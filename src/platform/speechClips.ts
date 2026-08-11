@@ -19,6 +19,8 @@
  * 现在改为解码后缓存 AudioBuffer，播放时一定是就绪状态。
  */
 
+import { assetUrl } from '@/platform/assetUrl'
+
 /** 判定为人声的能量门限，相对于整段峰值。3% 能滤掉底噪又不会切掉轻辅音 */
 const SPEECH_THRESHOLD = 0.03
 
@@ -104,7 +106,10 @@ export function loadClip(ctx: AudioContext, key: string): Promise<AudioBuffer | 
 
   const task = (async (): Promise<AudioBuffer | null> => {
     try {
-      const res = await fetch(`/audio/voice/${key}.mp3`)
+      // ⚠️ 必须走 assetUrl：写死 `/audio/...` 在 GitHub Pages 的子路径下会 404，
+      //    而且**只在线上错**（dev server 会顺便在根路径伺服 public/）。
+      //    后果是每一句都降级成机械的系统合成音。见 platform/assetUrl.ts
+      const res = await fetch(assetUrl(`audio/voice/${key}.mp3`))
       if (!res.ok) return null
       const decoded = await ctx.decodeAudioData(await res.arrayBuffer())
       const { start, end } = findSpeechRange(decoded)

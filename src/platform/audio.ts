@@ -14,6 +14,7 @@
  */
 
 import { Howl, Howler } from 'howler'
+import { assetUrl } from '@/platform/assetUrl'
 
 /**
  * 音效清单。键名与 `public/audio/sfx/*.wav` 一一对应。
@@ -43,9 +44,15 @@ const sounds = new Map<SfxKey, Howl>()
 let unlocked = false
 let enabled = true
 
-/** 音效文件路径。用绝对路径，保证在 hash 路由的任意深度下都解析正确 */
+/**
+ * 音效文件 URL。
+ *
+ * ⚠️ 必须走 `assetUrl` 而不是写死 `/audio/sfx/…`：站点部署在
+ * `/Sen.SmartLearning/` 子路径下，根绝对路径指向的是域名根，一律 404——
+ * 表现为**线上一个音效都没有**，而本地怎么测都正常。见 platform/assetUrl.ts。
+ */
 function sfxUrl(key: SfxKey): string {
-  return `/audio/sfx/${key}.wav`
+  return assetUrl(`audio/sfx/${key}.wav`)
 }
 
 /**
