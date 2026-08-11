@@ -80,6 +80,13 @@ export const ICON_PATHS = {
   question: { d: 'M9.2 9.3a2.9 2.9 0 1 1 3.9 2.7c-.8.3-1.1 1-1.1 1.8v.4 M12 17.6h.01' },
   /** 添加到主屏幕引导 */
   share: { d: 'M12 3.5v11 M8.5 7 12 3.5 15.5 7 M5.5 13v6a1.5 1.5 0 0 0 1.5 1.5h10a1.5 1.5 0 0 0 1.5-1.5v-6' },
+  /**
+   * 家长留言的信封。
+   *
+   * ⚠️ 信封盖画成**朝下的折线**（已封口）而不是敞开的口子：
+   * 孩子不识字，全靠图形认这是什么，而敞口的信封更像「垃圾桶」或「盒子」。
+   */
+  mail: { d: 'M3.5 6.5h17v11h-17Z M3.5 7l8.5 6.5L20.5 7' },
 } as const satisfies Record<string, IconDef>
 
 export type IconName = keyof typeof ICON_PATHS

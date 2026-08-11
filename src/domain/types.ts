@@ -345,9 +345,55 @@ export interface ItemTemplate {
 // 用户数据 —— 主键一律 UUID，备份导出的就是这些表
 // ============================================================================
 
+/**
+ * 家长写给孩子的一句话。
+ *
+ * ⭐ 这是全 App 唯一由**另一个人**产生的内容。孩子不识字，所以它必须被念出来；
+ * 而它把 App 从「一个人练」变成「有人在看着我」——
+ * 这件事的情感强度和任何积分系统都不是一个量级。
+ *
+ * @see src/features/home/ParentMessageCard.tsx  孩子那一端
+ * @see src/features/parent/MessageSetting.tsx   家长那一端
+ */
+export interface ParentMessage {
+  /** 留言正文。家长手写，因此只能走 TTS 朗读 */
+  text: string
+  createdAt: IsoDateTime
+  /**
+   * 孩子听过的时间，没听过则为 `undefined`。
+   *
+   * 只用来决定要不要显示「新留言」的提示——听过之后卡片仍然留着，
+   * 她想再听几遍是她的自由。
+   */
+  readAt?: IsoDateTime
+}
+
 export interface Profile {
   id: Uuid
+  /**
+   * 主昵称。App 用它称呼孩子，也用作备份文件名的一部分。
+   * @see src/data/repositories/profileRepo.ts
+   */
   name: string
+  /**
+   * 备用昵称，与 {@link Profile.name} 一起随机轮换（「小恩宝」/「恩宝」/「小恩恩」）。
+   *
+   * ⭐ 真实的家长不会一天到晚只用一个称呼，固定一个叫法很快就变成提示音的一部分，
+   * 被自动忽略掉。轮换让「叫名字」这件事保持有效。
+   *
+   * ⚠️ 可选字段：改名之前导出的备份没有它，导入后按「只有主昵称」处理。
+   * 因为不涉及索引变化，Dexie 的 `stores()` 定义不用动，也不需要递增 SCHEMA_VERSION。
+   */
+  aliases?: string[]
+  /**
+   * 家长留给孩子的一句话，下次打开时由伙伴念出来。
+   *
+   * 只保留**最新一条**：留言板攒成收件箱就变成了任务列表，
+   * 而它的价值恰恰在于「随手写一句」。
+   *
+   * ⚠️ 可选字段，理由同 {@link Profile.aliases}。
+   */
+  parentMessage?: ParentMessage
   avatarId: string
   /** `'YYYY-MM-DD'`，可选，仅用于年龄适配 */
   birthDate?: string

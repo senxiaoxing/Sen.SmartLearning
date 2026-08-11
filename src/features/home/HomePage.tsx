@@ -9,45 +9,35 @@
  */
 
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
-import { PetAvatar } from '@/components/PetAvatar'
 import { hasCompletedAssessment } from '@/data/repositories/assessmentRepo'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
 import { loadPendingRetry } from '@/data/repositories/reportRepo'
-import { isSubjectOpened, OPENED_SUBJECTS, petDefinitionOf } from '@/data/seed/pets'
-import { WARMUP_CLIPS } from '@/data/seed/voiceManifest'
-import { levelProgress } from '@/domain/pet/growth'
+import { OPENED_SUBJECTS } from '@/data/seed/pets'
+import { birthdayLine, isBirthday } from '@/domain/encourage/birthdayLine'
+import { greetingLine } from '@/domain/encourage/greetingLine'
+import { pickNickname } from '@/domain/encourage/pickNickname'
+import { timeOfDay } from '@/domain/encourage/timeOfDay'
+import { plain } from '@/domain/speech'
 import { todayLocal } from '@/domain/time'
 import { HomeCompanion } from '@/features/home/HomeCompanion'
+import { HomeGreeting } from '@/features/home/HomeGreeting'
+import { HomePets } from '@/features/home/HomePets'
+import { ParentMessageCard } from '@/features/home/ParentMessageCard'
 import { RetryEntry } from '@/features/home/RetryEntry'
 import { SubjectPicker } from '@/features/home/SubjectPicker'
+import { unlockAllAudio } from '@/features/home/unlockAllAudio'
 import { InstallPrompt } from '@/features/onboarding/InstallPrompt'
 import { ParentEntry } from '@/features/parent/ParentEntry'
-import { unlockAudio } from '@/platform/audio'
-import { unlockSpeechPlayback } from '@/platform/speech'
-import { unlockSpeech } from '@/platform/tts'
+import { say } from '@/platform/speech'
 import { usePetStore } from '@/stores/petStore'
+import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import type { Subject } from '@/domain/types'
-
-/**
- * 在用户手势中解锁全部音频通道。
- *
- * ⚠️ 三者都必须**同步**调用，不能 await 任何东西之后再调 ——
- * iOS 只认用户手势那一瞬间的调用栈。
- *
- * 顺带预热数字片段：不预热会出现「有的数字没读出来」——
- * 片段按需加载时会被新的朗读打断，低频数字（如 15）经常整个被吞掉。
- */
-function unlockAllAudio(): void {
-  unlockSpeech() // Web Speech，仅作缺片段时的兜底
-  unlockAudio() // 音效
-  unlockSpeechPlayback(WARMUP_CLIPS) // 预生成语音片段
-}
 
 export function HomePage() {
   const navigate = useNavigate()
@@ -57,6 +47,10 @@ export function HomePage() {
   const startWrongBookRetry = useSessionStore((s) => s.startWrongBookRetry)
   const pets = usePetStore((s) => s.pets)
   const loadPets = usePetStore((s) => s.load)
+  const nicknames = useProfileStore((s) => s.nicknames)
+  const birthDate = useProfileStore((s) => s.birthDate)
+  const parentMessage = useProfileStore((s) => s.parentMessage)
+  const markMessageHeard = useProfileStore((s) => s.markMessageHeard)
   const [today, setToday] = useState({ total: 0, correct: 0 })
   const [needsAssessment, setNeedsAssessment] = useState(false)
   /** 还没解决的错题总数，决定要不要显示「再练一练」 */
@@ -75,13 +69,30 @@ export function HomePage() {
   const openSubjects = OPENED_SUBJECTS
 
   /**
+   * 这次停留期间用哪个称呼。
+   *
+   * ⚠️ `useMemo` 锁定在 `nicknames` 上：不缓存的话每次重渲染都会重新抽，
+   * 标题会自己跳字（「小恩宝」→「恩宝」），看起来像出了故障。
+   * 轮换发生在**每次回到首页**，而不是每一帧。
+   */
+  const nickname = useMemo(() => pickNickname(nicknames, Math.random()), [nicknames])
+
+  // 生日当天换一句话、给伙伴挂个蛋糕，**不给任何奖励**——
+  // 挂上奖励它就变成又一个每日任务了。见 domain/encourage/birthdayLine.ts
+  const birthday = isBirthday(birthDate, todayLocal())
+  // 时段在这里读系统时间而不是 domain 里读 —— domain 必须保持纯函数可测试
+  const greeting = birthday
+    ? birthdayLine(nickname)
+    : greetingLine(nickname, timeOfDay(new Date().getHours()))
+
+  /**
    * 进入答题页。所有开课入口都必须走这里。
    *
    * ⚠️ `unlockAllAudio()` 必须留在这个同步调用栈里 —— 异步之后再调 iOS 会忽略，
    * 后果是全程无声，而孩子不识字，等于 App 报废。
    */
   const enterSession = (begin: () => void) => {
-    unlockAllAudio()
+    unlockAllAudio(nickname)
     begin()
     navigate('/learn')
   }
@@ -99,29 +110,16 @@ export function HomePage() {
           transition={{ type: 'spring', stiffness: 200, damping: 22 }}
           className="flex flex-col items-center gap-4"
         >
-          {/* 三只科目伙伴。⚠️ 平铺展示，绝不排名——见 CLAUDE.md 产品红线 */}
-          <button
-            type="button"
-            aria-label="我的伙伴"
-            onClick={() => navigate('/pets')}
-            className="flex items-end gap-2 rounded-blob px-4 py-2"
-          >
-            {pets.map((pet) => {
-              const def = petDefinitionOf(pet.subject, pet.gradeLevel)
-              if (def === undefined) return null
-              return (
-                <PetAvatar
-                  key={pet.id}
-                  def={def}
-                  stageIndex={levelProgress(pet.exp).stage}
-                  size={pet.subject === 'math' ? 'md' : 'sm'}
-                  asleep={!isSubjectOpened(pet.subject)}
-                  animated={false}
-                />
-              )
-            })}
-          </button>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">今天想学点什么？</h1>
+          <HomePets pets={pets} festive={birthday} onOpen={() => navigate('/pets')} />
+          {/* 点击是用户手势，顺手把音频解锁了 —— 见 HomeGreeting 的文件头 */}
+          <HomeGreeting
+            line={greeting}
+            celebrating={birthday}
+            onSpeak={() => {
+              unlockAllAudio(nickname)
+              say(greeting.utterance)
+            }}
+          />
         </motion.div>
 
         {/* 宽屏时这行让位给侧栏的今日面板 —— 同一份信息不在一屏里出现两次 */}
@@ -163,6 +161,21 @@ export function HomePage() {
           </BigButton>
         )}
 
+        {/* 爸妈的留言。排在「开始学习」之后：它是惊喜，不是必经的关卡，
+            她想先做题就先做题，信一直在那儿 */}
+        {parentMessage !== undefined && (
+          <ParentMessageCard
+            message={parentMessage}
+            onPlay={() => {
+              // 点击是用户手势 —— iOS 只认这一瞬间的调用栈。
+              // 留言是家长手写的，没有预生成片段，只能走 TTS
+              unlockAllAudio(nickname)
+              say(plain(parentMessage.text))
+              void markMessageHeard()
+            }}
+          />
+        )}
+
         {/* 错题订正的长期入口，为什么必须有见 RetryEntry 文件头。
             摸底还没做时不出现——那时既没有错题，也不该分散注意力 */}
         {!needsAssessment && pendingRetry > 0 && (
@@ -176,7 +189,7 @@ export function HomePage() {
             tone="neutral"
             className="px-6 py-4 text-xl sm:px-8"
             onClick={() => {
-              unlockAllAudio()
+              unlockAllAudio(nickname)
               navigate('/letters')
             }}
           >
@@ -187,7 +200,7 @@ export function HomePage() {
             tone="neutral"
             className="px-6 py-4 text-xl sm:px-8"
             onClick={() => {
-              unlockAllAudio()
+              unlockAllAudio(nickname)
               navigate('/explain')
             }}
           >

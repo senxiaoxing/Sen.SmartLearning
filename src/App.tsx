@@ -8,6 +8,7 @@
 
 import { useEffect, type ReactNode } from 'react'
 import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { LetterWall } from '@/features/english/LetterWall'
 import { HomePage } from '@/features/home/HomePage'
@@ -43,12 +44,17 @@ export function App() {
  */
 function AppRoutes() {
   const init = useSessionStore((s) => s.init)
+  const loadProfile = useProfileStore((s) => s.load)
 
   // 在这里初始化而不是首页：宠物页、讲解库都可能被直接打开
   // （刷新、从主屏图标进入某个 hash），每个页面各自 init 容易漏
+  //
+  // 昵称同理：首页、答题、小结、宠物页都要用它称呼孩子。
+  // 两者各自调 bootstrap（幂等且防并发），不需要排先后
   useEffect(() => {
     void init()
-  }, [init])
+    void loadProfile()
+  }, [init, loadProfile])
 
   return (
     <Routes>

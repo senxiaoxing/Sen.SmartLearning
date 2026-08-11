@@ -41,8 +41,8 @@ export default defineConfig({
       includeAssets: ['icons/apple-touch-icon-180.png'],
 
       manifest: {
-        name: '智慧学习',
-        short_name: '智慧学习',
+        name: '希恩爱学习',
+        short_name: '希恩爱学习',
         description: '一年级数学·拼音·英语的自适应练习',
         lang: 'zh-CN',
         // ⚠️ 必须是子路径而不是 '/'：写 '/' 的话 iOS 会认为 PWA 的作用域是

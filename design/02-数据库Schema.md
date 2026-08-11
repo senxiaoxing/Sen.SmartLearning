@@ -789,7 +789,7 @@ async function exportBackup(profileId: string): Promise<void> {
   const backup = await buildBackup(profileId)
   const json = JSON.stringify(backup)
   const blob = new Blob([json], { type: 'application/json' })
-  const fileName = `智慧学习_${backup.stats.petName}_${todayLocal()}.json`
+  const fileName = `希恩爱学习_${backup.stats.petName}_${todayLocal()}.json`
   const file = new File([blob], fileName, { type: 'application/json' })
 
   // ⭐ 优先用 Web Share API —— 直接调起 iOS 分享面板，

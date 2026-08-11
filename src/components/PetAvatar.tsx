@@ -27,7 +27,17 @@ interface PetAvatarProps {
   animated?: boolean
   /** 睡眠态：科目内容还没做好时用，明确表示「不是你没养好」 */
   asleep?: boolean
+  /**
+   * 过节态：右上角挂一个蛋糕。目前只在孩子生日当天用。
+   *
+   * 做成叠加的贴纸而不是改三个 Art 组件里的 SVG：一年只出现一天，
+   * 不值得让形象层多背一个状态；而且以后要加别的节日也只换这一个 emoji。
+   */
+  festive?: boolean
 }
+
+/** 过节态挂的东西。⚠️ 只在真的值得庆祝时出现，否则它会迅速贬值 */
+const FESTIVE_BADGE = '🎂'
 
 const BASE_SIZE = { sm: 48, md: 88, lg: 140 }
 
@@ -62,6 +72,7 @@ export function PetAvatar({
   size = 'md',
   animated = true,
   asleep = false,
+  festive = false,
 }: PetAvatarProps) {
   const base = BASE_SIZE[size]
   const stage = def.stages[stageIndex]
@@ -93,6 +104,19 @@ export function PetAvatar({
           asleep={asleep}
         />
       </motion.div>
+
+      {festive && (
+        // 只动 scale / rotate（GPU 合成属性），不碰布局属性 —— CLAUDE.md 性能红线
+        <motion.span
+          aria-hidden
+          initial={{ scale: 0, rotate: -25 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 12, delay: 0.2 }}
+          className="pointer-events-none absolute -right-1 -top-1 text-2xl"
+        >
+          {FESTIVE_BADGE}
+        </motion.span>
+      )}
     </div>
   )
 }

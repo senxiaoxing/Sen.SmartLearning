@@ -9,6 +9,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   PET_DEFINITIONS,
+  PET_LINE_MOMENTS,
   isSubjectOpened,
   OPENED_SUBJECTS,
   petDefinitionOf,
@@ -16,11 +17,34 @@ import {
 } from '@/data/seed/pets'
 import { ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
 import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
+import { petNameClipKey, VOICE_MANIFEST } from '@/data/seed/voiceManifest'
 import { STAGE_COUNT } from '@/domain/pet/growth'
 import type { AccessorySlot } from '@/data/seed/pets'
 import type { Subject } from '@/domain/types'
 
 const ALL_SUBJECTS: Subject[] = ['math', 'pinyin', 'english']
+
+describe('⭐ 每只宠物的默认名都有语音片段', () => {
+  /**
+   * 守的是升级那一句的音色。
+   *
+   * `voiceManifest.ts` 的 `PET_NAMES` 里抄了一份宠物名，改了这边的 `defaultName`
+   * 却没同步过去的后果是：升级播报整句降级为机器音，
+   * 而这只有真的养到升级那一刻才会暴露。
+   */
+  it.each(PET_DEFINITIONS.map((p) => [p.id, p] as const))('%s', (_id, def) => {
+    const clipKey = petNameClipKey(def.defaultName)
+
+    expect(clipKey, `${def.defaultName} 在 voiceManifest 的 PET_NAMES 里没有片段`).toBeDefined()
+    expect(VOICE_MANIFEST[clipKey!], '片段念的文本必须与 defaultName 逐字一致').toBe(
+      def.defaultName,
+    )
+  })
+
+  it('改过名的宠物查不到片段 —— 那时应整句走 TTS', () => {
+    expect(petNameClipKey('毛毛')).toBeUndefined()
+  })
+})
 
 describe('宠物定义', () => {
   it('一年级三个科目各有一只', () => {
@@ -136,8 +160,8 @@ describe('台词', () => {
   it('五个场景的台词池都不为空', () => {
     for (const def of PET_DEFINITIONS) {
       const p = def.personality
-      expect(p.catchphrase.length, `${def.id} 缺口头禅`).toBeGreaterThan(0)
-      for (const moment of ['greet', 'correct', 'wrong', 'levelUp', 'comeback'] as const) {
+      expect(p.catchphrase.text.length, `${def.id} 缺口头禅`).toBeGreaterThan(0)
+      for (const moment of PET_LINE_MOMENTS) {
         expect(p[moment].length, `${def.id} 的 ${moment} 台词池为空`).toBeGreaterThan(0)
       }
     }
@@ -149,12 +173,38 @@ describe('台词', () => {
     for (const def of PET_DEFINITIONS) {
       for (const line of [...def.personality.wrong, ...def.personality.comeback]) {
         for (const word of forbidden) {
-          expect(line.includes(word), `${def.id} 台词「${line}」含禁用词「${word}」`).toBe(
+          expect(line.text.includes(word), `${def.id} 台词「${line.text}」含禁用词「${word}」`).toBe(
             false,
           )
         }
       }
     }
+  })
+
+  /**
+   * ⭐ 台词现在会出现在**每一次答对**的反馈里，是全 App 最高频的语音之一。
+   * 少一个片段就意味着那一句掉回机器音，而它是随机轮换的——
+   * 可能好几轮才撞上一次，肉眼（耳）根本抓不住。
+   */
+  it('每一句台词都有语音片段，且片段念的就是这句话', () => {
+    for (const def of PET_DEFINITIONS) {
+      const all = [def.personality.catchphrase, ...PET_LINE_MOMENTS.flatMap((m) => def.personality[m])]
+
+      for (const line of all) {
+        expect(VOICE_MANIFEST[line.clipKey], `${line.clipKey}（${line.text}）不在清单里`).toBe(
+          line.text,
+        )
+      }
+    }
+  })
+
+  it('片段 key 全局唯一 —— 撞了会让两只宠物共用同一段录音', () => {
+    const keys = PET_DEFINITIONS.flatMap((def) => [
+      def.personality.catchphrase.clipKey,
+      ...PET_LINE_MOMENTS.flatMap((m) => def.personality[m].map((l) => l.clipKey)),
+    ])
+
+    expect(new Set(keys).size).toBe(keys.length)
   })
 })
 

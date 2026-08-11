@@ -33,7 +33,7 @@ export type SaveOutcome =
  * @returns 实际走了哪条路。⚠️ `'cancelled'` 表示家长取消了，调用方**不应**当作成功
  *
  * @example
- * const outcome = await saveJsonFile('智慧学习_小豆_2026-08-06.json', json)
+ * const outcome = await saveJsonFile('希恩爱学习_小恩宝_2026-08-06.json', json)
  * if (outcome !== 'cancelled') await markExported()
  */
 export async function saveJsonFile(fileName: string, json: string): Promise<SaveOutcome> {

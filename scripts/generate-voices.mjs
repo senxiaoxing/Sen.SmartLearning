@@ -25,8 +25,10 @@
  * ```
  * en.*      英语童声      用中文音色念 apple 会教错发音
  * pinyin.*  标准播音音色  ⭐ 孤立单字的声调最容易读飘，标准优先于亲切
- * 其余      少女声        题干、鼓励语，亲切感优先
+ * 其余      少女声        题干、鼓励语、昵称，亲切感优先
  * ```
+ * ⚠️ `name.*`（昵称）必须留在默认音色里：它拼在鼓励语的**同一句话**前面，
+ * 换音色就等于一句话里有两个人在说。
  * 发音教错比没有声音严重得多（拼音那边已经付过一次学费，见 design/07 §3.3）。
  */
 
@@ -41,6 +43,8 @@ const MANIFEST_FILE = join(ROOT, 'src', 'data', 'seed', 'voiceManifest.ts')
 const SYLLABLES_FILE = join(ROOT, 'src', 'data', 'seed', 'pinyinSyllables.ts')
 const ENGLISH_FILE = join(ROOT, 'src', 'data', 'seed', 'englishWords.ts')
 const LETTERS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishLetters.ts')
+const NICKNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'nicknamePresets.ts')
+const PETS_FILE = join(ROOT, 'src', 'data', 'seed', 'pets.ts')
 
 /**
  * 默认音色。
@@ -196,8 +200,69 @@ function loadManifest() {
     manifest[key] = value
   }
 
-  Object.assign(manifest, loadPinyin(), loadEnglish())
+  Object.assign(manifest, loadPinyin(), loadEnglish(), loadNicknames(), loadPetLines())
   return manifest
+}
+
+/**
+ * 宠物台词。
+ *
+ * 台词在 `pets.ts` 里就是 `{ clipKey, text }` 的字面量（见那里的 `PetLine` 说明），
+ * 所以这里用的正则和昵称那条**几乎一样**——把 key 写在台词旁边，
+ * 换来的正是这个：不需要为宠物再发明一套解析。
+ *
+ * ⚠️ 文本要认单引号和双引号两种：波波有句台词是 `"Let's go！我们开始吧"`，
+ * 里面的撇号逼得它必须用双引号包。英语词表那边同理。
+ */
+function loadPetLines() {
+  const text = readFileSync(PETS_FILE, 'utf-8')
+  const out = {}
+
+  for (const [, clipKey, single, double] of text.matchAll(
+    /\{\s*clipKey:\s*'(petline\.[A-Za-z0-9]+)',\s*text:\s*(?:'([^']*)'|"([^"]*)")/g,
+  )) {
+    out[clipKey] = single ?? double
+  }
+
+  // ⚠️ 硬失败而不是警告：台词结构变了却不同步这里，后果是宠物台词整句掉回机器音，
+  //    而它现在出现在**每一次答对**的反馈里——最该保住音色的位置。
+  //    与英语字母、昵称两处的处理保持一致
+  if (Object.keys(out).length === 0) {
+    console.error('✗ pets.ts 的 PetLine 结构变了，本脚本的 loadPetLines() 必须同步：')
+    console.error('  一条 petline.* 都没解析出来')
+    process.exit(1)
+  }
+
+  return out
+}
+
+/**
+ * 昵称单独解析 —— 与拼音、英语同理，它在 `nicknamePresets.ts` 里是结构化的
+ * `{ clipKey, text }` 对象，不是 `voiceManifest.ts` 那样的字面量键值对。
+ *
+ * 用默认的中文少女声念，与鼓励语同一个音色 —— 昵称就拼在鼓励语前面，
+ * 两者音色一旦不同，一句话里就有两个声音。
+ */
+function loadNicknames() {
+  const text = readFileSync(NICKNAMES_FILE, 'utf-8')
+  const out = {}
+
+  for (const [, clipKey, spoken] of text.matchAll(
+    /\{\s*clipKey:\s*'(name\.[A-Za-z0-9]+)',\s*text:\s*'([^']+)'/g,
+  )) {
+    out[clipKey] = spoken
+  }
+
+  // ⚠️ 硬失败而不是警告：清单结构变了却不同步这里，后果是新昵称**没有音频**，
+  //    而它的表现是「换了个昵称，声音忽然变成机器音」——静默、且极易被当成 iOS 的毛病。
+  //    英语字母那边踩过同类的坑，处理方式保持一致
+  if (Object.keys(out).length === 0) {
+    console.error('✗ nicknamePresets.ts 的结构变了，本脚本的 loadNicknames() 必须同步：')
+    console.error('  一条 name.* 都没解析出来')
+    process.exit(1)
+  }
+
+  return out
 }
 
 /**

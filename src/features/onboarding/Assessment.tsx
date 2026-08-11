@@ -19,10 +19,14 @@ import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
 import { PLACEMENT_PROBES } from '@/domain/assessment/placement'
+import { addressed } from '@/domain/encourage/addressed'
+import { primaryNickname } from '@/domain/encourage/pickNickname'
 import { ItemRenderer } from '@/items/ItemRenderer'
 import { unlockAudio } from '@/platform/audio'
+import { say } from '@/platform/speech'
 import { speak, unlockSpeech } from '@/platform/tts'
 import { useAssessmentStore } from '@/stores/assessmentStore'
+import { useProfileStore } from '@/stores/profileStore'
 
 export function Assessment() {
   const navigate = useNavigate()
@@ -119,6 +123,12 @@ function ProbeFeedback({ isCorrect, onNext }: { isCorrect: boolean; onNext: () =
 }
 
 function Intro({ onStart }: { onStart: () => void }) {
+  const nicknames = useProfileStore((s) => s.nicknames)
+  // 用主昵称而不是随机抽：这句话孩子只看一次，用最正式的那个叫法
+  const primary = primaryNickname(nicknames)
+  /** 「小鸡想知道**小恩宝**能走多远」——把她拉进这个故事里，而不是被测的对象 */
+  const who = primary.text.length > 0 ? primary.text : '你'
+
   return (
     <AppShell width="narrow">
       <div className="flex flex-col items-center gap-8 text-center">
@@ -132,7 +142,7 @@ function Intro({ onStart }: { onStart: () => void }) {
         <div className="flex flex-col gap-3">
           <h1 className="text-3xl font-bold">一起去探险吧！</h1>
           <p className="max-w-sm text-lg leading-relaxed text-ink/60">
-            小鸡想知道你能走多远。
+            小鸡想知道{who}能走多远。
             <br />
             走不动了也没关系，我们从那里开始一起练。
           </p>
@@ -155,9 +165,18 @@ function Intro({ onStart }: { onStart: () => void }) {
 }
 
 function Done({ startKpName, onFinish }: { startKpName: string | null; onFinish: () => void }) {
+  const nicknames = useProfileStore((s) => s.nicknames)
+  const nickname = primaryNickname(nicknames)
+
   useEffect(() => {
-    speak(startKpName === null ? '你全部都走完了，太厉害了' : `找到啦，我们从这里开始练习`)
-  }, [startKpName])
+    // 探险的终点是全程最值得庆祝的一刻，叫上名字。
+    // 顺带从实时 TTS 换成预生成片段——这两句本来就在清单里
+    const line =
+      startKpName === null
+        ? addressed(nickname, ['phrase.finishedAll'], '你全部都走完了，太厉害了')
+        : addressed(nickname, ['phrase.startHere'], '找到啦，我们从这里开始练习')
+    say(line.utterance)
+  }, [startKpName, nickname])
 
   return (
     <AppShell width="narrow">

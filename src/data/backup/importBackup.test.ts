@@ -332,7 +332,7 @@ describe('文件名', () => {
     const profileId = await seedUsedProfile()
     const backup = await buildBackup(profileId)
 
-    expect(backupFileName(backup)).toMatch(/^智慧学习_.+_\d{4}-\d{2}-\d{2}\.json$/)
+    expect(backupFileName(backup)).toMatch(/^希恩爱学习_.+_\d{4}-\d{2}-\d{2}\.json$/)
   })
 
   it('剔除文件系统保留字符，避免 iOS 拒绝保存', async () => {

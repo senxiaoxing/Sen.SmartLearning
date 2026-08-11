@@ -22,8 +22,25 @@ import { findNewlyUnlocked } from '@/domain/scheduler/unlockGraph'
 import { addDays, nowIso } from '@/domain/time'
 import { gradeLevelOf, type Mastery, type Profile, type Settings, type Uuid } from '@/domain/types'
 
-/** 默认档案名。孩子第一次打开时用，之后可在家长区改 */
-const DEFAULT_PROFILE_NAME = '小朋友'
+/**
+ * 默认昵称 —— 全 App 用它称呼孩子（「小恩宝，今天想学点什么？」）。
+ *
+ * 直接写成这台设备实际在用的名字而不是通用的「小朋友」：
+ * 这是自用 App，装上就该叫对名字，不该先让家长做一步配置。
+ * 家长区「孩子的昵称」随时可改，且它在 `data/seed/nicknamePresets.ts` 里有专属语音。
+ *
+ * ⚠️ 只在**首次建档**时用。已有档案的名字一律不动——
+ * 那是用户数据，App 更新不该悄悄改掉它。
+ */
+const DEFAULT_PROFILE_NAME = '小恩宝'
+
+/**
+ * 改默认昵称之前用的名字。
+ *
+ * 存在的唯一目的是 {@link migrateLegacyDefaultName}——
+ * 这台 iPad 上已经有一个叫「小朋友」的档案，而它从来没被家长改过。
+ */
+const LEGACY_DEFAULT_PROFILE_NAME = '小朋友'
 
 /**
  * 进行中的初始化。
@@ -86,12 +103,31 @@ async function syncStaticContent(): Promise<void> {
   ])
 }
 
+/**
+ * 把还叫旧默认名「小朋友」的档案改成「小恩宝」。
+ *
+ * ⚠️ **只改从没被家长动过的档案**——判据是 `updatedAt === createdAt`。
+ * 少了这个判据就成了 bug 而不是迁移：「小朋友」本身也是一个合法昵称
+ * （它在预设清单里），家长若特意选了它，每次冷启动都会被悄悄改回「小恩宝」。
+ *
+ * 改完名字自然不再满足条件，因此这是个天然一次性的迁移，不需要额外的标记位。
+ */
+async function migrateLegacyDefaultName(profile: Profile): Promise<void> {
+  if (profile.name !== LEGACY_DEFAULT_PROFILE_NAME) return
+  if (profile.updatedAt !== profile.createdAt) return
+
+  await db.profiles.put({ ...profile, name: DEFAULT_PROFILE_NAME, updatedAt: nowIso() })
+}
+
 /** 取当前档案，不存在则创建 */
 async function ensureProfile(): Promise<Uuid> {
   const active = await db.meta.get('activeProfileId')
   if (typeof active?.value === 'string') {
     const existing = await db.profiles.get(active.value)
-    if (existing !== undefined) return existing.id
+    if (existing !== undefined) {
+      await migrateLegacyDefaultName(existing)
+      return existing.id
+    }
   }
 
   const now = nowIso()

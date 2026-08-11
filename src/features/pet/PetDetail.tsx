@@ -17,10 +17,14 @@ import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
 import { PetAvatar, PetLevelBar } from '@/components/PetAvatar'
 import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { addressed } from '@/domain/encourage/addressed'
+import { pickNickname } from '@/domain/encourage/pickNickname'
 import { levelProgress, MAX_LEVEL } from '@/domain/pet/growth'
 import { greetingMoment, pickLine } from '@/domain/pet/personality'
+import { utter } from '@/domain/speech'
 import { nowIso } from '@/domain/time'
-import { speak } from '@/platform/tts'
+import { say } from '@/platform/speech'
+import { useProfileStore } from '@/stores/profileStore'
 import type { PetState } from '@/domain/types'
 
 interface PetDetailProps {
@@ -52,18 +56,30 @@ export function PetDetail({
   onConfirmRename,
 }: PetDetailProps) {
   const def = petDefinitionOf(pet.subject, pet.gradeLevel)
+  const nicknames = useProfileStore((s) => s.nicknames)
   const [line, setLine] = useState('')
 
   const progress = levelProgress(pet.exp)
   const opened = def !== undefined && isSubjectOpened(pet.subject)
 
+  /**
+   * 见面第一句叫名字：「小恩宝，我有点想你」。
+   *
+   * ⚠️ 只有见面这一句带昵称，后面点着玩的台词不带——
+   * 每一句都喊名字会从「它记得我」变成「它只会喊我名字」。
+   */
   useEffect(() => {
     if (def === undefined || !opened) return
     const moment = greetingMoment(pet.lastSeenAt, nowIso())
-    const text = pickLine(def.personality, moment, Math.random())
-    setLine(text)
-    speak(text)
-  }, [pet.id, pet.lastSeenAt, def, opened])
+    const spoken = pickLine(def.personality, moment, Math.random())
+    const greeting = addressed(
+      pickNickname(nicknames, Math.random()),
+      [spoken.clipKey],
+      spoken.text,
+    )
+    setLine(greeting.text)
+    say(greeting.utterance)
+  }, [pet.id, pet.lastSeenAt, def, opened, nicknames])
 
   if (def === undefined) return null
   const stage = def.stages[progress.stage]
@@ -76,9 +92,10 @@ export function PetDetail({
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
         onClick={() => {
           if (!opened) return
-          const text = pickLine(def.personality, 'greet', Math.random())
-          setLine(text)
-          speak(text)
+          // 反复点着玩的台词不带昵称，理由见上面 useEffect 的说明
+          const spoken = pickLine(def.personality, 'greet', Math.random())
+          setLine(spoken.text)
+          say(utter([spoken.clipKey], spoken.text))
         }}
       >
         <PetAvatar def={def} stageIndex={progress.stage} size="lg" asleep={!opened} animated />

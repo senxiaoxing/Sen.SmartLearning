@@ -11,6 +11,9 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
+import { BirthdaySetting } from '@/features/parent/BirthdaySetting'
+import { MessageSetting } from '@/features/parent/MessageSetting'
+import { NicknameSetting } from '@/features/parent/NicknameSetting'
 import { SkinPicker } from '@/features/parent/SkinPicker'
 import { useParentGateStore } from '@/stores/parentGateStore'
 import type { IconName } from '@/components/iconPaths'
@@ -80,6 +83,11 @@ export function ParentHome() {
           ))}
         </div>
 
+        {/* 顺序按「多久用一次」排：留言可能天天写，昵称设一次管很久，
+            生日一年一次，皮肤基本不动 */}
+        <MessageSetting />
+        <NicknameSetting />
+        <BirthdaySetting />
         <SkinPicker />
       </div>
     </AppShell>

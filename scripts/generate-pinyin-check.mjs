@@ -69,7 +69,7 @@ const html = `<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>拼音发音校验 · 智慧学习</title>
+<title>拼音发音校验 · 希恩爱学习</title>
 <style>
   :root { color-scheme: light dark; }
   body { font-family: system-ui, -apple-system, "Microsoft YaHei", sans-serif;

@@ -19,6 +19,17 @@ import type { BackupFile, IsoDateTime, Uuid } from '@/domain/types'
 const NAME_MAX_LENGTH = 12
 
 /**
+ * 备份文件名前缀 —— App 的显示名。
+ *
+ * ⚠️ 这只是**文件名**，与备份文件内部的 `format: 'smartlearning-backup'` 无关。
+ * 那个字段是数据格式标识，改名时**绝不能跟着改**：`validateBackup` 用它判断
+ * 「这是不是本 App 的备份」，改了会让改名前导出的所有备份一律无法恢复。
+ * 同理，早先叫「智慧学习_…json」的老备份换个名字照样能导入——
+ * 校验看的是文件内容，不是文件名。
+ */
+const FILE_NAME_PREFIX = '希恩爱学习'
+
+/**
  * 读出某档案的全部用户数据，打包成备份对象。
  *
  * @param profileId - 要备份的档案 ID
@@ -118,7 +129,7 @@ function extremes(times: IsoDateTime[]): { firstAttemptAt?: IsoDateTime; lastAtt
  * 十个 `backup.json` 堆在一起，恢复时只能靠猜。
  *
  * @example
- * backupFileName(backup)   // '智慧学习_小豆_2026-08-06.json'
+ * backupFileName(backup)   // '希恩爱学习_小恩宝_2026-08-06.json'
  */
 export function backupFileName(backup: BackupFile): string {
   // 去掉路径分隔符等文件系统保留字符，避免 iOS「文件」App 拒绝保存
@@ -128,7 +139,7 @@ export function backupFileName(backup: BackupFile): string {
     .slice(0, NAME_MAX_LENGTH)
 
   const label = safeName.length > 0 ? safeName : '进度'
-  return `智慧学习_${label}_${isoToLocalDate(backup.exportedAt)}.json`
+  return `${FILE_NAME_PREFIX}_${label}_${isoToLocalDate(backup.exportedAt)}.json`
 }
 
 /**

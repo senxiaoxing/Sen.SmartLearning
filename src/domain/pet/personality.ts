@@ -9,7 +9,7 @@
  */
 
 import { daysBetween } from '@/domain/time'
-import type { PetPersonality } from '@/data/seed/pets'
+import type { PetLine, PetPersonality } from '@/data/seed/pets'
 import type { IsoDateTime } from '@/domain/types'
 
 export type PetMoment = 'greet' | 'correct' | 'wrong' | 'levelUp' | 'comeback'
@@ -26,6 +26,10 @@ const COMEBACK_AFTER_DAYS = 3
 /**
  * 挑一句台词。
  *
+ * 返回的是 {@link PetLine}（文本 + 语音片段 key）而不是裸字符串：
+ * 台词全部预生成了 mp3，调用方拿到 key 才能用少女音播，
+ * 否则又掉回机器音——而答对反馈每题都要播这一句。
+ *
  * @param personality - 宠物性格
  * @param moment - 什么场合
  * @param seed - 随机源。传入调用方的随机数，保持 domain 纯净
@@ -33,13 +37,13 @@ const COMEBACK_AFTER_DAYS = 3
  *
  * @example
  * pickLine(penguin.personality, 'correct', Math.random())
- * // '哇，算对了！'
+ * // { clipKey: 'petline.penguinG1Correct0', text: '哇，算对了！' }
  */
 export function pickLine(
   personality: PetPersonality,
   moment: PetMoment,
   seed: number,
-): string {
+): PetLine {
   const pool = personality[moment]
   if (pool.length === 0) return personality.catchphrase
   const index = Math.floor(Math.abs(seed) * pool.length) % pool.length

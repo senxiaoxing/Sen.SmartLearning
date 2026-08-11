@@ -80,8 +80,10 @@ export function validateBackup(raw: unknown, currentSchemaVersion: number): Back
 
   const candidate = raw as Partial<BackupFile>
 
+  // ⚠️ `'smartlearning-backup'` 是数据格式标识，与 App 显示名无关，
+  //    App 改名时**不能**跟着改——改了会让改名前导出的备份全部无法恢复。
   if (candidate.format !== 'smartlearning-backup') {
-    return reject('wrong_format', '这不是「智慧学习」的备份文件，换一个文件试试。')
+    return reject('wrong_format', '这不是「希恩爱学习」的备份文件，换一个文件试试。')
   }
 
   if (typeof candidate.schemaVersion !== 'number' || !Number.isInteger(candidate.schemaVersion)) {

@@ -52,7 +52,9 @@ export function PetCard({ pet, onTap, compact = false }: PetCardProps) {
 
         {opened ? (
           <>
-            <p className="mt-0.5 truncate text-sm text-ink/50">{def.personality.catchphrase}</p>
+            <p className="mt-0.5 truncate text-sm text-ink/50">
+              {def.personality.catchphrase.text}
+            </p>
             <div className="mt-2">
               <PetLevelBar
                 level={progress.level}

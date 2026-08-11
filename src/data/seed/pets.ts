@@ -64,18 +64,41 @@ export interface PetStageAppearance {
   label: string
 }
 
+/**
+ * 一句宠物台词，自带语音片段 key。
+ *
+ * ⭐ **为什么台词要背着自己的 clipKey，而不是只写文本**
+ *
+ * 宠物台词全是静态内容，完全可以预生成 mp3——而这直接决定它是少女音还是机器音。
+ * 台词会出现在答对反馈里（每题必播），机器音在那个位置格外刺耳。
+ *
+ * key 写在台词旁边而不是由代码按下标推导（`petline.penguinG1Greet0`），
+ * 是为了让 `scripts/generate-voices.mjs` 能用**和昵称完全相同的正则**扫出来。
+ * 代价是啰嗦一点，换来的是台词文本仍然留在 pets.ts 里——
+ * 打开这一个文件就能看到这只宠物是什么性格，不用跳到第二个文件去拼。
+ */
+export interface PetLine {
+  /** 语音片段 key，形如 `petline.penguinG1Greet0` */
+  clipKey: string
+  /** 台词文本 */
+  text: string
+}
+
 export interface PetPersonality {
   /** 口头禅，最能体现性格的一句 */
-  catchphrase: string
+  catchphrase: PetLine
   /** 各场景台词池。随机取用，避免每次都是同一句 */
-  greet: string[]
-  correct: string[]
+  greet: readonly PetLine[]
+  correct: readonly PetLine[]
   /** ⚠️ 答错台词必须温和，见 CLAUDE.md 产品红线 */
-  wrong: string[]
-  levelUp: string[]
+  wrong: readonly PetLine[]
+  levelUp: readonly PetLine[]
   /** 久别重逢。⚠️ 只能是「想你了」，绝不能是「你都不理我」 */
-  comeback: string[]
+  comeback: readonly PetLine[]
 }
+
+/** `personality` 里全部台词池的字段名。遍历时用它，加了新场景这里也要加 */
+export const PET_LINE_MOMENTS = ['greet', 'correct', 'wrong', 'levelUp', 'comeback'] as const
 
 /** 六个形态，分别对应 Lv1-2 / 3-4 / 5-6 / 7-8 / 9-10 / 11-12 */
 export type PetStages = [
@@ -136,12 +159,35 @@ const PENGUIN_G1: PetDefinition = {
     },
   ],
   personality: {
-    catchphrase: '让我数数看～',
-    greet: ['今天也来数数吗？', '我刚才数到 100 啦！', '你来啦，我等你好久了～', '一起做数学题吧！'],
-    correct: ['哇，算对了！', '你比我还快！', '让我数数看…没错！', '厉害厉害～'],
-    wrong: ['嗯…我们再看看', '这道题有点绕呢', '没关系，我也常常数错', '再想想，你可以的'],
-    levelUp: ['我长大啦！', '又进步了一点点～', '快看快看，我不一样了！'],
-    comeback: ['好几天没见到你了，我有点想你', '你回来啦！我一直在等你', '想你想得都不会数数了～'],
+    catchphrase: { clipKey: 'petline.penguinG1Catchphrase', text: '让我数数看～' },
+    greet: [
+      { clipKey: 'petline.penguinG1Greet0', text: '今天也来数数吗？' },
+      { clipKey: 'petline.penguinG1Greet1', text: '我刚才数到 100 啦！' },
+      { clipKey: 'petline.penguinG1Greet2', text: '你来啦，我等你好久了～' },
+      { clipKey: 'petline.penguinG1Greet3', text: '一起做数学题吧！' },
+    ],
+    correct: [
+      { clipKey: 'petline.penguinG1Correct0', text: '哇，算对了！' },
+      { clipKey: 'petline.penguinG1Correct1', text: '你比我还快！' },
+      { clipKey: 'petline.penguinG1Correct2', text: '让我数数看…没错！' },
+      { clipKey: 'petline.penguinG1Correct3', text: '厉害厉害～' },
+    ],
+    wrong: [
+      { clipKey: 'petline.penguinG1Wrong0', text: '嗯…我们再看看' },
+      { clipKey: 'petline.penguinG1Wrong1', text: '这道题有点绕呢' },
+      { clipKey: 'petline.penguinG1Wrong2', text: '没关系，我也常常数错' },
+      { clipKey: 'petline.penguinG1Wrong3', text: '再想想，你可以的' },
+    ],
+    levelUp: [
+      { clipKey: 'petline.penguinG1LevelUp0', text: '我长大啦！' },
+      { clipKey: 'petline.penguinG1LevelUp1', text: '又进步了一点点～' },
+      { clipKey: 'petline.penguinG1LevelUp2', text: '快看快看，我不一样了！' },
+    ],
+    comeback: [
+      { clipKey: 'petline.penguinG1Comeback0', text: '好几天没见到你了，我有点想你' },
+      { clipKey: 'petline.penguinG1Comeback1', text: '你回来啦！我一直在等你' },
+      { clipKey: 'petline.penguinG1Comeback2', text: '想你想得都不会数数了～' },
+    ],
   },
 }
 
@@ -185,12 +231,35 @@ const DRAGON_G1: PetDefinition = {
     },
   ],
   personality: {
-    catchphrase: '本龙又学会一个字！',
-    greet: ['本龙今日也要读书！', '来听我念诗吗？', '你来啦，我正读到精彩处～', '今天学什么字呀？'],
-    correct: ['妙哉妙哉！', '本龙都要记下来了！', '读得真好听～', '你比本龙还厉害！'],
-    wrong: ['无妨无妨，再想想', '这个字确实难写', '本龙当年也念错过～', '慢慢来，不着急'],
-    levelUp: ['本龙长大了！', '又长了一片鳞～', '快看，本龙的角！'],
-    comeback: ['好久不见，本龙甚是想念', '你终于回来啦！', '这几日无人听我念书～'],
+    catchphrase: { clipKey: 'petline.dragonG1Catchphrase', text: '本龙又学会一个字！' },
+    greet: [
+      { clipKey: 'petline.dragonG1Greet0', text: '本龙今日也要读书！' },
+      { clipKey: 'petline.dragonG1Greet1', text: '来听我念诗吗？' },
+      { clipKey: 'petline.dragonG1Greet2', text: '你来啦，我正读到精彩处～' },
+      { clipKey: 'petline.dragonG1Greet3', text: '今天学什么字呀？' },
+    ],
+    correct: [
+      { clipKey: 'petline.dragonG1Correct0', text: '妙哉妙哉！' },
+      { clipKey: 'petline.dragonG1Correct1', text: '本龙都要记下来了！' },
+      { clipKey: 'petline.dragonG1Correct2', text: '读得真好听～' },
+      { clipKey: 'petline.dragonG1Correct3', text: '你比本龙还厉害！' },
+    ],
+    wrong: [
+      { clipKey: 'petline.dragonG1Wrong0', text: '无妨无妨，再想想' },
+      { clipKey: 'petline.dragonG1Wrong1', text: '这个字确实难写' },
+      { clipKey: 'petline.dragonG1Wrong2', text: '本龙当年也念错过～' },
+      { clipKey: 'petline.dragonG1Wrong3', text: '慢慢来，不着急' },
+    ],
+    levelUp: [
+      { clipKey: 'petline.dragonG1LevelUp0', text: '本龙长大了！' },
+      { clipKey: 'petline.dragonG1LevelUp1', text: '又长了一片鳞～' },
+      { clipKey: 'petline.dragonG1LevelUp2', text: '快看，本龙的角！' },
+    ],
+    comeback: [
+      { clipKey: 'petline.dragonG1Comeback0', text: '好久不见，本龙甚是想念' },
+      { clipKey: 'petline.dragonG1Comeback1', text: '你终于回来啦！' },
+      { clipKey: 'petline.dragonG1Comeback2', text: '这几日无人听我念书～' },
+    ],
   },
 }
 
@@ -231,13 +300,44 @@ const PANDA_G1: PetDefinition = {
       label: '熊猫博士',
     },
   ],
+  /**
+   * ⚠️ 波波的台词**中英夹杂**，而它和其他台词一样用中文少女声生成
+   * （见 scripts/generate-voices.mjs 的音色规则）。
+   *
+   * 这是刻意的，不是漏了：这些 `Hello` `Yes` `Wow` 是**语气词**，属于波波的性格，
+   * 不是教学内容。真正要教发音的英语词在 `en.*` 片段里，那些一律用英语童声。
+   * 反过来，把整句喂给英语音色会让中文部分念得一塌糊涂——那才是真的教错。
+   */
   personality: {
-    catchphrase: 'This is 好吃的！',
-    greet: ['Hello！今天学什么？', '波波想学新单词！', 'Hi～你来啦！', "Let's go！我们开始吧"],
-    correct: ['Yes！答对啦！', 'You are 太棒了！', 'Very good！', 'Wow～好厉害'],
-    wrong: ['Oh no～再试试', '没关系 no problem', '波波也常常记错～', 'Try again！'],
-    levelUp: ['波波长大了！', 'I am 变大了！', '快看看我～'],
-    comeback: ['好久不见，I miss you～', '你回来啦！波波好开心', '波波一直在等你哦'],
+    catchphrase: { clipKey: 'petline.pandaG1Catchphrase', text: 'This is 好吃的！' },
+    greet: [
+      { clipKey: 'petline.pandaG1Greet0', text: 'Hello！今天学什么？' },
+      { clipKey: 'petline.pandaG1Greet1', text: '波波想学新单词！' },
+      { clipKey: 'petline.pandaG1Greet2', text: 'Hi～你来啦！' },
+      { clipKey: 'petline.pandaG1Greet3', text: "Let's go！我们开始吧" },
+    ],
+    correct: [
+      { clipKey: 'petline.pandaG1Correct0', text: 'Yes！答对啦！' },
+      { clipKey: 'petline.pandaG1Correct1', text: 'You are 太棒了！' },
+      { clipKey: 'petline.pandaG1Correct2', text: 'Very good！' },
+      { clipKey: 'petline.pandaG1Correct3', text: 'Wow～好厉害' },
+    ],
+    wrong: [
+      { clipKey: 'petline.pandaG1Wrong0', text: 'Oh no～再试试' },
+      { clipKey: 'petline.pandaG1Wrong1', text: '没关系 no problem' },
+      { clipKey: 'petline.pandaG1Wrong2', text: '波波也常常记错～' },
+      { clipKey: 'petline.pandaG1Wrong3', text: 'Try again！' },
+    ],
+    levelUp: [
+      { clipKey: 'petline.pandaG1LevelUp0', text: '波波长大了！' },
+      { clipKey: 'petline.pandaG1LevelUp1', text: 'I am 变大了！' },
+      { clipKey: 'petline.pandaG1LevelUp2', text: '快看看我～' },
+    ],
+    comeback: [
+      { clipKey: 'petline.pandaG1Comeback0', text: '好久不见，I miss you～' },
+      { clipKey: 'petline.pandaG1Comeback1', text: '你回来啦！波波好开心' },
+      { clipKey: 'petline.pandaG1Comeback2', text: '波波一直在等你哦' },
+    ],
   },
 }
 

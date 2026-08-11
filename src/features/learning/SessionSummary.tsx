@@ -12,19 +12,24 @@
  */
 
 import { motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
+import { petNameClipKey } from '@/data/seed/voiceManifest'
+import { pickNickname } from '@/domain/encourage/pickNickname'
+import { summaryLine } from '@/domain/encourage/summaryLine'
+import type { LevelUpFacts } from '@/domain/encourage/levelUpLine'
 import { todayLocal } from '@/domain/time'
 import { LevelUpBanner } from '@/features/learning/LevelUpBanner'
 import { PointsEarned } from '@/features/learning/PointsEarned'
 import { WrongItemCard } from '@/features/learning/WrongItemCard'
 import { playSfx } from '@/platform/audio'
-import { speak } from '@/platform/tts'
+import { say } from '@/platform/speech'
 import { usePetStore } from '@/stores/petStore'
+import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 
 export function SessionSummary() {
@@ -43,7 +48,20 @@ export function SessionSummary() {
 
   const status = useSessionStore((s) => s.status)
   const levelUpNotice = usePetStore((s) => s.levelUpNotice)
+  const nicknames = useProfileStore((s) => s.nicknames)
   const [todayTotal, setTodayTotal] = useState(0)
+
+  /**
+   * 这一轮小结用哪个称呼。
+   *
+   * ⚠️ 抽一次给标题和语音共用：各抽各的会出现「屏幕上写着小恩宝、
+   * 耳朵里听到恩宝」。依赖 `answeredCount` 是为了每完成一轮重新抽，
+   * 而不是每次重渲染都抽。
+   */
+  const nickname = useMemo(
+    () => pickNickname(nicknames, Math.random()),
+    [nicknames, answeredCount],
+  )
 
   // 「再来一轮」「订正」把会话切回进行中，这里负责跟着跳回答题页
   useEffect(() => {
@@ -64,14 +82,32 @@ export function SessionSummary() {
       playSfx(levelUpNotice !== null ? 'levelUp' : 'complete')
     }
 
-    if (answeredCount === 0) {
-      speak('今天没有需要练习的内容')
-    } else if (wrongItems.length === 0) {
-      speak(`全部答对，太棒了`)
-    } else {
-      speak(`答对了 ${correctCount} 题，我们一起看看错的题目`)
-    }
-  }, [correctCount, answeredCount, wrongItems.length, levelUpNotice])
+    // ⭐ 升级播报拼进同一句话，不让横幅自己再念一遍 ——
+    //    两个 effect 各自朗读会互相打断，升级那句从来没被听全过。
+    //    见 domain/encourage/levelUpLine.ts 的文件头
+    const levelUp: LevelUpFacts | undefined =
+      levelUpNotice === null
+        ? undefined
+        : {
+            petName: levelUpNotice.petName,
+            // 孩子改过宠物名就查不到片段，那时整句会降级为 TTS
+            petNameClipKey: petNameClipKey(levelUpNotice.petName),
+            toLevel: levelUpNotice.toLevel,
+            stageChanged: levelUpNotice.stageChanged,
+          }
+
+    say(
+      summaryLine(
+        nickname,
+        {
+          answered: answeredCount,
+          correct: correctCount,
+          pendingWrong: wrongItems.length,
+        },
+        levelUp,
+      ).utterance,
+    )
+  }, [correctCount, answeredCount, wrongItems.length, levelUpNotice, nickname])
 
   const allCorrect = answeredCount > 0 && wrongItems.length === 0
 
@@ -95,7 +131,10 @@ export function SessionSummary() {
         {levelUpNotice !== null && <LevelUpBanner notice={levelUpNotice} />}
 
         <div className="mt-4 flex flex-col items-center gap-2">
-          <p className="text-3xl font-bold">
+          {/* 标题里的昵称与语音的开头一致（都是「小恩宝，」），
+              两个通道说的是同一句话，不会互相打架 */}
+          <p className="text-center text-3xl font-bold">
+            {nickname.text.length > 0 && `${nickname.text}，`}
             {isRetrySession ? '订正完成！' : allCorrect ? '全部答对！' : '这一轮完成啦！'}
           </p>
           <p className="text-xl text-ink/70">

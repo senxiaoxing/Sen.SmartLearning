@@ -17,10 +17,11 @@ import { AppShell } from '@/components/AppShell'
 import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { EXPLAINERS } from '@/data/seed/explainers'
+import { petDefinitionOf } from '@/data/seed/pets'
 import { Explainer } from '@/features/learning/Explainer'
 import { Feedback } from '@/features/learning/Feedback'
 import { ItemRenderer } from '@/items/ItemRenderer'
-import { stopSpeech } from '@/platform/speech'
+import { prefetchClips, stopSpeech } from '@/platform/speech'
 import { useSessionStore } from '@/stores/sessionStore'
 
 export function LearningSession() {
@@ -32,6 +33,8 @@ export function LearningSession() {
   const answer = useSessionStore((s) => s.answer)
   const next = useSessionStore((s) => s.next)
   const countReplay = useSessionStore((s) => s.countReplay)
+  const subject = useSessionStore((s) => s.subject)
+  const gradeLevel = useSessionStore((s) => s.gradeLevel)
   const [showExplainer, setShowExplainer] = useState(false)
 
   // 跳转必须放在 effect 里：渲染期调用 navigate 会在更新另一个组件的同时
@@ -39,6 +42,21 @@ export function LearningSession() {
   useEffect(() => {
     if (status === 'finished') navigate('/summary', { replace: true })
   }, [status, navigate])
+
+  /**
+   * 预取本轮伙伴的答对/答错台词。
+   *
+   * 它们参与每一题的反馈轮换，而首屏预热清单是科目无关的（那时还不知道要练哪一科），
+   * 所以在这里补上。不预取的话第一次抽到宠物台词要现 fetch + 解码，
+   * 听感上就是「这一句慢了半拍」——与当初「有的数字没读出来」同一个根因。
+   */
+  useEffect(() => {
+    const def = petDefinitionOf(subject, gradeLevel)
+    if (def === undefined) return
+    prefetchClips(
+      [...def.personality.correct, ...def.personality.wrong].map((line) => line.clipKey),
+    )
+  }, [subject, gradeLevel])
 
   if (status === 'loading') {
     return <CenteredMessage text="正在准备题目…" />

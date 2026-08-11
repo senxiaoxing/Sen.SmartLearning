@@ -125,6 +125,34 @@ describe('bootstrap', () => {
     expect(dueDates.size).toBeGreaterThan(1)
   })
 
+  it('首次建档的昵称就是「小恩宝」，装上不需要先做配置', async () => {
+    const profileId = await bootstrap()
+    expect((await db.profiles.get(profileId))?.name).toBe('小恩宝')
+  })
+
+  it('旧档案里没被改过的默认名「小朋友」会迁移成「小恩宝」', async () => {
+    const profileId = await bootstrap()
+    const profile = (await db.profiles.get(profileId))!
+    // 模拟改默认名之前建的档案：名字是旧默认值，且从没被家长动过
+    await db.profiles.put({ ...profile, name: '小朋友', updatedAt: profile.createdAt })
+
+    await bootstrap()
+
+    expect((await db.profiles.get(profileId))?.name).toBe('小恩宝')
+  })
+
+  it('⭐ 家长特意选的「小朋友」不会被迁移改回去', async () => {
+    // 「小朋友」本身是合法昵称（预设清单里就有）。少了 updatedAt 判据的话，
+    // 家长每次选它都会在下次冷启动时被悄悄改成「小恩宝」——那是 bug 不是迁移
+    const profileId = await bootstrap()
+    const profile = (await db.profiles.get(profileId))!
+    await db.profiles.put({ ...profile, name: '小朋友', updatedAt: nowIso() })
+
+    await bootstrap()
+
+    expect((await db.profiles.get(profileId))?.name).toBe('小朋友')
+  })
+
   it('不覆盖已有学习进度', async () => {
     const profileId = await bootstrap()
     const before = await db.mastery
