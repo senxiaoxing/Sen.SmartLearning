@@ -518,32 +518,110 @@
  "en.howManyDogsThree": "How many dogs? Three.",
  "en.howManyDogsFour": "How many dogs? Four.",
  "en.howManyDogsFive": "How many dogs? Five.",
- "en.letterA": "A is for apple.",
- "en.letterB": "B is for bird.",
- "en.letterC": "C is for cat.",
- "en.letterD": "D is for dog.",
- "en.letterE": "E is for egg.",
- "en.letterF": "F is for fish.",
- "en.letterG": "G is for grape.",
- "en.letterH": "H is for horse.",
- "en.letterI": "I is for ice cream.",
- "en.letterJ": "J is for juice.",
- "en.letterK": "K is for kite.",
- "en.letterL": "L is for lion.",
- "en.letterM": "M is for milk.",
- "en.letterN": "N is for nose.",
- "en.letterO": "O is for orange.",
- "en.letterP": "P is for pig.",
- "en.letterQ": "Q is for queen.",
- "en.letterR": "R is for rabbit.",
- "en.letterS": "S is for sun.",
- "en.letterT": "T is for tiger.",
- "en.letterU": "U is for umbrella.",
- "en.letterV": "V is for violin.",
- "en.letterW": "W is for water.",
- "en.letterX": "X is for x-ray.",
- "en.letterY": "Y is for yellow.",
- "en.letterZ": "Z is for zebra.",
+ "en.letterA": {
+  "text": "A is for apple.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterB": {
+  "text": "B is for bird.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterC": {
+  "text": "C is for cat.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterD": {
+  "text": "D is for dog.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterE": {
+  "text": "E is for egg.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterF": {
+  "text": "F is for fish.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterG": {
+  "text": "G is for grape.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterH": {
+  "text": "H is for horse.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterI": {
+  "text": "I is for ice cream.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterJ": {
+  "text": "J is for juice.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterK": {
+  "text": "K is for kite.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterL": {
+  "text": "L is for lion.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterM": {
+  "text": "M is for milk.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterN": {
+  "text": "N is for nose.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterO": {
+  "text": "O is for orange.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterP": {
+  "text": "P is for pig.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterQ": {
+  "text": "Q is for queen.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterR": {
+  "text": "R is for rabbit.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterS": {
+  "text": "S is for sun.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterT": {
+  "text": "T is for tiger.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterU": {
+  "text": "U is for umbrella.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterV": {
+  "text": "V is for violin.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterW": {
+  "text": "W is for water.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterX": {
+  "text": "X is for x-ray.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterY": {
+  "text": "Y is for yellow.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
+ "en.letterZ": {
+  "text": "Z is for zebra.",
+  "sig": "en-US-AnaNeural|-30%|+5%"
+ },
  "phrase.matchUpperLower": "把大写和小写配成一对",
  "phrase.matchLetterWord": "把字母和它开头的东西配成一对",
  "pinyin.nv3": {
