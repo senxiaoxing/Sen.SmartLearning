@@ -17,7 +17,16 @@
 export interface ExplainerStep {
   /** 屏幕上的说明文字 */
   text: string
-  /** 朗读文本。孩子不识字，这才是主要信息通道 */
+  /**
+   * 这一步的语音片段 key。
+   *
+   * ⭐ 讲解脚本是**静态内容**，所以整句都能预生成——而这里恰恰是最该用真人音色的地方：
+   * 讲解的全部价值在于「听懂原理」，机械合成音念一段三十个字的推理，
+   * 孩子听两句就走神了。key 写在台词旁边的理由与宠物台词相同，
+   * 见 `data/seed/pets.ts` 的 `PetLine`。
+   */
+  clipKey: string
+  /** 朗读文本。孩子不识字，这才是主要信息通道。⚠️ 必须与 clipKey 念的内容一致 */
   ttsText: string
   /** 十格阵内的点数 */
   frame: number
@@ -31,6 +40,8 @@ export interface ExplainerStep {
 
 export interface Explainer {
   kpId: string
+  /** 标题的语音片段 key。点进讲解时念一声，让她知道自己选的是什么 */
+  titleClipKey: string
   title: string
   steps: ExplainerStep[]
 }
@@ -43,10 +54,12 @@ export interface Explainer {
  */
 const MAKE_TEN: Explainer = {
   kpId: 'M5.1',
+  titleClipKey: 'explain.makeTenTitle',
   title: '凑十法',
   steps: [
     {
       text: '9 加 5，我们先把 9 放进十格里',
+      clipKey: 'explain.makeTen0',
       ttsText: '9 加 5。我们先把 9 个放进十格里，旁边还有 5 个',
       frame: 9,
       loose: 5,
@@ -55,6 +68,7 @@ const MAKE_TEN: Explainer = {
     },
     {
       text: '看，十格里还空着 1 个位置',
+      clipKey: 'explain.makeTen1',
       ttsText: '看，十格里还空着 1 个位置。再放 1 个就满十啦',
       frame: 9,
       loose: 5,
@@ -63,6 +77,7 @@ const MAKE_TEN: Explainer = {
     },
     {
       text: '从 5 里拿 1 个补进去，凑成 10',
+      clipKey: 'explain.makeTen2',
       ttsText: '从旁边的 5 个里拿 1 个补进去，就凑成 10 了。5 分成了 1 和 4',
       frame: 10,
       loose: 4,
@@ -71,6 +86,7 @@ const MAKE_TEN: Explainer = {
     },
     {
       text: '10 再加剩下的 4，就是 14',
+      clipKey: 'explain.makeTen3',
       ttsText: '现在是 10 加剩下的 4，等于 14。所以 9 加 5 等于 14',
       frame: 10,
       loose: 4,
@@ -88,10 +104,12 @@ const MAKE_TEN: Explainer = {
  */
 const BREAK_TEN: Explainer = {
   kpId: 'M6.1',
+  titleClipKey: 'explain.breakTenTitle',
   title: '破十法',
   steps: [
     {
       text: '13 就是 1 个十，和 3 个一',
+      clipKey: 'explain.breakTen0',
       ttsText: '13 减 9。13 就是 1 个十，和旁边 3 个一',
       frame: 10,
       loose: 3,
@@ -100,6 +118,7 @@ const BREAK_TEN: Explainer = {
     },
     {
       text: '旁边只有 3 个，不够减 9',
+      clipKey: 'explain.breakTen1',
       ttsText: '要减掉 9 个，可是旁边只有 3 个，不够减',
       frame: 10,
       loose: 3,
@@ -108,6 +127,7 @@ const BREAK_TEN: Explainer = {
     },
     {
       text: '那就从十格里减，10 减 9 剩 1',
+      clipKey: 'explain.breakTen2',
       ttsText: '那我们从十格里减。10 减 9，剩下 1 个',
       frame: 1,
       loose: 3,
@@ -116,6 +136,7 @@ const BREAK_TEN: Explainer = {
     },
     {
       text: '剩下的 1 和 3 合起来是 4',
+      clipKey: 'explain.breakTen3',
       ttsText: '十格里剩的 1 个，和旁边的 3 个合起来是 4。所以 13 减 9 等于 4',
       frame: 0,
       loose: 4,
@@ -133,10 +154,12 @@ const BREAK_TEN: Explainer = {
  */
 const TEN_DECOMPOSITION: Explainer = {
   kpId: 'M3.3',
+  titleClipKey: 'explain.tenSplitTitle',
   title: '10 的分与合',
   steps: [
     {
       text: '十格装满就是 10 个',
+      clipKey: 'explain.tenSplit0',
       ttsText: '十格装满，就是 10 个',
       frame: 10,
       loose: 0,
@@ -145,6 +168,7 @@ const TEN_DECOMPOSITION: Explainer = {
     },
     {
       text: '拿出 3 个放旁边',
+      clipKey: 'explain.tenSplit1',
       ttsText: '我们拿出 3 个放到旁边',
       frame: 7,
       loose: 3,
@@ -153,6 +177,7 @@ const TEN_DECOMPOSITION: Explainer = {
     },
     {
       text: '再多拿 3 个，格子里就更少了',
+      clipKey: 'explain.tenSplit2',
       ttsText: '再多拿 3 个出来，格子里剩 4 个，旁边有 6 个',
       frame: 4,
       loose: 6,
@@ -161,6 +186,7 @@ const TEN_DECOMPOSITION: Explainer = {
     },
     {
       text: '不管怎么分，两边合起来都是 10',
+      clipKey: 'explain.tenSplit3',
       ttsText: '不管怎么分，两边合起来永远都是 10。记住这个，后面的题目就容易啦',
       frame: 5,
       loose: 5,

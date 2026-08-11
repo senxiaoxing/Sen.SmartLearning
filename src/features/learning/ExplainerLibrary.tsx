@@ -19,7 +19,8 @@ import { PageHeader } from '@/components/PageHeader'
 import { EXPLAINERS } from '@/data/seed/explainers'
 import { KNOWLEDGE_POINT_BY_ID } from '@/data/seed/knowledgePoints'
 import { Explainer } from '@/features/learning/Explainer'
-import { speak } from '@/platform/tts'
+import { utter } from '@/domain/speech'
+import { say } from '@/platform/speech'
 
 export function ExplainerLibrary() {
   const navigate = useNavigate()
@@ -46,7 +47,7 @@ export function ExplainerLibrary() {
               transition={{ delay: i * 0.08, type: 'spring', stiffness: 300, damping: 26 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => {
-                speak(`${explainer.title}`)
+                say(utter([explainer.titleClipKey], explainer.title))
                 setOpenKpId(explainer.kpId)
               }}
               className="flex items-center gap-4 rounded-blob bg-surface px-6 py-5 text-left shadow-drop-surface"

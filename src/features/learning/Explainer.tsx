@@ -19,7 +19,8 @@ import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
 import { LooseDots, TenFrame } from '@/components/TenFrame'
-import { say, stopSpeech } from '@/platform/speech'
+import { utter } from '@/domain/speech'
+import { prefetchClips, say, stopSpeech } from '@/platform/speech'
 import type { Explainer as ExplainerData } from '@/data/seed/explainers'
 
 interface ExplainerProps {
@@ -34,8 +35,22 @@ export function Explainer({ explainer, onDone, doneLabel = '看完了' }: Explai
   const [stepIndex, setStepIndex] = useState(0)
   const step = explainer.steps[stepIndex]
 
+  /**
+   * 一进来就把整段讲解的片段全部预取。
+   *
+   * 讲解是孩子自己一步步点着走的，每一步都要立刻出声。按需加载的话
+   * 每次点「下一步」都要现 fetch + 解码，听感就是「每一步都慢半拍」——
+   * 与当初「有的数字没读出来」是同一个根因（见 voiceManifest.ts 的 WARMUP_CLIPS）。
+   * 一段讲解只有四句，代价可以忽略。
+   */
   useEffect(() => {
-    if (step !== undefined) say({ parts: [], fallbackText: step.ttsText })
+    prefetchClips(explainer.steps.map((s) => s.clipKey))
+  }, [explainer])
+
+  useEffect(() => {
+    // ⚠️ 讲解句全部预生成了片段（explain.*），不要退回 `{ parts: [] }`——
+    // 那会让整段讲解掉成机械合成音，而讲解的全部价值就在于「听懂」
+    if (step !== undefined) say(utter([step.clipKey], step.ttsText))
   }, [step])
 
   useEffect(() => stopSpeech, [])

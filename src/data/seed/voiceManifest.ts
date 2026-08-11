@@ -15,6 +15,7 @@
  */
 
 import { ALL_ENGLISH_WORDS } from '@/data/seed/englishWords'
+import { EXPLAINERS } from '@/data/seed/explainers'
 import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
 import { PET_DEFINITIONS, PET_LINE_MOMENTS } from '@/data/seed/pets'
 import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
@@ -210,6 +211,20 @@ const PET_LINES: VoiceManifest = Object.fromEntries(
 )
 
 /**
+ * 讲解脚本。
+ *
+ * ⭐ 这里是全 App 最该用真人音色的地方：讲解的全部价值在于「听懂原理」，
+ * 而机械合成音念一段三十来个字的推理，孩子听两句就走神了——
+ * 那道讲解就白做了。脚本是静态内容，整句预生成没有任何障碍。
+ */
+const EXPLAINER_LINES: VoiceManifest = Object.fromEntries(
+  [...EXPLAINERS.values()].flatMap((explainer) => [
+    [explainer.titleClipKey, explainer.title] as const,
+    ...explainer.steps.map((step) => [step.clipKey, step.ttsText] as const),
+  ]),
+)
+
+/**
  * 全部语音片段。
  *
  * 当前约 {@link VOICE_CLIP_COUNT} 条，三科齐全。
@@ -224,6 +239,7 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...NICKNAMES,
   ...PET_NAMES,
   ...PET_LINES,
+  ...EXPLAINER_LINES,
 }
 
 export const VOICE_CLIP_COUNT = Object.keys(VOICE_MANIFEST).length
