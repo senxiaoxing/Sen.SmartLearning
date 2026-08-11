@@ -63,7 +63,7 @@ export function TapCount({ item, selectedOptionId, revealed, onSelect, onReplay 
       </div>
 
       {visual !== undefined && visual.count > 0 && (
-        <div className="flex min-h-[120px] flex-wrap items-center justify-center gap-3 rounded-blob bg-white/50 p-4">
+        <div className="flex min-h-[120px] flex-wrap items-center justify-center gap-3 rounded-blob bg-surface/50 p-4">
           {Array.from({ length: visual.count }, (_, i) => {
             const isTapped = tapped.has(i)
             return (
@@ -85,7 +85,7 @@ export function TapCount({ item, selectedOptionId, revealed, onSelect, onReplay 
                 }}
                 className={[
                   'flex h-16 w-16 items-center justify-center rounded-2xl text-4xl',
-                  isTapped ? 'bg-mint/25 ring-4 ring-mint' : 'bg-white',
+                  isTapped ? 'bg-correct/25 ring-4 ring-correct' : 'bg-surface',
                 ].join(' ')}
               >
                 {visual.emoji}
@@ -100,7 +100,7 @@ export function TapCount({ item, selectedOptionId, revealed, onSelect, onReplay 
           key={tapped.size}
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="text-center text-2xl font-bold text-mint"
+          className="text-center text-2xl font-bold text-correct"
         >
           数了 {tapped.size} 个
         </motion.p>

@@ -1,3 +1,5 @@
+@import './tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,14 +17,21 @@
   body,
   #root {
     height: 100%;
+    /* ⚠️ 必须覆盖上面的 100%：iOS Safari 的 100% 不含被地址栏遮住的那段，
+       页面底部按钮会被吃掉。dvh 跟随地址栏收起展开实时变化。
+       两行都要留 —— iOS 15.4 以下不认 dvh，会安静地用上面那行 */
+    height: 100dvh;
     /* 禁止 iOS 橡皮筋滚动——孩子拖动页面会露出白边，破坏「这是个 App」的感觉 */
     overscroll-behavior: none;
   }
 
   body {
-    @apply bg-cream text-ink;
+    @apply bg-canvas text-ink;
+    /* ⭐ ui-rounded 在 iPad/iPhone 上解析为 SF Pro Rounded —— 圆体、数字圆润，
+       正是 design/03 §5.2 要的字形，且零下载。中文自动落到 PingFang，
+       Windows 上整体落到雅黑（开发机看着会比 iPad 上方一些，属正常） */
     font-family:
-      -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+      ui-rounded, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
       'Microsoft YaHei', sans-serif;
     /* 护眼：避免纯白背景 */
     -webkit-font-smoothing: antialiased;
@@ -41,6 +50,12 @@
   textarea {
     -webkit-user-select: auto;
     user-select: auto;
+  }
+
+  /* 键盘焦点可见。孩子不用键盘，但家长区备份/恢复要能用键盘操作 */
+  :focus-visible {
+    outline: 3px solid rgb(var(--c-correct));
+    outline-offset: 3px;
   }
 }
 

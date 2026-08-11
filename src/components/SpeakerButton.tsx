@@ -44,7 +44,7 @@ export function SpeakerButton({ text, parts, lang, onReplay, size = 'lg' }: Spea
       }}
       whileTap={{ scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-      className={`${dimension} shrink-0 rounded-full bg-sky/15 text-sky flex items-center justify-center`}
+      className={`${dimension} shrink-0 rounded-full bg-info/15 text-info flex items-center justify-center`}
     >
       <SpeakerIcon />
     </motion.button>

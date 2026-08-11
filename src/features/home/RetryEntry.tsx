@@ -11,6 +11,7 @@
  */
 
 import { motion } from 'framer-motion'
+import { Icon } from '@/components/Icon'
 
 /**
  * 徽标上显示的数字上限。
@@ -36,18 +37,16 @@ export function RetryEntry({ count, onClick }: RetryEntryProps) {
       transition={{ type: 'spring', stiffness: 260, damping: 20 }}
       onClick={onClick}
       aria-label={`再练一练，还有 ${count} 道题`}
-      className="relative flex min-h-touch items-center gap-3 rounded-blob bg-mint/20 px-8 py-4 active:translate-y-1"
+      className="relative flex min-h-touch items-center gap-3 rounded-blob bg-correct/20 px-8 py-4 active:translate-y-1"
     >
-      <span className="text-2xl" aria-hidden>
-        🔁
-      </span>
+      <Icon name="retry" className="h-7 w-7 text-correct" />
       <span className="text-xl font-bold">再练一练</span>
 
       {/* 数量做成徽标而不是写进文案：「还有 5 道题要订正」读起来像催促，
           一个小圆点则更像游戏里的提示，做完会消失 */}
       <span
         aria-hidden
-        className="flex h-7 min-w-7 items-center justify-center rounded-full bg-mint px-2 text-sm font-bold tabular-nums text-white"
+        className="flex h-7 min-w-7 items-center justify-center rounded-full bg-correct px-2 text-sm font-bold tabular-nums text-on-correct"
       >
         {count > BADGE_MAX ? `${BADGE_MAX}+` : count}
       </span>

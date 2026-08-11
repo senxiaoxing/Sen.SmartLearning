@@ -12,11 +12,30 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="智慧学习" />
-    <meta name="theme-color" content="#FFB84D" />
+    <meta name="theme-color" content="#FFF3E2" />
 
     <!-- iOS 不读 manifest 的 icons，必须单独给 apple-touch-icon -->
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+
+    <!--
+      在首帧之前打上皮肤属性。必须内联在这里，不能挪进 main.tsx：
+      等模块加载完再设置的话，选了星际皮肤的用户每次冷启动都会先闪一帧奶油色。
+      ⚠️ 'sen.skin' 与 src/platform/skin.ts 的 STORAGE_KEY 是同一个，改一处要改两处。
+    -->
+    <script>
+      try {
+        var skin = localStorage.getItem('sen.skin')
+        if (skin === 'jelly' || skin === 'star') {
+          document.documentElement.dataset.skin = skin
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute('content', skin === 'star' ? '#131A2E' : '#FFF3E2')
+        }
+      } catch (e) {
+        /* 隐私模式下读不到 localStorage，用默认皮肤即可 */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -14,17 +14,17 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
-import { playSfx } from '@/platform/audio'
 import { todayLocal } from '@/domain/time'
+import { LevelUpBanner } from '@/features/learning/LevelUpBanner'
 import { PointsEarned } from '@/features/learning/PointsEarned'
 import { WrongItemCard } from '@/features/learning/WrongItemCard'
-import { PetAvatar } from '@/components/PetAvatar'
-import { petDefinitionOf } from '@/data/seed/pets'
-import { stageFromLevel } from '@/domain/pet/growth'
+import { playSfx } from '@/platform/audio'
 import { speak } from '@/platform/tts'
-import { usePetStore, type LevelUpNotice } from '@/stores/petStore'
+import { usePetStore } from '@/stores/petStore'
 import { useSessionStore } from '@/stores/sessionStore'
 
 export function SessionSummary() {
@@ -76,113 +76,76 @@ export function SessionSummary() {
   const allCorrect = answeredCount > 0 && wrongItems.length === 0
 
   return (
-    <div className="safe-area flex h-full flex-col items-center overflow-y-auto px-6 py-8">
-      <motion.div
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-        className="text-7xl"
-      >
-        {allCorrect ? '🏆' : '🎉'}
-      </motion.div>
-
-      {/* 升级放在小结页统一展示，不在答题中途弹窗打断学习流 */}
-      {levelUpNotice !== null && <LevelUpBanner notice={levelUpNotice} />}
-
-      <div className="mt-4 flex flex-col items-center gap-2">
-        <p className="text-3xl font-bold">
-          {isRetrySession ? '订正完成！' : allCorrect ? '全部答对！' : '这一轮完成啦！'}
-        </p>
-        <p className="text-xl text-ink/70">
-          答对了{' '}
-          <span className="text-5xl font-bold tabular-nums text-mint">{correctCount}</span> 题
-        </p>
-        {todayTotal > answeredCount && (
-          <p className="text-base text-ink/50">今天一共做了 {todayTotal} 题</p>
-        )}
-        <PointsEarned earned={pointsEarned} balance={balance} />
-      </div>
-
-      {wrongItems.length > 0 && (
-        <section className="mt-8 w-full max-w-md">
-          <h2 className="mb-3 text-center text-lg font-bold text-ink/70">
-            再看看这几题 · 共 {wrongItems.length} 题
-          </h2>
-          <div className="flex flex-col gap-3">
-            {wrongItems.map((entry, i) => (
-              <WrongItemCard key={entry.item.signature} entry={entry} index={i} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      <div className="mt-10 flex w-full max-w-md flex-col gap-4 pb-4">
-        {wrongItems.length > 0 && (
-          <BigButton tone="correct" fullWidth onClick={startRetry}>
-            订正这 {wrongItems.length} 题
-          </BigButton>
-        )}
-
-        {/* 「再来一轮」沿用本轮科目：她刚跟小飞龙学完拼音，
-            下一轮不该被丢回数学去 */}
-        <BigButton tone="primary" fullWidth onClick={() => void start('daily', subject)}>
-          再来一轮
-        </BigButton>
-
-        <BigButton
-          tone="neutral"
-          fullWidth
-          onClick={() => {
-            reset()
-            navigate('/', { replace: true })
-          }}
+    <AppShell width="wide">
+      <div className="flex flex-col items-center py-4">
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 18 }}
         >
-          回到首页
-        </BigButton>
+          {/* 全对给奖杯，其余给闪光。⚠️ 不用 🎉 彩带：「派对」调子每轮都放会迅速贬值，
+              而一轮只有 10 题，完成本来就该是平常事 */}
+          <Icon
+            name={allCorrect ? 'trophy' : 'sparkles'}
+            className={`h-20 w-20 ${allCorrect ? 'text-primary' : 'text-correct'}`}
+          />
+        </motion.div>
+
+        {/* 升级放在小结页统一展示，不在答题中途弹窗打断学习流 */}
+        {levelUpNotice !== null && <LevelUpBanner notice={levelUpNotice} />}
+
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <p className="text-3xl font-bold">
+            {isRetrySession ? '订正完成！' : allCorrect ? '全部答对！' : '这一轮完成啦！'}
+          </p>
+          <p className="text-xl text-ink/70">
+            答对了{' '}
+            <span className="text-5xl font-bold tabular-nums text-correct">{correctCount}</span> 题
+          </p>
+          {todayTotal > answeredCount && (
+            <p className="text-base text-ink/50">今天一共做了 {todayTotal} 题</p>
+          )}
+          <PointsEarned earned={pointsEarned} balance={balance} />
+        </div>
+
+        {wrongItems.length > 0 && (
+          <section className="mt-8 w-full max-w-md">
+            <h2 className="mb-3 text-center text-lg font-bold text-ink/70">
+              再看看这几题 · 共 {wrongItems.length} 题
+            </h2>
+            <div className="flex flex-col gap-3">
+              {wrongItems.map((entry, i) => (
+                <WrongItemCard key={entry.item.signature} entry={entry} index={i} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="mt-10 flex w-full max-w-md flex-col gap-4 pb-4">
+          {wrongItems.length > 0 && (
+            <BigButton tone="correct" fullWidth onClick={startRetry}>
+              订正这 {wrongItems.length} 题
+            </BigButton>
+          )}
+
+          {/* 「再来一轮」沿用本轮科目：她刚跟小飞龙学完拼音，
+              下一轮不该被丢回数学去 */}
+          <BigButton tone="primary" fullWidth onClick={() => void start('daily', subject)}>
+            再来一轮
+          </BigButton>
+
+          <BigButton
+            tone="neutral"
+            fullWidth
+            onClick={() => {
+              reset()
+              navigate('/', { replace: true })
+            }}
+          >
+            回到首页
+          </BigButton>
+        </div>
       </div>
-    </div>
-  )
-}
-
-/**
- * 升级横幅。
- *
- * 形态变化（破壳、进化）给更隆重的展示——那是孩子最期待的时刻，
- * 而普通升级保持轻量，避免每轮都大张旗鼓反而失去分量。
- */
-function LevelUpBanner({ notice }: { notice: LevelUpNotice }) {
-  const def = petDefinitionOf(notice.subject, notice.gradeLevel)
-  const currentStage = def?.stages[stageFromLevel(notice.toLevel)]
-
-  useEffect(() => {
-    if (def === undefined || currentStage === undefined) return
-    speak(
-      notice.stageChanged
-        ? `${notice.petName}变身啦！现在是${currentStage.label}`
-        : `${notice.petName}升到 ${notice.toLevel} 级啦`,
-    )
-  }, [notice, def, currentStage])
-
-  if (def === undefined || currentStage === undefined) return null
-
-  return (
-    <motion.div
-      initial={{ scale: 0.7, opacity: 0, y: -10 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 280, damping: 18 }}
-      className="mb-2 flex items-center gap-3 rounded-blob px-6 py-3"
-      style={{ backgroundColor: `${def.themeColor}22` }}
-    >
-      {/* 变身是这一轮最值得看的一刻，横幅里的这只要动起来 */}
-      <PetAvatar def={def} stageIndex={stageFromLevel(notice.toLevel)} size="md" animated />
-      <div className="text-left">
-        <p className="text-lg font-bold" style={{ color: def.themeColor }}>
-          {notice.stageChanged ? `${notice.petName} 变身啦！` : `${notice.petName} 升级了！`}
-        </p>
-        <p className="text-sm text-ink/60">
-          {notice.stageChanged ? `现在是${currentStage.label}` : `Lv${notice.toLevel}`}
-        </p>
-      </div>
-    </motion.div>
+    </AppShell>
   )
 }

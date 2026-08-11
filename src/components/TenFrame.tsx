@@ -43,7 +43,7 @@ export function TenFrame({ filled, emphasis = 'none', size = 'md' }: TenFramePro
     <div
       className={[
         'grid grid-cols-5 gap-1 rounded-2xl border-4 p-2',
-        emphasis === 'frame' ? 'border-honey bg-honey/10' : 'border-ink/15 bg-white/60',
+        emphasis === 'frame' ? 'border-primary bg-primary/10' : 'border-ink/15 bg-surface/60',
       ].join(' ')}
       style={{ gridTemplateRows: `repeat(${FRAME_CAPACITY / CELLS_PER_ROW}, minmax(0, 1fr))` }}
       aria-label={`十格阵，已放入 ${count} 个`}
@@ -58,7 +58,7 @@ export function TenFrame({ filled, emphasis = 'none', size = 'md' }: TenFramePro
             className={[
               CELL_SIZE[size],
               'flex items-center justify-center rounded-lg',
-              isGap ? 'bg-honey/20' : 'bg-ink/5',
+              isGap ? 'bg-primary/20' : 'bg-ink/5',
             ].join(' ')}
           >
             {occupied && (
@@ -66,14 +66,14 @@ export function TenFrame({ filled, emphasis = 'none', size = 'md' }: TenFramePro
                 layout
                 layoutId={`frame-dot-${i}`}
                 transition={{ type: 'spring', stiffness: 380, damping: 28 }}
-                className={`${DOT_SIZE[size]} rounded-full bg-sky`}
+                className={`${DOT_SIZE[size]} rounded-full bg-info`}
               />
             )}
             {isGap && (
               <motion.span
                 animate={{ scale: [1, 1.25, 1], opacity: [0.4, 0.9, 0.4] }}
                 transition={{ duration: 1.2, repeat: Infinity }}
-                className={`${DOT_SIZE[size]} rounded-full border-4 border-dashed border-honey`}
+                className={`${DOT_SIZE[size]} rounded-full border-4 border-dashed border-primary`}
               />
             )}
           </div>
@@ -107,7 +107,7 @@ export function LooseDots({
     <div
       className={[
         'flex max-w-[180px] flex-wrap items-center justify-center gap-2 rounded-2xl p-2',
-        emphasis ? 'bg-coral/10 ring-4 ring-coral/30' : '',
+        emphasis ? 'bg-alert/10 ring-4 ring-alert/30' : '',
       ].join(' ')}
       aria-label={`还有 ${count} 个`}
     >
@@ -120,7 +120,7 @@ export function LooseDots({
           className={[
             DOT_SIZE[size],
             'rounded-full',
-            tone === 'take' ? 'bg-coral' : 'bg-mint',
+            tone === 'take' ? 'bg-alert' : 'bg-correct',
           ].join(' ')}
         />
       ))}

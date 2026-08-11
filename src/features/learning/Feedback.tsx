@@ -46,7 +46,7 @@ export function Feedback({ feedback, onNext, isLast }: FeedbackProps) {
       className="flex flex-col items-center gap-6"
     >
       {feedback.isCorrect ? (
-        <div className="flex items-center gap-3 text-4xl font-bold text-mint">
+        <div className="flex items-center gap-3 text-4xl font-bold text-correct">
           <motion.span
             initial={{ scale: 0, rotate: -30 }}
             animate={{ scale: 1, rotate: 0 }}
@@ -59,9 +59,9 @@ export function Feedback({ feedback, onNext, isLast }: FeedbackProps) {
       ) : (
         <div className="flex flex-col items-center gap-2">
           {/* 语气词而非否定判断——不说「错了」 */}
-          <p className="text-3xl font-bold text-honey">再看看～</p>
+          <p className="text-3xl font-bold text-primary">再看看～</p>
           <p className="text-xl text-ink/70">
-            答案是 <span className="text-3xl font-bold text-mint">{feedback.correctText}</span>
+            答案是 <span className="text-3xl font-bold text-correct">{feedback.correctText}</span>
           </p>
         </div>
       )}

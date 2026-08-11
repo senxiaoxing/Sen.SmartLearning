@@ -8,6 +8,7 @@
  * 「凑十的时候丢了 1，去练 9 和几凑成 10」。
  */
 
+import { Icon } from '@/components/Icon'
 import { KNOWLEDGE_POINT_BY_ID } from '@/data/seed/knowledgePoints'
 import { MISCONCEPTION_LABELS } from '@/data/seed/misconceptionLabels'
 import type { MisconceptionStat } from '@/domain/report/subjectReport'
@@ -24,7 +25,7 @@ export function MisconceptionCard({ stat }: { stat: MisconceptionStat }) {
   const moreCount = stat.kpIds.length - kpNames.length
 
   return (
-    <div className="flex flex-col gap-2 rounded-blob bg-honey/10 p-4">
+    <div className="flex flex-col gap-2 rounded-blob bg-primary/10 p-4">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-base font-bold">{label.label}</span>
         <span className="shrink-0 text-sm tabular-nums text-ink/50">{stat.count} 次</span>
@@ -32,8 +33,8 @@ export function MisconceptionCard({ stat }: { stat: MisconceptionStat }) {
 
       <p className="text-sm leading-relaxed text-ink/60">{label.example}</p>
 
-      <p className="text-sm leading-relaxed text-ink/80">
-        <span aria-hidden>💡 </span>
+      <p className="flex gap-1.5 text-sm leading-relaxed text-ink/80">
+        <Icon name="bulb" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         {label.advice}
       </p>
 

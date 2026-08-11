@@ -73,8 +73,8 @@ export function DragCard({
         'flex touch-none select-none items-center justify-center rounded-blob py-3',
         'font-bold tabular-nums',
         selected
-          ? 'bg-honey text-white shadow-[0_5px_0_#E09A2E] ring-4 ring-honey/40'
-          : 'bg-white text-ink shadow-[0_5px_0_#E8DFCC]',
+          ? 'bg-primary text-on-primary shadow-drop-primary ring-4 ring-primary/40'
+          : 'bg-surface text-ink shadow-drop-surface',
       ].join(' ')}
     >
       {label}
@@ -129,8 +129,8 @@ export function DropSlot({
           'flex min-h-touch min-w-touch items-center justify-center rounded-blob px-5 py-3',
           'text-4xl font-bold tabular-nums',
           filled
-            ? 'bg-mint/20 text-ink ring-4 ring-mint'
-            : 'border-4 border-dashed border-ink/25 bg-white/40 text-ink/30',
+            ? 'bg-correct/20 text-ink ring-4 ring-correct'
+            : 'border-4 border-dashed border-ink/25 bg-surface/40 text-ink/30',
         ].join(' ')}
       >
         {content ?? '?'}

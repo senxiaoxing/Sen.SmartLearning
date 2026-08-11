@@ -13,6 +13,7 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
+import { Icon } from '@/components/Icon'
 import { matchArrangement } from '@/domain/generators/arrangements'
 import { KEY_CLEAN, KEY_MIRROR } from '@/domain/generators/memoryPair'
 import { isMirrorMistake } from '@/domain/generators/memoryCards'
@@ -128,7 +129,7 @@ function MemoryCardView({ card, open, done, onFlip }: CardViewProps) {
       className={[
         'flex min-h-touch min-w-touch flex-col items-center justify-center gap-1',
         'rounded-blob px-2 py-5 font-bold',
-        done ? 'bg-mint/25 ring-2 ring-mint' : 'bg-white shadow-[0_6px_0_#E8DFCC]',
+        done ? 'bg-correct/25 ring-2 ring-correct' : 'bg-surface shadow-drop-surface',
       ].join(' ')}
       style={{ transformStyle: 'preserve-3d' }}
     >
@@ -141,8 +142,8 @@ function MemoryCardView({ card, open, done, onFlip }: CardViewProps) {
         </>
       ) : (
         // 背面朝上时整体旋转了 180°，问号要再转回来才不是镜像的
-        <span className="text-3xl text-ink/25" style={{ transform: 'rotateY(180deg)' }}>
-          ❓
+        <span style={{ transform: 'rotateY(180deg)' }}>
+          <Icon name="question" className="h-8 w-8 text-ink/30" />
         </span>
       )}
     </motion.button>

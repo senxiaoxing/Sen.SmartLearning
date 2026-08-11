@@ -13,6 +13,9 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
+import { Icon } from '@/components/Icon'
+import { PageHeader } from '@/components/PageHeader'
 import { EXPLAINERS } from '@/data/seed/explainers'
 import { KNOWLEDGE_POINT_BY_ID } from '@/data/seed/knowledgePoints'
 import { Explainer } from '@/features/learning/Explainer'
@@ -28,18 +31,8 @@ export function ExplainerLibrary() {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col px-6 py-4">
-      <header className="flex items-center gap-4">
-        <button
-          type="button"
-          aria-label="返回"
-          onClick={() => navigate('/')}
-          className="h-12 w-12 shrink-0 rounded-full bg-white/70 text-2xl text-ink/50"
-        >
-          ←
-        </button>
-        <h1 className="text-2xl font-bold">看讲解</h1>
-      </header>
+    <AppShell width="wide" layout="stack">
+      <PageHeader onBack={() => navigate('/')} title="看讲解" />
 
       <main className="mx-auto mt-6 flex w-full max-w-md flex-1 flex-col gap-4">
         {[...EXPLAINERS.values()].map((explainer, i) => {
@@ -56,11 +49,9 @@ export function ExplainerLibrary() {
                 speak(`${explainer.title}`)
                 setOpenKpId(explainer.kpId)
               }}
-              className="flex items-center gap-4 rounded-blob bg-white px-6 py-5 text-left shadow-[0_5px_0_#E8DFCC]"
+              className="flex items-center gap-4 rounded-blob bg-surface px-6 py-5 text-left shadow-drop-surface"
             >
-              <span className="text-4xl" aria-hidden="true">
-                💡
-              </span>
+              <Icon name="bulb" className="h-10 w-10 shrink-0 text-accent" />
               <span className="flex-1">
                 <span className="block text-2xl font-bold">{explainer.title}</span>
                 <span className="block text-base text-ink/50">
@@ -72,6 +63,6 @@ export function ExplainerLibrary() {
           )
         })}
       </main>
-    </div>
+    </AppShell>
   )
 }

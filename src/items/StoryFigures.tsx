@@ -94,7 +94,7 @@ export function BraceGroups({ visual }: { visual: Of<'braceGroups'> }) {
         />
       </svg>
 
-      <span className="text-2xl font-bold tabular-nums text-honey">
+      <span className="text-2xl font-bold tabular-nums text-primary">
         {question === 'total' ? '?' : groups.reduce((s, n) => s + n, 0)}
       </span>
     </div>

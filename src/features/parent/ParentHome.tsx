@@ -8,12 +8,16 @@
  */
 
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
+import { SkinPicker } from '@/features/parent/SkinPicker'
 import { useParentGateStore } from '@/stores/parentGateStore'
+import type { IconName } from '@/components/iconPaths'
 
 interface Entry {
   to: string
-  icon: string
+  icon: IconName
   title: string
   desc: string
 }
@@ -21,19 +25,19 @@ interface Entry {
 const ENTRIES: Entry[] = [
   {
     to: '/parent/report',
-    icon: '📊',
+    icon: 'chart',
     title: '学习报告',
     desc: '三科分别的进度、专注时长，以及她具体卡在哪里',
   },
   {
     to: '/parent/wrong',
-    icon: '📕',
+    icon: 'book',
     title: '错题本',
     desc: '最近错过、而且还没改对的题',
   },
   {
     to: '/parent/backup',
-    icon: '💾',
+    icon: 'save',
     title: '数据备份',
     desc: '导出与恢复进度。换设备、清数据前务必先存一份',
   },
@@ -50,8 +54,8 @@ export function ParentHome() {
   }
 
   return (
-    <div className="safe-area h-full overflow-y-auto px-6 py-8">
-      <div className="mx-auto flex max-w-lg flex-col gap-6">
+    <AppShell width="wide" layout="stack">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 py-4">
         <header className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">家长区</h1>
           <BigButton tone="neutral" className="px-5 py-3 text-base" onClick={leave}>
@@ -65,11 +69,9 @@ export function ParentHome() {
               key={entry.to}
               type="button"
               onClick={() => navigate(entry.to)}
-              className="flex items-center gap-4 rounded-blob bg-white p-5 text-left shadow-[0_4px_0_#E8DFCC] active:translate-y-1 active:shadow-none"
+              className="flex items-center gap-4 rounded-blob bg-surface p-5 text-left shadow-card active:translate-y-1 active:shadow-none"
             >
-              <span className="text-4xl" aria-hidden>
-                {entry.icon}
-              </span>
+              <Icon name={entry.icon} className="h-9 w-9 shrink-0 text-primary" />
               <span className="flex flex-col gap-1">
                 <span className="text-lg font-bold">{entry.title}</span>
                 <span className="text-sm leading-relaxed text-ink/50">{entry.desc}</span>
@@ -77,7 +79,9 @@ export function ParentHome() {
             </button>
           ))}
         </div>
+
+        <SkinPicker />
       </div>
-    </div>
+    </AppShell>
   )
 }

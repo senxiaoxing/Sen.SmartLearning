@@ -28,14 +28,14 @@ export function WrongItemCard({ entry, index }: WrongItemCardProps) {
       transition={{ delay: 0.1 + index * 0.06, type: 'spring', stiffness: 300, damping: 26 }}
       whileTap={{ scale: 0.97 }}
       onClick={() => speak(`${item.stem.ttsText}，答案是 ${correct}`)}
-      className="flex w-full items-center justify-between gap-3 rounded-blob bg-white px-5 py-4 text-left shadow-[0_4px_0_#E8DFCC]"
+      className="flex w-full items-center justify-between gap-3 rounded-blob bg-surface px-5 py-4 text-left shadow-card"
     >
       {/* min-w-0 + break-words 必须成对出现：计数题的题干是十几个 emoji，
           不允许换行的话会把右侧答案挤出卡片外 */}
       <span className="min-w-0 flex-1 break-words text-xl font-bold tabular-nums leading-snug text-ink/80">
         {item.stem.text}
       </span>
-      <span className="shrink-0 text-3xl font-bold tabular-nums text-mint">{correct}</span>
+      <span className="shrink-0 text-3xl font-bold tabular-nums text-correct">{correct}</span>
     </motion.button>
   )
 }

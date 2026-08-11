@@ -13,6 +13,7 @@
 
 import { useState } from 'react'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { importBackup } from '@/data/backup/importBackup'
 import { bootstrap } from '@/data/bootstrap'
 import { SCHEMA_VERSION } from '@/data/db'
@@ -79,7 +80,7 @@ export function RestoreBackup() {
       <h2 className="text-lg font-bold text-ink/70">从备份恢复</h2>
 
       {phase.step === 'error' && (
-        <p className="rounded-blob bg-coral/15 px-5 py-3 text-base text-ink/70">{phase.message}</p>
+        <p className="rounded-blob bg-alert/15 px-5 py-3 text-base text-ink/70">{phase.message}</p>
       )}
 
       <BigButton
@@ -89,7 +90,14 @@ export function RestoreBackup() {
         disabled={phase.step === 'reading' || phase.step === 'importing'}
         onClick={() => void handlePick()}
       >
-        {phase.step === 'importing' ? '恢复中…' : '📂 选择备份文件'}
+        {phase.step === 'importing' ? (
+          '恢复中…'
+        ) : (
+          <>
+            <Icon name="folder" className="h-6 w-6" />
+            选择备份文件
+          </>
+        )}
       </BigButton>
 
       <p className="text-sm leading-relaxed text-ink/40">
@@ -125,7 +133,7 @@ function ConfirmCard({ backup, checksumMatched, onCancel, onConfirm }: ConfirmCa
     <div className="flex flex-col gap-4">
       <h2 className="text-lg font-bold text-ink/70">确认恢复这份备份？</h2>
 
-      <div className="flex flex-col gap-2 rounded-blob bg-white p-5 shadow-[0_4px_0_#E8DFCC]">
+      <div className="flex flex-col gap-2 rounded-blob bg-surface p-5 shadow-card">
         <Row label="档案" value={stats.profileName} />
         <Row label="已做题目" value={`${stats.totalAttempts} 题`} />
         <Row label="已掌握知识点" value={`${stats.masteredCount} 个`} />
@@ -140,7 +148,7 @@ function ConfirmCard({ backup, checksumMatched, onCancel, onConfirm }: ConfirmCa
       {!checksumMatched && (
         // 校验和不匹配只警告不拦——孩子可能只剩这一份备份，
         // 把它挡在门外比让家长承担一点风险更糟
-        <p className="rounded-blob bg-honey/15 px-5 py-3 text-base text-ink/70">
+        <p className="rounded-blob bg-primary/15 px-5 py-3 text-base text-ink/70">
           ⚠️ 这个文件的校验和对不上，可能在传输中损坏了。上面的信息看着对的话可以继续，
           恢复后请检查一下进度是否完整。
         </p>

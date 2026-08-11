@@ -5,11 +5,17 @@
  *
  * 布局遵循「层级极浅」原则：进度条 + 题目 + 反馈，没有任何二级入口。
  * 一年级孩子在答题时不该看到任何可以点进去的旁支。
+ *
+ * ⭐ 答题区宽度在任何屏幕上都固定（AppShell 的 `narrow`）。
+ * 桌面端把题干摊成一行两米宽只会让她读得更慢——视线扫描距离必须是常量。
  */
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
+import { Icon } from '@/components/Icon'
+import { PageHeader } from '@/components/PageHeader'
 import { EXPLAINERS } from '@/data/seed/explainers'
 import { Explainer } from '@/features/learning/Explainer'
 import { Feedback } from '@/features/learning/Feedback'
@@ -58,30 +64,31 @@ export function LearningSession() {
     )
   }
 
-  const progress = items.length === 0 ? 0 : (index / items.length) * 100
+  /** 0~1 的比例，直接喂给 scaleX */
+  const progress = items.length === 0 ? 0 : index / items.length
 
   return (
-    <div className="safe-area flex h-full flex-col px-6 py-4">
-      <header className="flex items-center gap-4">
-        <button
-          type="button"
-          aria-label="退出"
-          onClick={() => {
-            stopSpeech()
-            navigate('/')
-          }}
-          className="h-12 w-12 shrink-0 rounded-full bg-white/70 text-2xl text-ink/50"
-        >
-          ×
-        </button>
-
-        <div className="h-4 flex-1 overflow-hidden rounded-full bg-white/70">
-          {/* initial 必须显式给 0%：不给的话初始渲染是块级元素的默认满宽，
-              进度条会先闪一下满格再动画回 0，看起来像「一进来就做完了」 */}
+    <AppShell width="narrow" layout="stack">
+      <PageHeader
+        onBack={() => {
+          stopSpeech()
+          navigate('/')
+        }}
+        backLabel="退出"
+        backIcon="close"
+      >
+        <div className="h-4 flex-1 overflow-hidden rounded-full bg-surface">
+          {/*
+            ⚠️ 用 scaleX 而不是 width —— 动画 width 会触发 layout，在 iPad 上必掉帧
+            （CLAUDE.md 性能红线）。内部条**不加圆角**：外层 overflow-hidden 已经
+            裁出左端的半圆，内部再加圆角会被 scaleX 拉成椭圆。
+            initial 显式给 0 是必须的：不给的话初始渲染是满宽，进度条会先闪一下满格
+            再动画回 0，看起来像「一进来就做完了」。
+          */}
           <motion.div
-            className="h-full rounded-full bg-honey"
-            initial={{ width: '0%' }}
-            animate={{ width: `${progress}%` }}
+            className="h-full w-full origin-left bg-primary"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: progress }}
             transition={{ type: 'spring', stiffness: 200, damping: 30 }}
           />
         </div>
@@ -100,15 +107,16 @@ export function LearningSession() {
               setShowExplainer(true)
             }}
             whileTap={{ scale: 0.92 }}
-            className="flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-grape/15 px-4 text-base font-bold text-grape"
+            className="flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-accent/15 px-4 text-base font-bold text-accent"
           >
-            <span aria-hidden="true">💡</span>
-            <span>看讲解</span>
+            <Icon name="bulb" className="h-5 w-5" />
+            {/* 窄屏只留图标：进度条比这几个字重要，挤掉进度条是本末倒置 */}
+            <span className="hidden sm:inline">看讲解</span>
           </motion.button>
         )}
-      </header>
+      </PageHeader>
 
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center">
+      <main className="flex w-full flex-1 flex-col justify-center">
         <ItemRenderer
           item={current.item}
           selectedOptionId={feedback?.selectedOptionId ?? null}
@@ -130,12 +138,14 @@ export function LearningSession() {
           )}
         </AnimatePresence>
       </footer>
-    </div>
+    </AppShell>
   )
 }
 
 function CenteredMessage({ text }: { text: string }) {
   return (
-    <div className="flex h-full items-center justify-center text-2xl text-ink/60">{text}</div>
+    <AppShell width="narrow">
+      <p className="text-center text-2xl text-ink/60">{text}</p>
+    </AppShell>
   )
 }

@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { loadReport, type FullReport } from '@/data/repositories/reportRepo'
 import { SubjectReportCard } from '@/features/parent/SubjectReportCard'
@@ -27,8 +28,8 @@ export function Report() {
   }, [profileId])
 
   return (
-    <div className="safe-area h-full overflow-y-auto px-6 py-8">
-      <div className="mx-auto flex max-w-lg flex-col gap-5">
+    <AppShell width="wide" layout="stack">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-5 py-4">
         <header className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">学习报告</h1>
           <BigButton
@@ -41,7 +42,7 @@ export function Report() {
         </header>
 
         {report === null ? (
-          <p className="rounded-blob bg-white/60 p-5 text-base text-ink/40">读取中…</p>
+          <p className="rounded-blob bg-surface/60 p-5 text-base text-ink/40">读取中…</p>
         ) : report.isEmpty ? (
           <EmptyState />
         ) : (
@@ -53,13 +54,13 @@ export function Report() {
           </>
         )}
       </div>
-    </div>
+    </AppShell>
   )
 }
 
 function EmptyState() {
   return (
-    <p className="rounded-blob bg-white p-5 text-base leading-relaxed text-ink/50 shadow-[0_4px_0_#E8DFCC]">
+    <p className="rounded-blob bg-surface p-5 text-base leading-relaxed text-ink/50 shadow-card">
       还没有练习记录。等她做完第一轮，这里就会显示三科各自的进度、
       专注时长，以及具体卡在哪些地方。
     </p>
@@ -80,7 +81,7 @@ function StreakBanner({ streak }: { streak: number }) {
 
   return (
     <p className="px-1 text-base text-ink/60">
-      已经连续学习 <span className="text-xl font-bold tabular-nums text-honey">{streak}</span> 天
+      已经连续学习 <span className="text-xl font-bold tabular-nums text-primary">{streak}</span> 天
     </p>
   )
 }

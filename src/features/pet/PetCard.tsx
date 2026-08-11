@@ -32,7 +32,7 @@ export function PetCard({ pet, onTap, compact = false }: PetCardProps) {
       onClick={onTap}
       whileTap={onTap === undefined ? undefined : { scale: 0.97 }}
       className={[
-        'flex items-center gap-4 rounded-blob bg-white px-5 py-4 text-left shadow-[0_5px_0_#E8DFCC]',
+        'flex items-center gap-4 rounded-blob bg-surface px-5 py-4 text-left shadow-drop-surface',
         compact ? 'w-full' : 'w-full',
       ].join(' ')}
     >

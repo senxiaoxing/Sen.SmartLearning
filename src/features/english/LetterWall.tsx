@@ -23,6 +23,8 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
+import { PageHeader } from '@/components/PageHeader'
 import { LETTER_CARDS } from '@/data/seed/englishLetters'
 import { loadMasteryMap } from '@/data/repositories/masteryRepo'
 import { prefetchClips } from '@/platform/speech'
@@ -77,27 +79,21 @@ export function LetterWall() {
     // ⚠️ 整页滚动而不是「头部固定 + 卡片区内部滚动」：
     // 26 张大卡在 iPad 上必然超过一屏，让整页跟着手指走才是孩子熟悉的手感，
     // 内部滚动区在触屏上还容易和卡片点击抢手势
-    <div className="safe-area h-full overflow-y-auto px-4 py-4">
-      <header className="flex items-center justify-between px-2">
-        <button
-          type="button"
-          aria-label="返回"
-          onClick={() => navigate('/')}
-          className="flex h-[64px] w-[64px] items-center justify-center rounded-full bg-ink/5 text-2xl"
-        >
-          ←
-        </button>
-        <span className="rounded-full bg-grape/15 px-4 py-2 text-lg font-bold text-grape">
-          字母乐园
+    <AppShell width="wide" layout="stack">
+      <PageHeader onBack={() => navigate('/')} backLabel="返回">
+        <span className="flex-1 text-center">
+          <span className="rounded-full bg-accent/15 px-4 py-2 text-lg font-bold text-accent">
+            字母乐园
+          </span>
         </span>
-        {/* 占位，让标题真正居中 */}
-        <span className="h-[64px] w-[64px]" />
-      </header>
+        {/* 占位，抵消左侧返回键的宽度，让标题落在真正的中线上 */}
+        <span className="h-12 w-12 shrink-0" />
+      </PageHeader>
 
       <p className="py-3 text-center text-lg text-ink/60">
         {learnedCount > 0 ? (
           <>
-            已经认识 <span className="font-bold tabular-nums text-honey">{learnedCount}</span> 个字母
+            已经认识 <span className="font-bold tabular-nums text-primary">{learnedCount}</span> 个字母
           </>
         ) : (
           '点一下卡片，听听它是谁'
@@ -121,6 +117,6 @@ export function LetterWall() {
           />
         ))}
       </motion.div>
-    </div>
+    </AppShell>
   )
 }

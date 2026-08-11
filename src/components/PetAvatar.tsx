@@ -120,11 +120,18 @@ export function PetLevelBar({ level, ratio, isMax, color }: PetLevelBarProps) {
         Lv{level}
       </span>
       <div className="h-3 flex-1 overflow-hidden rounded-full bg-ink/10">
+        {/*
+          ⚠️ 用 scaleX 而不是动画 width：动 width 触发 layout，必掉帧
+          （CLAUDE.md 性能红线）。这条在小结页升级时和宠物形象一起动，
+          正是最不能掉帧的一刻。
+          内部条不加圆角 —— 外层 overflow-hidden 已裁出左端半圆，
+          再加圆角会被 scaleX 拉成椭圆。
+        */}
         <motion.div
-          className="h-full rounded-full"
+          className="h-full w-full origin-left"
           style={{ backgroundColor: color }}
-          initial={{ width: '0%' }}
-          animate={{ width: `${(isMax ? 1 : ratio) * 100}%` }}
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: isMax ? 1 : ratio }}
           transition={{ type: 'spring', stiffness: 180, damping: 26 }}
         />
       </div>

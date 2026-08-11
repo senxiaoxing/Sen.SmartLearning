@@ -36,10 +36,10 @@ function faceSize(text: string): string {
 }
 
 const STATE_CLASS: Record<OptionVisualState, string> = {
-  idle: 'bg-white text-ink shadow-[0_6px_0_#E8DFCC]',
-  'selected-correct': 'bg-mint text-white shadow-[0_6px_0_#3FB185]',
-  'selected-wrong': 'bg-white text-coral ring-4 ring-coral/50 shadow-[0_6px_0_#E8DFCC]',
-  'reveal-correct': 'bg-mint/20 text-mint ring-4 ring-mint shadow-[0_6px_0_#E8DFCC]',
+  idle: 'bg-surface text-ink shadow-drop-surface',
+  'selected-correct': 'bg-correct text-on-correct shadow-drop-correct',
+  'selected-wrong': 'bg-surface text-alert ring-4 ring-alert/50 shadow-drop-surface',
+  'reveal-correct': 'bg-correct/20 text-correct ring-4 ring-correct shadow-drop-surface',
 }
 
 /**

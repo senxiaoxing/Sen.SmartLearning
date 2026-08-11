@@ -10,6 +10,7 @@
 
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { Icon } from '@/components/Icon'
 import { shouldPromptInstall } from '@/platform/install'
 
 /** 本次会话内已关闭的标记。刻意不写入 localStorage —— */
@@ -24,18 +25,16 @@ export function InstallPrompt() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.6 }}
-      className="fixed inset-x-4 bottom-6 z-50 mx-auto max-w-md rounded-blob bg-white/95 p-5 shadow-lg backdrop-blur"
+      className="fixed inset-x-4 bottom-6 z-50 mx-auto max-w-md rounded-blob bg-surface/95 p-5 shadow-lg backdrop-blur"
     >
       <div className="flex items-start gap-3">
-        <span className="text-3xl" aria-hidden="true">
-          📌
-        </span>
+        <Icon name="share" className="h-7 w-7 shrink-0 text-primary" />
         <div className="flex-1 text-left">
           <p className="text-base font-bold text-ink">建议添加到主屏幕</p>
           <p className="mt-1 text-sm leading-relaxed text-ink/70">
             点击底部 <ShareGlyph /> 分享按钮 → 选择「添加到主屏幕」。
             <br />
-            <span className="text-coral">
+            <span className="text-alert">
               不添加的话，Safari 可能在 7 天后清除学习进度。
             </span>
           </p>
@@ -59,7 +58,7 @@ function ShareGlyph() {
     <svg
       viewBox="0 0 24 24"
       fill="none"
-      className="inline-block h-4 w-4 -translate-y-px text-sky"
+      className="inline-block h-4 w-4 -translate-y-px text-info"
       aria-label="分享"
     >
       <path

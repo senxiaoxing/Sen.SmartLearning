@@ -10,6 +10,7 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import {
   loadWrongBook,
@@ -33,8 +34,8 @@ export function WrongBook() {
   const total = sections?.reduce((n, s) => n + s.items.length, 0) ?? 0
 
   return (
-    <div className="safe-area h-full overflow-y-auto px-6 py-8">
-      <div className="mx-auto flex max-w-lg flex-col gap-5">
+    <AppShell width="wide" layout="stack">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-5 py-4">
         <header className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">错题本</h1>
           <BigButton
@@ -47,9 +48,9 @@ export function WrongBook() {
         </header>
 
         {sections === null ? (
-          <p className="rounded-blob bg-white/60 p-5 text-base text-ink/40">读取中…</p>
+          <p className="rounded-blob bg-surface/60 p-5 text-base text-ink/40">读取中…</p>
         ) : total === 0 ? (
-          <p className="rounded-blob bg-white p-5 text-base leading-relaxed text-ink/50 shadow-[0_4px_0_#E8DFCC]">
+          <p className="rounded-blob bg-surface p-5 text-base leading-relaxed text-ink/50 shadow-card">
             最近 {WRONG_BOOK_DAYS} 天没有待订正的错题。
             错过但后来改对的题不会留在这里。
           </p>
@@ -64,7 +65,7 @@ export function WrongBook() {
           </>
         )}
       </div>
-    </div>
+    </AppShell>
   )
 }
 

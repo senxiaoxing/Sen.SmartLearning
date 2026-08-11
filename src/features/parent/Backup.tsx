@@ -10,7 +10,9 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { backupFileName, buildBackup, lastExportAt, markExported } from '@/data/backup/buildBackup'
 import { daysBetween, isoToLocalDate, nowIso } from '@/domain/time'
 import { RestoreBackup } from '@/features/parent/RestoreBackup'
@@ -51,7 +53,7 @@ export function Backup() {
       // 只有真正保存成功才更新时间，否则家长会以为存好了，而实际什么都没有
       await markExported()
       setLastExport(await lastExportAt())
-      setMessage(outcome === 'shared' ? '已保存 ✅' : '已下载到「文件」App ✅')
+      setMessage(outcome === 'shared' ? '已保存' : '已下载到「文件」App')
     } catch (error) {
       setMessage(error instanceof Error ? `保存失败：${error.message}` : '保存失败。')
     } finally {
@@ -60,8 +62,8 @@ export function Backup() {
   }
 
   return (
-    <div className="safe-area h-full overflow-y-auto px-6 py-8">
-      <div className="mx-auto flex max-w-lg flex-col gap-6">
+    <AppShell width="wide" layout="stack">
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-6 py-4">
         <header className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">数据备份</h1>
           <BigButton tone="neutral" className="px-5 py-3 text-base" onClick={() => navigate('/')}>
@@ -79,7 +81,14 @@ export function Backup() {
           disabled={backup === null || saving}
           onClick={() => void handleSave()}
         >
-          {saving ? '保存中…' : '💾 保存进度到文件'}
+          {saving ? (
+            '保存中…'
+          ) : (
+            <>
+              <Icon name="save" className="h-6 w-6" />
+              保存进度到文件
+            </>
+          )}
         </BigButton>
 
         {message !== null && <p className="text-center text-base text-ink/60">{message}</p>}
@@ -93,19 +102,19 @@ export function Backup() {
 
         <RestoreBackup />
       </div>
-    </div>
+    </AppShell>
   )
 }
 
 /** 当前进度摘要，让家长确认「要保存的确实是这份数据」 */
 function ProgressSummary({ backup }: { backup: BackupFile | null }) {
   if (backup === null) {
-    return <div className="rounded-blob bg-white/60 p-5 text-base text-ink/40">读取中…</div>
+    return <div className="rounded-blob bg-surface/60 p-5 text-base text-ink/40">读取中…</div>
   }
 
   const { stats } = backup
   return (
-    <div className="flex flex-col gap-2 rounded-blob bg-white p-5 shadow-[0_4px_0_#E8DFCC]">
+    <div className="flex flex-col gap-2 rounded-blob bg-surface p-5 shadow-card">
       <Row label="已做题目" value={`${stats.totalAttempts} 题`} />
       <Row label="已掌握知识点" value={`${stats.masteredCount} 个`} />
       <Row
@@ -138,7 +147,7 @@ function Row({ label, value }: { label: string; value: string }) {
 function ExportReminder({ lastExport }: { lastExport: IsoDateTime | undefined }) {
   if (lastExport === undefined) {
     return (
-      <p className="rounded-blob bg-honey/15 px-5 py-3 text-base text-ink/70">
+      <p className="rounded-blob bg-primary/15 px-5 py-3 text-base text-ink/70">
         还没有备份过。建议现在保存一份，以后每周一次。
       </p>
     )
@@ -155,7 +164,7 @@ function ExportReminder({ lastExport }: { lastExport: IsoDateTime | undefined })
   }
 
   return (
-    <p className="rounded-blob bg-honey/15 px-5 py-3 text-base text-ink/70">
+    <p className="rounded-blob bg-primary/15 px-5 py-3 text-base text-ink/70">
       距离上次备份已经 {days} 天了，建议保存一下。
     </p>
   )

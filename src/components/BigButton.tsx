@@ -14,11 +14,16 @@ import { playSfx } from '@/platform/audio'
 
 export type BigButtonTone = 'primary' | 'neutral' | 'correct' | 'wrong'
 
+/**
+ * ⚠️ 文字色一律走 `text-on-*` 而不是 `text-white`：
+ * 星际皮肤的主色是星芒黄，白字压在黄底上对比度只有 1.5:1，等于看不见。
+ * `on-primary` 在果冻岛是白、在星际是深墨，由 tokens.css 决定。
+ */
 const TONE_CLASS: Record<BigButtonTone, string> = {
-  primary: 'bg-honey text-white shadow-[0_6px_0_#E09A2E]',
-  neutral: 'bg-white text-ink shadow-[0_6px_0_#E8DFCC]',
-  correct: 'bg-mint text-white shadow-[0_6px_0_#3FB185]',
-  wrong: 'bg-coral text-white shadow-[0_6px_0_#E05F50]',
+  primary: 'bg-primary text-on-primary shadow-drop-primary',
+  neutral: 'bg-surface text-ink shadow-drop-surface',
+  correct: 'bg-correct text-on-correct shadow-drop-correct',
+  wrong: 'bg-alert text-on-alert shadow-drop-alert',
 }
 
 interface BigButtonProps {

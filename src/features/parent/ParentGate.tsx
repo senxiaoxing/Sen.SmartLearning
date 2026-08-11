@@ -11,7 +11,9 @@
  */
 
 import { useState, type ReactNode } from 'react'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { useParentGateStore } from '@/stores/parentGateStore'
 
 /** 两个加数各自的取值范围。两位数且必然进位，超出一年级上学期范围 */
@@ -84,48 +86,50 @@ export function ParentGate({ children, onCancel }: ParentGateProps) {
   }
 
   return (
-    <div className="safe-area flex h-full flex-col items-center justify-center gap-8 px-6">
-      <div className="flex flex-col items-center gap-2">
-        <span className="text-5xl">🔒</span>
-        <h1 className="text-2xl font-bold">家长区</h1>
-        <p className="text-base text-ink/50">请回答下面的问题</p>
+    <AppShell width="narrow">
+      <div className="flex flex-col items-center gap-8">
+        <div className="flex flex-col items-center gap-2">
+          <Icon name="lock" className="h-14 w-14 text-ink/40" />
+          <h1 className="text-2xl font-bold">家长区</h1>
+          <p className="text-base text-ink/50">请回答下面的问题</p>
+        </div>
+
+        <p className="text-5xl font-bold tabular-nums">
+          {challenge.a} + {challenge.b} = ?
+        </p>
+
+        <input
+          type="number"
+          inputMode="numeric"
+          autoFocus
+          value={input}
+          onChange={(e) => {
+            setInput(e.target.value)
+            setWrong(false)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') submit()
+          }}
+          aria-label="答案"
+          className="w-48 rounded-blob bg-surface px-6 py-4 text-center text-3xl font-bold tabular-nums text-ink shadow-card outline-none"
+        />
+
+        {wrong && <p className="text-lg text-ink/50">不对哦，再算一次～</p>}
+
+        <div className="flex gap-4">
+          <BigButton tone="neutral" className="px-8 py-4 text-xl" onClick={onCancel}>
+            返回
+          </BigButton>
+          <BigButton
+            tone="primary"
+            className="px-8 py-4 text-xl"
+            disabled={input.trim().length === 0}
+            onClick={submit}
+          >
+            进入
+          </BigButton>
+        </div>
       </div>
-
-      <p className="text-5xl font-bold tabular-nums">
-        {challenge.a} + {challenge.b} = ?
-      </p>
-
-      <input
-        type="number"
-        inputMode="numeric"
-        autoFocus
-        value={input}
-        onChange={(e) => {
-          setInput(e.target.value)
-          setWrong(false)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') submit()
-        }}
-        aria-label="答案"
-        className="w-48 rounded-blob bg-white px-6 py-4 text-center text-3xl font-bold tabular-nums shadow-[0_4px_0_#E8DFCC] outline-none"
-      />
-
-      {wrong && <p className="text-lg text-ink/50">不对哦，再算一次～</p>}
-
-      <div className="flex gap-4">
-        <BigButton tone="neutral" className="px-8 py-4 text-xl" onClick={onCancel}>
-          返回
-        </BigButton>
-        <BigButton
-          tone="primary"
-          className="px-8 py-4 text-xl"
-          disabled={input.trim().length === 0}
-          onClick={submit}
-        >
-          进入
-        </BigButton>
-      </div>
-    </div>
+    </AppShell>
   )
 }

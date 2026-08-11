@@ -1,0 +1,111 @@
+/**
+ * @file 设计 token —— 全站配色/圆角/阴影的唯一定义处
+ * @layer styles
+ * @see design/03-技术方案.md §5.2 视觉与动效
+ *
+ * 皮肤靠 <html data-skin="…"> 切换，一个属性换掉全站视觉。
+ * 组件里**不允许出现任何十六进制颜色**，一律走 Tailwind 语义色名
+ * （canvas / surface / primary / correct / alert / info / accent / ink），
+ * 那些色名在 tailwind.config.js 里指向下面这些变量。
+ *
+ * ⚠️ 颜色变量存的是**裸通道值**（`255 147 48`）而不是完整颜色。
+ *    这是 Tailwind `<alpha-value>` 机制的硬性要求 —— 存成 `#FF9330` 或
+ *    `rgb(...)` 的话，全项目的 `text-ink/50`、`bg-surface/70`、`bg-accent/15`
+ *    会**静默失效**（透明度被忽略，不报错），排查起来极其痛苦。
+ *
+ * 命名约定：
+ *   --c-x        颜色主值
+ *   --c-x-deep   同色系的下沉阴影色（按钮那道 6px 实心边）
+ *   --c-on-x     叠在 x 之上的文字色（果冻岛是白字，星际是深字）
+ */
+
+/* ══════════════════════════════════════════════════════════════
+   A · 果冻岛 Jelly Isle —— 默认皮肤
+   暖杏奶油底 + 日落橙。厚实的下沉按钮带内高光，像一颗能按下去的糖。
+   ══════════════════════════════════════════════════════════════ */
+:root,
+[data-skin='jelly'] {
+  --c-canvas: 255 243 226;
+  --c-surface: 255 255 255;
+  --c-surface-2: 255 233 206;
+  /** 白卡片下沉阴影专用的暖灰。比 canvas 深一档，浅了会看不出立体 */
+  --c-surface-deep: 239 224 203;
+
+  --c-ink: 46 42 51;
+
+  --c-primary: 255 147 48;
+  --c-primary-deep: 217 111 19;
+  --c-on-primary: 255 255 255;
+
+  --c-correct: 35 201 160;
+  --c-correct-deep: 18 163 130;
+  --c-on-correct: 255 255 255;
+
+  /** 温和提示色。⚠️ 语义是「再看看」不是「错误」，绝不用于红叉式否定 */
+  --c-alert: 255 107 138;
+  --c-alert-deep: 224 79 110;
+  --c-on-alert: 255 255 255;
+
+  /** 团团（数学小企鹅）的主题色，喇叭按钮等信息类元素也用它 */
+  --c-info: 99 179 242;
+  /** 墨墨（语文小飞龙）的主题色，讲解入口用它 */
+  --c-accent: 167 139 250;
+
+  --r-blob: 26px;
+  --r-card: 16px;
+
+  /** 按钮顶部那道内高光。是「果冻感」的全部来源，去掉就变回扁平色块 */
+  --sh-inner: inset 0 2px 0 rgb(255 255 255 / 0.45);
+
+  /** 页面背景装饰。纯 CSS 渐变，不加载任何图片，滚动零开销 */
+  --deco:
+    radial-gradient(circle at 15% 8%, rgb(255 147 48 / 0.13), transparent 42%),
+    radial-gradient(circle at 88% 82%, rgb(35 201 160 / 0.13), transparent 46%);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   C · 星际学院 Star Academy
+   深靛夜空 + 星芒黄。存在的理由是孩子那句「像幼儿园小朋友做的题目」——
+   深色底在这个年龄段的认知里等于「大人的东西、高年级的东西」。
+   见 design/05-孩子反馈与响应.md
+   ══════════════════════════════════════════════════════════════ */
+[data-skin='star'] {
+  --c-canvas: 19 26 46;
+  --c-surface: 30 39 69;
+  --c-surface-2: 42 54 92;
+  /** 深色皮肤下的「下沉边」要比卡片更暗，靠暗部而不是亮部制造厚度 */
+  --c-surface-deep: 12 17 33;
+
+  --c-ink: 238 243 255;
+
+  --c-primary: 255 201 74;
+  --c-primary-deep: 192 141 20;
+  /** ⚠️ 黄底上必须用深色字。沿用白字对比度只有 1.5:1，等于看不见 */
+  --c-on-primary: 42 30 0;
+
+  --c-correct: 61 220 255;
+  --c-correct-deep: 23 149 184;
+  --c-on-correct: 8 30 40;
+
+  --c-alert: 255 92 138;
+  --c-alert-deep: 200 55 95;
+  --c-on-alert: 42 8 20;
+
+  --c-info: 125 196 255;
+  --c-accent: 178 152 255;
+
+  --r-blob: 20px;
+  --r-card: 13px;
+
+  --sh-inner: inset 0 1px 0 rgb(255 255 255 / 0.09);
+
+  /** 星点是 5 个 radial-gradient，不是图片也不是 canvas。
+   *  ⚠️ 星星**不做闪烁动画**：全屏重绘会直接吃掉答题时的帧预算 */
+  --deco:
+    radial-gradient(1.4px 1.4px at 22% 14%, rgb(255 255 255 / 0.72), transparent),
+    radial-gradient(1.2px 1.2px at 72% 26%, rgb(255 255 255 / 0.55), transparent),
+    radial-gradient(1.6px 1.6px at 42% 62%, rgb(255 255 255 / 0.6), transparent),
+    radial-gradient(1.2px 1.2px at 84% 76%, rgb(255 255 255 / 0.45), transparent),
+    radial-gradient(1.3px 1.3px at 12% 84%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(circle at 78% 6%, rgb(61 220 255 / 0.16), transparent 44%);
+}

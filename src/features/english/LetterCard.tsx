@@ -52,8 +52,8 @@ export function LetterCard({ card, flipped, learned, onFlip }: LetterCardProps) 
           style={BACKFACE_HIDDEN}
           className={
             learned
-              ? 'bg-white text-ink ring-4 ring-honey shadow-[0_6px_0_#E8DFCC]'
-              : 'bg-white text-ink shadow-[0_6px_0_#E8DFCC]'
+              ? 'bg-surface text-ink ring-4 ring-primary shadow-drop-surface'
+              : 'bg-surface text-ink shadow-drop-surface'
           }
         >
           {/*
@@ -71,8 +71,8 @@ export function LetterCard({ card, flipped, learned, onFlip }: LetterCardProps) 
         <Face
           style={{ ...BACKFACE_HIDDEN, transform: 'rotateY(180deg)' }}
           // 高亮圈跟着翻过来：翻个面就不算「已学」了会很奇怪
-          className={`bg-sky/15 text-ink shadow-[0_6px_0_#E8DFCC] ${
-            learned ? 'ring-4 ring-honey' : ''
+          className={`bg-info/15 text-ink shadow-drop-surface ${
+            learned ? 'ring-4 ring-primary' : ''
           }`}
         >
           <span className="text-6xl leading-none">{card.emoji}</span>

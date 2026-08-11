@@ -42,7 +42,7 @@ export function SubjectPicker({ pets, onPick }: SubjectPickerProps) {
               whileTap={{ scale: 0.95, y: 4 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               // 只动 scale / y（GPU 合成属性），不碰尺寸属性
-              className="flex min-h-touch min-w-touch flex-col items-center gap-2 rounded-blob bg-white px-8 py-5 shadow-[0_6px_0_#E8DFCC]"
+              className="flex min-h-touch min-w-touch flex-col items-center gap-2 rounded-blob bg-surface px-8 py-5 shadow-drop-surface"
             >
               <PetAvatar def={def} stageIndex={levelProgress(pet.exp).stage} size="md" animated />
               <span className="text-2xl font-bold" style={{ color: def.themeColor }}>

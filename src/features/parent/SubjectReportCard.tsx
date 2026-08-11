@@ -27,7 +27,7 @@ export function SubjectReportCard({ section }: { section: SubjectSection }) {
   const started = report.totalAttempts > 0
 
   return (
-    <section className="flex flex-col gap-4 rounded-blob bg-white p-5 shadow-[0_4px_0_#E8DFCC]">
+    <section className="flex flex-col gap-4 rounded-blob bg-surface p-5 shadow-card">
       <div className="flex items-baseline justify-between">
         <h2 className="text-xl font-bold">{SUBJECT_LABEL[report.subject]}</h2>
         <span className="text-sm text-ink/50">
@@ -98,7 +98,7 @@ function MasteryBar({ mastered, total }: { mastered: number; total: number }) {
       </div>
       <div className="h-3 overflow-hidden rounded-full bg-ink/10">
         {/* 静态布局宽度，不是动画——CLAUDE.md 禁的是「动画 width」 */}
-        <div className="h-full rounded-full bg-mint" style={{ width: `${ratio * 100}%` }} />
+        <div className="h-full rounded-full bg-correct" style={{ width: `${ratio * 100}%` }} />
       </div>
     </div>
   )
@@ -120,7 +120,7 @@ function TrendBars({ trend }: { trend: readonly DayStat[] }) {
         {trend.map((day) => (
           <div key={day.localDate} className="flex flex-1 flex-col items-center gap-1">
             <div
-              className={`w-full rounded-t ${day.total === 0 ? 'bg-ink/10' : 'bg-honey'}`}
+              className={`w-full rounded-t ${day.total === 0 ? 'bg-ink/10' : 'bg-primary'}`}
               style={{ height: `${Math.max(4, (day.total / max) * 100)}%` }}
               title={`${day.localDate}：${day.total} 题`}
             />

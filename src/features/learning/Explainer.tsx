@@ -15,7 +15,9 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { LooseDots, TenFrame } from '@/components/TenFrame'
 import { say, stopSpeech } from '@/platform/speech'
 import type { Explainer as ExplainerData } from '@/data/seed/explainers'
@@ -43,12 +45,13 @@ export function Explainer({ explainer, onDone, doneLabel = '看完了' }: Explai
   const isLast = stepIndex === explainer.steps.length - 1
 
   return (
-    <div className="safe-area flex h-full flex-col px-6 py-4">
+    <AppShell width="wide" layout="stack">
       <header className="flex items-center justify-between">
-        <span className="rounded-full bg-grape/15 px-4 py-2 text-lg font-bold text-grape">
+        <span className="rounded-full bg-accent/15 px-4 py-2 text-lg font-bold text-accent">
           {explainer.title}
         </span>
-        {/* 随时可退出：讲解是自愿看的，不该有任何「被困住」的感觉 */}
+        {/* 随时可退出：讲解是自愿看的，不该有任何「被困住」的感觉。
+            ⚠️ 关闭在右上——这是浮层的通用位置，与页面级的左上返回键区分开 */}
         <button
           type="button"
           aria-label="关闭"
@@ -56,18 +59,20 @@ export function Explainer({ explainer, onDone, doneLabel = '看完了' }: Explai
             stopSpeech()
             onDone()
           }}
-          className="h-12 w-12 rounded-full bg-white/70 text-2xl text-ink/50"
+          className="flex h-12 w-12 items-center justify-center rounded-full bg-surface text-ink/50 shadow-card"
         >
-          ×
+          <Icon name="close" className="h-6 w-6" />
         </button>
       </header>
 
       <div className="mt-2 flex items-center justify-center gap-2">
         {explainer.steps.map((_, i) => (
+          // ⚠️ 用 scaleX 而不是动画 width：动 width 触发 layout，必掉帧
+          // （CLAUDE.md 性能红线）。宽度固定 28px，未选中时压到 0.36 ≈ 10px
           <motion.span
             key={i}
-            animate={{ width: i === stepIndex ? 28 : 10, opacity: i <= stepIndex ? 1 : 0.3 }}
-            className="h-2.5 rounded-full bg-grape"
+            animate={{ scaleX: i === stepIndex ? 1 : 0.36, opacity: i <= stepIndex ? 1 : 0.3 }}
+            className="h-2.5 w-7 rounded-full bg-accent"
           />
         ))}
       </div>
@@ -132,6 +137,6 @@ export function Explainer({ explainer, onDone, doneLabel = '看完了' }: Explai
           </BigButton>
         )}
       </footer>
-    </div>
+    </AppShell>
   )
 }

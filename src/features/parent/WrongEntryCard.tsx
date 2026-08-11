@@ -23,7 +23,7 @@ export function WrongEntryCard({ item }: { item: WrongItem }) {
     item.misconceptionTag === undefined ? undefined : MISCONCEPTION_LABELS[item.misconceptionTag]
 
   return (
-    <div className="flex flex-col gap-2 rounded-blob bg-white p-4 shadow-[0_4px_0_#E8DFCC]">
+    <div className="flex flex-col gap-2 rounded-blob bg-surface p-4 shadow-card">
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-lg font-bold">{item.stem === '' ? kpName : item.stem}</span>
         <span className="shrink-0 text-xs text-ink/40">{formatDay(item.localDate)}</span>
@@ -32,7 +32,7 @@ export function WrongEntryCard({ item }: { item: WrongItem }) {
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 text-base">
         <span>
           <span className="text-ink/40">正确 </span>
-          <span className="font-bold text-mint">{item.correctAnswer || '—'}</span>
+          <span className="font-bold text-correct">{item.correctAnswer || '—'}</span>
         </span>
         {item.selectedText !== undefined && (
           <span>

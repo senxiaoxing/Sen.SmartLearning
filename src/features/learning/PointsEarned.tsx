@@ -45,12 +45,12 @@ export function PointsEarned({ earned, balance }: PointsEarnedProps) {
       initial={{ scale: 0.7, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 300, damping: 18, delay: 0.25 }}
-      className="mt-3 flex items-center gap-3 rounded-blob bg-honey/15 px-6 py-3"
+      className="mt-3 flex items-center gap-3 rounded-blob bg-primary/15 px-6 py-3"
     >
       <span className="text-3xl" aria-hidden>
         ⭐
       </span>
-      <span className="text-4xl font-bold tabular-nums text-honey">+{earned}</span>
+      <span className="text-4xl font-bold tabular-nums text-primary">+{earned}</span>
       <span className="text-base text-ink/50">一共 {balance} 颗</span>
     </motion.div>
   )

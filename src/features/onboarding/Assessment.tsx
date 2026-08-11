@@ -15,7 +15,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { PLACEMENT_PROBES } from '@/domain/assessment/placement'
 import { ItemRenderer } from '@/items/ItemRenderer'
 import { unlockAudio } from '@/platform/audio'
@@ -40,15 +42,21 @@ export function Assessment() {
   const step = results.length + (status === 'feedback' ? 0 : 1)
 
   return (
-    <div className="safe-area flex h-full flex-col px-6 py-4">
-      <header className="flex items-center justify-center gap-2 py-2">
+    <AppShell width="narrow" layout="stack">
+      {/* 走过的站插旗，没走到的是小圆点。⚠️ 没有「失败」的标记——
+          探险只有走到哪里，没有对错 */}
+      <header className="flex items-center justify-center gap-3 py-2">
         {PLACEMENT_PROBES.map((_, i) => (
           <motion.span
             key={i}
-            animate={{ scale: i < results.length ? 1 : 0.7, opacity: i < results.length ? 1 : 0.3 }}
-            className="text-2xl"
+            animate={{ scale: i < results.length ? 1 : 0.7, opacity: i < results.length ? 1 : 0.35 }}
+            className="flex h-7 w-7 items-center justify-center"
           >
-            {i < results.length ? '🚩' : '·'}
+            {i < results.length ? (
+              <Icon name="flag" className="h-6 w-6 text-primary" />
+            ) : (
+              <span className="h-2 w-2 rounded-full bg-ink/40" />
+            )}
           </motion.span>
         ))}
       </header>
@@ -57,7 +65,7 @@ export function Assessment() {
         探险第 {step} 站 · 一共 {PLACEMENT_PROBES.length} 站
       </p>
 
-      <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center">
+      <main className="flex w-full flex-1 flex-col justify-center">
         <ItemRenderer
           item={currentItem}
           selectedOptionId={null}
@@ -69,11 +77,15 @@ export function Assessment() {
       <footer className="flex min-h-[140px] items-center justify-center">
         <AnimatePresence mode="wait">
           {status === 'feedback' && (
-            <ProbeFeedback key={results.length} isCorrect={lastCorrect === true} onNext={() => void next()} />
+            <ProbeFeedback
+              key={results.length}
+              isCorrect={lastCorrect === true}
+              onNext={() => void next()}
+            />
           )}
         </AnimatePresence>
       </footer>
-    </div>
+    </AppShell>
   )
 }
 
@@ -90,8 +102,14 @@ function ProbeFeedback({ isCorrect, onNext }: { isCorrect: boolean; onNext: () =
       exit={{ opacity: 0 }}
       className="flex flex-col items-center gap-4"
     >
-      <p className={`text-2xl font-bold ${isCorrect ? 'text-mint' : 'text-honey'}`}>
-        {isCorrect ? '🚩 走对啦，继续往前！' : '⛰️ 这里有点难，我们回头再来'}
+      <p
+        className={`flex items-center gap-2 text-2xl font-bold ${
+          isCorrect ? 'text-correct' : 'text-primary'
+        }`}
+      >
+        {/* 走不动的那一站给一座山：是「前面有座山」，不是「你失败了」 */}
+        <Icon name={isCorrect ? 'flag' : 'mountain'} className="h-7 w-7" />
+        {isCorrect ? '走对啦，继续往前！' : '这里有点难，我们回头再来'}
       </p>
       <BigButton tone="primary" onClick={onNext}>
         继续
@@ -102,36 +120,37 @@ function ProbeFeedback({ isCorrect, onNext }: { isCorrect: boolean; onNext: () =
 
 function Intro({ onStart }: { onStart: () => void }) {
   return (
-    <div className="safe-area flex h-full flex-col items-center justify-center gap-8 px-6 text-center">
-      <motion.div
-        initial={{ scale: 0.7, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-        className="text-8xl"
-      >
-        🐣
-      </motion.div>
-      <div className="flex flex-col gap-3">
-        <h1 className="text-3xl font-bold">一起去探险吧！</h1>
-        <p className="max-w-sm text-lg leading-relaxed text-ink/60">
-          小鸡想知道你能走多远。
-          <br />
-          走不动了也没关系，我们从那里开始一起练。
-        </p>
+    <AppShell width="narrow">
+      <div className="flex flex-col items-center gap-8 text-center">
+        <motion.div
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 18 }}
+        >
+          <Icon name="egg" className="h-24 w-24 text-primary" />
+        </motion.div>
+        <div className="flex flex-col gap-3">
+          <h1 className="text-3xl font-bold">一起去探险吧！</h1>
+          <p className="max-w-sm text-lg leading-relaxed text-ink/60">
+            小鸡想知道你能走多远。
+            <br />
+            走不动了也没关系，我们从那里开始一起练。
+          </p>
+        </div>
+        <BigButton
+          tone="primary"
+          className="px-12 py-6 text-3xl"
+          onClick={() => {
+            // ⚠️ 必须在用户手势的同步栈里解锁 iOS 音频（语音 + 音效）
+            unlockSpeech()
+            unlockAudio()
+            onStart()
+          }}
+        >
+          出发！
+        </BigButton>
       </div>
-      <BigButton
-        tone="primary"
-        className="px-12 py-6 text-3xl"
-        onClick={() => {
-          // ⚠️ 必须在用户手势的同步栈里解锁 iOS 音频（语音 + 音效）
-          unlockSpeech()
-          unlockAudio()
-          onStart()
-        }}
-      >
-        出发！
-      </BigButton>
-    </div>
+    </AppShell>
   )
 }
 
@@ -141,30 +160,34 @@ function Done({ startKpName, onFinish }: { startKpName: string | null; onFinish:
   }, [startKpName])
 
   return (
-    <div className="safe-area flex h-full flex-col items-center justify-center gap-8 px-6 text-center">
-      <motion.div
-        initial={{ scale: 0.6, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 16 }}
-        className="text-8xl"
-      >
-        {startKpName === null ? '🏆' : '🗺️'}
-      </motion.div>
+    <AppShell width="narrow">
+      <div className="flex flex-col items-center gap-8 text-center">
+        <motion.div
+          initial={{ scale: 0.6, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+        >
+          <Icon
+            name={startKpName === null ? 'trophy' : 'map'}
+            className="h-24 w-24 text-primary"
+          />
+        </motion.div>
 
-      <div className="flex flex-col gap-3">
-        <h1 className="text-3xl font-bold">
-          {startKpName === null ? '全部走完了，太厉害了！' : '找到你的起点啦！'}
-        </h1>
-        {startKpName !== null && (
-          <p className="text-lg text-ink/60">
-            我们从 <span className="font-bold text-honey">{startKpName}</span> 开始一起练
-          </p>
-        )}
+        <div className="flex flex-col gap-3">
+          <h1 className="text-3xl font-bold">
+            {startKpName === null ? '全部走完了，太厉害了！' : '找到你的起点啦！'}
+          </h1>
+          {startKpName !== null && (
+            <p className="text-lg text-ink/60">
+              我们从 <span className="font-bold text-primary">{startKpName}</span> 开始一起练
+            </p>
+          )}
+        </div>
+
+        <BigButton tone="primary" className="px-10 py-5 text-2xl" onClick={onFinish}>
+          开始学习
+        </BigButton>
       </div>
-
-      <BigButton tone="primary" className="px-10 py-5 text-2xl" onClick={onFinish}>
-        开始学习
-      </BigButton>
-    </div>
+    </AppShell>
   )
 }

@@ -11,7 +11,9 @@
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
+import { Icon } from '@/components/Icon'
 import { PetAvatar } from '@/components/PetAvatar'
 import { hasCompletedAssessment } from '@/data/repositories/assessmentRepo'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
@@ -20,6 +22,7 @@ import { isSubjectOpened, OPENED_SUBJECTS, petDefinitionOf } from '@/data/seed/p
 import { WARMUP_CLIPS } from '@/data/seed/voiceManifest'
 import { levelProgress } from '@/domain/pet/growth'
 import { todayLocal } from '@/domain/time'
+import { HomeCompanion } from '@/features/home/HomeCompanion'
 import { RetryEntry } from '@/features/home/RetryEntry'
 import { SubjectPicker } from '@/features/home/SubjectPicker'
 import { InstallPrompt } from '@/features/onboarding/InstallPrompt'
@@ -88,111 +91,116 @@ export function HomePage() {
   const beginRetry = () => enterSession(() => void startWrongBookRetry())
 
   return (
-    <div className="safe-area flex h-full flex-col items-center justify-center gap-12 px-6">
-      <motion.div
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 22 }}
-        className="flex flex-col items-center gap-4"
-      >
-        {/* 三只科目伙伴。⚠️ 平铺展示，绝不排名——见 CLAUDE.md 产品红线 */}
-        <button
-          type="button"
-          aria-label="我的伙伴"
-          onClick={() => navigate('/pets')}
-          className="flex items-end gap-2 rounded-blob px-4 py-2"
+    <AppShell width="wide" aside={<HomeCompanion today={today} pendingRetry={pendingRetry} />}>
+      <div className="flex flex-col items-center gap-9 sm:gap-11">
+        <motion.div
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+          className="flex flex-col items-center gap-4"
         >
-          {pets.map((pet) => {
-            const def = petDefinitionOf(pet.subject, pet.gradeLevel)
-            if (def === undefined) return null
-            return (
-              <PetAvatar
-                key={pet.id}
-                def={def}
-                stageIndex={levelProgress(pet.exp).stage}
-                size={pet.subject === 'math' ? 'md' : 'sm'}
-                asleep={!isSubjectOpened(pet.subject)}
-                animated={false}
-              />
-            )
-          })}
-        </button>
-        <h1 className="text-3xl font-bold">今天想学点什么？</h1>
-      </motion.div>
+          {/* 三只科目伙伴。⚠️ 平铺展示，绝不排名——见 CLAUDE.md 产品红线 */}
+          <button
+            type="button"
+            aria-label="我的伙伴"
+            onClick={() => navigate('/pets')}
+            className="flex items-end gap-2 rounded-blob px-4 py-2"
+          >
+            {pets.map((pet) => {
+              const def = petDefinitionOf(pet.subject, pet.gradeLevel)
+              if (def === undefined) return null
+              return (
+                <PetAvatar
+                  key={pet.id}
+                  def={def}
+                  stageIndex={levelProgress(pet.exp).stage}
+                  size={pet.subject === 'math' ? 'md' : 'sm'}
+                  asleep={!isSubjectOpened(pet.subject)}
+                  animated={false}
+                />
+              )
+            })}
+          </button>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">今天想学点什么？</h1>
+        </motion.div>
 
-      {today.total > 0 && (
-        <p className="text-xl text-ink/60">
-          今天已经做了 <span className="font-bold tabular-nums text-honey">{today.total}</span> 题，
-          答对 <span className="font-bold tabular-nums text-mint">{today.correct}</span> 题
-        </p>
-      )}
+        {/* 宽屏时这行让位给侧栏的今日面板 —— 同一份信息不在一屏里出现两次 */}
+        {today.total > 0 && (
+          <p className="text-xl text-ink/60 xl:hidden">
+            今天已经做了 <span className="font-bold tabular-nums text-primary">{today.total}</span>{' '}
+            题， 答对 <span className="font-bold tabular-nums text-correct">{today.correct}</span> 题
+          </p>
+        )}
 
-      {needsAssessment ? (
-        // 首次使用先做摸底，避免让上过幼小衔接的孩子从「数一数」开始
-        <div className="flex flex-col items-center gap-3">
+        {needsAssessment ? (
+          // 首次使用先做摸底，避免让上过幼小衔接的孩子从「数一数」开始
+          <div className="flex flex-col items-center gap-3">
+            <BigButton
+              tone="primary"
+              className="px-12 py-6 text-3xl"
+              onClick={() => navigate('/assessment')}
+            >
+              一起去探险
+            </BigButton>
+            <button
+              type="button"
+              onClick={() => beginSession('math')}
+              className="px-4 py-2 text-base text-ink/40"
+            >
+              跳过，直接开始
+            </button>
+          </div>
+        ) : openSubjects.length > 1 ? (
+          // 开放了多个科目就让她自己挑 —— 宠物即标签，她认形象不认字
+          <SubjectPicker pets={pets} onPick={(subject) => beginSession(subject)} />
+        ) : (
           <BigButton
             tone="primary"
             className="px-12 py-6 text-3xl"
-            onClick={() => navigate('/assessment')}
+            onClick={() => beginSession(openSubjects[0] ?? 'math')}
           >
-            一起去探险
+            开始学习
           </BigButton>
-          <button
-            type="button"
-            onClick={() => beginSession('math')}
-            className="px-4 py-2 text-base text-ink/40"
+        )}
+
+        {/* 错题订正的长期入口，为什么必须有见 RetryEntry 文件头。
+            摸底还没做时不出现——那时既没有错题，也不该分散注意力 */}
+        {!needsAssessment && pendingRetry > 0 && (
+          <RetryEntry count={pendingRetry} onClick={beginRetry} />
+        )}
+
+        {/* 两个独立模块，随时可来反复玩/看，都不绑在答题流程里。
+            ⚠️ 进去之前必须解锁音频 —— 这两页的全部内容都是听的 */}
+        <div className="flex gap-3 sm:gap-4">
+          <BigButton
+            tone="neutral"
+            className="px-6 py-4 text-xl sm:px-8"
+            onClick={() => {
+              unlockAllAudio()
+              navigate('/letters')
+            }}
           >
-            跳过，直接开始
-          </button>
+            <Icon name="letters" className="h-7 w-7 text-info" />
+            <span>字母乐园</span>
+          </BigButton>
+          <BigButton
+            tone="neutral"
+            className="px-6 py-4 text-xl sm:px-8"
+            onClick={() => {
+              unlockAllAudio()
+              navigate('/explain')
+            }}
+          >
+            <Icon name="bulb" className="h-7 w-7 text-accent" />
+            <span>看讲解</span>
+          </BigButton>
         </div>
-      ) : openSubjects.length > 1 ? (
-        // 开放了多个科目就让她自己挑 —— 宠物即标签，她认形象不认字
-        <SubjectPicker pets={pets} onPick={(subject) => beginSession(subject)} />
-      ) : (
-        <BigButton
-          tone="primary"
-          className="px-12 py-6 text-3xl"
-          onClick={() => beginSession(openSubjects[0] ?? 'math')}
-        >
-          开始学习
-        </BigButton>
-      )}
-
-      {/* 错题订正的长期入口，为什么必须有见 RetryEntry 文件头。
-          摸底还没做时不出现——那时既没有错题，也不该分散注意力 */}
-      {!needsAssessment && pendingRetry > 0 && (
-        <RetryEntry count={pendingRetry} onClick={beginRetry} />
-      )}
-
-      {/* 两个独立模块，随时可来反复玩/看，都不绑在答题流程里。
-          ⚠️ 进去之前必须解锁音频 —— 这两页的全部内容都是听的 */}
-      <div className="flex gap-3">
-        <BigButton
-          tone="neutral"
-          className="px-8 py-4 text-xl"
-          onClick={() => {
-            unlockAllAudio()
-            navigate('/letters')
-          }}
-        >
-          🔤 字母乐园
-        </BigButton>
-        <BigButton
-          tone="neutral"
-          className="px-8 py-4 text-xl"
-          onClick={() => {
-            unlockAllAudio()
-            navigate('/explain')
-          }}
-        >
-          💡 看讲解
-        </BigButton>
       </div>
 
       <InstallPrompt />
 
       {/* 右上角不可见热区，长按 3 秒进家长区（备份/恢复） */}
       <ParentEntry onEnter={() => navigate('/parent')} />
-    </div>
+    </AppShell>
   )
 }
