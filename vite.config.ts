@@ -10,7 +10,26 @@ const { version: appVersion } = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
 ) as { version: string }
 
+/**
+ * 站点根路径。GitHub Pages 把仓库部署在 `/<仓库名>/` 子路径下，
+ * 所有资源引用都必须带这个前缀，否则打包产物全部 404、页面纯白。
+ *
+ * ⚠️ 写死而不是用环境变量：Windows 的 npm script 传环境变量要用 cmd 的
+ * `set VAR=x&&` 语法，`&&` 前多一个空格就会把空格带进变量值，
+ * 而这个项目只往一个地方部署，不值得为此引入 cross-env 依赖。
+ *
+ * 代价是本地开发地址也带上了这一段：
+ *   http://localhost:5173/Sen.SmartLearning/
+ * 换来的是 dev / preview / 线上三者路径完全一致 ——
+ * 不会出现「本地好好的、线上白屏」这类只在生产环境复现的问题。
+ *
+ * 将来换自定义域名或换回 Cloudflare Pages（根路径部署）时，改回 '/' 即可。
+ */
+const BASE = '/Sen.SmartLearning/'
+
 export default defineConfig({
+  base: BASE,
+
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
   },
@@ -26,20 +45,26 @@ export default defineConfig({
         short_name: '智慧学习',
         description: '一年级数学·拼音·英语的自适应练习',
         lang: 'zh-CN',
-        start_url: '/',
-        scope: '/',
+        // ⚠️ 必须是子路径而不是 '/'：写 '/' 的话 iOS 会认为 PWA 的作用域是
+        // github.io 整个域名，「添加到主屏幕」后点开会跳到 github.io 首页
+        start_url: BASE,
+        scope: BASE,
         // standalone 让「添加到主屏幕」后全屏运行，没有 Safari 地址栏
         display: 'standalone',
         // iOS 会忽略 manifest 的 orientation，强制横屏做不到，
         // 因此设为 any 并由布局自行适配 iPad 横屏与 iPhone 竖屏
         orientation: 'any',
-        theme_color: '#FFB84D',
-        background_color: '#FFF8E7',
+        // 与 index.html 的 <meta name="theme-color"> 和果冻岛皮肤的 canvas 色保持一致，
+        // 三处对不上的话启动画面会闪一下旧配色
+        theme_color: '#FFF3E2',
+        background_color: '#FFF3E2',
+        // 相对路径。manifest 本身位于 BASE 下，浏览器会按它解析出正确的绝对地址；
+        // 写成 '/icons/…' 会跳过 BASE 直接指向域名根，在 GitHub Pages 上必 404
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
           {
-            src: '/icons/icon-512-maskable.png',
+            src: 'icons/icon-512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

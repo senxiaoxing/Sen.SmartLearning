@@ -14,9 +14,11 @@
     <meta name="apple-mobile-web-app-title" content="智慧学习" />
     <meta name="theme-color" content="#FFF3E2" />
 
-    <!-- iOS 不读 manifest 的 icons，必须单独给 apple-touch-icon -->
-    <link rel="apple-touch-icon" href="/icons/apple-touch-icon-180.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <!-- iOS 不读 manifest 的 icons，必须单独给 apple-touch-icon。
+         ⚠️ 用相对路径：GitHub Pages 部署在 /Sen.SmartLearning/ 子路径下，
+         以 / 开头会指向 github.io 域名根，图标 404 变空白方块 -->
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
 
     <!--
       在首帧之前打上皮肤属性。必须内联在这里，不能挪进 main.tsx：
