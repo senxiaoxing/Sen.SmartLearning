@@ -25,8 +25,10 @@
  * ```
  * en.*      英语童声      用中文音色念 apple 会教错发音
  * pinyin.*  标准播音音色  ⭐ 孤立单字的声调最容易读飘，标准优先于亲切
- * 其余      少女声        题干、鼓励语、昵称，亲切感优先
+ * 其余      少女声        题干、鼓励语、昵称、宠物台词、讲解，亲切感优先
  * ```
+ * 语速另有两处放慢：`pinyin.*`（声调要走完）与 `en.letter*`（字母卡要听清），
+ * 见 RATE_PINYIN / RATE_LETTER。
  * ⚠️ `name.*`（昵称）必须留在默认音色里：它拼在鼓励语的**同一句话**前面，
  * 换音色就等于一句话里有两个人在说。
  * 发音教错比没有声音严重得多（拼音那边已经付过一次学费，见 design/07 §3.3）。
@@ -83,6 +85,8 @@ const DEFAULT_VOICE_PINYIN = 'zh-CN-XiaoxiaoNeural'
 /** 按 key 前缀选音色 */
 const EN_PREFIX = 'en.'
 const PINYIN_PREFIX = 'pinyin.'
+/** 字母卡。⚠️ 是 `en.` 的子集，音色跟英语走，只有语速单独一套 */
+const LETTER_PREFIX = 'en.letter'
 
 /** 语速。儿童建议略慢，与原来 Web Speech 的 0.85 对齐 */
 const RATE = '-15%'
@@ -102,6 +106,19 @@ const PITCH = '+5%'
  */
 const RATE_PINYIN = '-30%'
 const PITCH_PINYIN = '+0%'
+
+/**
+ * ⭐ 字母卡（`en.letter*`）的语速：比其他英语内容更慢。
+ *
+ * 念的是「A is for apple.」，而对一个刚开始接触英语的孩子来说，
+ * 这句话里**每一个音都是新的**——她既要抓住字母名 /eɪ/，
+ * 又要听清后面那个单词。常速下这两件事会糊在一起。
+ *
+ * 与拼音那边同一个道理（见 RATE_PINYIN）：孤立的、要「听清楚」的教学内容，
+ * 慢比自然更重要。⚠️ 只放慢语速、不动音高——音高偏移在英语里没有必要，
+ * 而任何多余的改动都是在赌已经念对的那些。
+ */
+const RATE_LETTER = '-30%'
 
 /**
  * ⭐ 少数「怎么调参数都读不稳」的音节，靠一个**尾随逗号**救。
@@ -151,11 +168,16 @@ function voiceFor(key) {
   return voice
 }
 
-/** 这个片段用什么语速音调。拼音单独一套，理由见 RATE_PINYIN */
+/**
+ * 这个片段用什么语速音调。
+ *
+ * ⚠️ 字母的判断必须排在英语前面——`en.letterA` 同时匹配两者，
+ * 而它要的是更慢的那一套。理由见 RATE_PINYIN 与 RATE_LETTER。
+ */
 function prosodyFor(key) {
-  return key.startsWith(PINYIN_PREFIX)
-    ? { rate: RATE_PINYIN, pitch: PITCH_PINYIN }
-    : { rate: RATE, pitch: PITCH }
+  if (key.startsWith(PINYIN_PREFIX)) return { rate: RATE_PINYIN, pitch: PITCH_PINYIN }
+  if (key.startsWith(LETTER_PREFIX)) return { rate: RATE_LETTER, pitch: PITCH }
+  return { rate: RATE, pitch: PITCH }
 }
 
 /** 实际喂给 TTS 的文本。个别音节要补尾随逗号，见 TAIL_FIX_KEYS */
@@ -445,14 +467,20 @@ if (changed.length > 0) {
   console.log()
 }
 
-const pendingEn = pending.filter(([key]) => key.startsWith(EN_PREFIX))
+// ⚠️ 字母要先从英语里摘出来单独统计：它俩共用 en. 前缀但语速不同，
+//    合在一起报会打印出一个根本没用上的语速，下次调参时必然被误导
+const pendingLetter = pending.filter(([key]) => key.startsWith(LETTER_PREFIX))
+const pendingEn = pending.filter(
+  ([key]) => key.startsWith(EN_PREFIX) && !key.startsWith(LETTER_PREFIX),
+)
 const pendingPy = pending.filter(([key]) => key.startsWith(PINYIN_PREFIX))
-const pendingZh = pending.length - pendingEn.length - pendingPy.length
+const pendingZh = pending.length - pendingEn.length - pendingPy.length - pendingLetter.length
 
 console.log(`清单共 ${entries.length} 条，待生成 ${pending.length} 条`)
 console.log(`  中文 ${pendingZh} 条 · ${voice} · ${RATE} ${PITCH}`)
 console.log(`  拼音 ${pendingPy.length} 条 · ${voicePinyin} · ${RATE_PINYIN} ${PITCH_PINYIN}`)
-console.log(`  英语 ${pendingEn.length} 条 · ${voiceEn} · ${RATE} ${PITCH}\n`)
+console.log(`  英语 ${pendingEn.length} 条 · ${voiceEn} · ${RATE} ${PITCH}`)
+console.log(`  字母 ${pendingLetter.length} 条 · ${voiceEn} · ${RATE_LETTER} ${PITCH}\n`)
 
 if (pending.length === 0) {
   console.log('全部已存在，无需生成。换音色请加 --force')

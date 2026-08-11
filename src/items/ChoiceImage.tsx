@@ -57,9 +57,6 @@ export function ChoiceImage({
             disabled={revealed}
             state={visualState(option.id, option.isCorrect, selectedOptionId, revealed)}
             onSelect={onSelect}
-            /* 图形选项没有可念的文字，念 ttsText（如「正方体」）反而会报答案；
-               只有挂了 ttsText 的非图形选项才允许点读 */
-            speakOnTap={option.imageKey === undefined && option.ttsText !== undefined}
           />
         ))}
       </div>

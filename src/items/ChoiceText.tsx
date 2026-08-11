@@ -42,7 +42,6 @@ export function ChoiceText({
             disabled={revealed}
             state={visualState(option.id, option.isCorrect, selectedOptionId, revealed)}
             onSelect={onSelect}
-            speakOnTap={false}
           />
         ))}
       </div>

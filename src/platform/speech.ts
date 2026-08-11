@@ -85,6 +85,11 @@ export function unlockSpeechPlayback(warmup: readonly ClipKey[] = []): void {
  * 这与当初「有的数字没读出来」是同一个根因，
  * 那次的解法也是预热（见 voiceManifest.ts 的 WARMUP_CLIPS）。
  *
+ * ⚠️ **可以在任何用户手势之前调用**，`App.tsx` 一挂载就调了一次。
+ * iOS 只禁止无手势的**播放**，而 `decodeAudioData` 在 suspended 的
+ * AudioContext 上照常工作。这样第一次点击时片段已经解码好，
+ * 不会出现「按了没反应、过一会儿才出声」。
+ *
  * 已在缓存里的片段会被 `loadClip` 直接跳过，重复调用无代价。
  *
  * @param keys - 要预取的片段 key，不在清单里的自动忽略

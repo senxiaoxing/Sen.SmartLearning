@@ -271,14 +271,18 @@ export function hasClip(key: string): boolean {
 }
 
 /**
- * 开场就该预热的片段 —— 数字与运算词。
+ * 开场就该预热的片段。
  *
  * ⭐ 不预热会出现「有的数字没读出来」：片段按需加载，
  * 而新的朗读会打断加载中的片段，低频数字（如 15）经常整个被吞掉。
  * 这是孩子实测反馈的问题。
  *
- * 只预热数学的高频片段（约 27 个、300KB），拼音音节按需加载即可——
- * 它们在一轮里只出现几个，且拼音题的节奏本来就慢一些。
+ * ⚠️ 由 `App.tsx` 在**挂载时**就开始预取，不等第一次点击——
+ * 解码本身要几十毫秒，等到点下去才开始，那一下就是「按了没反应」。
+ * 手势里的 `unlockAllAudio` 会再传一次，`loadClip` 有缓存，重复无代价。
+ *
+ * 拼音音节与英语词不在此列（按需加载即可）：它们在一轮里只出现几个，
+ * 而字母乐园那 26 条由 `LetterWall` 进页面时自己预取。
  */
 export const WARMUP_CLIPS: readonly string[] = [
   ...Object.keys(NUMBERS),
@@ -290,4 +294,13 @@ export const WARMUP_CLIPS: readonly string[] = [
   // 鼓励语：每答对一题必播，比任何一个数字都高频。
   // 首次答对距离解锁只有十几秒，不预热的话第一声「太棒了」会迟到
   ...PRAISE_POOL.map((praise) => praise.clipKey),
+  // 首页问候 —— 打开 App 听到的第一句话，最不该卡的就是它。
+  // 六个昵称全预取（只有一个会用上，但每条才十来 KB，比判断该取哪个省事）
+  ...Object.keys(NICKNAMES),
+  'phrase.whatToLearn',
+  'phrase.goodMorning',
+  'phrase.goodNoon',
+  'phrase.goodAfternoon',
+  'phrase.goodEvening',
+  'phrase.happyBirthday',
 ]

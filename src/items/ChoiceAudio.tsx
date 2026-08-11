@@ -65,13 +65,6 @@ export function ChoiceAudio({
             disabled={revealed}
             state={optionState(option.id, option.isCorrect, selectedOptionId, revealed)}
             onSelect={onSelect}
-            /*
-             * 拼音题的选项**就是答案本身**，朗读出来等于直接报答案，所以不许点读。
-             * 英语题的选项是 emoji，朗读的是挂在 `ttsText` 上的中文释义——
-             * 她仍然得先听懂 apple 指的是苹果才选得对，不泄题，
-             * 而「每个选项可单独点击朗读」是本项目的无障碍硬要求。
-             */
-            speakOnTap={option.ttsText !== undefined}
           />
         ))}
       </div>

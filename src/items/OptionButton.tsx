@@ -4,11 +4,20 @@
  *
  * 答错反馈刻意做得温和：轻微摇动 + 柔和描边，**不用红叉、不用刺耳音效**。
  * 见 CLAUDE.md「产品红线」——挫败感是这个年龄段孩子放弃学习的首要原因。
+ *
+ * ## ⭐ 点击选项**不朗读**
+ *
+ * 曾经点一下既选中、又念一遍选项内容（无障碍考虑）。实测下来是错的：
+ * 这一下点击是**提交答案**，不是试听——紧接着就会响起反馈的鼓励语，
+ * 于是「苹果」的机器音和「小恩宝，太棒了」的少女音叠在一起，
+ * 而 iOS 上 `speechSynthesis.cancel()` 又拦不干净，两个声音会一起说完。
+ *
+ * 何况孩子既然点得下去，就说明她已经看懂了这个选项——
+ * 真正需要听的是**题干**，那一句仍然自动朗读、并且可以反复重听。
  */
 
 import { motion } from 'framer-motion'
 import { MathShape } from '@/components/shape/MathShape'
-import { say } from '@/platform/speech'
 import type { ItemOption } from '@/domain/types'
 
 export type OptionVisualState = 'idle' | 'selected-correct' | 'selected-wrong' | 'reveal-correct'
@@ -18,8 +27,6 @@ interface OptionButtonProps {
   state: OptionVisualState
   disabled: boolean
   onSelect: (id: string) => void
-  /** 点击时朗读选项内容——孩子不识字，选项也要能听 */
-  speakOnTap?: boolean
 }
 
 /**
@@ -48,34 +55,15 @@ const STATE_CLASS: Record<OptionVisualState, string> = {
  * 动效只用 `scale`/`x`（GPU 合成属性），答错时的摇动幅度控制在 ±6px——
  * 足以传达「不对哦」，又不至于让孩子觉得被责备。
  */
-export function OptionButton({
-  option,
-  state,
-  disabled,
-  onSelect,
-  speakOnTap = true,
-}: OptionButtonProps) {
+export function OptionButton({ option, state, disabled, onSelect }: OptionButtonProps) {
   const label = option.text ?? ''
-  // ⭐ 英语选项的主体是 emoji，念它等于什么也没念出来，
-  //    所以朗读的是挂在 ttsText 上的中文释义
-  const spoken = option.ttsText ?? label
 
   return (
     <motion.button
       type="button"
       disabled={disabled}
-      onClick={() => {
-        // ⚠️ 走 say 而非 speak：拼音选项要播**预生成片段**，
-        // 实时 TTS 念裸拼音会读错声调（见 ItemOption.ttsParts 的说明）
-        if (speakOnTap) {
-          say({
-            parts: option.ttsParts ?? [],
-            fallbackText: spoken,
-            ...(option.ttsLang === undefined ? {} : { lang: option.ttsLang }),
-          })
-        }
-        onSelect(option.id)
-      }}
+      // ⚠️ 只选中、不发声 —— 理由见文件头。紧接着的反馈语才是这一刻该听到的
+      onClick={() => onSelect(option.id)}
       whileTap={disabled ? undefined : { scale: 0.95, y: 4 }}
       animate={state === 'selected-wrong' ? { x: [0, -6, 6, -4, 4, 0] } : { x: 0 }}
       transition={{ type: 'spring', stiffness: 500, damping: 28 }}

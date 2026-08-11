@@ -8,6 +8,8 @@
 
 import { useEffect, type ReactNode } from 'react'
 import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { WARMUP_CLIPS } from '@/data/seed/voiceManifest'
+import { prefetchClips } from '@/platform/speech'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { LetterWall } from '@/features/english/LetterWall'
@@ -55,6 +57,21 @@ function AppRoutes() {
     void init()
     void loadProfile()
   }, [init, loadProfile])
+
+  /**
+   * ⭐ 一启动就在后台把常用片段下载并解码好，**不等第一次点击**。
+   *
+   * 原来只在手势里（`unlockAllAudio`）才开始预取，于是第一次点标题时
+   * 才现下载现解码——孩子按下去要等一会儿才出声，而后面每一次都是即时的。
+   * 一个「第一下没反应」的按钮，她会以为是没点到，再点一次。
+   *
+   * ⚠️ 这里**只解码、不播放**：iOS 不允许没有用户手势的播放，
+   * 但 `decodeAudioData` 在 suspended 的 AudioContext 上照常工作。
+   * 真正的解锁（resume + 播一个无声帧）仍然留在手势里，两件事不能混。
+   */
+  useEffect(() => {
+    prefetchClips(WARMUP_CLIPS)
+  }, [])
 
   return (
     <Routes>
