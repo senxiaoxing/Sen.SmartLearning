@@ -1,0 +1,83 @@
+/**
+ * @file 路由骨架
+ * @layer features
+ *
+ * 层级刻意保持极浅：三个页面、无嵌套路由、无标签栏。
+ * 一年级孩子的导航能力有限，任何深层结构都会让她迷路。
+ */
+
+import { useEffect, type ReactNode } from 'react'
+import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { useSessionStore } from '@/stores/sessionStore'
+import { LetterWall } from '@/features/english/LetterWall'
+import { HomePage } from '@/features/home/HomePage'
+import { ExplainerLibrary } from '@/features/learning/ExplainerLibrary'
+import { LearningSession } from '@/features/learning/LearningSession'
+import { SessionSummary } from '@/features/learning/SessionSummary'
+import { Assessment } from '@/features/onboarding/Assessment'
+import { Backup } from '@/features/parent/Backup'
+import { ParentGate } from '@/features/parent/ParentGate'
+import { ParentHome } from '@/features/parent/ParentHome'
+import { Report } from '@/features/parent/Report'
+import { WrongBook } from '@/features/parent/WrongBook'
+import { PetHome } from '@/features/pet/PetHome'
+
+/**
+ * 用 `HashRouter` 而非 `BrowserRouter`：
+ * PWA 添加到主屏幕后走的是静态托管，History 路由需要服务端 fallback 配置，
+ * 而 Hash 路由在任何静态托管上都能直接工作，少一个出错环节。
+ */
+export function App() {
+  return (
+    <HashRouter>
+      <AppRoutes />
+    </HashRouter>
+  )
+}
+
+/**
+ * 路由表。
+ *
+ * 拆成独立组件是因为家长区需要 `useNavigate` 做「取消门禁 → 回主页」，
+ * 而这个 hook 必须在 `HashRouter` 内部才能用。
+ */
+function AppRoutes() {
+  const init = useSessionStore((s) => s.init)
+
+  // 在这里初始化而不是首页：宠物页、讲解库都可能被直接打开
+  // （刷新、从主屏图标进入某个 hash），每个页面各自 init 容易漏
+  useEffect(() => {
+    void init()
+  }, [init])
+
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/assessment" element={<Assessment />} />
+      <Route path="/learn" element={<LearningSession />} />
+      <Route path="/explain" element={<ExplainerLibrary />} />
+      {/* 字母乐园：英语的第一站，先玩后练，不绑在答题流程里 */}
+      <Route path="/letters" element={<LetterWall />} />
+      <Route path="/pets" element={<PetHome />} />
+      <Route path="/summary" element={<SessionSummary />} />
+      {/* 家长区。门禁包在路由这一层，任何直接跳 hash 的路径都绕不过去。
+          通行状态存在 parentGateStore，因此子页面之间跳转不会重复验证 */}
+      <Route path="/parent" element={<Gated><ParentHome /></Gated>} />
+      <Route path="/parent/report" element={<Gated><Report /></Gated>} />
+      <Route path="/parent/wrong" element={<Gated><WrongBook /></Gated>} />
+      <Route path="/parent/backup" element={<Gated><Backup /></Gated>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  )
+}
+
+/**
+ * 家长区页面的统一包装：门禁 + 放弃时回主页。
+ *
+ * ⚠️ 必须是模块级组件，不能写成 `AppRoutes` 内部的箭头函数——
+ * 那样每次渲染都会产生新的组件类型，React 会把整棵子树卸载重建。
+ */
+function Gated({ children }: { children: ReactNode }) {
+  const navigate = useNavigate()
+  return <ParentGate onCancel={() => navigate('/')}>{children}</ParentGate>
+}

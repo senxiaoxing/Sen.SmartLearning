@@ -1,0 +1,445 @@
+/**
+ * @file 宠物形象的待机动画 —— 三只共用一份，按前缀分区
+ * @layer components
+ * @see design/06-宠物系统.md §6 形象方向
+ *
+ * 全部只用 transform / opacity（GPU 合成），不碰 width/height/top/left。
+ * `prefers-reduced-motion` 已由 styles/index.css 的全局规则统一压掉，这里不重复。
+ *
+ * transform-origin 用的是 viewBox 坐标下的 px。SVG 元素的 transform-box
+ * 默认就是 view-box，这里显式写出来，免得日后有人改了默认值查不到原因。
+ */
+
+.petart-anim [class*='petart-'],
+.petart-anim [class^='peng-'],
+.petart-anim [class^='drag-'],
+.petart-anim [class^='pand-'] {
+  transform-box: view-box;
+}
+
+/* ---------- LOD ---------- */
+
+/* 容器越小能留的细节越少。48px 下腹甲纹路、竹节、镜片反光只会糊成几团脏点，
+   去掉反而更清楚。lod3 是全细节，不需要规则。 */
+.lod1 .d-fine,
+.lod1 .d-mid,
+.lod2 .d-fine {
+  display: none;
+}
+
+/* ---------- 三只共用 ---------- */
+
+/* 眼睑靠 scaleY 开合，闭合要快——慢了像犯困而不是眨眼 */
+.petart-lid {
+  transform-origin: center top;
+  transition: transform 0.085s ease-out;
+}
+
+.petart-glow {
+  transform-origin: center;
+  animation: petart-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes petart-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.28;
+  }
+  50% {
+    transform: scale(1.14);
+    opacity: 0.55;
+  }
+}
+
+/* 睡眠态：呼吸放慢一倍。⚠️ 不做灰度或半透明——
+   那读起来是「生病/失效」，而这只是课程还没做好，不该让孩子觉得是自己没养好 */
+.petart-asleep {
+  animation: petart-slowbreath 5.6s ease-in-out infinite;
+}
+
+@keyframes petart-slowbreath {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.022);
+  }
+}
+
+.petart-zzz {
+  animation: petart-zzz 3.2s ease-out infinite;
+}
+
+.petart-zzz-2 {
+  animation: petart-zzz 3.2s ease-out 1.06s infinite;
+}
+
+.petart-zzz-3 {
+  animation: petart-zzz 3.2s ease-out 2.12s infinite;
+}
+
+@keyframes petart-zzz {
+  0% {
+    transform: translate(0, 0) scale(0.6);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(10px, -30px) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* ---------- 团团 · 企鹅 ---------- */
+
+.peng-breathe {
+  transform-origin: 100px 200px;
+  animation: peng-breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes peng-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+.peng-flip-l {
+  transform-origin: 40px 96px;
+  animation: peng-flip-l 3.1s ease-in-out infinite;
+}
+
+.peng-flip-r {
+  transform-origin: 160px 96px;
+  animation: peng-flip-r 3.1s ease-in-out infinite;
+}
+
+@keyframes peng-flip-l {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-7deg);
+  }
+}
+
+@keyframes peng-flip-r {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+
+.peng-tail {
+  transform-origin: 134px 146px;
+  animation: peng-tail 3.6s ease-in-out infinite;
+}
+
+@keyframes peng-tail {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+/* 披风前后两片错相摆动。周期 5.4 与 4.2 不整除，叠起来永不重复——
+   单片刚体旋转看着像块摇晃的纸板 */
+.peng-cape-back {
+  transform-origin: 100px 90px;
+  animation: peng-cape-back 5.4s ease-in-out infinite;
+}
+
+.peng-cape-front {
+  transform-origin: 100px 94px;
+  animation: peng-cape-front 4.2s ease-in-out infinite;
+}
+
+@keyframes peng-cape-back {
+  0%,
+  100% {
+    transform: rotate(-2.2deg) skewX(1deg);
+  }
+  50% {
+    transform: rotate(2.2deg) skewX(-1deg);
+  }
+}
+
+@keyframes peng-cape-front {
+  0%,
+  100% {
+    transform: rotate(1.6deg) skewX(-0.8deg);
+  }
+  50% {
+    transform: rotate(-1.6deg) skewX(0.8deg);
+  }
+}
+
+/* ---------- 墨墨 · 小飞龙 ---------- */
+
+.drag-float {
+  transform-origin: 96px 220px;
+  animation: drag-float 3.4s ease-in-out infinite;
+}
+
+@keyframes drag-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3.5px) scale(1.018);
+  }
+}
+
+/* 阴影留在地上并反向收窄。跟着一起浮的话「浮起来」就只是整体放大 */
+.drag-shadow {
+  transform-origin: 96px 224px;
+  animation: drag-shadow 3.4s ease-in-out infinite;
+}
+
+@keyframes drag-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.1;
+  }
+  50% {
+    transform: scaleX(0.93);
+    opacity: 0.075;
+  }
+}
+
+/* 尾焰三层：周期 1.15 / .88 / .68 互不整除，叠加永不重复。
+   scaleX 与 scaleY 反相（窜高时收窄）是真火的形变特征 */
+.drag-flame-o {
+  transform-origin: 172px 96px;
+  animation: drag-flame-o 1.15s ease-in-out infinite;
+}
+
+.drag-flame-m {
+  transform-origin: 172px 92px;
+  animation: drag-flame-m 0.88s ease-in-out infinite;
+}
+
+.drag-flame-c {
+  transform-origin: 172px 88px;
+  animation: drag-flame-c 0.68s ease-in-out infinite;
+}
+
+@keyframes drag-flame-o {
+  0%,
+  100% {
+    transform: scale(1, 1) rotate(-1.6deg);
+  }
+  50% {
+    transform: scale(0.93, 1.13) rotate(1.6deg);
+  }
+}
+
+@keyframes drag-flame-m {
+  0%,
+  100% {
+    transform: scale(1.03, 0.96) rotate(2deg);
+  }
+  50% {
+    transform: scale(0.91, 1.17) rotate(-2deg);
+  }
+}
+
+@keyframes drag-flame-c {
+  0%,
+  100% {
+    transform: scale(0.95, 1.07);
+  }
+  50% {
+    transform: scale(1.07, 0.91);
+  }
+}
+
+.drag-ember {
+  animation: drag-rise 2.2s ease-out infinite;
+}
+
+.drag-ember-2 {
+  animation: drag-rise 2.9s ease-out 0.8s infinite;
+}
+
+@keyframes drag-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-30px) scale(0.35);
+    opacity: 0;
+  }
+}
+
+/* 蛋顶的烟：两条相反路径交替，升到一半各自偏开。直线上升像水汽，散开才像烟 */
+.drag-puff {
+  transform-origin: 111px 44px;
+}
+
+.drag-puff-a {
+  animation: drag-puff-a 2.8s ease-out infinite;
+}
+
+.drag-puff-b {
+  animation: drag-puff-b 2.8s ease-out 0.93s infinite;
+}
+
+.drag-puff-c {
+  animation: drag-puff-a 2.8s ease-out 1.86s infinite;
+}
+
+@keyframes drag-puff-a {
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.5;
+  }
+  55% {
+    transform: translate(-5px, -17px) scale(1.1);
+    opacity: 0.34;
+  }
+  100% {
+    transform: translate(6px, -36px) scale(1.95);
+    opacity: 0;
+  }
+}
+
+@keyframes drag-puff-b {
+  0% {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.46;
+  }
+  55% {
+    transform: translate(6px, -16px) scale(1.15);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-4px, -35px) scale(2.05);
+    opacity: 0;
+  }
+}
+
+.drag-wing-l {
+  transform-origin: 62px 118px;
+  animation: drag-wing-l 2.6s ease-in-out infinite;
+}
+
+.drag-wing-r {
+  transform-origin: 130px 118px;
+  animation: drag-wing-r 2.6s ease-in-out infinite;
+}
+
+@keyframes drag-wing-l {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes drag-wing-r {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+/* ---------- 波波 · 小熊猫 ---------- */
+
+/* 左右轻摇，锚点压在球底。圆的东西的物理直觉就是不稳——
+   这个动作本身就在说「我是圆的」，比呼吸有效得多 */
+.pand-sway {
+  transform-origin: 100px 218px;
+  animation: pand-sway 2.8s ease-in-out infinite;
+}
+
+@keyframes pand-sway {
+  0%,
+  100% {
+    transform: rotate(-2.1deg);
+  }
+  50% {
+    transform: rotate(2.1deg);
+  }
+}
+
+.pand-shadow {
+  animation: pand-shadow 2.8s ease-in-out infinite;
+}
+
+@keyframes pand-shadow {
+  0%,
+  100% {
+    transform: translateX(-2.5px);
+  }
+  50% {
+    transform: translateX(2.5px);
+  }
+}
+
+/* 斗篷同周期但慢半拍，布料跟随身体的感觉全靠这 .16s */
+.pand-cloak {
+  transform-origin: 100px 120px;
+  animation: pand-sway 2.8s ease-in-out 0.16s infinite;
+}
+
+/* 咀嚼：熊猫最标志性的动作，也是「一直在吃」的憨 */
+.pand-chew {
+  animation: pand-chew 0.9s ease-in-out infinite;
+}
+
+@keyframes pand-chew {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(1.9px);
+  }
+}
+
+.pand-bamboo {
+  transform-origin: 163px 190px;
+  animation: pand-bamboo 2.4s ease-in-out infinite;
+}
+
+@keyframes pand-bamboo {
+  0%,
+  100% {
+    transform: rotate(-2.2deg);
+  }
+  50% {
+    transform: rotate(2.8deg);
+  }
+}
