@@ -73,7 +73,11 @@ export default defineConfig({
       },
 
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,woff2,mp3}'],
+        // ⚠️ wav 不能漏：6 个音效（tap/correct/wrong/complete/levelUp/place）全是 wav，
+        // 只写 mp3 的话它们不进预缓存，装到主屏幕后**离线时音效全部失效**——
+        // 而「每次交互必有视觉 + 音效双反馈」是硬要求（design/03 §5.2），
+        // 答错时那声柔和提示音尤其不能少。
+        globPatterns: ['**/*.{js,css,html,png,svg,woff2,mp3,wav}'],
         cleanupOutdatedCaches: true,
         // ⚠️ 刻意不启用 skipWaiting/clientsClaim：
         // 新版本立即接管会在孩子答题途中刷新页面，当前会话的题目存在内存里会全部丢失。
