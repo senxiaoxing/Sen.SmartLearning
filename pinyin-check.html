@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>拼音发音校验 · 智慧学习</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, -apple-system, "Microsoft YaHei", sans-serif;
+         margin: 0; padding: 24px; background: #FFF8E7; color: #3D3A38; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: #3D3A38aa; font-size: 14px; margin-bottom: 20px; line-height: 1.7; }
+  .warn { background: #FFB84D22; border-left: 4px solid #FFB84D;
+          padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; line-height: 1.7; }
+  .bar { position: sticky; top: 0; background: #FFF8E7; padding: 12px 0;
+         display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+         border-bottom: 2px solid #3D3A3818; margin-bottom: 16px; z-index: 10; }
+  button { font: inherit; padding: 8px 16px; border-radius: 10px; border: none;
+           background: #fff; box-shadow: 0 2px 0 #E8DFCC; cursor: pointer; }
+  button.primary { background: #FFB84D; color: #fff; box-shadow: 0 2px 0 #E09A2E; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+  .card { background: #fff; border-radius: 14px; padding: 14px; display: flex;
+          flex-direction: column; gap: 8px; border: 3px solid transparent; }
+  .card.risk { border-color: #FF7A6B88; }
+  .card.bad  { border-color: #FF7A6B; background: #FF7A6B18; }
+  .card.ok   { border-color: #5FD3A6; }
+  .py { font-size: 30px; font-weight: 700; letter-spacing: 1px; }
+  .meta { font-size: 13px; color: #3D3A38aa; display: flex; justify-content: space-between; }
+  .char { font-size: 22px; font-weight: 700; }
+  .nochar { color: #FF7A6B; font-weight: 700; font-size: 13px; }
+  .row { display: flex; gap: 6px; }
+  .row button { flex: 1; padding: 6px; font-size: 13px; }
+  .group { grid-column: 1/-1; font-weight: 700; margin: 14px 0 2px; font-size: 15px; }
+  #out { width: 100%; height: 120px; margin-top: 16px; font-family: ui-monospace, monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>拼音发音校验</h1>
+<p class="sub">
+  共 <b>99</b> 个音节，其中 <b style="color:#FF7A6B">7</b> 个没有汉字载体（已排在最前、红框标出）。<br>
+  键盘：<b>→</b> 下一个并播放 · <b>←</b> 上一个 · <b>空格</b> 重听 · <b>1</b> 标记有问题 · <b>2</b> 标记正常
+</p>
+
+<div class="warn">
+  <b>⚠️ 请重点听这几类：</b><br>
+  ① <b>没有汉字载体的</b>（红框）—— 这些是直接把拼音串喂给 TTS，读错的概率最高<br>
+  ② <b>声调对不对</b> —— 一声二声三声四声是否分明，尤其 <code>ā á ǎ à</code> 这组<br>
+  ③ <b>前后鼻音</b> —— <code>en/eng</code>、<code>in/ing</code> 是否读得出区别<br>
+  ④ <b>平翘舌</b> —— <code>z/zh</code>、<code>c/ch</code>、<code>s/sh</code> 是否读得出区别<br>
+  发现问题的标记出来，最后点「导出问题清单」，把结果贴回给我即可。
+</div>
+
+<div class="bar">
+  <button class="primary" onclick="playAll()">▶ 从头连播</button>
+  <button onclick="stopAll()">■ 停止</button>
+  <button onclick="exportBad()">导出问题清单</button>
+  <button onclick="resetMarks()">清空标记</button>
+  <span id="stat" style="margin-left:auto;font-size:14px"></span>
+</div>
+
+<div class="grid" id="grid"></div>
+<textarea id="out" placeholder="点「导出问题清单」后，结果出现在这里"></textarea>
+
+<script>
+const SYLLABLES = [{"key":"pinyin.de1","pinyin":"dē","base":"de","tone":1,"char":null,"group":"声母"},{"key":"pinyin.ne4","pinyin":"nè","base":"ne","tone":4,"char":null,"group":"声母"},{"key":"pinyin.le4","pinyin":"lè","base":"le","tone":4,"char":null,"group":"声母"},{"key":"pinyin.ei1","pinyin":"ēi","base":"ei","tone":1,"char":null,"group":"复韵母·鼻韵母"},{"key":"pinyin.vn1","pinyin":"yūn","base":"ün","tone":1,"char":null,"group":"复韵母·鼻韵母"},{"key":"pinyin.eng1","pinyin":"ēng","base":"eng","tone":1,"char":null,"group":"复韵母·鼻韵母"},{"key":"pinyin.ong1","pinyin":"ōng","base":"ong","tone":1,"char":null,"group":"复韵母·鼻韵母"},{"key":"pinyin.bo1","pinyin":"bō","base":"bo","tone":1,"char":"玻","group":"声母"},{"key":"pinyin.po1","pinyin":"pō","base":"po","tone":1,"char":"坡","group":"声母"},{"key":"pinyin.mo1","pinyin":"mō","base":"mo","tone":1,"char":"摸","group":"声母"},{"key":"pinyin.fo2","pinyin":"fó","base":"fo","tone":2,"char":"佛","group":"声母"},{"key":"pinyin.te4","pinyin":"tè","base":"te","tone":4,"char":"特","group":"声母"},{"key":"pinyin.ge1","pinyin":"gē","base":"ge","tone":1,"char":"哥","group":"声母"},{"key":"pinyin.ke1","pinyin":"kē","base":"ke","tone":1,"char":"科","group":"声母"},{"key":"pinyin.he1","pinyin":"hē","base":"he","tone":1,"char":"喝","group":"声母"},{"key":"pinyin.ji1","pinyin":"jī","base":"ji","tone":1,"char":"鸡","group":"声母"},{"key":"pinyin.qi1","pinyin":"qī","base":"qi","tone":1,"char":"七","group":"声母"},{"key":"pinyin.xi1","pinyin":"xī","base":"xi","tone":1,"char":"西","group":"声母"},{"key":"pinyin.zhi1","pinyin":"zhī","base":"zhi","tone":1,"char":"知","group":"声母"},{"key":"pinyin.chi1","pinyin":"chī","base":"chi","tone":1,"char":"吃","group":"声母"},{"key":"pinyin.shi1","pinyin":"shī","base":"shi","tone":1,"char":"诗","group":"声母"},{"key":"pinyin.ri4","pinyin":"rì","base":"ri","tone":4,"char":"日","group":"声母"},{"key":"pinyin.zi1","pinyin":"zī","base":"zi","tone":1,"char":"资","group":"声母"},{"key":"pinyin.ci2","pinyin":"cí","base":"ci","tone":2,"char":"词","group":"声母"},{"key":"pinyin.si1","pinyin":"sī","base":"si","tone":1,"char":"思","group":"声母"},{"key":"pinyin.yi1","pinyin":"yī","base":"yi","tone":1,"char":"衣","group":"声母"},{"key":"pinyin.wu1","pinyin":"wū","base":"wu","tone":1,"char":"屋","group":"声母"},{"key":"pinyin.a1","pinyin":"ā","base":"a","tone":1,"char":"啊","group":"单韵母·四声"},{"key":"pinyin.o1","pinyin":"ō","base":"o","tone":1,"char":"噢","group":"单韵母·四声"},{"key":"pinyin.e2","pinyin":"é","base":"e","tone":2,"char":"鹅","group":"单韵母·四声"},{"key":"pinyin.i1","pinyin":"yī","base":"i","tone":1,"char":"衣","group":"单韵母·四声"},{"key":"pinyin.u1","pinyin":"wū","base":"u","tone":1,"char":"屋","group":"单韵母·四声"},{"key":"pinyin.v2","pinyin":"yú","base":"ü","tone":2,"char":"鱼","group":"单韵母·四声"},{"key":"pinyin.ai1","pinyin":"āi","base":"ai","tone":1,"char":"哀","group":"复韵母·鼻韵母"},{"key":"pinyin.ui1","pinyin":"wēi","base":"ui","tone":1,"char":"威","group":"复韵母·鼻韵母"},{"key":"pinyin.ao1","pinyin":"āo","base":"ao","tone":1,"char":"凹","group":"复韵母·鼻韵母"},{"key":"pinyin.ou1","pinyin":"ōu","base":"ou","tone":1,"char":"欧","group":"复韵母·鼻韵母"},{"key":"pinyin.iu1","pinyin":"yōu","base":"iu","tone":1,"char":"优","group":"复韵母·鼻韵母"},{"key":"pinyin.ie1","pinyin":"yē","base":"ie","tone":1,"char":"椰","group":"复韵母·鼻韵母"},{"key":"pinyin.ve1","pinyin":"yuē","base":"üe","tone":1,"char":"约","group":"复韵母·鼻韵母"},{"key":"pinyin.er2","pinyin":"ér","base":"er","tone":2,"char":"儿","group":"复韵母·鼻韵母"},{"key":"pinyin.an1","pinyin":"ān","base":"an","tone":1,"char":"安","group":"复韵母·鼻韵母"},{"key":"pinyin.en1","pinyin":"ēn","base":"en","tone":1,"char":"恩","group":"复韵母·鼻韵母"},{"key":"pinyin.in1","pinyin":"yīn","base":"in","tone":1,"char":"音","group":"复韵母·鼻韵母"},{"key":"pinyin.un1","pinyin":"wēn","base":"un","tone":1,"char":"温","group":"复韵母·鼻韵母"},{"key":"pinyin.ang1","pinyin":"āng","base":"ang","tone":1,"char":"肮","group":"复韵母·鼻韵母"},{"key":"pinyin.ing1","pinyin":"yīng","base":"ing","tone":1,"char":"英","group":"复韵母·鼻韵母"},{"key":"pinyin.yu2","pinyin":"yú","base":"yu","tone":2,"char":"鱼","group":"整体认读"},{"key":"pinyin.ye4","pinyin":"yè","base":"ye","tone":4,"char":"叶","group":"整体认读"},{"key":"pinyin.yue4","pinyin":"yuè","base":"yue","tone":4,"char":"月","group":"整体认读"},{"key":"pinyin.yuan3","pinyin":"yuǎn","base":"yuan","tone":3,"char":"远","group":"整体认读"},{"key":"pinyin.yin1","pinyin":"yīn","base":"yin","tone":1,"char":"音","group":"整体认读"},{"key":"pinyin.yun2","pinyin":"yún","base":"yun","tone":2,"char":"云","group":"整体认读"},{"key":"pinyin.ying1","pinyin":"yīng","base":"ying","tone":1,"char":"英","group":"整体认读"},{"key":"pinyin.ba1","pinyin":"bā","base":"ba","tone":1,"char":"八","group":"两拼音节"},{"key":"pinyin.ma1","pinyin":"mā","base":"ma","tone":1,"char":"妈","group":"两拼音节"},{"key":"pinyin.da4","pinyin":"dà","base":"da","tone":4,"char":"大","group":"两拼音节"},{"key":"pinyin.he2","pinyin":"hé","base":"he","tone":2,"char":"禾","group":"两拼音节"},{"key":"pinyin.mi3","pinyin":"mǐ","base":"mi","tone":3,"char":"米","group":"两拼音节"},{"key":"pinyin.bi3","pinyin":"bǐ","base":"bi","tone":3,"char":"笔","group":"两拼音节"},{"key":"pinyin.di4","pinyin":"dì","base":"di","tone":4,"char":"弟","group":"两拼音节"},{"key":"pinyin.ni3","pinyin":"nǐ","base":"ni","tone":3,"char":"你","group":"两拼音节"},{"key":"pinyin.li3","pinyin":"lǐ","base":"li","tone":3,"char":"里","group":"两拼音节"},{"key":"pinyin.tu3","pinyin":"tǔ","base":"tu","tone":3,"char":"土","group":"两拼音节"},{"key":"pinyin.lu4","pinyin":"lù","base":"lu","tone":4,"char":"路","group":"两拼音节"},{"key":"pinyin.pi2","pinyin":"pí","base":"pi","tone":2,"char":"皮","group":"两拼音节"},{"key":"pinyin.gu3","pinyin":"gǔ","base":"gu","tone":3,"char":"鼓","group":"两拼音节"},{"key":"pinyin.ke4","pinyin":"kè","base":"ke","tone":4,"char":"课","group":"两拼音节"},{"key":"pinyin.hai3","pinyin":"hǎi","base":"hai","tone":3,"char":"海","group":"两拼音节"},{"key":"pinyin.bai2","pinyin":"bái","base":"bai","tone":2,"char":"白","group":"两拼音节"},{"key":"pinyin.mao1","pinyin":"māo","base":"mao","tone":1,"char":"猫","group":"两拼音节"},{"key":"pinyin.gou3","pinyin":"gǒu","base":"gou","tone":3,"char":"狗","group":"两拼音节"},{"key":"pinyin.shan1","pinyin":"shān","base":"shan","tone":1,"char":"山","group":"两拼音节"},{"key":"pinyin.feng1","pinyin":"fēng","base":"feng","tone":1,"char":"风","group":"两拼音节"},{"key":"pinyin.mang2","pinyin":"máng","base":"mang","tone":2,"char":"忙","group":"两拼音节"},{"key":"pinyin.xing1","pinyin":"xīng","base":"xing","tone":1,"char":"星","group":"两拼音节"},{"key":"pinyin.nv3","pinyin":"nǚ","base":"nü","tone":3,"char":"女","group":"两拼音节"},{"key":"pinyin.niu2","pinyin":"niú","base":"niu","tone":2,"char":"牛","group":"两拼音节"},{"key":"pinyin.nan2","pinyin":"nán","base":"nan","tone":2,"char":"南","group":"两拼音节"},{"key":"pinyin.lan2","pinyin":"lán","base":"lan","tone":2,"char":"蓝","group":"两拼音节"},{"key":"pinyin.lao3","pinyin":"lǎo","base":"lao","tone":3,"char":"老","group":"两拼音节"},{"key":"pinyin.zao3","pinyin":"zǎo","base":"zao","tone":3,"char":"早","group":"两拼音节"},{"key":"pinyin.zou3","pinyin":"zǒu","base":"zou","tone":3,"char":"走","group":"两拼音节"},{"key":"pinyin.zhao3","pinyin":"zhǎo","base":"zhao","tone":3,"char":"找","group":"两拼音节"},{"key":"pinyin.zhu1","pinyin":"zhū","base":"zhu","tone":1,"char":"猪","group":"两拼音节"},{"key":"pinyin.cai4","pinyin":"cài","base":"cai","tone":4,"char":"菜","group":"两拼音节"},{"key":"pinyin.cao3","pinyin":"cǎo","base":"cao","tone":3,"char":"草","group":"两拼音节"},{"key":"pinyin.che1","pinyin":"chē","base":"che","tone":1,"char":"车","group":"两拼音节"},{"key":"pinyin.chang4","pinyin":"chàng","base":"chang","tone":4,"char":"唱","group":"两拼音节"},{"key":"pinyin.san1","pinyin":"sān","base":"san","tone":1,"char":"三","group":"两拼音节"},{"key":"pinyin.song1","pinyin":"sōng","base":"song","tone":1,"char":"松","group":"两拼音节"},{"key":"pinyin.shu1","pinyin":"shū","base":"shu","tone":1,"char":"书","group":"两拼音节"},{"key":"pinyin.shui3","pinyin":"shuǐ","base":"shui","tone":3,"char":"水","group":"两拼音节"},{"key":"pinyin.xin1","pinyin":"xīn","base":"xin","tone":1,"char":"心","group":"两拼音节"},{"key":"pinyin.jin1","pinyin":"jīn","base":"jin","tone":1,"char":"金","group":"两拼音节"},{"key":"pinyin.qing1","pinyin":"qīng","base":"qing","tone":1,"char":"青","group":"两拼音节"},{"key":"pinyin.bang1","pinyin":"bāng","base":"bang","tone":1,"char":"帮","group":"两拼音节"},{"key":"pinyin.huo3","pinyin":"huǒ","base":"huo","tone":3,"char":"火","group":"两拼音节"},{"key":"pinyin.yu3","pinyin":"yǔ","base":"yu","tone":3,"char":"雨","group":"两拼音节"}];
+const marks = JSON.parse(localStorage.getItem('pinyinMarks') || '{}');
+let cursor = 0, playing = false;
+
+const grid = document.getElementById('grid');
+let lastGroup = null;
+
+SYLLABLES.forEach((s, i) => {
+  if (s.group !== lastGroup) {
+    lastGroup = s.group;
+    const h = document.createElement('div');
+    h.className = 'group';
+    h.textContent = s.group;
+    grid.appendChild(h);
+  }
+  const card = document.createElement('div');
+  card.id = 'c' + i;
+  card.className = 'card' + (s.char === null ? ' risk' : '');
+  card.innerHTML = `
+    <div class="py">${s.pinyin}</div>
+    <div class="meta"><span>${s.base} · ${s.tone}声</span>
+      ${s.char ? '<span class="char">' + s.char + '</span>' : '<span class="nochar">念拼音</span>'}</div>
+    <audio id="a${i}" src="/audio/voice/${s.key}.mp3" preload="none"></audio>
+    <div class="row">
+      <button onclick="play(${i})">▶ 听</button>
+      <button onclick="mark(${i},'bad')">✗ 有问题</button>
+      <button onclick="mark(${i},'ok')">✓ 正常</button>
+    </div>`;
+  grid.appendChild(card);
+});
+
+function play(i) {
+  cursor = i;
+  document.querySelectorAll('audio').forEach(a => { a.pause(); a.currentTime = 0; });
+  const el = document.getElementById('a' + i);
+  el.play();
+  document.getElementById('c' + i).scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+function mark(i, v) {
+  marks[SYLLABLES[i].key] = v;
+  localStorage.setItem('pinyinMarks', JSON.stringify(marks));
+  render();
+}
+function render() {
+  SYLLABLES.forEach((s, i) => {
+    const c = document.getElementById('c' + i);
+    c.classList.remove('bad', 'ok');
+    if (marks[s.key]) c.classList.add(marks[s.key]);
+  });
+  const bad = Object.values(marks).filter(v => v === 'bad').length;
+  const done = Object.keys(marks).length;
+  document.getElementById('stat').textContent =
+    `已听 ${done}/${SYLLABLES.length}　有问题 ${bad}`;
+}
+async function playAll() {
+  playing = true;
+  for (let i = cursor; i < SYLLABLES.length && playing; i++) {
+    play(i);
+    await new Promise(r => setTimeout(r, 1400));
+  }
+  playing = false;
+}
+function stopAll() { playing = false; document.querySelectorAll('audio').forEach(a => a.pause()); }
+function exportBad() {
+  const bad = SYLLABLES.filter(s => marks[s.key] === 'bad');
+  document.getElementById('out').value = bad.length === 0
+    ? '（没有标记出问题的音节）'
+    : '发音有问题的音节：\n' + bad.map(s =>
+        `  ${s.pinyin}  (${s.group}, key=${s.key}, 载体=${s.char ?? '无·念拼音'})`).join('\n');
+}
+function resetMarks() {
+  if (!confirm('清空全部标记？')) return;
+  for (const k of Object.keys(marks)) delete marks[k];
+  localStorage.setItem('pinyinMarks', '{}');
+  render();
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') { play(Math.min(cursor + 1, SYLLABLES.length - 1)); e.preventDefault(); }
+  if (e.key === 'ArrowLeft')  { play(Math.max(cursor - 1, 0)); e.preventDefault(); }
+  if (e.key === ' ')          { play(cursor); e.preventDefault(); }
+  if (e.key === '1')          { mark(cursor, 'bad'); }
+  if (e.key === '2')          { mark(cursor, 'ok'); }
+});
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>空白页（调试用）</title>
+  </head>
+  <body>
+    <!--
+      调试用空白页。唯一用途：在删除 IndexedDB 之前先导航到这里。
+
+      为什么需要它：App 页面持有 Dexie 打开的数据库连接，
+      直接调用 indexedDB.deleteDatabase('smartlearning') 会被阻塞（blocked），
+      而且 **不会报错** —— 它安静地什么也不做，让人以为已经清干净了。
+
+      正确姿势：
+        1. 先 navigate 到 /empty.html（App 页面卸载，连接随之断开）
+        2. 再执行 indexedDB.deleteDatabase('smartlearning')
+        3. 最后 navigate 回 App，验证是全新状态
+
+      这个页面刻意不加载任何脚本，保证它自己不会碰 IndexedDB。
+    -->
+    <p style="font-family: system-ui; color: #999">空白页 · 调试用</p>
+  </body>
+</html>
