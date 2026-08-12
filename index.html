@@ -29,19 +29,20 @@
     -->
     <script>
       try {
+        // 皮肤 id → 状态栏色。加新皮肤时这里和 src/platform/skin.ts 的 SKINS
+        // 都要加一行，漏了这边的话那套皮肤每次冷启动都会先闪一帧默认色。
+        var THEME = { jelly: '#FFF3E2', star: '#131A2E', meadow: '#F0F6EA' }
         var skin = localStorage.getItem('sen.skin')
-        if (skin === 'jelly' || skin === 'star') {
+        if (THEME[skin]) {
           document.documentElement.dataset.skin = skin
-          document
-            .querySelector('meta[name="theme-color"]')
-            .setAttribute('content', skin === 'star' ? '#131A2E' : '#FFF3E2')
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME[skin])
         }
       } catch (e) {
         /* 隐私模式下读不到 localStorage，用默认皮肤即可 */
       }
     </script>
-    <script type="module" crossorigin src="/Sen.SmartLearning/assets/index-m9eahSwF.js"></script>
-    <link rel="stylesheet" crossorigin href="/Sen.SmartLearning/assets/index-BJ02qzLd.css">
+    <script type="module" crossorigin src="/Sen.SmartLearning/assets/index-Cf29i1R4.js"></script>
+    <link rel="stylesheet" crossorigin href="/Sen.SmartLearning/assets/index-B8BISw_4.css">
   <link rel="manifest" href="/Sen.SmartLearning/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/Sen.SmartLearning/registerSW.js"></script></head>
   <body>
     <div id="root"></div>

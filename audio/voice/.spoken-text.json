@@ -1135,5 +1135,889 @@
  "explain.tenSplitTitle": {
   "text": "10 的分与合",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pinyin.fei1": {
+  "text": "飞",
+  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+ },
+ "hanzi.u5929": {
+  "text": "天。蓝天的天。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5730": {
+  "text": "地。大地的地。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4eba": {
+  "text": "人。大人的人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4f60": {
+  "text": "你。你好的你。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6211": {
+  "text": "我。我们的我。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4ed6": {
+  "text": "他。他们的他。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e00": {
+  "text": "一。一个的一。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e8c": {
+  "text": "二。二月的二。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e09": {
+  "text": "三。三天的三。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u56db": {
+  "text": "四。四季的四。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e94": {
+  "text": "五。五个的五。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u516d": {
+  "text": "六。六月的六。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e03": {
+  "text": "七。七天的七。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u516b": {
+  "text": "八。八月的八。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e5d": {
+  "text": "九。九个的九。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5341": {
+  "text": "十。十个的十。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e0a": {
+  "text": "上。上面的上。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e0b": {
+  "text": "下。下面的下。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5927": {
+  "text": "大。大人的大。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5c0f": {
+  "text": "小。小手的小。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53e3": {
+  "text": "口。张口的口。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8033": {
+  "text": "耳。耳朵的耳。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u76ee": {
+  "text": "目。目光的目。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u624b": {
+  "text": "手。小手的手。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8db3": {
+  "text": "足。足球的足。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5934": {
+  "text": "头。点头的头。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5fc3": {
+  "text": "心。小心的心。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7259": {
+  "text": "牙。刷牙的牙。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7ad9": {
+  "text": "站。站好的站。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5750": {
+  "text": "坐。坐下的坐。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u65e5": {
+  "text": "日。日出的日。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6708": {
+  "text": "月。月亮的月。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6c34": {
+  "text": "水。喝水的水。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u706b": {
+  "text": "火。火花的火。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5c71": {
+  "text": "山。大山的山。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u77f3": {
+  "text": "石。石头的石。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7530": {
+  "text": "田。田地的田。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u79be": {
+  "text": "禾。禾苗的禾。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u571f": {
+  "text": "土。泥土的土。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6728": {
+  "text": "木。木头的木。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e91": {
+  "text": "云。白云的云。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u96e8": {
+  "text": "雨。下雨的雨。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u98ce": {
+  "text": "风。大风的风。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u82b1": {
+  "text": "花。花朵的花。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9e1f": {
+  "text": "鸟。小鸟的鸟。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u866b": {
+  "text": "虫。虫子的虫。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u96ea": {
+  "text": "雪。下雪的雪。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u661f": {
+  "text": "星。星星的星。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6625": {
+  "text": "春。春天的春。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u79cb": {
+  "text": "秋。秋天的秋。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7238": {
+  "text": "爸。爸爸的爸。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5988": {
+  "text": "妈。妈妈的妈。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7237": {
+  "text": "爷。爷爷的爷。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5976": {
+  "text": "奶。奶奶的奶。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u54e5": {
+  "text": "哥。哥哥的哥。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u59d0": {
+  "text": "姐。姐姐的姐。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5f1f": {
+  "text": "弟。弟弟的弟。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u59b9": {
+  "text": "妹。妹妹的妹。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5bb6": {
+  "text": "家。回家的家。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u95e8": {
+  "text": "门。大门的门。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u725b": {
+  "text": "牛。小牛的牛。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9a6c": {
+  "text": "马。小马的马。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7f8a": {
+  "text": "羊。小羊的羊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u732b": {
+  "text": "猫。小猫的猫。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u72d7": {
+  "text": "狗。小狗的狗。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9c7c": {
+  "text": "鱼。小鱼的鱼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5154": {
+  "text": "兔。兔子的兔。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9e2d": {
+  "text": "鸭。小鸭的鸭。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9e21": {
+  "text": "鸡。小鸡的鸡。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u864e": {
+  "text": "虎。老虎的虎。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e66": {
+  "text": "书。看书的书。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5305": {
+  "text": "包。书包的包。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7b14": {
+  "text": "笔。铅笔的笔。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5200": {
+  "text": "刀。小刀的刀。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5c3a": {
+  "text": "尺。尺子的尺。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u672c": {
+  "text": "本。本子的本。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8f66": {
+  "text": "车。汽车的车。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u679c": {
+  "text": "果。苹果的果。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7c73": {
+  "text": "米。大米的米。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8863": {
+  "text": "衣。衣服的衣。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u770b": {
+  "text": "看。看见的看。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u542c": {
+  "text": "听。听见的听。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bf4": {
+  "text": "说。说话的说。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8d70": {
+  "text": "走。走路的走。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u98de": {
+  "text": "飞。飞机的飞。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5403": {
+  "text": "吃。吃饭的吃。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6765": {
+  "text": "来。过来的来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53bb": {
+  "text": "去。出去的去。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5f00": {
+  "text": "开。开门的开。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5173": {
+  "text": "关。关门的关。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7ea2": {
+  "text": "红。红色的红。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9ec4": {
+  "text": "黄。黄色的黄。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u767d": {
+  "text": "白。白色的白。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9ed1": {
+  "text": "黑。黑色的黑。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9752": {
+  "text": "青。青草的青。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u957f": {
+  "text": "长。长短的长。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u77ed": {
+  "text": "短。长短的短。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u591a": {
+  "text": "多。多少的多。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5c11": {
+  "text": "少。多少的少。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u597d": {
+  "text": "好。你好的好。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanTitle": {
+  "text": "江南",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanL0": {
+  "text": "江南可采莲，莲叶何田田。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanL1": {
+  "text": "鱼戏莲叶间。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanL2": {
+  "text": "鱼戏莲叶东，鱼戏莲叶西，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanL3": {
+  "text": "鱼戏莲叶南，鱼戏莲叶北。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanMeaning": {
+  "text": "江南水乡又到了采莲的时候，莲叶长得又密又好看。小鱼在莲叶中间游来游去，一会儿游到东边，一会儿游到西边，一会儿游到南边，一会儿游到北边。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongeTitle": {
+  "text": "咏鹅",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongeL0": {
+  "text": "鹅，鹅，鹅，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongeL1": {
+  "text": "屈项向天歌。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongeL2": {
+  "text": "白毛浮绿水，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongeL3": {
+  "text": "红掌拨清波。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongeMeaning": {
+  "text": "白鹅呀白鹅，弯着长长的脖子对着天空唱歌。雪白的羽毛浮在绿绿的水面上，红红的脚掌拨动着清清的水波。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huaTitle": {
+  "text": "画",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huaL0": {
+  "text": "远看山有色，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huaL1": {
+  "text": "近听水无声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huaL2": {
+  "text": "春去花还在，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huaL3": {
+  "text": "人来鸟不惊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huaMeaning": {
+  "text": "远远看过去，山是有颜色的；走近了听，水却没有声音。春天过去了，花还开着；人走过来，鸟儿也不飞走。原来呀，这是一幅画。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.minnongTitle": {
+  "text": "悯农",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.minnongL0": {
+  "text": "锄禾日当午，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.minnongL1": {
+  "text": "汗滴禾下土。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.minnongL2": {
+  "text": "谁知盘中餐，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.minnongL3": {
+  "text": "粒粒皆辛苦。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.minnongMeaning": {
+  "text": "农民在中午最热的时候在田里锄草，汗水一滴一滴落进禾苗下面的泥土里。谁知道盘子里的饭，每一粒都是这样辛苦种出来的。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.gulangyuexingTitle": {
+  "text": "古朗月行",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.gulangyuexingL0": {
+  "text": "小时不识月，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.gulangyuexingL1": {
+  "text": "呼作白玉盘。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.gulangyuexingL2": {
+  "text": "又疑瑶台镜，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.gulangyuexingL3": {
+  "text": "飞在青云端。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.gulangyuexingMeaning": {
+  "text": "小时候不认识月亮，把它叫作白玉做成的盘子。又觉得它像神仙住的地方的那面镜子，飞在青色的云彩上边。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.fengTitle": {
+  "text": "风",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.fengL0": {
+  "text": "解落三秋叶，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.fengL1": {
+  "text": "能开二月花。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.fengL2": {
+  "text": "过江千尺浪，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.fengL3": {
+  "text": "入竹万竿斜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.fengMeaning": {
+  "text": "风能吹落秋天的树叶，也能吹开二月的鲜花。它吹过江面，能掀起千尺高的浪；吹进竹林，能让万根竹子都斜斜地弯下腰。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jingyesiTitle": {
+  "text": "静夜思",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jingyesiL0": {
+  "text": "床前明月光，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jingyesiL1": {
+  "text": "疑是地上霜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jingyesiL2": {
+  "text": "举头望明月，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jingyesiL3": {
+  "text": "低头思故乡。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jingyesiMeaning": {
+  "text": "明亮的月光洒在床前，好像地上结了一层白霜。抬起头看着天上的月亮，低下头就想起了自己的家乡。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chishangTitle": {
+  "text": "池上",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chishangL0": {
+  "text": "小娃撑小艇，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chishangL1": {
+  "text": "偷采白莲回。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chishangL2": {
+  "text": "不解藏踪迹，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chishangL3": {
+  "text": "浮萍一道开。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chishangMeaning": {
+  "text": "一个小孩撑着小船，偷偷采了白莲花回来。他还不懂得藏起自己的行踪，水面上的浮萍被小船分开，留下一道长长的痕迹。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochiTitle": {
+  "text": "小池",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochiL0": {
+  "text": "泉眼无声惜细流，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochiL1": {
+  "text": "树阴照水爱晴柔。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochiL2": {
+  "text": "小荷才露尖尖角，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochiL3": {
+  "text": "早有蜻蜓立上头。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochiMeaning": {
+  "text": "泉眼悄悄地流出细细的水流，好像很舍不得。树荫倒映在水面上，喜欢这晴天里柔和的样子。小荷叶才刚刚露出尖尖的角，就已经有蜻蜓停在上面了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunxiaoTitle": {
+  "text": "春晓",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunxiaoL0": {
+  "text": "春眠不觉晓，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunxiaoL1": {
+  "text": "处处闻啼鸟。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunxiaoL2": {
+  "text": "夜来风雨声，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunxiaoL3": {
+  "text": "花落知多少。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunxiaoMeaning": {
+  "text": "春天里睡得很香，不知不觉天就亮了。到处都能听见小鸟在叫。想起昨天夜里的风声雨声，不知道有多少花被吹落了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunyinzheTitle": {
+  "text": "寻隐者不遇",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunyinzheL0": {
+  "text": "松下问童子，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunyinzheL1": {
+  "text": "言师采药去。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunyinzheL2": {
+  "text": "只在此山中，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunyinzheL3": {
+  "text": "云深不知处。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunyinzheMeaning": {
+  "text": "我在松树下问一个小孩，他说师父采药去了。就在这座山里面，可是云雾太深，不知道到底在哪里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengwanglunTitle": {
+  "text": "赠汪伦",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengwanglunL0": {
+  "text": "李白乘舟将欲行，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengwanglunL1": {
+  "text": "忽闻岸上踏歌声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengwanglunL2": {
+  "text": "桃花潭水深千尺，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengwanglunL3": {
+  "text": "不及汪伦送我情。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengwanglunMeaning": {
+  "text": "李白坐上小船正要出发，忽然听见岸上传来踏着拍子唱歌的声音。桃花潭的水有千尺那么深，也比不上汪伦送我的这份情谊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huajiTitle": {
+  "text": "画鸡",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huajiL0": {
+  "text": "头上红冠不用裁，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huajiL1": {
+  "text": "满身雪白走将来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huajiL2": {
+  "text": "平生不敢轻言语，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huajiL3": {
+  "text": "一叫千门万户开。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huajiMeaning": {
+  "text": "大公鸡头上的红冠子不用裁剪就那么好看，它一身雪白地走过来。它平时不轻易开口，一叫起来，千家万户的门就都打开了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dengguanquelouTitle": {
+  "text": "登鹳雀楼",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dengguanquelouL0": {
+  "text": "白日依山尽，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dengguanquelouL1": {
+  "text": "黄河入海流。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dengguanquelouL2": {
+  "text": "欲穷千里目，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dengguanquelouL3": {
+  "text": "更上一层楼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dengguanquelouMeaning": {
+  "text": "太阳靠着大山慢慢落下去，黄河朝着大海奔流。想要看到更远的地方，那就再登上一层楼吧。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongliuTitle": {
+  "text": "咏柳",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongliuL0": {
+  "text": "碧玉妆成一树高，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongliuL1": {
+  "text": "万条垂下绿丝绦。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongliuL2": {
+  "text": "不知细叶谁裁出，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongliuL3": {
+  "text": "二月春风似剪刀。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yongliuMeaning": {
+  "text": "高高的柳树像是用碧玉打扮成的，垂下来的万千枝条像绿色的丝带。不知道这细细的叶子是谁裁出来的，原来二月的春风就像一把剪刀。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wanglushanpubuTitle": {
+  "text": "望庐山瀑布",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wanglushanpubuL0": {
+  "text": "日照香炉生紫烟，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wanglushanpubuL1": {
+  "text": "遥看瀑布挂前川。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wanglushanpubuL2": {
+  "text": "飞流直下三千尺，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wanglushanpubuL3": {
+  "text": "疑是银河落九天。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wanglushanpubuMeaning": {
+  "text": "太阳照着香炉峰，升起紫色的云烟。远远望过去，瀑布像一条大河挂在山前。水流飞快地直冲下来，有三千尺那么长，让人怀疑是银河从天上掉了下来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangxueTitle": {
+  "text": "江雪",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangxueL0": {
+  "text": "千山鸟飞绝，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangxueL1": {
+  "text": "万径人踪灭。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangxueL2": {
+  "text": "孤舟蓑笠翁，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangxueL3": {
+  "text": "独钓寒江雪。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangxueMeaning": {
+  "text": "所有的山上都看不见鸟儿飞了，所有的小路上都没有人的脚印。江面上只有一条小船，船上坐着披蓑衣、戴斗笠的老爷爷，独自在下雪的江上钓鱼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chilegeTitle": {
+  "text": "敕勒歌",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chilegeL0": {
+  "text": "敕勒川，阴山下。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chilegeL1": {
+  "text": "天似穹庐，笼盖四野。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chilegeL2": {
+  "text": "天苍苍，野茫茫，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chilegeL3": {
+  "text": "风吹草低现牛羊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chilegeMeaning": {
+  "text": "敕勒人住的大平原，就在阴山脚下。天空像一顶大帐篷，把四面的原野都罩了起来。天蓝蓝的，原野望不到边。风吹过来，草低下头，就露出了成群的牛羊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suojianTitle": {
+  "text": "所见",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suojianL0": {
+  "text": "牧童骑黄牛，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suojianL1": {
+  "text": "歌声振林樾。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suojianL2": {
+  "text": "意欲捕鸣蝉，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suojianL3": {
+  "text": "忽然闭口立。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suojianMeaning": {
+  "text": "放牛的小孩骑在黄牛背上，唱歌的声音传遍了整个树林。他忽然想去捉那只正在叫的知了，就赶紧闭上嘴巴，一动不动地站住了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huixiangoushuTitle": {
+  "text": "回乡偶书",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huixiangoushuL0": {
+  "text": "绍小离家老大回，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huixiangoushuL1": {
+  "text": "乡音无改鬓毛衰。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huixiangoushuL2": {
+  "text": "儿童相见不相识，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huixiangoushuL3": {
+  "text": "笑问客从何处来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huixiangoushuMeaning": {
+  "text": "我很小的时候就离开了家，年纪大了才回来。家乡的口音没有变，两边的头发却已经白了。村里的小孩看见我都不认识，笑着问：客人您是从哪里来的呀？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  }
 }
