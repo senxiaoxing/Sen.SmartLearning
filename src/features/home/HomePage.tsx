@@ -13,7 +13,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
-import { Icon } from '@/components/Icon'
 import { hasCompletedAssessment } from '@/data/repositories/assessmentRepo'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
 import { loadPendingRetry } from '@/data/repositories/reportRepo'
@@ -28,6 +27,7 @@ import { HomeCompanion } from '@/features/home/HomeCompanion'
 import { HomeGreeting } from '@/features/home/HomeGreeting'
 import { HomePets } from '@/features/home/HomePets'
 import { ParentMessageCard } from '@/features/home/ParentMessageCard'
+import { PlayEntries } from '@/features/home/PlayEntries'
 import { RetryEntry } from '@/features/home/RetryEntry'
 import { SubjectPicker } from '@/features/home/SubjectPicker'
 import { unlockAllAudio } from '@/features/home/unlockAllAudio'
@@ -182,32 +182,14 @@ export function HomePage() {
           <RetryEntry count={pendingRetry} onClick={beginRetry} />
         )}
 
-        {/* 两个独立模块，随时可来反复玩/看，都不绑在答题流程里。
-            ⚠️ 进去之前必须解锁音频 —— 这两页的全部内容都是听的 */}
-        <div className="flex gap-3 sm:gap-4">
-          <BigButton
-            tone="neutral"
-            className="px-6 py-4 text-xl sm:px-8"
-            onClick={() => {
-              unlockAllAudio(nickname)
-              navigate('/letters')
-            }}
-          >
-            <Icon name="letters" className="h-7 w-7 text-info" />
-            <span>字母乐园</span>
-          </BigButton>
-          <BigButton
-            tone="neutral"
-            className="px-6 py-4 text-xl sm:px-8"
-            onClick={() => {
-              unlockAllAudio(nickname)
-              navigate('/explain')
-            }}
-          >
-            <Icon name="bulb" className="h-7 w-7 text-accent" />
-            <span>看讲解</span>
-          </BigButton>
-        </div>
+        {/* 五个自由入口（拼音 / 识字 / 古诗 / 字母 / 讲解），都不绑在答题流程里。
+            ⚠️ 进去之前必须解锁音频 —— 这几页的全部内容都是听的 */}
+        <PlayEntries
+          onOpen={(path) => {
+            unlockAllAudio(nickname)
+            navigate(path)
+          }}
+        />
       </div>
 
       <InstallPrompt />

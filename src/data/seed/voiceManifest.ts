@@ -16,10 +16,14 @@
 
 import { ALL_ENGLISH_WORDS } from '@/data/seed/englishWords'
 import { EXPLAINERS } from '@/data/seed/explainers'
+import { ALL_HANZI_CARDS } from '@/data/seed/hanziCards'
 import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
 import { PET_DEFINITIONS, PET_LINE_MOMENTS } from '@/data/seed/pets'
 import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
+import { POEMS } from '@/data/seed/poems'
 import { spokenText, wordKey } from '@/domain/english'
+import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
+import { poemLineClipKey, poemMeaningClipKey, poemTitleClipKey } from '@/domain/poem'
 
 /** 每个片段：key → 要念的文本 */
 export type VoiceManifest = Readonly<Record<string, string>>
@@ -152,6 +156,43 @@ const ENGLISH: VoiceManifest = Object.fromEntries(
 )
 
 /**
+ * 识字卡的 100 个字。
+ *
+ * ⭐ 念的是「天。蓝天的天。」而**不是孤立的「天」**——理由见 `domain/hanzi.ts`
+ * 的 {@link hanziSpokenText}：孤立单字既挑不准多音字的读音，声调也读得发飘。
+ * 这是拼音那边用学费换来的同一条结论，只是那边的解法是换汉字载体，
+ * 这边的解法是把字放进一句话里。
+ *
+ * ⚠️ 用**默认的中文少女声**，不走拼音那套播音音色：这里念的是完整句子，
+ * 少女声在句子上一向稳，而亲切感对识字这种反复翻看的内容更重要。
+ */
+const HANZI: VoiceManifest = Object.fromEntries(
+  ALL_HANZI_CARDS.map((card) => [hanziClipKey(card.char), hanziSpokenText(card)]),
+)
+
+/**
+ * 古诗：诗题、逐句、译文。
+ *
+ * ⭐ **一句一条**而不是整首一条。整首朗读由播放器把这些片段按顺序排出来
+ * （见 `domain/poem.ts` 的 `poemLineClipKeys`），单句朗读直接取其中一条——
+ * 同一份素材两种用法，不必为整首再合成一遍。
+ *
+ * ⚠️ 念的是 `line.spoken ?? line.text`：极少数句子送去合成的文本与屏幕上的原文
+ * **不同**（「曲项」喂「屈项」、「见牛羊」喂「现牛羊」），
+ * 因为 TTS 会把这些古音字念成现代常用音。见 `poems.ts` 文件头。
+ * 抓错字段的话，孩子听到的就是错的读音，而屏幕上一切正常。
+ */
+const POEM_LINES: VoiceManifest = Object.fromEntries(
+  POEMS.flatMap((poem) => [
+    [poemTitleClipKey(poem.id), poem.title] as const,
+    ...poem.lines.map(
+      (line, index) => [poemLineClipKey(poem.id, index), line.spoken ?? line.text] as const,
+    ),
+    [poemMeaningClipKey(poem.id), poem.meaning] as const,
+  ]),
+)
+
+/**
  * 三只伙伴的**默认**名字。
  *
  * 与昵称同一个套路：孩子给宠物改过名就没有专属片段，整句降级为 TTS；
@@ -235,6 +276,8 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...PHRASES,
   ...WORDS,
   ...PINYIN,
+  ...HANZI,
+  ...POEM_LINES,
   ...ENGLISH,
   ...NICKNAMES,
   ...PET_NAMES,

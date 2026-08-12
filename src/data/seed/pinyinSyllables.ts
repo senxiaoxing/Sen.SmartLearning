@@ -254,6 +254,16 @@ export const BLEND_SYLLABLES: readonly BlendSyllable[] = [
   { pinyin: 'qīng', base: 'qing', tone: 1, char: '青', initial: 'q', final: 'ing' },
   { pinyin: 'bāng', base: 'bang', tone: 1, char: '帮', initial: 'b', final: 'ang' },
 
+  /**
+   * ⭐ 「飞」是为**拼音墙上的 ei** 加的，不是为出题。
+   *
+   * `ei` 没有干净的汉字载体（诶 ēi/éi/ěi/èi 四读），因此不进题库；
+   * 但拼音墙是「教」的地方，缺一个韵母孩子会问「ei 呢」。
+   * 解法与课本一致：**不念孤立的韵母，念一个含它的词**——「飞机」的「飞」。
+   * 见 `pinyinChart.ts` 的 `example` 字段。
+   */
+  { pinyin: 'fēi', base: 'fei', tone: 1, char: '飞', initial: 'f', final: 'ei' },
+
   // 常用字，主要服务 P8.3 听音选字
   { pinyin: 'huǒ', base: 'huo', tone: 3, char: '火', initial: 'h', final: 'uo' },
   // 与整体认读的 yú（鱼，二声）同 base 不同调 —— 正好给 P8.3 当声调干扰项

@@ -12,6 +12,10 @@ import { WARMUP_CLIPS } from '@/data/seed/voiceManifest'
 import { prefetchClips } from '@/platform/speech'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
+import { HanziWall } from '@/features/chinese/HanziWall'
+import { PinyinWall } from '@/features/chinese/PinyinWall'
+import { PoemLibrary } from '@/features/chinese/PoemLibrary'
+import { PoemView } from '@/features/chinese/PoemView'
 import { LetterWall } from '@/features/english/LetterWall'
 import { HomePage } from '@/features/home/HomePage'
 import { ExplainerLibrary } from '@/features/learning/ExplainerLibrary'
@@ -81,6 +85,13 @@ function AppRoutes() {
       <Route path="/explain" element={<ExplainerLibrary />} />
       {/* 字母乐园：英语的第一站，先玩后练，不绑在答题流程里 */}
       <Route path="/letters" element={<LetterWall />} />
+      {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定。
+          古诗是这里唯一有二级页的——诗单选一首再看那一首，
+          点击深度仍是 2（首页 → 诗单 → 诗），与家长区的报告页同级 */}
+      <Route path="/pinyin" element={<PinyinWall />} />
+      <Route path="/hanzi" element={<HanziWall />} />
+      <Route path="/poems" element={<PoemLibrary />} />
+      <Route path="/poems/:id" element={<PoemView />} />
       <Route path="/pets" element={<PetHome />} />
       <Route path="/summary" element={<SessionSummary />} />
       {/* 家长区。门禁包在路由这一层，任何直接跳 hash 的路径都绕不过去。

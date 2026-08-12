@@ -25,10 +25,14 @@
  * ```
  * en.*      英语童声      用中文音色念 apple 会教错发音
  * pinyin.*  标准播音音色  ⭐ 孤立单字的声调最容易读飘，标准优先于亲切
- * 其余      少女声        题干、鼓励语、昵称、宠物台词、讲解，亲切感优先
+ * 其余      少女声        题干、鼓励语、昵称、宠物台词、讲解、识字、古诗
  * ```
- * 语速另有两处放慢：`pinyin.*`（声调要走完）与 `en.letter*`（字母卡要听清），
- * 见 RATE_PINYIN / RATE_LETTER。
+ * ⭐ `hanzi.*` 与 `poem.*` 刻意**不跟拼音那套播音音色**：那边念的是孤立单字，
+ * 这两类念的都是完整句子（「天。蓝天的天。」「床前明月光，」），
+ * 少女声在句子上一向稳，而亲切感对这种会被反复翻看的内容更重要。
+ *
+ * 语速另有三处放慢：`pinyin.*`（声调要走完）、`en.letter*`（字母卡要听清）、
+ * `hanzi.*` 与 `poem.*`（要跟着念），见 RATE_PINYIN / RATE_LETTER / RATE_RECITE。
  * ⚠️ `name.*`（昵称）必须留在默认音色里：它拼在鼓励语的**同一句话**前面，
  * 换音色就等于一句话里有两个人在说。
  * 发音教错比没有声音严重得多（拼音那边已经付过一次学费，见 design/07 §3.3）。
@@ -48,6 +52,8 @@ const LETTERS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishLetters.ts')
 const NICKNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'nicknamePresets.ts')
 const PETS_FILE = join(ROOT, 'src', 'data', 'seed', 'pets.ts')
 const EXPLAINERS_FILE = join(ROOT, 'src', 'data', 'seed', 'explainers.ts')
+const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
+const POEMS_FILE = join(ROOT, 'src', 'data', 'seed', 'poems.ts')
 
 /**
  * 默认音色。
@@ -87,6 +93,17 @@ const EN_PREFIX = 'en.'
 const PINYIN_PREFIX = 'pinyin.'
 /** 字母卡。⚠️ 是 `en.` 的子集，音色跟英语走，只有语速单独一套 */
 const LETTER_PREFIX = 'en.letter'
+/**
+ * 识字卡与古诗。
+ *
+ * ⭐ 音色走**默认的中文少女声**——刻意不跟 `pinyin.*` 那套播音音色：
+ * 那边念的是孤立单字，声调稳定压倒一切；这两类念的都是完整句子
+ * （「天。蓝天的天。」「床前明月光，」），少女声在句子上一向稳，
+ * 而亲切感对这种会被反复翻看的内容更重要。
+ * 只有语速单独放慢，见 RATE_RECITE。
+ */
+const HANZI_PREFIX = 'hanzi.'
+const POEM_PREFIX = 'poem.'
 
 /** 语速。儿童建议略慢，与原来 Web Speech 的 0.85 对齐 */
 const RATE = '-15%'
@@ -119,6 +136,19 @@ const PITCH_PINYIN = '+0%'
  * 而任何多余的改动都是在赌已经念对的那些。
  */
 const RATE_LETTER = '-30%'
+
+/**
+ * ⭐ 识字卡与古诗的语速：比常速慢，但不像字母那么慢。
+ *
+ * 这两类内容孩子是**跟着念**的，不是听个大概——「天。蓝天的天。」要她跟着说一遍，
+ * 「床前明月光」要她跟着背。常速下她跟不上，只能听完再回想，
+ * 那就从「跟读」退化成「听广播」了。
+ *
+ * 没有用字母卡那档 `-30%`：字母慢是因为每个音都陌生，
+ * 而这里念的是她天天听的中文，过慢反而拖沓、像在哄小小孩——
+ * 那正是「像幼儿园小朋友做的题目」那句反馈要避开的调子。
+ */
+const RATE_RECITE = '-25%'
 
 /**
  * ⭐ 少数「怎么调参数都读不稳」的音节，靠一个**尾随逗号**救。
@@ -177,6 +207,9 @@ function voiceFor(key) {
 function prosodyFor(key) {
   if (key.startsWith(PINYIN_PREFIX)) return { rate: RATE_PINYIN, pitch: PITCH_PINYIN }
   if (key.startsWith(LETTER_PREFIX)) return { rate: RATE_LETTER, pitch: PITCH }
+  if (key.startsWith(HANZI_PREFIX) || key.startsWith(POEM_PREFIX)) {
+    return { rate: RATE_RECITE, pitch: PITCH }
+  }
   return { rate: RATE, pitch: PITCH }
 }
 
@@ -230,8 +263,122 @@ function loadManifest() {
     loadNicknames(),
     loadPetLines(),
     loadExplainers(),
+    loadHanzi(),
+    loadPoems(),
   )
   return manifest
+}
+
+/**
+ * 识字卡的 100 个字。
+ *
+ * ⭐ 念的是「天。蓝天的天。」而**不是孤立的「天」**，句式必须与
+ * `domain/hanzi.ts` 的 `hanziSpokenText()` 逐字一致——两边不一致时台账会判定
+ * 「文本变了」而每次都重生成，更糟的是屏幕与耳朵对不上。
+ *
+ * 孤立单字为什么不行见那个函数的说明：多音字挑不准、声调读得飘。
+ * 这是拼音那边用学费换来的同一条结论。
+ *
+ * key 用汉字的 Unicode 码点（`hanzi.u5929`），与 `hanziClipKey()` 同规则：
+ * 拼音会撞车（十/石、木/目），码点不会。
+ */
+function loadHanzi() {
+  const text = readFileSync(HANZI_FILE, 'utf-8')
+  const out = {}
+
+  // 形如：  h('天', 'tiān', '蓝天', '🌤️'),   末尾的 emoji 可省
+  // ⚠️ 锚定行首，免得扫到注释或文档里的同名片段
+  for (const [, char, , word] of text.matchAll(/^\s*h\('([^']+)',\s*'([^']+)',\s*'([^']+)'/gm)) {
+    out[`hanzi.u${char.codePointAt(0).toString(16)}`] = `${char}。${word}的${char}。`
+  }
+
+  // ⚠️ 硬失败而不是警告：字表结构变了却不同步这里，后果是识字卡**整片没有音频**，
+  //    而孩子不识字，这一页的全部内容都是听的——等于这一页作废。
+  //    与英语字母、宠物台词几处的处理保持一致
+  if (Object.keys(out).length !== 100) {
+    console.error('✗ hanziCards.ts 的结构变了，本脚本的 loadHanzi() 必须同步：')
+    console.error(`  解析出 ${Object.keys(out).length} 个字（应为 100）`)
+    process.exit(1)
+  }
+
+  return out
+}
+
+/**
+ * 古诗：诗题、逐句、译文。
+ *
+ * ⚠️ **逐行状态机而不是一条大正则**：句子的片段 key 里带序号
+ * （`poem.jingyesiL2`），而序号是「这一句在这首诗里排第几」——
+ * 正则匹配拿不到这个上下文。逐行扫描时遇到 `id:` 就换一首、清零计数，
+ * 遇到一行 `l(...)` 就 +1，与文件里的书写顺序严格对应。
+ * 这也是 `poems.ts` 要求每句独占一行的原因。
+ *
+ * ⭐ 念的是 `spoken ?? text`：极少数句子送去合成的文本与屏幕上的原文**不同**
+ * （「曲项」喂「屈项」、「见牛羊」喂「现牛羊」、「少小」喂「绍小」），
+ * 因为 TTS 会把这些古音字念成现代常用音。取错字段的话，
+ * 孩子听到的是错读音，而屏幕上一切正常——这类问题没人会主动去核对。
+ */
+function loadPoems() {
+  const text = readFileSync(POEMS_FILE, 'utf-8')
+  const out = {}
+
+  let id = null
+  let lineIndex = 0
+  /** `meaning:` 后面换行才写字符串，见到它就等下一行 */
+  let awaitingMeaning = false
+
+  for (const raw of text.split('\n')) {
+    const idMatch = raw.match(/^\s*id:\s*'([a-z0-9]+)',/)
+    if (idMatch !== null) {
+      id = idMatch[1]
+      lineIndex = 0
+      awaitingMeaning = false
+      continue
+    }
+    if (id === null) continue
+
+    const titleMatch = raw.match(/^\s*title:\s*'([^']+)',/)
+    if (titleMatch !== null) {
+      out[`poem.${id}Title`] = titleMatch[1]
+      continue
+    }
+
+    // 形如：  l('床前明月光，', 'chuáng qián míng yuè guāng'),
+    //   或：  l('曲项向天歌。', 'qū xiàng xiàng tiān gē', '屈项向天歌。'),
+    const lineMatch = raw.match(/^\s*l\('([^']*)',\s*'[^']*'(?:,\s*'([^']*)')?\s*\)/)
+    if (lineMatch !== null) {
+      out[`poem.${id}L${lineIndex}`] = lineMatch[2] ?? lineMatch[1]
+      lineIndex += 1
+      continue
+    }
+
+    if (/^\s*meaning:\s*$/.test(raw)) {
+      awaitingMeaning = true
+      continue
+    }
+    if (awaitingMeaning) {
+      const meaningMatch = raw.match(/^\s*'([^']+)'/)
+      if (meaningMatch !== null) {
+        out[`poem.${id}Meaning`] = meaningMatch[1]
+        awaitingMeaning = false
+      }
+      continue
+    }
+  }
+
+  const titles = Object.keys(out).filter((k) => k.endsWith('Title')).length
+  const meanings = Object.keys(out).filter((k) => k.endsWith('Meaning')).length
+  const lines = Object.keys(out).length - titles - meanings
+
+  // ⚠️ 硬失败：与 loadHanzi() 同一个理由。另外**诗题、译文、诗句三者必须都在**——
+  //    只有诗句而没有诗题，表现是点进一首诗、标题不出声，很容易被当成没点到
+  if (titles !== 20 || meanings !== 20 || lines === 0) {
+    console.error('✗ poems.ts 的结构变了，本脚本的 loadPoems() 必须同步：')
+    console.error(`  诗题 ${titles} 首（应为 20）· 译文 ${meanings} 条（应为 20）· 诗句 ${lines} 句`)
+    process.exit(1)
+  }
+
+  return out
 }
 
 /**
@@ -474,10 +621,17 @@ const pendingEn = pending.filter(
   ([key]) => key.startsWith(EN_PREFIX) && !key.startsWith(LETTER_PREFIX),
 )
 const pendingPy = pending.filter(([key]) => key.startsWith(PINYIN_PREFIX))
-const pendingZh = pending.length - pendingEn.length - pendingPy.length - pendingLetter.length
+// ⚠️ 识字与古诗同样要单独统计：它们和其他中文内容共用少女音，但语速是 RATE_RECITE。
+//    与字母那条同一个理由——混在一起报会打印出一个根本没用上的语速
+const pendingRecite = pending.filter(
+  ([key]) => key.startsWith(HANZI_PREFIX) || key.startsWith(POEM_PREFIX),
+)
+const pendingZh =
+  pending.length - pendingEn.length - pendingPy.length - pendingLetter.length - pendingRecite.length
 
 console.log(`清单共 ${entries.length} 条，待生成 ${pending.length} 条`)
 console.log(`  中文 ${pendingZh} 条 · ${voice} · ${RATE} ${PITCH}`)
+console.log(`  识字古诗 ${pendingRecite.length} 条 · ${voice} · ${RATE_RECITE} ${PITCH}`)
 console.log(`  拼音 ${pendingPy.length} 条 · ${voicePinyin} · ${RATE_PINYIN} ${PITCH_PINYIN}`)
 console.log(`  英语 ${pendingEn.length} 条 · ${voiceEn} · ${RATE} ${PITCH}`)
 console.log(`  字母 ${pendingLetter.length} 条 · ${voiceEn} · ${RATE_LETTER} ${PITCH}\n`)
