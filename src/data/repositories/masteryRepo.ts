@@ -70,7 +70,7 @@ export interface AttemptOutcome {
  * 掌握度记录缺失（数据异常）时**依然照常发积分**——答对了就该给分，
  * 这和系统内部有没有建好那条记录无关，不能因为程序自己的问题少给孩子分。
  *
- * @param attempt - 本次作答，`id` 由调用方用 `crypto.randomUUID()` 生成
+ * @param attempt - 本次作答，`id` 由调用方用 `newId()` 生成
  * @param now - 当前时间
  * @returns 掌握度、是否刚掌握、本次积分与余额
  *

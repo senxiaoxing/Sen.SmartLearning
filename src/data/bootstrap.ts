@@ -17,6 +17,7 @@ import {
   ASSUMED_REVIEW_SPREAD_DAYS,
 } from '@/data/seed/placementPresets'
 import { ensurePets } from '@/data/repositories/petRepo'
+import { newId } from '@/platform/newId'
 import { createMastery } from '@/domain/mastery/updateMastery'
 import { findNewlyUnlocked } from '@/domain/scheduler/unlockGraph'
 import { addDays, nowIso } from '@/domain/time'
@@ -132,7 +133,7 @@ async function ensureProfile(): Promise<Uuid> {
 
   const now = nowIso()
   const profile: Profile = {
-    id: crypto.randomUUID(),
+    id: newId(),
     name: DEFAULT_PROFILE_NAME,
     avatarId: 'default',
     grade: '1A',
@@ -161,7 +162,7 @@ async function ensureProfile(): Promise<Uuid> {
   await db.settings.put(settings)
   await db.meta.bulkPut([
     { key: 'activeProfileId', value: profile.id, updatedAt: now },
-    { key: 'installId', value: crypto.randomUUID(), updatedAt: now },
+    { key: 'installId', value: newId(), updatedAt: now },
     { key: 'firstLaunchAt', value: now, updatedAt: now },
   ])
 
@@ -186,7 +187,7 @@ async function ensureMastery(profileId: Uuid): Promise<void> {
   const now = nowIso()
   const assumed = new Set(ASSUMED_MASTERED_KP_IDS)
   const records: Mastery[] = missing.map((kp, index) => {
-    const base = createMastery(crypto.randomUUID(), profileId, kp, now)
+    const base = createMastery(newId(), profileId, kp, now)
     if (!assumed.has(kp.id)) return base
 
     return {

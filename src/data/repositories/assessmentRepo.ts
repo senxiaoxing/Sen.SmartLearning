@@ -13,6 +13,7 @@ import {
   type ProbeResult,
 } from '@/domain/assessment/placement'
 import { addDays, nowIso } from '@/domain/time'
+import { newId } from '@/platform/newId'
 import type { Assessment, Mastery, Uuid } from '@/domain/types'
 
 /**
@@ -52,7 +53,7 @@ export async function saveAndApplyPlacement(
   const now = nowIso()
 
   const assessment: Assessment = {
-    id: crypto.randomUUID(),
+    id: newId(),
     profileId,
     type: 'initial',
     startedAt: now,

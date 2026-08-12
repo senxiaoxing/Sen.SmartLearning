@@ -9,6 +9,7 @@ import { db } from '@/data/db'
 import { petDefinitionOf, petsOfGrade } from '@/data/seed/pets'
 import { applyExpGain } from '@/domain/pet/growth'
 import { nowIso } from '@/domain/time'
+import { newId } from '@/platform/newId'
 import type { GradeLevel, IsoDateTime, PetState, Subject, Uuid } from '@/domain/types'
 
 /**
@@ -33,7 +34,7 @@ export async function ensurePets(
   for (const def of petsOfGrade(gradeLevel)) {
     if (owned.has(`${def.subject}|${def.gradeLevel}`)) continue
     created.push({
-      id: crypto.randomUUID(),
+      id: newId(),
       profileId,
       subject: def.subject,
       gradeLevel: def.gradeLevel,

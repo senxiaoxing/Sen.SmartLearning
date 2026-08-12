@@ -76,6 +76,40 @@ describe('bootstrap', () => {
     expect((await db.settings.get(profileId))?.autoReadStem).toBe(true)
   })
 
+  /**
+   * ⭐ 回归测试：局域网 http 调试地址下必须也能建档案。
+   *
+   * `crypto.randomUUID()` 要求安全上下文，`http://192.168.x.x:5173` 不满足，
+   * 那里它是 `undefined`。早先各处直接调它，于是 bootstrap 第一行就抛异常，
+   * `profileId` 永远为 null —— 表现是首页宠物和科目按钮整块空掉，
+   * 而 CLAUDE.md 推荐的 iPad 调试方式恰恰就是这个地址。
+   */
+  it('⭐ 非安全上下文（局域网 http）下也能完成初始化', async () => {
+    const original = crypto.randomUUID
+    Object.defineProperty(crypto, 'randomUUID', {
+      value: undefined,
+      configurable: true,
+      writable: true,
+    })
+
+    try {
+      const profileId = await bootstrap()
+
+      expect(await db.profiles.count()).toBe(1)
+      // 三只伙伴必须都在：它们缺席正是那次问题的表面症状
+      expect(await db.petState.where('profileId').equals(profileId).count()).toBe(3)
+      expect(await db.mastery.where('profileId').equals(profileId).count()).toBe(
+        KNOWLEDGE_POINTS.length,
+      )
+    } finally {
+      Object.defineProperty(crypto, 'randomUUID', {
+        value: original,
+        configurable: true,
+        writable: true,
+      })
+    }
+  })
+
   it('重复调用幂等，不会创建第二个档案', async () => {
     const first = await bootstrap()
     const second = await bootstrap()

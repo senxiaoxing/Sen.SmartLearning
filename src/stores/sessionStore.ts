@@ -23,6 +23,7 @@ import { createRng } from '@/domain/generators/rng'
 import { selectNextItems } from '@/domain/scheduler/selectNextItems'
 import { selectRetryItems } from '@/domain/scheduler/selectRetryItems'
 import { nowIso, todayLocal } from '@/domain/time'
+import { newId } from '@/platform/newId'
 import { usePetStore } from '@/stores/petStore'
 import {
   gradeLevelOf,
@@ -229,7 +230,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     }
 
     const now = nowIso()
-    const sessionId = crypto.randomUUID()
+    const sessionId = newId()
     await db.sessions.add({
       id: sessionId,
       profileId,
@@ -306,7 +307,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     const correctOption = current.item.options.find((o) => o.isCorrect)
 
     const attempt: Attempt = {
-      id: crypto.randomUUID(),
+      id: newId(),
       profileId: state.profileId,
       sessionId: state.sessionId,
       kpId: current.item.kpId,

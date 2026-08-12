@@ -49,13 +49,13 @@ function difficultyWeight(difficulty: 1 | 2 | 3, isCorrect: boolean): number {
  * 新知识点默认为 `locked`，由 `scheduler/unlockGraph.ts` 依据前置完成情况解锁。
  * 无前置的入口知识点会被立刻置为 `available`。
  *
- * @param id - 预生成的 UUID（由调用方用 `crypto.randomUUID()` 提供，保持本函数纯净）
+ * @param id - 预生成的 UUID（由调用方用 `newId()` 提供，保持本函数纯净）
  * @param profileId - 档案 ID
  * @param kp - 知识点
  * @param now - 当前时间
  *
  * @example
- * createMastery(crypto.randomUUID(), profileId, kp, nowIso())
+ * createMastery(newId(), profileId, kp, nowIso())
  */
 export function createMastery(
   id: Uuid,

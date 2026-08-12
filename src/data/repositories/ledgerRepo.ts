@@ -13,6 +13,7 @@ import { db } from '@/data/db'
 import { applyGrants, type GrantSettlement } from '@/domain/economy/applyGrants'
 import type { RewardGrant } from '@/domain/economy/rewards'
 import { nowIso, parseIso, toIso, todayLocal } from '@/domain/time'
+import { newId } from '@/platform/newId'
 import type { IsoDateTime, LedgerEntry, LocalDate, Uuid } from '@/domain/types'
 
 /**
@@ -105,7 +106,7 @@ export async function appendGrants(
   const localDate = options.localDate ?? todayLocal()
 
   const rows: LedgerEntry[] = settlement.entries.map((entry, i) => ({
-    id: crypto.randomUUID(),
+    id: newId(),
     profileId,
     delta: entry.delta,
     balanceAfter: entry.balanceAfter,

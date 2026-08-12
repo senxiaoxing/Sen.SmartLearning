@@ -27,7 +27,7 @@ export type IsoDateTime = string & { readonly __brand: 'IsoDateTime' }
  */
 export type LocalDate = string & { readonly __brand: 'LocalDate' }
 
-/** UUID v4 字符串，由 `crypto.randomUUID()` 生成。仅用于用户数据，静态内容用语义 ID。 */
+/** UUID v4 字符串，由 `newId()`（platform/newId.ts）生成。仅用于用户数据，静态内容用语义 ID。 */
 export type Uuid = string
 
 // ============================================================================
