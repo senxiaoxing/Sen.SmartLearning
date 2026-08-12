@@ -2,7 +2,7 @@
  * @file 皮肤切换 —— 家长区里的界面外观选择
  * @layer features
  * @see src/platform/skin.ts     皮肤的读写与应用
- * @see src/styles/tokens.css    两套皮肤的实际配色
+ * @see src/styles/tokens.css    三套皮肤的实际配色
  *
  * ## 为什么放在家长区而不是孩子界面
  *
@@ -27,7 +27,9 @@ export function SkinPicker() {
         <p className="text-sm text-ink/50">立即生效，不影响学习进度</p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      {/* ⚠️ 始终单列。家长区容器只有 512px 宽，三套并排每列不到 160px，
+          色块加两行文字必然挤成一团 —— 这里不缺垂直空间，竖排最清楚 */}
+      <div className="flex flex-col gap-3">
         {SKINS.map((meta) => {
           const active = meta.id === skin
           return (

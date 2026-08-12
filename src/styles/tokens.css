@@ -14,9 +14,14 @@
  *    会**静默失效**（透明度被忽略，不报错），排查起来极其痛苦。
  *
  * 命名约定：
- *   --c-x        颜色主值
- *   --c-x-deep   同色系的下沉阴影色（按钮那道 6px 实心边）
- *   --c-on-x     叠在 x 之上的文字色（果冻岛是白字，星际是深字）
+ *   --c-x         颜色主值
+ *   --c-x-deep    同色系的加深色（硬下沉皮肤用作实心边，柔和皮肤用作阴影色）
+ *   --c-on-x      叠在 x 之上的文字色（果冻岛是白字，星际是深字）
+ *   --sh-drop-x   按钮阴影**整条**，不只是颜色 —— 阴影形态是皮肤性格的一部分
+ *   --sh-card     卡片阴影整条
+ *
+ * ⚠️ 每套皮肤都必须把 `--sh-*` 五条**全部**定义一遍。
+ *    漏掉一条不会报错，那个位置会直接没有阴影，卡片糊在背景上。
  */
 
 /* ══════════════════════════════════════════════════════════════
@@ -56,6 +61,13 @@
 
   /** 按钮顶部那道内高光。是「果冻感」的全部来源，去掉就变回扁平色块 */
   --sh-inner: inset 0 2px 0 rgb(255 255 255 / 0.45);
+
+  /* 硬下沉 6px：厚实、可按压。这是果冻岛的立身之本 */
+  --sh-drop-primary: 0 6px 0 rgb(var(--c-primary-deep)), var(--sh-inner);
+  --sh-drop-correct: 0 6px 0 rgb(var(--c-correct-deep)), var(--sh-inner);
+  --sh-drop-alert: 0 6px 0 rgb(var(--c-alert-deep)), var(--sh-inner);
+  --sh-drop-surface: 0 6px 0 rgb(var(--c-surface-deep)), var(--sh-inner);
+  --sh-card: 0 4px 0 rgb(var(--c-surface-deep));
 
   /** 页面背景装饰。纯 CSS 渐变，不加载任何图片，滚动零开销 */
   --deco:
@@ -99,6 +111,13 @@
 
   --sh-inner: inset 0 1px 0 rgb(255 255 255 / 0.09);
 
+  /* 同样是硬下沉，但内高光压到 9%：深色面上的白色高光稍强一点就显脏 */
+  --sh-drop-primary: 0 6px 0 rgb(var(--c-primary-deep)), var(--sh-inner);
+  --sh-drop-correct: 0 6px 0 rgb(var(--c-correct-deep)), var(--sh-inner);
+  --sh-drop-alert: 0 6px 0 rgb(var(--c-alert-deep)), var(--sh-inner);
+  --sh-drop-surface: 0 6px 0 rgb(var(--c-surface-deep)), var(--sh-inner);
+  --sh-card: 0 4px 0 rgb(var(--c-surface-deep));
+
   /** 星点是 5 个 radial-gradient，不是图片也不是 canvas。
    *  ⚠️ 星星**不做闪烁动画**：全屏重绘会直接吃掉答题时的帧预算 */
   --deco:
@@ -108,4 +127,76 @@
     radial-gradient(1.2px 1.2px at 84% 76%, rgb(255 255 255 / 0.45), transparent),
     radial-gradient(1.3px 1.3px at 12% 84%, rgb(255 255 255 / 0.5), transparent),
     radial-gradient(circle at 78% 6%, rgb(61 220 255 / 0.16), transparent 44%);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   D · 清晨草地 Morning Meadow
+   淡绿底 + 顶部奶油带 + 纯白卡片，阴影是柔和漫射而非硬下沉。
+   三套里最清淡的一套，长时间做题最不累眼。
+
+   ## 主色是深松绿：单色系配色，靠明度分层而不是色相对比
+
+   ⚠️ 试过两版非绿的主色，实测都不行：
+   - 暖金 `#EFAE3B` —— 高亮度高饱和压在低饱和的淡绿上像贴纸，太跳
+   - 赤陶 `#BE6B4A` —— 色相距离够了，但暖色和这套的清爽调子不是一路
+
+   现在整套走**单色系**：深松绿按钮 → 草绿答对 → 淡绿背景，靠明度分三层。
+   这是最不会出错的配色，代价写在下面。
+
+   ⚠️ **已知代价**：primary `#3B7F62` 与 correct `#3E9B72` 对比度只有 1.4:1，
+   两者几乎同色。答对时选项变的绿和「下一题」按钮看起来是一个颜色。
+   之所以能接受，是因为答对反馈从来不只靠颜色 —— 还有星星、文案、音效
+   和位置差异（见 features/learning/Feedback.tsx）。
+   如果实机上仍然糊，正确的解法是**提亮 correct**（如 `#5FBF8A` 并把
+   `--c-on-correct` 改成深色），而不是把 primary 换回非绿。
+   ══════════════════════════════════════════════════════════════ */
+[data-skin='meadow'] {
+  --c-canvas: 240 246 234;
+  --c-surface: 255 255 255;
+  /** 浅绿卡片面，用于徽章、次级卡片 */
+  --c-surface-2: 223 239 220;
+  --c-surface-deep: 205 223 200;
+
+  /** 深灰绿而非中性黑：纯黑压在淡绿上会显得脏 */
+  --c-ink: 47 64 56;
+
+  --c-primary: 59 127 98;
+  --c-primary-deep: 43 98 74;
+  /** 深松绿上白字对比度约 4.4:1，清晰 */
+  --c-on-primary: 255 255 255;
+
+  --c-correct: 62 155 114;
+  --c-correct-deep: 45 120 88;
+  --c-on-correct: 255 255 255;
+
+  /** 柔珊瑚。整套皮肤都是低饱和的，用果冻岛那种莓果粉会突兀得像贴上去的 */
+  --c-alert: 232 139 125;
+  --c-alert-deep: 200 105 92;
+  --c-on-alert: 255 255 255;
+
+  --c-info: 127 168 208;
+  --c-accent: 167 155 216;
+
+  --r-blob: 28px;
+  --r-card: 18px;
+
+  /* 这套没有内高光：柔和漫射阴影配上内高光会显得又软又亮，像塑料。
+     ⚠️ 设为 none 而不是省略 —— 省略会继承果冻岛那道 45% 白高光。
+     下面的 --sh-drop-* 都不引用它，别在这套里给 box-shadow 拼上
+     `var(--sh-inner)`，`none` 混进阴影列表会让整条声明失效。 */
+  --sh-inner: none;
+
+  /* 柔和漫射。⚠️ 模糊阴影比实心阴影贵，所以半径压在 12px 以内，
+     且只用在按钮和卡片上，绝不给列表里成百上千的元素用 */
+  --sh-drop-primary: 0 4px 12px rgb(43 98 74 / 0.3);
+  --sh-drop-correct: 0 4px 12px rgb(45 120 88 / 0.28);
+  --sh-drop-alert: 0 4px 12px rgb(200 105 92 / 0.28);
+  --sh-drop-surface: 0 3px 10px rgb(47 64 56 / 0.1);
+  --sh-card: 0 2px 8px rgb(47 64 56 / 0.08);
+
+  /** 顶部一条奶油黄带 + 左下淡绿光晕。参考图的空间感全来自那条暖色带：
+   *  它把「页头」和「内容」分开，而不需要任何一条分隔线 */
+  --deco:
+    linear-gradient(180deg, rgb(252 242 214 / 0.85) 0%, rgb(252 242 214 / 0) 26%),
+    radial-gradient(circle at 8% 72%, rgb(62 155 114 / 0.1), transparent 46%);
 }

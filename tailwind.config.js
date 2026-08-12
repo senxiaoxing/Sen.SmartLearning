@@ -58,14 +58,19 @@ export default {
         card: 'var(--r-card)',
       },
 
+      /**
+       * ⚠️ 阴影**整条**交给皮肤，而不是只换颜色。
+       *
+       * 阴影的形态本身就是皮肤性格的一部分：果冻岛靠 `0 6px 0` 的硬下沉做出
+       * 「能按下去的糖」，清晨草地靠柔和漫射做出清淡感，两者不是同一个公式换色能得到的。
+       * 早先把 `0 6px 0 …` 写死在这里，等于规定了所有皮肤都必须是硬下沉风格。
+       */
       boxShadow: {
-        /** 按压式下沉阴影。whileTap 时组件把它去掉，制造「按下去」的错觉 */
-        'drop-primary': '0 6px 0 rgb(var(--c-primary-deep)), var(--sh-inner)',
-        'drop-correct': '0 6px 0 rgb(var(--c-correct-deep)), var(--sh-inner)',
-        'drop-alert': '0 6px 0 rgb(var(--c-alert-deep)), var(--sh-inner)',
-        'drop-surface': '0 6px 0 rgb(var(--c-surface-deep)), var(--sh-inner)',
-        /** 卡片用的浅一档下沉，不带内高光 */
-        card: '0 4px 0 rgb(var(--c-surface-deep))',
+        'drop-primary': 'var(--sh-drop-primary)',
+        'drop-correct': 'var(--sh-drop-correct)',
+        'drop-alert': 'var(--sh-drop-alert)',
+        'drop-surface': 'var(--sh-drop-surface)',
+        card: 'var(--sh-card)',
       },
 
       backgroundImage: {

@@ -7,7 +7,7 @@
  * 不该被导出到备份文件里，换了 iPad 也不该被恢复过来。
  */
 
-export type SkinId = 'jelly' | 'star'
+export type SkinId = 'jelly' | 'star' | 'meadow'
 
 /**
  * ⚠️ 必须与 index.html `<head>` 里那段内联脚本使用的 key 保持一致。
@@ -46,6 +46,13 @@ export const SKINS: readonly SkinMeta[] = [
     hint: '深色夜空，暗处不刺眼，看起来更「大孩子」',
     themeColor: '#131A2E',
     swatch: ['#131A2E', '#FFC94A', '#3DDCFF'],
+  },
+  {
+    id: 'meadow',
+    label: '清晨草地',
+    hint: '淡绿配奶油，最清淡的一套，长时间做题不累眼',
+    themeColor: '#F0F6EA',
+    swatch: ['#F0F6EA', '#3B7F62', '#3E9B72'],
   },
 ]
 
