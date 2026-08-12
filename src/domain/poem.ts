@@ -7,6 +7,8 @@
  * 类型与 key 规则在 domain，诗本身在 data/seed。
  */
 
+import type { Utterance } from '@/domain/speech'
+
 /** 诗里的一句：汉字与它的逐字拼音 */
 export interface PoemLine {
   /** 诗句原文，含标点 */
@@ -121,19 +123,42 @@ export function poemLineClipKeys(poem: Pick<Poem, 'id' | 'lines'>): string[] {
 }
 
 /**
+ * 读整首时**句与句之间**的停顿（秒）。
+ *
+ * ⭐ 播放器的默认间隔是 80ms，那是按「一句话内部的词」定的
+ * （「9」「加」「5」不黏在一起就行）。整句与整句之间完全是另一个量级——
+ * 上机反馈「相邻两句间隔太快了」，四句连着念像一口气赶完，不像在读诗。
+ *
+ * 取值有实测依据：诗题那条片段念的是「静夜思。唐，李白。」，
+ * 逐帧扫它内部的静音得到（三首取样一致）——
+ *
+ * | 位置 | 停顿 |
+ * |---|---|
+ * | 「静夜思」**。**「唐」 | 0.85 / 0.89 / 0.89 秒 |
+ * | 「唐」**，**「李白」 | 0.36 / 0.34 / 0.40 秒 |
+ *
+ * 这里取**逗号那一档**（≈0.4 秒）而不是句号档：句号档是「一段话说完了」的
+ * 停顿，用在句间会把一首五言绝句拖成四段独白；逗号档正是同一首诗里
+ * 上下句之间的自然换气。⚠️ 想要更舒缓就往 0.85 靠，别超过它——
+ * 那是 TTS 自己认为「这里该断开了」的长度。
+ */
+const POEM_LINE_GAP = 0.4
+
+/**
  * 「读整首」要说的话：报诗名那一句 + 全部诗句。
  *
  * @param poem - 一首诗
- * @returns 片段序列与兜底文本，直接交给 `say()`
+ * @returns 待朗读语句（含句间停顿），直接交给 `say()`
  *
  * @example
  * wholePoemUtterance(jingyesi)
  * // { parts: ['poem.jingyesiTitle', 'poem.jingyesiL0', …],
- * //   fallbackText: '静夜思。唐，李白。床前明月光，…' }
+ * //   fallbackText: '静夜思。唐，李白。床前明月光，…', gap: 0.4 }
  */
-export function wholePoemUtterance(poem: Poem): { parts: string[]; fallbackText: string } {
+export function wholePoemUtterance(poem: Poem): Utterance {
   return {
     parts: [poemTitleClipKey(poem.id), ...poemLineClipKeys(poem)],
     fallbackText: poemHeadText(poem) + poem.lines.map((line) => line.text).join(''),
+    gap: POEM_LINE_GAP,
   }
 }

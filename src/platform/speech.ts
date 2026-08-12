@@ -28,10 +28,13 @@ import { speak as speakTts, stopSpeaking as stopTts } from '@/platform/tts'
 import type { ClipKey, Utterance } from '@/domain/speech'
 
 /**
- * 片段之间的间隔（秒）。
+ * 片段之间的默认间隔（秒）。
  *
  * 裁掉静音后片段是紧挨着的，完全不留缝会让「9」「加」「5」黏成一团听不清词界。
- * 80ms 接近中文自然语流里的词间停顿。
+ * 80ms 接近中文自然语流里的**词间**停顿。
+ *
+ * ⚠️ 这是按「一句话内部的词」定的。整句与整句之间要长得多——
+ * 那种场景由 `Utterance.gap` 单独指定（如古诗的句间停顿）。
  */
 const GAP = 0.08
 
@@ -154,6 +157,8 @@ async function playSequence(audio: AudioContext, utterance: Utterance): Promise<
     return
   }
 
+  const gap = utterance.gap ?? GAP
+
   let at = audio.currentTime + 0.02
   for (const buffer of buffers) {
     const source = audio.createBufferSource()
@@ -161,7 +166,7 @@ async function playSequence(audio: AudioContext, utterance: Utterance): Promise<
     source.connect(audio.destination)
     source.start(at)
     playing.push(source)
-    at += buffer!.duration + GAP
+    at += buffer!.duration + gap
   }
 }
 
