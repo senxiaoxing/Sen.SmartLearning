@@ -50,6 +50,7 @@ const SYLLABLES_FILE = join(ROOT, 'src', 'data', 'seed', 'pinyinSyllables.ts')
 const ENGLISH_FILE = join(ROOT, 'src', 'data', 'seed', 'englishWords.ts')
 const LETTERS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishLetters.ts')
 const NICKNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'nicknamePresets.ts')
+const PETNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'petNamePresets.ts')
 const PETS_FILE = join(ROOT, 'src', 'data', 'seed', 'pets.ts')
 const EXPLAINERS_FILE = join(ROOT, 'src', 'data', 'seed', 'explainers.ts')
 const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
@@ -87,6 +88,55 @@ const DEFAULT_VOICE_EN = 'en-US-AnaNeural'
  * 换回少女声：`npm run voices -- --voice-pinyin=zh-CN-XiaoyiNeural --force=pinyin.`
  */
 const DEFAULT_VOICE_PINYIN = 'zh-CN-XiaoxiaoNeural'
+
+/**
+ * ⭐ 三只伙伴的专属音色 —— 孩子一耳朵就能分出「谁在说话」。
+ *
+ * | 伙伴 | 音色 | 听感 |
+ * |---|---|---|
+ * | 数学小企鹅 团团 | `YunxiaNeural` | 男童声，像同班的小男孩 |
+ * | 语文小飞龙 墨墨 | `YunxiNeural` | 阳光青年男声，「妙哉妙哉」的小学者 |
+ * | 英语小熊猫 波波 | `XiaoxiaoNeural` | 温暖女声，软乎乎的大姐姐 |
+ *
+ * 与旁白（Xiaoyi 少女声）合计四个声部：男童 / 青年男 / 温暖女 / 少女，
+ * 音域各不相同，不靠上下文也能分辨。
+ *
+ * ⚠️ 波波与拼音共用 Xiaoxiao 底色，但韵律完全不同（拼音是 -30% +0% 的播音腔，
+ * 波波是 -20% +10% 的软语），且语境一个是孤立单字、一个是台词，听感差别很大。
+ *
+ * 路由的 key 形态有两种（见 `petSpeakerOf`）：
+ * - `petline.<species>…`  —— 台词本体
+ * - `name.<species>Xxx…`  —— 昵称的音色变体：宠物叫「小恩宝」时名字也得是它的声音，
+ *   key 构造规则与 `domain/encourage/petSpeaker.ts` 的 `nicknameClipFor` **逐字一致**
+ */
+const PET_VOICES = {
+  penguin: 'zh-CN-YunxiaNeural',
+  dragon: 'zh-CN-YunxiNeural',
+  panda: 'zh-CN-XiaoxiaoNeural',
+}
+
+/**
+ * 伙伴台词的韵律 —— 在音色之外再拉开一点性格辨识度。
+ *
+ * ⚠️ 墨墨（男声）不抬音高：+5% 在女声上是「亲切」，在男声上是「捏着嗓子」。
+ */
+const PET_PROSODY = {
+  penguin: { rate: '-8%', pitch: '+5%' }, // 活泼，比旁白稍快
+  dragon: { rate: '-15%', pitch: '+0%' }, // 稳重念白
+  panda: { rate: '-20%', pitch: '+10%' }, // 又软又慢
+}
+
+/**
+ * 这个片段是哪只伙伴说的。不是伙伴内容返回 null。
+ *
+ * ⚠️ `name.` 分支必须要求物种段后面跟大写字母（`name.penguinXiaoenbao`），
+ * 否则旁白昵称若恰好以物种名开头（如 `name.pandan…`）会被误路由。
+ */
+function petSpeakerOf(key) {
+  let m = /^petline\.(penguin|dragon|panda)/.exec(key)
+  if (m === null) m = /^name\.(penguin|dragon|panda)(?=[A-Z])/.exec(key)
+  return m === null ? null : m[1]
+}
 
 /** 按 key 前缀选音色 */
 const EN_PREFIX = 'en.'
@@ -195,6 +245,8 @@ const forcePrefix = args.find((a) => a.startsWith('--force='))?.split('=')[1] ??
 function voiceFor(key) {
   if (key.startsWith(EN_PREFIX)) return voiceEn
   if (key.startsWith(PINYIN_PREFIX)) return voicePinyin
+  const pet = petSpeakerOf(key)
+  if (pet !== null) return PET_VOICES[pet]
   return voice
 }
 
@@ -210,6 +262,8 @@ function prosodyFor(key) {
   if (key.startsWith(HANZI_PREFIX) || key.startsWith(POEM_PREFIX)) {
     return { rate: RATE_RECITE, pitch: PITCH }
   }
+  const pet = petSpeakerOf(key)
+  if (pet !== null) return PET_PROSODY[pet]
   return { rate: RATE, pitch: PITCH }
 }
 
@@ -261,6 +315,7 @@ function loadManifest() {
     loadPinyin(),
     loadEnglish(),
     loadNicknames(),
+    loadPetNames(),
     loadPetLines(),
     loadExplainers(),
     loadHanzi(),
@@ -462,6 +517,16 @@ function loadNicknames() {
     /\{\s*clipKey:\s*'(name\.[A-Za-z0-9]+)',\s*text:\s*'([^']+)'/g,
   )) {
     out[clipKey] = spoken
+
+    // ⭐ 每个昵称按三只伙伴的音色再各生成一份变体（name.penguinXiaoenbao …）。
+    //    宠物叫名字时整句都得是它的声音，见 PET_VOICES 的说明。
+    //    key 构造与 domain/encourage/petSpeaker.ts 的 nicknameClipFor 逐字一致，
+    //    对不上的后果是变体文件生成了、运行时却引用不到，整句默默降级成 TTS
+    const slug = clipKey.slice('name.'.length)
+    const capitalized = slug.charAt(0).toUpperCase() + slug.slice(1)
+    for (const species of Object.keys(PET_VOICES)) {
+      out[`name.${species}${capitalized}`] = spoken
+    }
   }
 
   // ⚠️ 硬失败而不是警告：清单结构变了却不同步这里，后果是新昵称**没有音频**，
@@ -470,6 +535,31 @@ function loadNicknames() {
   if (Object.keys(out).length === 0) {
     console.error('✗ nicknamePresets.ts 的结构变了，本脚本的 loadNicknames() 必须同步：')
     console.error('  一条 name.* 都没解析出来')
+    process.exit(1)
+  }
+
+  return out
+}
+
+/**
+ * 宠物起名的候选池（petname.*）—— 与昵称同款的结构化清单，
+ * 起名改成「预录名单里挑」之后，改名的宠物照样有专属片段。
+ */
+function loadPetNames() {
+  const text = readFileSync(PETNAMES_FILE, 'utf-8')
+  const out = {}
+
+  for (const [, clipKey, spoken] of text.matchAll(
+    /\{\s*clipKey:\s*'(petname\.[A-Za-z0-9]+)',\s*text:\s*'([^']+)'/g,
+  )) {
+    out[clipKey] = spoken
+  }
+
+  // ⚠️ 硬失败而不是警告，理由与 loadNicknames 完全一致：
+  //    静默漏生成的表现是「孩子给宠物改了名，升级那句忽然变机器音」
+  if (Object.keys(out).length === 0) {
+    console.error('✗ petNamePresets.ts 的结构变了，本脚本的 loadPetNames() 必须同步：')
+    console.error('  一条 petname.* 都没解析出来')
     process.exit(1)
   }
 
@@ -626,15 +716,28 @@ const pendingPy = pending.filter(([key]) => key.startsWith(PINYIN_PREFIX))
 const pendingRecite = pending.filter(
   ([key]) => key.startsWith(HANZI_PREFIX) || key.startsWith(POEM_PREFIX),
 )
+// 伙伴内容（台词 + 昵称音色变体）按三只各自统计——音色韵律都不同，混着报会误导调参
+const pendingPet = pending.filter(([key]) => petSpeakerOf(key) !== null)
 const pendingZh =
-  pending.length - pendingEn.length - pendingPy.length - pendingLetter.length - pendingRecite.length
+  pending.length -
+  pendingEn.length -
+  pendingPy.length -
+  pendingLetter.length -
+  pendingRecite.length -
+  pendingPet.length
 
 console.log(`清单共 ${entries.length} 条，待生成 ${pending.length} 条`)
 console.log(`  中文 ${pendingZh} 条 · ${voice} · ${RATE} ${PITCH}`)
 console.log(`  识字古诗 ${pendingRecite.length} 条 · ${voice} · ${RATE_RECITE} ${PITCH}`)
 console.log(`  拼音 ${pendingPy.length} 条 · ${voicePinyin} · ${RATE_PINYIN} ${PITCH_PINYIN}`)
 console.log(`  英语 ${pendingEn.length} 条 · ${voiceEn} · ${RATE} ${PITCH}`)
-console.log(`  字母 ${pendingLetter.length} 条 · ${voiceEn} · ${RATE_LETTER} ${PITCH}\n`)
+console.log(`  字母 ${pendingLetter.length} 条 · ${voiceEn} · ${RATE_LETTER} ${PITCH}`)
+for (const species of Object.keys(PET_VOICES)) {
+  const count = pendingPet.filter(([key]) => petSpeakerOf(key) === species).length
+  const { rate, pitch } = PET_PROSODY[species]
+  console.log(`  伙伴(${species}) ${count} 条 · ${PET_VOICES[species]} · ${rate} ${pitch}`)
+}
+console.log()
 
 if (pending.length === 0) {
   console.log('全部已存在，无需生成。换音色请加 --force')

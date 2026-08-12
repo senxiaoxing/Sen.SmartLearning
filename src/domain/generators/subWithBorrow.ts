@@ -135,6 +135,16 @@ function buildBreakTenItem(
     stem: {
       text: `${minuend} - ${subtrahend}，先算 10 - ${subtrahend} = ?`,
       ttsText: `${minuend} 减 ${subtrahend}，先算 10 减 ${subtrahend} 等于几`,
+      ttsParts: [
+        ...num(minuend),
+        'op.minus',
+        ...num(subtrahend),
+        'phrase.firstCompute',
+        ...num(10),
+        'op.minus',
+        ...num(subtrahend),
+        'phrase.equalsWhat',
+      ],
     },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),

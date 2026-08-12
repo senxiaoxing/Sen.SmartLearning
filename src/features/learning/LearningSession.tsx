@@ -17,7 +17,7 @@ import { AppShell } from '@/components/AppShell'
 import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
 import { EXPLAINERS } from '@/data/seed/explainers'
-import { petDefinitionOf } from '@/data/seed/pets'
+import { SESSION_CLIPS } from '@/data/seed/voiceManifest'
 import { Explainer } from '@/features/learning/Explainer'
 import { Feedback } from '@/features/learning/Feedback'
 import { ItemRenderer } from '@/items/ItemRenderer'
@@ -33,8 +33,6 @@ export function LearningSession() {
   const answer = useSessionStore((s) => s.answer)
   const next = useSessionStore((s) => s.next)
   const countReplay = useSessionStore((s) => s.countReplay)
-  const subject = useSessionStore((s) => s.subject)
-  const gradeLevel = useSessionStore((s) => s.gradeLevel)
   const [showExplainer, setShowExplainer] = useState(false)
 
   // 跳转必须放在 effect 里：渲染期调用 navigate 会在更新另一个组件的同时
@@ -44,19 +42,32 @@ export function LearningSession() {
   }, [status, navigate])
 
   /**
-   * 预取本轮伙伴的答对/答错台词。
+   * 进会话就预取反馈与小结要用的片段。
    *
-   * 它们参与每一题的反馈轮换，而首屏预热清单是科目无关的（那时还不知道要练哪一科），
-   * 所以在这里补上。不预取的话第一次抽到宠物台词要现 fetch + 解码，
-   * 听感上就是「这一句慢了半拍」——与当初「有的数字没读出来」同一个根因。
+   * 首屏预热只管「首屏必需」；这里的（答错引导语、小结语、升级播报件）
+   * 只在会话里出现，进会话时取正好。宠物台词已并入 App 挂载的 WARMUP_CLIPS，
+   * 不再按科目单独取。
    */
   useEffect(() => {
-    const def = petDefinitionOf(subject, gradeLevel)
-    if (def === undefined) return
+    prefetchClips(SESSION_CLIPS)
+  }, [])
+
+  /**
+   * ⭐ 预取本轮全部题目的语音：题干 + 选项点读。
+   *
+   * 十道题在会话开始时就已选好（design/03「会话开始前预加载本段全部题目资源」），
+   * 转场那零点几秒足够 fetch + 解码完。不取的话每道新题的题干
+   * 都要现解码，听感上就是「点了下一题，隔半拍才开口」——
+   * 与当初「有的数字没读出来」「按了没反应」同一个根因。
+   */
+  useEffect(() => {
     prefetchClips(
-      [...def.personality.correct, ...def.personality.wrong].map((line) => line.clipKey),
+      items.flatMap(({ item }) => [
+        ...(item.stem.ttsParts ?? []),
+        ...item.options.flatMap((option) => option.ttsParts ?? []),
+      ]),
     )
-  }, [subject, gradeLevel])
+  }, [items])
 
   if (status === 'loading') {
     return <CenteredMessage text="正在准备题目…" />

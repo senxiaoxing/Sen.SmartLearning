@@ -21,7 +21,8 @@ import { PRAISE_POOL } from '@/data/seed/voiceManifest'
 import { pickNickname } from '@/domain/encourage/pickNickname'
 import { praiseLine } from '@/domain/encourage/praiseLine'
 import { pickLine } from '@/domain/pet/personality'
-import { plain } from '@/domain/speech'
+import { plain, utter, type Utterance } from '@/domain/speech'
+import type { PetLine } from '@/data/seed/pets'
 import { playSfx } from '@/platform/audio'
 import { say } from '@/platform/speech'
 import { useProfileStore } from '@/stores/profileStore'
@@ -32,6 +33,23 @@ interface FeedbackProps {
   feedback: AnswerFeedback
   onNext: () => void
   isLast: boolean
+}
+
+/**
+ * 答错时说的那句：「（伙伴安慰），答案是 X」。
+ *
+ * ⭐ 正确答案带片段（`feedback.correctParts`）时**整句走预生成音色**：
+ * 伙伴台词（petline.*）与「答案是」（phrase.answerIs / phrase.lookAgain）
+ * 都是现成片段。答案拿不到片段就整句 TTS——
+ * 绝不「半句真声半句机器声」（design/07 §2.5 的混播禁令）。
+ */
+function wrongUtterance(feedback: AnswerFeedback, consolation: PetLine | null): Utterance {
+  const fallback = `${consolation?.text ?? '再看看'}，答案是 ${feedback.correctText}`
+  if (feedback.correctParts === undefined) return plain(fallback)
+  return consolation === null
+    ? // phrase.lookAgain 念的就是「再看看，答案是」，与 fallback 文本一致
+      utter(['phrase.lookAgain', ...feedback.correctParts], fallback)
+    : utter([consolation.clipKey, 'phrase.answerIs', ...feedback.correctParts], fallback)
 }
 
 export function Feedback({ feedback, onNext, isLast }: FeedbackProps) {
@@ -74,13 +92,7 @@ export function Feedback({ feedback, onNext, isLast }: FeedbackProps) {
     playSfx(feedback.isCorrect ? 'correct' : 'wrong')
     // ⭐ 答错时**不叫名字**：「小恩宝，再看看」听起来像点名。
     //    昵称只出现在正向语境，见 domain/encourage/addressed.ts 的文件头。
-    //    正确答案是自由文本（可能是「苹果」也可能是「5」），拼不出片段，
-    //    所以答错这一句整体走 TTS —— 与加宠物台词之前一样
-    say(
-      feedback.isCorrect
-        ? praise.utterance
-        : plain(`${consolation?.text ?? '再看看'}，答案是 ${feedback.correctText}`),
-    )
+    say(feedback.isCorrect ? praise.utterance : wrongUtterance(feedback, consolation))
     // 反馈语只在进入反馈态时播一次
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [feedback])

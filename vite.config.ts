@@ -78,6 +78,20 @@ export default defineConfig({
         // 而「每次交互必有视觉 + 音效双反馈」是硬要求（design/03 §5.2），
         // 答错时那声柔和提示音尤其不能少。
         globPatterns: ['**/*.{js,css,html,png,svg,woff2,mp3,wav}'],
+        // ⭐ 音频的「补录层」。预缓存是 install 期一次性的：装到一半断网、
+        // 或某次更新没下完，缺的文件不会自己补上——表现是那句话降级成机器音。
+        // 这条 CacheFirst 路由让启动自检门（VoiceCacheGate）能主动把缺的拉回来：
+        // 页面 fetch 一条，SW 就缓存一条，下次离线照样有。
+        //
+        // ⚠️ 预缓存命中的文件走预缓存路由（带版本修订、更新时自动换新），
+        // 这条路由只接「预缓存没有」的漏网文件——CacheFirst 不会让正常文件变陈旧。
+        runtimeCaching: [
+          {
+            urlPattern: /\/audio\/(voice|sfx)\/[^/]+\.(mp3|wav)$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'audio-repair' },
+          },
+        ],
         cleanupOutdatedCaches: true,
         // ⚠️ 刻意不启用 skipWaiting/clientsClaim：
         // 新版本立即接管会在孩子答题途中刷新页面，当前会话的题目存在内存里会全部丢失。

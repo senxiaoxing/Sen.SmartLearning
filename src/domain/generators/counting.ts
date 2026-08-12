@@ -8,24 +8,14 @@
  * 只需把 `stem.text` 换成 `imageKey`，题目逻辑一行不用改。
  */
 
+import { COUNTABLES } from '@/domain/generators/countables'
 import { buildNumericOptions, type NumericDistractor } from '@/domain/generators/distractors'
 import { readEnum, readRange } from '@/domain/generators/params'
 import { randomInt, randomPick } from '@/domain/generators/rng'
+import { num } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
 
 const MODES = ['count', 'next', 'prev', 'between'] as const
-
-/** 可数对象。挑选原则：轮廓清晰、颜色鲜明、一年级孩子都认识 */
-const COUNTABLES = [
-  { emoji: '🍎', name: '苹果' },
-  { emoji: '🐱', name: '小猫' },
-  { emoji: '⭐', name: '星星' },
-  { emoji: '🌸', name: '花' },
-  { emoji: '🚗', name: '小汽车' },
-  { emoji: '🐟', name: '小鱼' },
-  { emoji: '🍓', name: '草莓' },
-  { emoji: '🎈', name: '气球' },
-] as const
 
 /**
  * 生成一道计数或数序题目。
@@ -83,11 +73,22 @@ function buildCountItem(ctx: GeneratorContext, min: number, max: number): Genera
     kpId: ctx.kpId,
     type: 'tap_count',
     difficulty: ctx.difficulty,
-    stem: {
-      // 0 个时无法用 emoji 表示，改用文字描述——M1.2「认识 0」的核心场景
-      text: answer === 0 ? `一个${thing.name}也没有，是几个?` : `数一数，有几个${thing.name}?`,
-      ttsText: answer === 0 ? `一个${thing.name}也没有，是几个` : `数一数，有几个${thing.name}`,
-    },
+    // 0 个时无法用 emoji 表示，改用文字描述——M1.2「认识 0」的核心场景。
+    // ⚠️ 名词前置（「苹果一个也没有」而非「一个苹果也没有」）：
+    //    语音由 [名词, phrase.noneAtAll] 两个片段拼成，名词只能在句首或句尾，
+    //    而屏幕文字必须与念出来的一字不差（写 A 读 B 是明令禁止的）。
+    stem:
+      answer === 0
+        ? {
+            text: `${thing.name}一个也没有，是几个?`,
+            ttsText: `${thing.name}一个也没有，是几个`,
+            ttsParts: [thing.clipKey, 'phrase.noneAtAll'],
+          }
+        : {
+            text: `数一数，有几个${thing.name}?`,
+            ttsText: `数一数，有几个${thing.name}`,
+            ttsParts: ['phrase.countThem', 'phrase.howMany', thing.clipKey],
+          },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),
     visual: { kind: 'countable', emoji: thing.emoji, name: thing.name, count: answer },
@@ -109,6 +110,7 @@ function buildSequenceItem(
       answer: pivot + 1,
       text: `${pivot} 的后面是几?`,
       tts: `${pivot} 的后面是几`,
+      parts: [...num(pivot), 'phrase.afterIsWhat'],
       // 说成前一个，是「前/后」方位没建立
       wrong: pivot - 1,
     },
@@ -116,12 +118,14 @@ function buildSequenceItem(
       answer: pivot - 1,
       text: `${pivot} 的前面是几?`,
       tts: `${pivot} 的前面是几`,
+      parts: [...num(pivot), 'phrase.beforeIsWhat'],
       wrong: pivot + 1,
     },
     between: {
       answer: pivot,
       text: `${pivot - 1} 和 ${pivot + 1} 中间是几?`,
       tts: `${pivot - 1} 和 ${pivot + 1} 中间是几`,
+      parts: [...num(pivot - 1), 'op.and', ...num(pivot + 1), 'phrase.betweenIsWhat'],
       wrong: pivot + 2,
     },
   }[mode]
@@ -137,7 +141,7 @@ function buildSequenceItem(
     kpId: ctx.kpId,
     type: 'input_number',
     difficulty: ctx.difficulty,
-    stem: { text: config.text, ttsText: config.tts },
+    stem: { text: config.text, ttsText: config.tts, ttsParts: config.parts },
     options: buildNumericOptions(config.answer, candidates, ctx.rng),
     answer: String(config.answer),
   }

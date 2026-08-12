@@ -13,7 +13,6 @@
 
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
 import { PetAvatar, PetLevelBar } from '@/components/PetAvatar'
 import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
@@ -23,6 +22,7 @@ import { levelProgress, MAX_LEVEL } from '@/domain/pet/growth'
 import { greetingMoment, pickLine } from '@/domain/pet/personality'
 import { utter } from '@/domain/speech'
 import { nowIso } from '@/domain/time'
+import { PetNamePicker } from '@/features/pet/PetNamePicker'
 import { say } from '@/platform/speech'
 import { useProfileStore } from '@/stores/profileStore'
 import type { PetState } from '@/domain/types'
@@ -41,7 +41,8 @@ interface PetDetailProps {
  * 一只伙伴的详情面板。
  *
  * @param pet - 当前选中的宠物
- * @param renaming - 是否处于改名态。改名是全 App 唯一需要键盘的地方
+ * @param renaming - 是否处于改名态。起名从预录名单里点选（PetNamePicker），
+ *                   不再用键盘——预设之外的名字没有语音片段，升级播报会掉成机器音
  *
  * @example
  * <PetDetail pet={pet} renaming={false} draftName="" … />
@@ -113,24 +114,13 @@ export function PetDetail({
       )}
 
       {renaming ? (
-        <div className="flex w-full max-w-xs flex-col items-center gap-3">
-          <input
-            value={draftName}
-            onChange={(e) => onDraftChange(e.target.value)}
-            maxLength={8}
-            autoFocus
-            aria-label="宠物名字"
-            className="w-full rounded-blob border-4 border-primary/40 bg-surface px-5 py-3 text-center text-2xl font-bold text-ink outline-none"
-          />
-          <div className="flex gap-3">
-            <BigButton tone="neutral" onClick={onCancelRename}>
-              算了
-            </BigButton>
-            <BigButton tone="primary" onClick={onConfirmRename}>
-              就叫这个
-            </BigButton>
-          </div>
-        </div>
+        <PetNamePicker
+          defaultName={def.defaultName}
+          current={draftName}
+          onPick={onDraftChange}
+          onCancel={onCancelRename}
+          onConfirm={onConfirmRename}
+        />
       ) : (
         <div className="flex flex-col items-center gap-3">
           <div className="flex items-baseline gap-2">

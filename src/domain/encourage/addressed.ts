@@ -22,6 +22,7 @@
  * 见 CLAUDE.md 产品红线「答错反馈要温和」。
  */
 
+import { nicknameClipFor, speakerOfParts } from '@/domain/encourage/petSpeaker'
 import { plain, utter, type ClipKey, type Utterance } from '@/domain/speech'
 
 /** 昵称与它的语音片段。片段缺失时整句降级为 TTS，见 {@link addressed} */
@@ -99,11 +100,18 @@ export function addressed(
    * 于是**只念出一个名字**，后半句连同兜底文本一起消失。
    * 孩子听到的是「小恩宝。」然后没了——比音色不对严重得多。
    */
-  if (parts.flat().length === 0) return { text, utterance: plain(text) }
+  const flat = parts.flat()
+  if (flat.length === 0) return { text, utterance: plain(text) }
 
-  return {
-    text,
-    utterance:
-      nickname.clipKey === undefined ? plain(text) : utter([nickname.clipKey, ...parts], text),
-  }
+  if (nickname.clipKey === undefined) return { text, utterance: plain(text) }
+
+  /**
+   * ⭐ 昵称片段按**说话者**选音色变体：后半句是宠物台词（petline.*）时，
+   * 名字也要用那只宠物的音色念——「一句话一个音色」，
+   * 少女声的「小恩宝」接男童声的「我有点想你」是两个人在说话。
+   * 说话者不用调用方传，它是台词片段 key 自带的信息（见 petSpeaker.ts）。
+   */
+  const nameClip = nicknameClipFor(nickname.clipKey, speakerOfParts(flat))
+
+  return { text, utterance: utter([nameClip, ...flat], text) }
 }

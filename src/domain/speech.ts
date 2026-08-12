@@ -92,6 +92,38 @@ export function utter(
 }
 
 /**
+ * 把「数字组成的答案文本」解析成片段序列 —— 答错反馈念「答案是 X」用。
+ *
+ * 覆盖四类答案原文：`'5'`（填空）、`'5 6 7 8'`（排序）、`'10 和 3'`（拆分）、
+ * `'1 和 4、2 和 3'`（配对）。解析不了的自由文本（图形名、拼音写法等）
+ * 返回 `undefined`，由调用方整句降级——**宁可整句 TTS 也不能拼出漏词的句子**。
+ *
+ * @param text - 正确答案的展示文本
+ * @returns 片段序列；含非数字词或数字超过 20 时返回 `undefined`
+ *
+ * @example
+ * answerParts('10 和 3')      // ['num.10', 'op.and', 'num.3']
+ * answerParts('5 6 7 8')      // ['num.5', 'num.6', 'num.7', 'num.8']
+ * answerParts('正方体')       // undefined —— 这类答案由选项自带的 ttsParts 提供
+ */
+export function answerParts(text: string): ClipKey[] | undefined {
+  const tokens = text.split(/[\s、，]+/).filter((t) => t.length > 0)
+  if (tokens.length === 0) return undefined
+
+  const parts: ClipKey[] = []
+  for (const token of tokens) {
+    if (token === '和') {
+      parts.push('op.and')
+      continue
+    }
+    // 20 以上 num() 会退化成逐位拼读（25 → 「二 五」），那是错的读法，宁可不拼
+    if (!/^\d+$/.test(token) || Number(token) > 20) return undefined
+    parts.push(...num(Number(token)))
+  }
+  return parts
+}
+
+/**
  * 纯文本语句 —— 没有对应片段，只能走 TTS。
  *
  * 过渡期用：宠物台词、成就文案这些还没纳入片段清单的内容先这样挂着，

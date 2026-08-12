@@ -65,6 +65,7 @@ export const classifyShape: Generator = ({ kpId, difficulty, rng }) => {
     stem: {
       text: `哪个和它一样，也是${kindWord}？`,
       ttsText: `哪个和它一样，也是${kindWord}`,
+      ttsParts: [askSolid ? 'phrase.sameKindSolid' : 'phrase.sameKindPlane'],
     },
     options: toShapeOptions(shuffle(rng, raw)),
     answer: SHAPE_NAMES[twin] ?? '',

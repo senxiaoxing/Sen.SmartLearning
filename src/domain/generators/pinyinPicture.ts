@@ -20,7 +20,7 @@
  * 池子里没有同音字时才退到音近的（同声母或同韵母）。
  */
 
-import { displayForm, initialOf, rhymeOf, type Syllable } from '@/domain/pinyin'
+import { displayForm, initialOf, rhymeOf, syllableKey, type Syllable } from '@/domain/pinyin'
 import { shuffle } from '@/domain/generators/rng'
 import type { Generator, ItemOption } from '@/domain/types'
 
@@ -75,6 +75,9 @@ export const pinyinPicture: Generator = ({ kpId, difficulty, params, rng }) => {
   const options: ItemOption[] = shuffle(rng, [target, ...distractors]).map((s, i) => ({
     id: OPTION_IDS[i] ?? `x${i}`,
     text: displayForm(s),
+    // ⚠️ 答题时选项不发声（播了等于报答案，OptionButton 本来也不朗读）。
+    // 这份片段只喂答错反馈的「答案是 máo」与家长错题本——那两处答案已经揭晓
+    ttsParts: [syllableKey(s.base, s.tone)],
     isCorrect: s === target,
     ...(s === target
       ? {}
@@ -92,6 +95,7 @@ export const pinyinPicture: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: '这是什么？选出它的拼音',
       ttsText: '这是什么，选出它的拼音',
+      ttsParts: ['phrase.pickPinyin'],
     },
     options,
     answer: targetForm,

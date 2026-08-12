@@ -145,7 +145,18 @@ function buildThreeTermItem(
     kpId: ctx.kpId,
     type: 'input_number',
     difficulty: ctx.difficulty,
-    stem: { text: `${a} ${op1} ${b} ${op2} ${c} = ?`, ttsText: tts },
+    stem: {
+      text: `${a} ${op1} ${b} ${op2} ${c} = ?`,
+      ttsText: tts,
+      ttsParts: [
+        ...num(a),
+        op1 === '+' ? 'op.plus' : 'op.minus',
+        ...num(b),
+        op2 === '+' ? 'op.plus' : 'op.minus',
+        ...num(c),
+        'phrase.equalsWhat',
+      ],
+    },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),
   }

@@ -12,6 +12,7 @@
 import { buildArrangementOptions } from '@/domain/generators/arrangements'
 import { readRange } from '@/domain/generators/params'
 import { randomInt, shuffle } from '@/domain/generators/rng'
+import { num } from '@/domain/speech'
 import type { ArrangementDistractor } from '@/domain/generators/arrangements'
 import type { Generator } from '@/domain/types'
 
@@ -69,6 +70,7 @@ export const matchPairs: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `连一连，每组合起来是 ${total}`,
       ttsText: `把左边和右边连起来，每一组合起来都要是 ${total}`,
+      ttsParts: ['phrase.connectPairs', ...num(total)],
     },
     options: buildArrangementOptions(
       { key: correctKey, text: correctText },

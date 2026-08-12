@@ -70,6 +70,7 @@ export const orderSequence: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `把它们${directionText}排好`,
       ttsText: `请把这些数${directionText}排好`,
+      ttsParts: [wantsDescending ? 'phrase.arrangeDesc' : 'phrase.arrangeAsc'],
     },
     options: buildArrangementOptions(
       { key: correct.join(','), text: correct.join(' ') },

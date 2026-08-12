@@ -16,8 +16,10 @@
 
 import { ALL_ENGLISH_WORDS } from '@/data/seed/englishWords'
 import { EXPLAINERS } from '@/data/seed/explainers'
+import { nicknameClipFor, PET_SPEAKERS } from '@/domain/encourage/petSpeaker'
 import { ALL_HANZI_CARDS } from '@/data/seed/hanziCards'
 import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
+import { PET_NAME_PRESETS } from '@/data/seed/petNamePresets'
 import { PET_DEFINITIONS, PET_LINE_MOMENTS } from '@/data/seed/pets'
 import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
 import { POEMS } from '@/data/seed/poems'
@@ -45,6 +47,11 @@ const OPERATORS: VoiceManifest = {
   'op.equals': '等于',
   'op.and': '和',
   'op.he': '合起来是',
+  // 比较符号的名字（M1.6/M1.8）：屏幕上是「>」，念出来是「大于号」——
+  // 裸符号喂给 TTS 读不读、怎么读全凭运气
+  'op.greaterSign': '大于号',
+  'op.lessSign': '小于号',
+  'op.equalsSign': '等于号',
 }
 
 /**
@@ -76,6 +83,71 @@ const PHRASES: VoiceManifest = {
   'phrase.firstSplit': '先把',
   'phrase.intoAndWhat': '分成几和几',
   'phrase.firstCompute': '先算',
+  'phrase.splitInto': '分成',
+
+  // —— 题干：数序 / 比较 / 数位（M1.x）
+  'phrase.afterIsWhat': '的后面是几',
+  'phrase.beforeIsWhat': '的前面是几',
+  'phrase.betweenIsWhat': '中间是几',
+  'phrase.compareWhatSymbol': '比，中间该填什么符号',
+  'phrase.tensDigitWhat': '的十位上是几',
+  'phrase.onesDigitWhat': '的个位上是几',
+
+  // —— 题干：序数与位置（M1.4 / M2.x）
+  // ⚠️ 'phrase.at' 是孤立单字「在」，生成后要复听，读飘就进 TAIL_FIX_KEYS
+  'phrase.fromLeftCount': '从左边数',
+  'phrase.fromRightCount': '从右边数',
+  'phrase.rankWhich': '排第几',
+  'phrase.at': '在',
+  'phrase.whatPosition': '的什么位置',
+
+  // —— 题干：情境题（M4.1/M4.3/M9.x）。'phrase.unitGe' 同上，孤立「个」要复听
+  'phrase.leftHas': '左边有',
+  'phrase.rightHas': '右边有',
+  'phrase.unitGe': '个',
+  'phrase.altogetherHowMany': '一共有几个',
+  'phrase.originallyHas': '原来有',
+  'phrase.tookAway': '拿走了',
+  'phrase.howManyLeft': '还剩几个',
+  'phrase.topMoreHowMany': '上面比下面多几个',
+  'phrase.questionGroupHas': '问号那一组有几个',
+  'phrase.whichEquationFits': '哪个算式说的是这幅图',
+
+  // —— 题干：图形（M7.x）
+  'phrase.whichIs': '哪个是',
+  'phrase.sameKindSolid': '哪个和它一样，也是立体图形',
+  'phrase.sameKindPlane': '哪个和它一样，也是平面图形',
+  'phrase.howManyBlocks': '一共有几块积木',
+  'phrase.howManyInPicture': '图里有几个',
+
+  // —— 题干：钟表（M8.x）。认指针题的分钟恒为 0，只需「点整」；
+  //    「点半」给答错反馈念半时答案用（M8.3）
+  'phrase.whatTimeNow': '现在是几点',
+  'phrase.whichClockShows': '哪个钟面是',
+  'phrase.oclockSharp': '点整',
+  'phrase.halfPast': '点半',
+
+  // —— 题干：拼音固定题干（P 系列，整句一条，不拼接）
+  'phrase.oddInitial': '点一点听一听，哪个的声母和其他三个不一样',
+  'phrase.oddFinal': '点一点听一听，哪个的韵母和其他三个不一样',
+  'phrase.oddTone': '点一点听一听，哪个的声调和其他三个不一样',
+  'phrase.pickPinyin': '这是什么，选出它的拼音',
+  'phrase.whichIntegral': '哪个是整体认读音节，就是不能拆开拼的那个',
+  /**
+   * ⭐ 念的是「迂」不是「ü」：喂裸字母给中文 TTS 读音全凭运气（§3.3 的教训），
+   * 而 ü 的呼读音正是 yū，「迂」是它唯一的常用一声载体字。
+   * 前半个音（j/q/x/y 的呼读音）由拼音片段（pinyin.ji1 等）拼在前面。
+   */
+  'phrase.umlautAsk': '和迂拼在一起，应该怎么写',
+  /**
+   * ⭐ 说「这个音节」而不念题干里的裸拼音（hao/jia…）：
+   * 裸拼音喂给 TTS 会读错声调——P3.4 考的是标调位置，音节写在屏幕上即可。
+   * 四个声调各一条整句，不用「第 + 数字 + 声」拼接——整句韵律更稳。
+   */
+  'phrase.toneMark1': '这个音节读第一声，声调该标在哪里',
+  'phrase.toneMark2': '这个音节读第二声，声调该标在哪里',
+  'phrase.toneMark3': '这个音节读第三声，声调该标在哪里',
+  'phrase.toneMark4': '这个音节读第四声，声调该标在哪里',
   // —— 记忆翻牌（E1.6 / E1.9）
   'phrase.matchUpperLower': '把大写和小写配成一对',
   'phrase.matchLetterWord': '把字母和它开头的东西配成一对',
@@ -96,6 +168,8 @@ const PHRASES: VoiceManifest = {
   'phrase.praise4': '就是这样',
   'phrase.praise5': '好厉害呀',
   'phrase.lookAgain': '再看看，答案是',
+  // 有伙伴安慰语在前时接的后半句：「（安慰），答案是 X」
+  'phrase.answerIs': '答案是',
 
   // —— 升级（拼在小结后面，合成一句话说完）
   'phrase.transformed': '变身啦',
@@ -117,16 +191,64 @@ const PHRASES: VoiceManifest = {
   'phrase.startHere': '找到啦，我们从这里开始练习',
 }
 
-/** 数数题里可数物体的名称。与 `domain/generators/counting.ts` 的清单一一对应 */
+/**
+ * 名词片段。
+ *
+ * 与三份 domain 清单一一对应，**改那边必须同步这边**（漂移由
+ * `voiceManifest.test.ts` 的生成器采样用例兜底抓出）：
+ * - `domain/generators/countables.ts` 的 COUNTABLES / ORDINAL_LINEUP / SPATIAL_PAIRS
+ * - `domain/generators/shapeKinds.ts` 的图形名（key 直接用图形 kind：`word.cube`）
+ * - `domain/generators/position.ts` 的方位词（选项点读与错题本用）
+ *
+ * ⚠️ 单字词（花/球/圆）是孤立短音，声调可能读飘（见 §3.3 拼音的教训），
+ * 生成后要复听；读不稳就在生成脚本的 TAIL_FIX_KEYS 里补尾随逗号。
+ */
 const WORDS: VoiceManifest = {
+  // —— 可数物体（COUNTABLES）
   'word.apple': '苹果',
   'word.cat': '小猫',
-  'word.dog': '小狗',
   'word.star': '星星',
   'word.flower': '花',
-  'word.car': '汽车',
-  'word.duck': '小鸭',
+  'word.car': '小汽车',
   'word.fish': '小鱼',
+  'word.strawberry': '草莓',
+  'word.balloon': '气球',
+  'word.duck': '小鸭子',
+  'word.rabbit': '小兔子',
+  'word.cookie': '饼干',
+  'word.sunflower': '向日葵',
+  // —— 序数队伍（ORDINAL_LINEUP）
+  'word.dog': '小狗',
+  'word.bear': '小熊',
+  'word.panda': '熊猫',
+  'word.fox': '小狐狸',
+  'word.frog': '小青蛙',
+  'word.pig': '小猪',
+  // —— 位置题的参照物与目标（SPATIAL_PAIRS）
+  'word.tree': '大树',
+  'word.house': '房子',
+  'word.chair': '椅子',
+  'word.box': '箱子',
+  'word.bird': '小鸟',
+  'word.teddy': '玩具熊',
+  'word.ball': '皮球',
+  'word.butterfly': '蝴蝶',
+  // —— 方位词（M2.x 选项）
+  'word.above': '上面',
+  'word.below': '下面',
+  'word.front': '前面',
+  'word.behind': '后面',
+  'word.left': '左边',
+  'word.right': '右边',
+  // —— 图形名（M7.x，key 与 shapeKinds 的 kind 同名）
+  'word.cube': '正方体',
+  'word.cuboid': '长方体',
+  'word.cylinder': '圆柱',
+  'word.sphere': '球',
+  'word.square': '正方形',
+  'word.rect': '长方形',
+  'word.triangle': '三角形',
+  'word.circle': '圆',
 }
 
 /**
@@ -209,18 +331,35 @@ const PET_NAMES: VoiceManifest = {
 }
 
 /**
- * 查宠物名的专属片段。
+ * 起名选择器的共享候选池（petname.*）。
  *
- * @param name - 宠物当前的名字（孩子可能改过）
- * @returns 片段 key；改过名就没有，调用方应整句走 TTS
+ * 起名只能从「默认名 + 这个池子」里挑（PetNamePicker），
+ * 因此**改过名的宠物照样有专属片段**——升级那句再也不会降级成机器音。
+ */
+const PET_NAME_PRESET_CLIPS: VoiceManifest = Object.fromEntries(
+  PET_NAME_PRESETS.map((preset) => [preset.clipKey, preset.text]),
+)
+
+/**
+ * 查宠物名的专属片段：默认名（pet.*）与预设候选名（petname.*）都在内。
+ *
+ * 起名改成预设选择器之后正常路径永远查得到；查不到只剩一种情况——
+ * 旧档案里遗留的自由输入名字，那时调用方应整句走 TTS（绝不混播）。
+ *
+ * @param name - 宠物当前的名字
+ * @returns 片段 key；旧档案的自由输入名返回 `undefined`
  *
  * @example
  * petNameClipKey('团团')   // 'pet.tuantuan'
- * petNameClipKey('毛毛')   // undefined —— 孩子改的名字
+ * petNameClipKey('毛毛')   // 'petname.maomao'
+ * petNameClipKey('阿旺')   // undefined —— 改版前用键盘起的名字
  */
 export function petNameClipKey(name: string): string | undefined {
   const trimmed = name.trim()
-  return Object.keys(PET_NAMES).find((key) => PET_NAMES[key] === trimmed)
+  return (
+    Object.keys(PET_NAMES).find((key) => PET_NAMES[key] === trimmed) ??
+    PET_NAME_PRESETS.find((preset) => preset.text === trimmed)?.clipKey
+  )
 }
 
 /**
@@ -228,11 +367,22 @@ export function petNameClipKey(name: string): string | undefined {
  *
  * ⭐ 唯一一组「内容由家长决定」的片段：孩子听到的是自己的名字，
  * 而不是「小朋友」。只有 {@link NICKNAME_PRESETS} 里的昵称有专属音频，
- * 其余昵称整句降级为实时 TTS——名字照样叫得出来，只是音色换成机器声。
+ * 其余昵称（旧档案遗留）整句降级为实时 TTS。
  * 为什么不混播见 `nicknamePresets.ts` 的文件头。
+ *
+ * ⭐ **每个昵称按音色生成四份**：旁白一份 + 三只伙伴各一份
+ * （`name.xiaoenbao` / `name.penguinXiaoenbao` / …）。
+ * 宠物用自己的音色说「小恩宝，我有点想你」时，名字也必须是它的声音——
+ * 一句话一个音色。变体的挑选逻辑在 `domain/encourage/petSpeaker.ts`，
+ * key 的构造规则与生成脚本的 `loadNicknames()` 逐字一致。
  */
 const NICKNAMES: VoiceManifest = Object.fromEntries(
-  NICKNAME_PRESETS.map((preset) => [preset.clipKey, preset.text]),
+  NICKNAME_PRESETS.flatMap((preset) => [
+    [preset.clipKey, preset.text] as const,
+    ...PET_SPEAKERS.map(
+      (speaker) => [nicknameClipFor(preset.clipKey, speaker), preset.text] as const,
+    ),
+  ]),
 )
 
 /**
@@ -281,6 +431,7 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...ENGLISH,
   ...NICKNAMES,
   ...PET_NAMES,
+  ...PET_NAME_PRESET_CLIPS,
   ...PET_LINES,
   ...EXPLAINER_LINES,
 }
@@ -338,7 +489,8 @@ export const WARMUP_CLIPS: readonly string[] = [
   // 首次答对距离解锁只有十几秒，不预热的话第一声「太棒了」会迟到
   ...PRAISE_POOL.map((praise) => praise.clipKey),
   // 首页问候 —— 打开 App 听到的第一句话，最不该卡的就是它。
-  // 六个昵称全预取（只有一个会用上，但每条才十来 KB，比判断该取哪个省事）
+  // 昵称片段全预取（含三只伙伴音色的变体：答对反馈抽到宠物台词时马上要用），
+  // 每条才十来 KB，全取比判断该取哪个省事
   ...Object.keys(NICKNAMES),
   'phrase.whatToLearn',
   'phrase.goodMorning',
@@ -346,4 +498,38 @@ export const WARMUP_CLIPS: readonly string[] = [
   'phrase.goodAfternoon',
   'phrase.goodEvening',
   'phrase.happyBirthday',
+  // ⭐ 三只伙伴的全部台词。出现在两个「点了就该响」的位置：
+  // 宠物页的见面语在挂载瞬间就播（等不了进页再取），
+  // 答对反馈的轮换池里一半是台词（首次答对距开始只有十几秒）。
+  // 57 条约 700KB，App 挂载时在首页停留的那几秒足够取完
+  ...Object.keys(PET_LINES),
+]
+
+/**
+ * 进入学习会话就该预取的片段（`LearningSession` 挂载时取）。
+ *
+ * 会话里**必然或大概率**要播、而首屏预热又覆盖不到的：
+ * 答错反馈的引导语、小结语、升级播报的组装片段与宠物名字。
+ * 不并进 WARMUP_CLIPS：没开始学习就不需要它们，首屏预热要保持「首屏必需」的语义。
+ *
+ * ⚠️ 本轮题目的题干/选项片段不在这里——它们随题而变，
+ * 由 LearningSession 按 `items` 现算（见那边的预取 effect）。
+ */
+export const SESSION_CLIPS: readonly string[] = [
+  // 答错反馈：「再看看，答案是 X」/「（伙伴安慰），答案是 X」
+  'phrase.lookAgain',
+  'phrase.answerIs',
+  // 小结语（summaryLine.ts 的全部组装件）
+  'phrase.allCorrect',
+  'phrase.youGot',
+  'phrase.questions',
+  'phrase.reviewWrong',
+  'phrase.roundDone',
+  'phrase.nothingToday',
+  // 升级播报（levelUpLine.ts：拼在小结语后面）+ 念得出任何一个宠物名字
+  'phrase.transformed',
+  'phrase.leveledTo',
+  'phrase.levelUnit',
+  ...Object.keys(PET_NAMES),
+  ...PET_NAME_PRESETS.map((preset) => preset.clipKey),
 ]

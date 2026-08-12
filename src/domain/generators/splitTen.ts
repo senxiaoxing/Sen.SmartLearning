@@ -18,6 +18,7 @@ import { buildArrangementOptions } from '@/domain/generators/arrangements'
 import { readBoolean, readNumberList } from '@/domain/generators/params'
 import { randomInt, randomPick } from '@/domain/generators/rng'
 import { cardsFrom, nearMissSplits } from '@/domain/generators/splitCards'
+import { num } from '@/domain/speech'
 import type { Difficulty, GeneratedItem, Generator } from '@/domain/types'
 
 /** 十格阵容量。凑十、破十都围绕这个数展开 */
@@ -86,7 +87,20 @@ function buildCarryItem(
     difficulty,
     stem: {
       text: `${a} + ${b}：把 ${b} 分成两份`,
-      ttsText: `${a} 加 ${b}。把 ${b} 分成两份，一份补给 ${a} 凑成 10，另一份剩下`,
+      // 「先把」而不是「把」：与 M5.1 填空版同一句式，且清单里已有该片段
+      ttsText: `${a} 加 ${b}，先把 ${b} 分成两份，一份补给 ${a} 凑成 10，另一份剩下`,
+      ttsParts: [
+        ...num(a),
+        'op.plus',
+        ...num(b),
+        'phrase.firstSplit',
+        ...num(b),
+        'phrase.splitIntoTwo',
+        'phrase.oneGoesTo',
+        ...num(a),
+        'phrase.toMakeTen',
+        'phrase.theRestLeft',
+      ],
     },
     options,
     // ⚠️ `answer` 是**展示用文本**（契约：等于正确选项的 text），
@@ -139,7 +153,19 @@ function buildBorrowItem(
     difficulty,
     stem: {
       text: `${minuend} - ${s}：把 ${minuend} 分成两份`,
-      ttsText: `${minuend} 减 ${s}。把 ${minuend} 分成两份，一份拿来减 ${s}，另一份剩下`,
+      // 同凑十版：句式统一为「先把」，片段清单里已备好
+      ttsText: `${minuend} 减 ${s}，先把 ${minuend} 分成两份，一份拿来减 ${s}，另一份剩下`,
+      ttsParts: [
+        ...num(minuend),
+        'op.minus',
+        ...num(s),
+        'phrase.firstSplit',
+        ...num(minuend),
+        'phrase.splitIntoTwo',
+        'phrase.takeToSubtract',
+        ...num(s),
+        'phrase.theRestLeft',
+      ],
     },
     options,
     answer: `10 和 ${ones}`,

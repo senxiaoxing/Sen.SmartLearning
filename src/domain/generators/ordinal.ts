@@ -47,7 +47,8 @@ export const ordinal: Generator = ({ kpId, difficulty, params, rng }) => {
   const targetIndex = position - 1
 
   const arrayIndex = fromRight ? count - 1 - targetIndex : targetIndex
-  const targetName = lineup[arrayIndex]?.name ?? '它'
+  const target = lineup[arrayIndex]
+  const targetName = target?.name ?? '它'
   const side = fromRight ? '右' : '左'
 
   return {
@@ -58,6 +59,15 @@ export const ordinal: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `从${side}边数，${targetName}排第几？`,
       ttsText: `从${side}边数，${targetName}排第几`,
+      // target 理论上必然存在（arrayIndex < lineup.length），?? 只是 TS 收窄；
+      // 万一取不到就不给 parts，整句走 TTS 兜底，绝不能拼出「从左边数排第几」
+      ...(target !== undefined && {
+        ttsParts: [
+          fromRight ? 'phrase.fromRightCount' : 'phrase.fromLeftCount',
+          target.clipKey,
+          'phrase.rankWhich',
+        ],
+      }),
     },
     options: buildNumericOptions(
       position,

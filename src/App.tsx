@@ -22,6 +22,7 @@ import { ExplainerLibrary } from '@/features/learning/ExplainerLibrary'
 import { LearningSession } from '@/features/learning/LearningSession'
 import { SessionSummary } from '@/features/learning/SessionSummary'
 import { Assessment } from '@/features/onboarding/Assessment'
+import { VoiceCacheGate } from '@/features/onboarding/VoiceCacheGate'
 import { Backup } from '@/features/parent/Backup'
 import { ParentGate } from '@/features/parent/ParentGate'
 import { ParentHome } from '@/features/parent/ParentHome'
@@ -78,30 +79,35 @@ function AppRoutes() {
   }, [])
 
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/assessment" element={<Assessment />} />
-      <Route path="/learn" element={<LearningSession />} />
-      <Route path="/explain" element={<ExplainerLibrary />} />
-      {/* 字母乐园：英语的第一站，先玩后练，不绑在答题流程里 */}
-      <Route path="/letters" element={<LetterWall />} />
-      {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定。
-          古诗是这里唯一有二级页的——诗单选一首再看那一首，
-          点击深度仍是 2（首页 → 诗单 → 诗），与家长区的报告页同级 */}
-      <Route path="/pinyin" element={<PinyinWall />} />
-      <Route path="/hanzi" element={<HanziWall />} />
-      <Route path="/poems" element={<PoemLibrary />} />
-      <Route path="/poems/:id" element={<PoemView />} />
-      <Route path="/pets" element={<PetHome />} />
-      <Route path="/summary" element={<SessionSummary />} />
-      {/* 家长区。门禁包在路由这一层，任何直接跳 hash 的路径都绕不过去。
-          通行状态存在 parentGateStore，因此子页面之间跳转不会重复验证 */}
-      <Route path="/parent" element={<Gated><ParentHome /></Gated>} />
-      <Route path="/parent/report" element={<Gated><Report /></Gated>} />
-      <Route path="/parent/wrong" element={<Gated><WrongBook /></Gated>} />
-      <Route path="/parent/backup" element={<Gated><Backup /></Gated>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      {/* ⭐ 启动自检：语音缓存不全时盖住整个 App 先补全（design/07 §2.5d）。
+          齐全（绝大多数启动）时它什么也不渲染 */}
+      <VoiceCacheGate />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/assessment" element={<Assessment />} />
+        <Route path="/learn" element={<LearningSession />} />
+        <Route path="/explain" element={<ExplainerLibrary />} />
+        {/* 字母乐园：英语的第一站，先玩后练，不绑在答题流程里 */}
+        <Route path="/letters" element={<LetterWall />} />
+        {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定。
+            古诗是这里唯一有二级页的——诗单选一首再看那一首，
+            点击深度仍是 2（首页 → 诗单 → 诗），与家长区的报告页同级 */}
+        <Route path="/pinyin" element={<PinyinWall />} />
+        <Route path="/hanzi" element={<HanziWall />} />
+        <Route path="/poems" element={<PoemLibrary />} />
+        <Route path="/poems/:id" element={<PoemView />} />
+        <Route path="/pets" element={<PetHome />} />
+        <Route path="/summary" element={<SessionSummary />} />
+        {/* 家长区。门禁包在路由这一层，任何直接跳 hash 的路径都绕不过去。
+            通行状态存在 parentGateStore，因此子页面之间跳转不会重复验证 */}
+        <Route path="/parent" element={<Gated><ParentHome /></Gated>} />
+        <Route path="/parent/report" element={<Gated><Report /></Gated>} />
+        <Route path="/parent/wrong" element={<Gated><WrongBook /></Gated>} />
+        <Route path="/parent/backup" element={<Gated><Backup /></Gated>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   )
 }
 

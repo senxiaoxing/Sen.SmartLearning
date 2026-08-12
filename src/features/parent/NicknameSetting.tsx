@@ -1,7 +1,7 @@
 /**
  * @file 昵称设置 —— 家长区里改「App 该怎么称呼孩子」
  * @layer features
- * @see src/data/seed/nicknamePresets.ts       哪些昵称有专属语音
+ * @see src/data/seed/nicknamePresets.ts       预设昵称清单（唯一的新增途径）
  * @see src/domain/encourage/pickNickname.ts   多个称呼怎么轮换
  * @see src/stores/profileStore.ts             读写
  *
@@ -12,14 +12,18 @@
  * 而是提示音的一部分；真实的家长本来也不会一天到晚只用一个称呼。
  * 第一个是主昵称，备份文件名用的是它。
  *
- * ⚠️ 这一屏在家长门禁之后，受众是成年人，因此不受孩子端那套
- * 「不识字 / 无键盘 / 88pt 触控区」的约束限制。
+ * ⭐ **只能从预设里挑，不再自由输入**：预设之外的昵称没有语音片段，
+ * 整句问候都会降级成机器音——「叫对了名字但换了个人的声音」比不叫更怪。
+ * 想加新称呼：在 `nicknamePresets.ts` 登记一条、跑 `npm run voices` 重新构建。
+ * 改版前存下的自由昵称仍会显示（标「合成音」），删掉后无法再加回。
+ *
+ * ⚠️ 这一屏在家长门禁之后，受众是成年人，不受孩子端「不识字 / 88pt」约束。
  */
 
 import { useEffect, useState } from 'react'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
-import { NICKNAME_MAX_COUNT, NICKNAME_MAX_LENGTH } from '@/data/repositories/profileRepo'
+import { NICKNAME_MAX_COUNT } from '@/data/repositories/profileRepo'
 import { NICKNAME_PRESETS, toNickname } from '@/data/seed/nicknamePresets'
 import { greetingLine } from '@/domain/encourage/greetingLine'
 import { pickNickname } from '@/domain/encourage/pickNickname'
@@ -31,8 +35,8 @@ import { useProfileStore } from '@/stores/profileStore'
 /**
  * 草稿列表压成单个字符串时用的分隔符。
  *
- * 换行是单行输入框打不出来的字符，昵称里也不可能有，
- * 所以拆回来一定还是原样。换成空格的话「小 恩宝」会被拆成两个称呼。
+ * 换行在昵称文本里不可能出现，所以拆回来一定还是原样。
+ * 换成空格的话「小 恩宝」会被拆成两个称呼。
  */
 const JOINER = '\n'
 
@@ -40,7 +44,6 @@ export function NicknameSetting() {
   const nicknames = useProfileStore((s) => s.nicknames)
   const rename = useProfileStore((s) => s.rename)
   const [draft, setDraft] = useState<string[]>([])
-  const [typing, setTyping] = useState('')
 
   /** 已保存的列表。压成字符串是为了当 effect 依赖，数组每次渲染都是新引用 */
   const savedKey = nicknames.map((n) => n.text).join(JOINER)
@@ -55,11 +58,8 @@ export function NicknameSetting() {
   const full = draft.length >= NICKNAME_MAX_COUNT
 
   const add = (text: string) => {
-    // 顺手去掉中间的空白：昵称要被念出来，「小 恩宝」在语音里是个突兀的停顿
-    const clean = text.replace(/\s+/g, '').slice(0, NICKNAME_MAX_LENGTH)
-    if (clean.length === 0 || full || draft.includes(clean)) return
-    setDraft([...draft, clean])
-    setTyping('')
+    if (full || draft.includes(text)) return
+    setDraft([...draft, text])
   }
 
   /**
@@ -81,8 +81,10 @@ export function NicknameSetting() {
       <div>
         <h2 className="text-lg font-bold">孩子的昵称</h2>
         <p className="text-sm leading-relaxed text-ink/50">
-          用在问候、鼓励和小结里，并且会念出来。可以设几个，App 会换着叫；
+          用在问候、鼓励和小结里，并且会念出来。从下面的预设里挑几个，App 会换着叫；
           第一个是主昵称，备份文件名用它。全部删掉则不称呼。
+          想加新称呼要先在 nicknamePresets.ts 登记并重新生成语音——
+          预设之外的昵称只能用机器音念，等于换了个人在叫她。
         </p>
       </div>
 
@@ -118,36 +120,15 @@ export function NicknameSetting() {
           <p className="text-base text-ink/40">还没有称呼，所有文案会退回不带称呼的说法。</p>
         )}
 
-        <div className="flex gap-3 border-t border-ink/10 pt-3">
-          <input
-            value={typing}
-            onChange={(e) => setTyping(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && add(typing)}
-            maxLength={NICKNAME_MAX_LENGTH}
-            disabled={full}
-            aria-label="新增昵称"
-            placeholder={full ? `最多 ${NICKNAME_MAX_COUNT} 个` : '比如：小恩宝'}
-            className="min-w-0 flex-1 rounded-blob border-4 border-primary/30 bg-canvas px-4 py-3 text-xl font-bold text-ink outline-none focus:border-primary/60 disabled:opacity-40"
-          />
-          <BigButton
-            tone="neutral"
-            disabled={typing.trim().length === 0 || full}
-            className="shrink-0 px-5 py-3 text-base"
-            onClick={() => add(typing)}
-          >
-            加上
-          </BigButton>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-ink/40">有专属录音：</span>
+        <div className="flex flex-wrap items-center gap-2 border-t border-ink/10 pt-3">
+          <span className="text-sm text-ink/40">{full ? `最多 ${NICKNAME_MAX_COUNT} 个：` : '点击添加：'}</span>
           {NICKNAME_PRESETS.map((preset) => (
             <button
               key={preset.clipKey}
               type="button"
               disabled={full || draft.includes(preset.text)}
               onClick={() => add(preset.text)}
-              className="rounded-full bg-canvas px-3 py-1.5 text-sm text-ink/60 disabled:opacity-30"
+              className="rounded-full bg-canvas px-4 py-2 text-base font-bold text-ink/70 disabled:opacity-30"
             >
               ＋{preset.text}
             </button>

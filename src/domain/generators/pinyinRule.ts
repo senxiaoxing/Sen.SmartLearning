@@ -23,6 +23,20 @@ const OPTION_IDS = ['a', 'b', 'c', 'd'] as const
 const UMLAUT_INITIALS = ['j', 'q', 'x', 'y'] as const
 
 /**
+ * 声母 → 呼读音的拼音片段（jī 用「鸡」生成，见 pinyinSyllables 的载体字机制）。
+ *
+ * 题干朗读拼的是 [呼读音片段, phrase.umlautAsk]：
+ * 「jī，和 yū 拼在一起，应该怎么写」——与老师课堂上的问法一致。
+ * 直接把字母 j 喂给 TTS 会读成英文字母名，那是另一个音。
+ */
+const INITIAL_CLIPS: Record<(typeof UMLAUT_INITIALS)[number], string> = {
+  j: 'pinyin.ji1',
+  q: 'pinyin.qi1',
+  x: 'pinyin.xi1',
+  y: 'pinyin.yi1',
+}
+
+/**
  * 生成一道拼音书写规则题。
  *
  * @param ctx.params.mode - `'umlaut'`（P3.3 去两点）| `'tonePos'`（P3.4 标调位置）
@@ -70,6 +84,7 @@ function umlautItem(
     stem: {
       text: `${initial} 和 ${final} 拼在一起，应该怎么写？`,
       ttsText: `${initial} 和 ü 拼在一起，应该怎么写`,
+      ttsParts: [INITIAL_CLIPS[initial], 'phrase.umlautAsk'],
     },
     options: toOptions(shuffle(rng, dedupe(candidates)), 'u_umlaut_kept'),
     answer: correct,
@@ -109,7 +124,11 @@ function toneItem(
     difficulty,
     stem: {
       text: `${base} 读第 ${tone} 声，声调该标在哪里？`,
-      ttsText: `${base}，读第 ${tone} 声，声调该标在哪里`,
+      // ⚠️ 语音说「这个音节」而不念 base：裸拼音（hao/jia…）喂给 TTS 会读错，
+      // 音节写在屏幕上即可——P3.4 考的是标调位置，不是听音。
+      // 这是全 App 唯一一处「屏幕多于语音」的题干，理由同上，别改回去。
+      ttsText: `这个音节读第 ${tone} 声，声调该标在哪里`,
+      ttsParts: [`phrase.toneMark${tone}`],
     },
     options: toOptions(shuffle(rng, dedupe(candidates)), 'tone_wrong_position'),
     answer: correct,

@@ -8,7 +8,8 @@
  */
 
 import { motion } from 'framer-motion'
-import { speak } from '@/platform/tts'
+import { answerParts, plain, utter } from '@/domain/speech'
+import { say } from '@/platform/speech'
 import type { SessionItem } from '@/data/buildSessionItems'
 
 interface WrongItemCardProps {
@@ -18,7 +19,23 @@ interface WrongItemCardProps {
 
 export function WrongItemCard({ entry, index }: WrongItemCardProps) {
   const { item } = entry
-  const correct = item.options.find((o) => o.isCorrect)?.text ?? item.answer
+  const correctOption = item.options.find((o) => o.isCorrect)
+  const correct = correctOption?.text ?? item.answer
+
+  /**
+   * 点读走预生成片段：题干 parts + 「答案是」 + 答案 parts。
+   * 任何一环拿不到就整句 TTS（绝不混播）——与答错反馈同一套规则。
+   * 本轮题目的片段在会话开始时就已预取，这里点了就响。
+   */
+  const readAloud = () => {
+    const sentence = `${item.stem.ttsText}，答案是 ${correct}`
+    const answer = correctOption?.ttsParts ?? answerParts(correct)
+    say(
+      item.stem.ttsParts === undefined || answer === undefined
+        ? plain(sentence)
+        : utter([...item.stem.ttsParts, 'phrase.answerIs', ...answer], sentence),
+    )
+  }
 
   return (
     <motion.button
@@ -27,7 +44,7 @@ export function WrongItemCard({ entry, index }: WrongItemCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 + index * 0.06, type: 'spring', stiffness: 300, damping: 26 }}
       whileTap={{ scale: 0.97 }}
-      onClick={() => speak(`${item.stem.ttsText}，答案是 ${correct}`)}
+      onClick={readAloud}
       className="flex w-full items-center justify-between gap-3 rounded-blob bg-surface px-5 py-4 text-left shadow-card"
     >
       {/* min-w-0 + break-words 必须成对出现：计数题的题干是十几个 emoji，

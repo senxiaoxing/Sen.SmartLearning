@@ -22,6 +22,7 @@ import { COUNTABLES } from '@/domain/generators/countables'
 import { buildNumericOptions } from '@/domain/generators/distractors'
 import { readEnum, readRange } from '@/domain/generators/params'
 import { randomInt, randomPick } from '@/domain/generators/rng'
+import { num } from '@/domain/speech'
 import type { Generator, ItemVisual } from '@/domain/types'
 
 /**
@@ -61,14 +62,26 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
       kpId,
       type: 'choice_image',
       difficulty,
-      stem: {
-        text: story
-          ? `左边有 ${a} 个${thing.name}，右边有 ${b} 个，一共有几个？`
-          : `一共有几个${thing.name}？`,
-        ttsText: story
-          ? `左边有 ${a} 个${thing.name}，右边有 ${b} 个，一共有几个`
-          : `一共有几个${thing.name}`,
-      },
+      stem: story
+        ? {
+            text: `左边有 ${a} 个${thing.name}，右边有 ${b} 个，一共有几个？`,
+            ttsText: `左边有 ${a} 个${thing.name}，右边有 ${b} 个，一共有几个`,
+            ttsParts: [
+              'phrase.leftHas',
+              ...num(a),
+              'phrase.unitGe',
+              thing.clipKey,
+              'phrase.rightHas',
+              ...num(b),
+              'phrase.unitGe',
+              'phrase.altogetherHowMany',
+            ],
+          }
+        : {
+            text: `一共有几个${thing.name}？`,
+            ttsText: `一共有几个${thing.name}`,
+            ttsParts: ['phrase.altogetherHowMany', thing.clipKey],
+          },
       options: buildNumericOptions(
         answer,
         [
@@ -94,14 +107,26 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
       kpId,
       type: 'choice_image',
       difficulty,
-      stem: {
-        text: story
-          ? `原来有 ${total} 个${thing.name}，拿走了 ${taken} 个，还剩几个？`
-          : `还剩几个${thing.name}？`,
-        ttsText: story
-          ? `原来有 ${total} 个${thing.name}，拿走了 ${taken} 个，还剩几个`
-          : `还剩几个${thing.name}`,
-      },
+      stem: story
+        ? {
+            text: `原来有 ${total} 个${thing.name}，拿走了 ${taken} 个，还剩几个？`,
+            ttsText: `原来有 ${total} 个${thing.name}，拿走了 ${taken} 个，还剩几个`,
+            ttsParts: [
+              'phrase.originallyHas',
+              ...num(total),
+              'phrase.unitGe',
+              thing.clipKey,
+              'phrase.tookAway',
+              ...num(taken),
+              'phrase.unitGe',
+              'phrase.howManyLeft',
+            ],
+          }
+        : {
+            text: `还剩几个${thing.name}？`,
+            ttsText: `还剩几个${thing.name}`,
+            ttsParts: ['phrase.howManyLeft', thing.clipKey],
+          },
       options: buildNumericOptions(
         answer,
         [
@@ -131,6 +156,7 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `上面比下面多几个${thing.name}？`,
       ttsText: `上面比下面多几个${thing.name}`,
+      ttsParts: ['phrase.topMoreHowMany', thing.clipKey],
     },
     options: buildNumericOptions(
       answer,

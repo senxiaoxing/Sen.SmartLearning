@@ -12,6 +12,7 @@
 import { buildNumericOptions } from '@/domain/generators/distractors'
 import { readEnum, readRange } from '@/domain/generators/params'
 import { randomInt } from '@/domain/generators/rng'
+import { num } from '@/domain/speech'
 import type { Generator } from '@/domain/types'
 
 /**
@@ -48,6 +49,7 @@ export const placeValue: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `${value} 的${placeName}上是几？`,
       ttsText: `${value} 的${placeName}上是几`,
+      ttsParts: [...num(value), askTens ? 'phrase.tensDigitWhat' : 'phrase.onesDigitWhat'],
     },
     options: buildNumericOptions(
       answer,

@@ -59,7 +59,12 @@ export const shapes: Generator = ({ kpId, difficulty, params, rng }) => {
     kpId,
     type: 'choice_image',
     difficulty,
-    stem: { text: `哪个是${name}？`, ttsText: `哪个是${name}` },
+    stem: {
+      text: `哪个是${name}？`,
+      ttsText: `哪个是${name}`,
+      // 图形名片段的 key 与 kind 同名（word.cube / word.square…），见 voiceManifest WORDS 段
+      ttsParts: ['phrase.whichIs', `word.${answer}`],
+    },
     options: toShapeOptions(shuffle(rng, raw)),
     answer: name,
   }

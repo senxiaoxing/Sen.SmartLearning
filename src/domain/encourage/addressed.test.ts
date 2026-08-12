@@ -71,4 +71,19 @@ describe('addressed', () => {
       expect(line.utterance.fallbackText.length).toBeGreaterThan(0)
     }
   })
+
+  it('⭐ 后半句是宠物台词：昵称换成那只宠物音色的变体片段', () => {
+    // 「小恩宝，我有点想你」整句都得是熊猫的声音——
+    // 少女声的名字接温柔女声的台词，听感上就是换了个人在叫她
+    const line = addressed(WITH_CLIP, ['petline.pandaG1Miss0'], '我有点想你')
+
+    expect(line.text).toBe('小恩宝，我有点想你')
+    expect(line.utterance.parts).toEqual(['name.pandaXiaoenbao', 'petline.pandaG1Miss0'])
+  })
+
+  it('后半句是旁白内容：昵称仍用旁白音色的原始片段', () => {
+    const line = addressed(WITH_CLIP, ['phrase.praise1'], '太棒了')
+
+    expect(line.utterance.parts[0]).toBe('name.xiaoenbao')
+  })
 })

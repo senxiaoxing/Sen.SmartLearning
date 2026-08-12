@@ -72,6 +72,8 @@ export const pinyinOddOne: Generator = ({ kpId, difficulty, params, rng }) => {
   }))
 
   const axisWord = axis === 'initial' ? '声母' : axis === 'final' ? '韵母' : '声调'
+  const stemClip =
+    axis === 'initial' ? 'phrase.oddInitial' : axis === 'final' ? 'phrase.oddFinal' : 'phrase.oddTone'
 
   return {
     signature: `${kpId}-odd#${axis}:${picked.odd.base}${picked.odd.tone}:${picked.group
@@ -84,6 +86,7 @@ export const pinyinOddOne: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `点一点听一听，哪个的${axisWord}和其他三个不一样？`,
       ttsText: `点一点听一听，哪个的${axisWord}和其他三个不一样`,
+      ttsParts: [stemClip],
     },
     options,
     answer: displayForm(picked.odd),

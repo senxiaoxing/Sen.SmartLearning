@@ -137,6 +137,7 @@ function buildTeenItem(ctx: GeneratorContext): GeneratedItem {
     stem: {
       text: `${total} 里面有 1 个十和 ? 个一`,
       ttsText: `${total} 里面有 1 个十和几个一`,
+      ttsParts: [...num(total), 'phrase.hasOneTenAnd'],
     },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),

@@ -41,8 +41,10 @@ describe('⭐ 每只宠物的默认名都有语音片段', () => {
     )
   })
 
-  it('改过名的宠物查不到片段 —— 那时应整句走 TTS', () => {
-    expect(petNameClipKey('毛毛')).toBeUndefined()
+  // 起名已改成预设选择器：候选池里的名字（如「毛毛」）也有片段，
+  // 详见 petNamePresets.test.ts。查不到片段只剩旧档案的键盘名一种情况
+  it('旧档案里键盘起的名字查不到片段 —— 那时应整句走 TTS', () => {
+    expect(petNameClipKey('阿旺')).toBeUndefined()
   })
 })
 

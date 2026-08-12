@@ -22,6 +22,7 @@ import { ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
 import { createRng } from '@/domain/generators/rng'
 import { selectNextItems } from '@/domain/scheduler/selectNextItems'
 import { selectRetryItems } from '@/domain/scheduler/selectRetryItems'
+import { answerParts } from '@/domain/speech'
 import { nowIso, todayLocal } from '@/domain/time'
 import { newId } from '@/platform/newId'
 import { usePetStore } from '@/stores/petStore'
@@ -64,6 +65,12 @@ export interface AnswerFeedback {
   selectedOptionId: string
   /** 正确答案文本，答错时展示 */
   correctText: string
+  /**
+   * 正确答案的语音片段——答错反馈用它把「答案是 X」整句拼成预生成音色。
+   * 取正确选项自带的 `ttsParts`，纯数字答案由 `answerParts` 推导；
+   * 都拿不到（如拼音书写规则题）则缺省，那句反馈整句走 TTS 兜底。
+   */
+  correctParts?: string[]
 }
 
 interface SessionState {
@@ -334,12 +341,16 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       localDate: todayLocal(),
     }
 
+    const correctText = correctOption?.text ?? current.item.answer
+    const correctParts = correctOption?.ttsParts ?? answerParts(correctText)
+
     set({
       status: 'feedback',
       feedback: {
         isCorrect,
         selectedOptionId: optionId,
-        correctText: correctOption?.text ?? current.item.answer,
+        correctText,
+        ...(correctParts !== undefined && { correctParts }),
       },
       correctCount: state.correctCount + (isCorrect ? 1 : 0),
       answeredCount: state.answeredCount + 1,

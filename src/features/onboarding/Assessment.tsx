@@ -21,12 +21,24 @@ import { Icon } from '@/components/Icon'
 import { PLACEMENT_PROBES } from '@/domain/assessment/placement'
 import { addressed } from '@/domain/encourage/addressed'
 import { primaryNickname } from '@/domain/encourage/pickNickname'
+import { utter } from '@/domain/speech'
 import { ItemRenderer } from '@/items/ItemRenderer'
 import { unlockAudio } from '@/platform/audio'
-import { say } from '@/platform/speech'
-import { speak, unlockSpeech } from '@/platform/tts'
+import { prefetchClips, say } from '@/platform/speech'
+import { unlockSpeech } from '@/platform/tts'
 import { useAssessmentStore } from '@/stores/assessmentStore'
 import { useProfileStore } from '@/stores/profileStore'
+
+/**
+ * 摸底全程要播的固定语句。进页就预取：
+ * 第一站答完（距开始只有十几秒）反馈语就要响，等用到再取就是「慢半拍」。
+ */
+const ASSESSMENT_CLIPS = [
+  'phrase.keepGoing',
+  'phrase.tooHardHere',
+  'phrase.finishedAll',
+  'phrase.startHere',
+]
 
 export function Assessment() {
   const navigate = useNavigate()
@@ -38,6 +50,10 @@ export function Assessment() {
   const start = useAssessmentStore((s) => s.start)
   const answer = useAssessmentStore((s) => s.answer)
   const next = useAssessmentStore((s) => s.next)
+
+  useEffect(() => {
+    prefetchClips(ASSESSMENT_CLIPS)
+  }, [])
 
   if (status === 'idle') return <Intro onStart={() => void start()} />
   if (status === 'done') return <Done startKpName={startKpName} onFinish={() => navigate('/')} />
@@ -96,7 +112,12 @@ export function Assessment() {
 /** 探测题的反馈。答错时刻意不显示正确答案——这是定位不是教学，给答案会干扰后续判断 */
 function ProbeFeedback({ isCorrect, onNext }: { isCorrect: boolean; onNext: () => void }) {
   useEffect(() => {
-    speak(isCorrect ? '走对啦，继续往前' : '这里有点难，我们回头再来')
+    // 走预生成片段（原来是实时 TTS——迁移清零后这里是最后一个直呼 speak 的地方）
+    say(
+      isCorrect
+        ? utter(['phrase.keepGoing'], '走对啦，继续往前')
+        : utter(['phrase.tooHardHere'], '这里有点难，我们回头再来'),
+    )
   }, [isCorrect])
 
   return (

@@ -14,7 +14,9 @@
 
 import { describe, expect, it } from 'vitest'
 import { ITEM_TEMPLATES } from '@/data/seed/itemTemplates'
+import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
 import { hasClip, VOICE_CLIP_COUNT, VOICE_MANIFEST } from '@/data/seed/voiceManifest'
+import { nicknameClipFor, PET_SPEAKERS } from '@/domain/encourage/petSpeaker'
 import { generateFromTemplate } from '@/domain/generators'
 import { createRng } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
@@ -48,6 +50,17 @@ describe('语音片段清单', () => {
     for (let n = 0; n <= 20; n++) {
       for (const key of num(n)) {
         expect(hasClip(key), `num(${n}) 产出的 ${key} 不在清单里`).toBe(true)
+      }
+    }
+  })
+
+  it('⭐ 每个预设昵称 × 每只伙伴都有音色变体片段', () => {
+    // 缺一个变体的后果：宠物叫名字那句拼不齐片段，整句降级成机器音——
+    // 而它偏偏出现在「见面第一句」这种情感浓度最高的位置
+    for (const preset of NICKNAME_PRESETS) {
+      for (const speaker of PET_SPEAKERS) {
+        const key = nicknameClipFor(preset.clipKey, speaker)
+        expect(hasClip(key), `缺少昵称变体 ${key}`).toBe(true)
       }
     }
   })

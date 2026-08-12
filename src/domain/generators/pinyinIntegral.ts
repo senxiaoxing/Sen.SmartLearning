@@ -76,6 +76,7 @@ export const pinyinIntegral: Generator = ({ kpId, difficulty, params, rng }) => 
     stem: {
       text: '哪个是整体认读音节？（不能拆开拼的那个）',
       ttsText: '哪个是整体认读音节，就是不能拆开拼的那个',
+      ttsParts: ['phrase.whichIntegral'],
     },
     options,
     answer: displayForm(target),

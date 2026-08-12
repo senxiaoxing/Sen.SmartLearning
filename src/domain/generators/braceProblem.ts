@@ -55,7 +55,11 @@ export const braceProblem: Generator = ({ kpId, difficulty, params, rng }) => {
       kpId,
       type: 'choice_image',
       difficulty,
-      stem: { text: `一共有几个${thing.name}？`, ttsText: `一共有几个${thing.name}` },
+      stem: {
+        text: `一共有几个${thing.name}？`,
+        ttsText: `一共有几个${thing.name}`,
+        ttsParts: ['phrase.altogetherHowMany', thing.clipKey],
+      },
       options: buildNumericOptions(
         total,
         [
@@ -88,6 +92,7 @@ export const braceProblem: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `问号那一组有几个${thing.name}？`,
       ttsText: `问号那一组有几个${thing.name}`,
+      ttsParts: ['phrase.questionGroupHas', thing.clipKey],
     },
     options: buildNumericOptions(
       answer,

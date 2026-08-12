@@ -128,6 +128,16 @@ function buildMakeTenItem(ctx: GeneratorContext, a: number, b: number): Generate
     stem: {
       text: `${a} + ${b}，把 ${b} 分成 ${toTen} 和 ?`,
       ttsText: `${a} 加 ${b}，先把 ${b} 分成 ${toTen} 和几`,
+      ttsParts: [
+        ...num(a),
+        'op.plus',
+        ...num(b),
+        'phrase.firstSplit',
+        ...num(b),
+        'phrase.splitInto',
+        ...num(toTen),
+        'phrase.andWhat',
+      ],
     },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),

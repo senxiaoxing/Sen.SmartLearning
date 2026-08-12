@@ -15,6 +15,7 @@ import { BirthdaySetting } from '@/features/parent/BirthdaySetting'
 import { MessageSetting } from '@/features/parent/MessageSetting'
 import { NicknameSetting } from '@/features/parent/NicknameSetting'
 import { SkinPicker } from '@/features/parent/SkinPicker'
+import { VoiceCacheCheck } from '@/features/parent/VoiceCacheCheck'
 import { useParentGateStore } from '@/stores/parentGateStore'
 import type { IconName } from '@/components/iconPaths'
 
@@ -84,11 +85,12 @@ export function ParentHome() {
         </div>
 
         {/* 顺序按「多久用一次」排：留言可能天天写，昵称设一次管很久，
-            生日一年一次，皮肤基本不动 */}
+            生日一年一次，皮肤基本不动，资源自检只在装完/更新后跑一次 */}
         <MessageSetting />
         <NicknameSetting />
         <BirthdaySetting />
         <SkinPicker />
+        <VoiceCacheCheck />
       </div>
     </AppShell>
   )

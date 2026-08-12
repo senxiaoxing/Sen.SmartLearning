@@ -71,7 +71,11 @@ function blocksItem(
     kpId,
     type: 'choice_image',
     difficulty,
-    stem: { text: '一共有几块积木？', ttsText: '一共有几块积木' },
+    stem: {
+      text: '一共有几块积木？',
+      ttsText: '一共有几块积木',
+      ttsParts: ['phrase.howManyBlocks'],
+    },
     options: buildNumericOptions(
       total,
       [
@@ -126,7 +130,12 @@ function mixedItem(
     kpId,
     type: 'choice_image',
     difficulty,
-    stem: { text: `有几个${name}？`, ttsText: `图里有几个${name}` },
+    stem: {
+      text: `有几个${name}？`,
+      ttsText: `图里有几个${name}`,
+      // 图形名片段与 kind 同名（word.triangle…），见 voiceManifest WORDS 段
+      ttsParts: ['phrase.howManyInPicture', `word.${target}`],
+    },
     options: buildNumericOptions(
       targetCount,
       [

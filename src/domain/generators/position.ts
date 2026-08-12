@@ -28,11 +28,34 @@ const OPTION_IDS = ['a', 'b', 'c', 'd'] as const
 
 type Axis = 'updown' | 'frontback' | 'leftright'
 
-/** 每根轴上的一对方位词，以及说反了对应的诊断标签 */
-const AXES: Record<Axis, { relations: [string, string]; labels: [string, string]; tag: MisconceptionTag }> = {
-  updown: { relations: ['above', 'below'], labels: ['上面', '下面'], tag: 'lr_mirror' },
-  frontback: { relations: ['front', 'behind'], labels: ['前面', '后面'], tag: 'lr_mirror' },
-  leftright: { relations: ['left', 'right'], labels: ['左边', '右边'], tag: 'lr_mirror' },
+/** 每根轴上的一对方位词（含语音片段 key），以及说反了对应的诊断标签 */
+const AXES: Record<
+  Axis,
+  {
+    relations: [string, string]
+    labels: [string, string]
+    clips: [string, string]
+    tag: MisconceptionTag
+  }
+> = {
+  updown: {
+    relations: ['above', 'below'],
+    labels: ['上面', '下面'],
+    clips: ['word.above', 'word.below'],
+    tag: 'lr_mirror',
+  },
+  frontback: {
+    relations: ['front', 'behind'],
+    labels: ['前面', '后面'],
+    clips: ['word.front', 'word.behind'],
+    tag: 'lr_mirror',
+  },
+  leftright: {
+    relations: ['left', 'right'],
+    labels: ['左边', '右边'],
+    clips: ['word.left', 'word.right'],
+    tag: 'lr_mirror',
+  },
 }
 
 /**
@@ -66,17 +89,24 @@ export const position: Generator = ({ kpId, difficulty, params, rng }) => {
     | 'front'
     | 'behind'
   const correctLabel = spec.labels[which] ?? '上面'
+  const correctClip = spec.clips[which] ?? 'word.above'
   const oppositeLabel = spec.labels[1 - which] ?? '下面'
+  const oppositeClip = spec.clips[1 - which] ?? 'word.below'
 
   // 另一根轴的两个词作为补充干扰项：答错它们说明连问的是哪个方向都没听清
   const otherAxis = (Object.keys(AXES) as Axis[]).filter((a) => a !== axis)
   const extra = randomPick(rng, otherAxis)
 
-  const candidates: { text: string; isCorrect: boolean; tag?: MisconceptionTag }[] = [
-    { text: correctLabel, isCorrect: true },
+  const candidates: { text: string; clip: string; isCorrect: boolean; tag?: MisconceptionTag }[] = [
+    { text: correctLabel, clip: correctClip, isCorrect: true },
     // ⭐ 反方向必须在选项里，否则 lr_mirror 无从诊断
-    { text: oppositeLabel, isCorrect: false, tag: spec.tag },
-    ...AXES[extra].labels.map((t) => ({ text: t, isCorrect: false, tag: spec.tag })),
+    { text: oppositeLabel, clip: oppositeClip, isCorrect: false, tag: spec.tag },
+    ...AXES[extra].labels.map((t, i) => ({
+      text: t,
+      clip: AXES[extra].clips[i] ?? 'word.above',
+      isCorrect: false,
+      tag: spec.tag,
+    })),
   ]
 
   const options: ItemOption[] = shuffle(rng, candidates)
@@ -84,8 +114,9 @@ export const position: Generator = ({ kpId, difficulty, params, rng }) => {
     .map((c, i) => ({
       id: OPTION_IDS[i] ?? `x${i}`,
       text: c.text,
-      // 孩子不识字，选项必须能点读
+      // 孩子不识字，选项必须能点读（错题本与试听走片段，不落 TTS）
       ttsText: c.text,
+      ttsParts: [c.clip],
       isCorrect: c.isCorrect,
       ...(c.tag !== undefined && { misconceptionTag: c.tag }),
     }))
@@ -98,6 +129,7 @@ export const position: Generator = ({ kpId, difficulty, params, rng }) => {
     stem: {
       text: `${pair.targetName}在${pair.anchorName}的什么位置？`,
       ttsText: `${pair.targetName}在${pair.anchorName}的什么位置`,
+      ttsParts: [pair.targetClip, 'phrase.at', pair.anchorClip, 'phrase.whatPosition'],
     },
     options,
     answer: correctLabel,

@@ -11,9 +11,20 @@
 import { buildTextOptions } from '@/domain/generators/distractors'
 import { readEnum, readRange } from '@/domain/generators/params'
 import { randomInt } from '@/domain/generators/rng'
+import { num } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
 
 const MODES = ['symbol', 'which'] as const
+
+/**
+ * 符号选项的读法。屏幕上是符号，念出来的是它的名字——
+ * 答错反馈「答案是 大于号」与错题本点读用，TTS 念裸符号「>」全凭运气。
+ */
+const SYMBOL_SPEECH: Record<string, { clip: string; spoken: string }> = {
+  '>': { clip: 'op.greaterSign', spoken: '大于号' },
+  '<': { clip: 'op.lessSign', spoken: '小于号' },
+  '=': { clip: 'op.equalsSign', spoken: '等于号' },
+}
 
 /**
  * 生成一道比大小题目。
@@ -84,8 +95,12 @@ function buildSymbolItem(ctx: GeneratorContext, a: number, b: number): Generated
     stem: {
       text: `${a} ○ ${b}`,
       ttsText: `${a} 和 ${b} 比，中间该填什么符号`,
+      ttsParts: [...num(a), 'op.and', ...num(b), 'phrase.compareWhatSymbol'],
     },
-    options: buildTextOptions(answer, candidates, ctx.rng),
+    options: buildTextOptions(answer, candidates, ctx.rng).map((o) => {
+      const speech = o.text === undefined ? undefined : SYMBOL_SPEECH[o.text]
+      return speech === undefined ? o : { ...o, ttsText: speech.spoken, ttsParts: [speech.clip] }
+    }),
     answer,
   }
 }
@@ -110,6 +125,7 @@ function buildWhichItem(ctx: GeneratorContext, a: number, b: number): GeneratedI
     stem: {
       text: `${left} 和 ${right}，哪个更大?`,
       ttsText: `${left} 和 ${right}，哪个更大`,
+      ttsParts: [...num(left), 'op.and', ...num(right), 'phrase.whichBigger'],
     },
     options: buildTextOptions(answer, [{ text: wrong, tag: 'symbol_reversed' }], ctx.rng),
     answer,

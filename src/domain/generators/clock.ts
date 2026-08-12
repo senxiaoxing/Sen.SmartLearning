@@ -21,9 +21,22 @@ import {
 } from '@/domain/generators/clockTime'
 import { readEnum } from '@/domain/generators/params'
 import { randomInt, shuffle } from '@/domain/generators/rng'
+import { num } from '@/domain/speech'
 import type { Difficulty, Generator, ItemOption } from '@/domain/types'
 
 const OPTION_IDS = ['a', 'b', 'c', 'd'] as const
+
+/**
+ * 时刻的语音片段。整时/半时可拼（数字 + 点整/点半）；
+ * 其余分钟（指针交换产物「12 点 15 分」）拿不到片段，返回 undefined——
+ * 它们只出现在干扰项上，而答错反馈只念**正确答案**，正确答案永远是整时或半时。
+ */
+function timeParts(t: { hour: number; minute: number }): string[] | undefined {
+  const h = t.hour === 0 ? 12 : t.hour
+  if (t.minute === 0) return [...num(h), 'phrase.oclockSharp']
+  if (t.minute === 30) return [...num(h), 'phrase.halfPast']
+  return undefined
+}
 
 /**
  * 生成一道读钟表的题。
@@ -52,8 +65,8 @@ export const clock: Generator = ({ kpId, difficulty, params, rng }) => {
   const picked = pickDistinctTimes(hour, minute, (t) => readTime(t.hour, t.minute), correct)
 
   const options = shuffle(rng, [
-    { label: correct, isCorrect: true },
-    ...picked.map((t) => ({ label: readTime(t.hour, t.minute), isCorrect: false })),
+    { label: correct, isCorrect: true, time: { hour, minute } },
+    ...picked.map((t) => ({ label: readTime(t.hour, t.minute), isCorrect: false, time: t })),
   ])
     .slice(0, 4)
     .map(toOption)
@@ -63,7 +76,7 @@ export const clock: Generator = ({ kpId, difficulty, params, rng }) => {
     kpId,
     type: 'choice_image',
     difficulty,
-    stem: { text: '现在是几点？', ttsText: '现在是几点' },
+    stem: { text: '现在是几点？', ttsText: '现在是几点', ttsParts: ['phrase.whatTimeNow'] },
     options,
     answer: correct,
     visual: { kind: 'figure', imageKey: `clock:${hour}:${minute}` },
@@ -90,39 +103,57 @@ function handsItem(
   const picked = pickDistinctTimes(hour, minute, keyOf, correctKey)
 
   const options: ItemOption[] = shuffle(rng, [
-    { key: correctKey, label: target, isCorrect: true },
+    { key: correctKey, label: target, isCorrect: true, time: { hour, minute } },
     ...picked.map((t) => ({
       key: keyOf(t),
       label: readTime(t.hour, t.minute),
       isCorrect: false,
+      time: t,
     })),
   ])
     .slice(0, 4)
-    .map((o, i) => ({
-      id: OPTION_IDS[i] ?? `x${i}`,
-      // ⚠️ 文字不显示也不朗读，只为契约与家长错题本
-      text: o.label,
-      imageKey: o.key,
-      isCorrect: o.isCorrect,
-      ...(o.isCorrect ? {} : { misconceptionTag: 'hand_swap' as const }),
-    }))
+    .map((o, i) => {
+      const parts = timeParts(o.time)
+      return {
+        id: OPTION_IDS[i] ?? `x${i}`,
+        // ⚠️ 文字不显示也不朗读，只为契约、家长错题本与答错反馈的「答案是」
+        text: o.label,
+        ...(parts !== undefined && { ttsParts: parts }),
+        imageKey: o.key,
+        isCorrect: o.isCorrect,
+        ...(o.isCorrect ? {} : { misconceptionTag: 'hand_swap' as const }),
+      }
+    })
 
   return {
     signature: `${kpId}-clock#parts:${hour}:${minute}`,
     kpId,
     type: 'choice_image',
     difficulty,
-    stem: { text: `哪个钟面是 ${target}？`, ttsText: `哪个钟面是${target}` },
+    stem: {
+      text: `哪个钟面是 ${target}？`,
+      ttsText: `哪个钟面是${target}`,
+      // parts 模式的分钟恒为 0（clock() 只在 half 模式掷半点），读法固定是「H 点整」。
+      // 万一将来放开半点，这里不给 parts、整句走兜底，绝不能把「点整」拼到半点上
+      ...(minute === 0 && {
+        ttsParts: ['phrase.whichClockShows', ...num(hour), 'phrase.oclockSharp'],
+      }),
+    },
     options,
     answer: target,
   }
 }
 
 /** 文字时刻选项。⚠️ 每个错误项都要带 tag，见 CLAUDE.md 干扰项铁律 */
-function toOption(o: { label: string; isCorrect: boolean }, i: number): ItemOption {
+function toOption(
+  o: { label: string; isCorrect: boolean; time: { hour: number; minute: number } },
+  i: number,
+): ItemOption {
+  const parts = timeParts(o.time)
   return {
     id: OPTION_IDS[i] ?? `x${i}`,
     text: o.label,
+    ...(parts !== undefined && { ttsParts: parts }),
     isCorrect: o.isCorrect,
     ...(o.isCorrect ? {} : { misconceptionTag: 'hand_swap' as const }),
   }

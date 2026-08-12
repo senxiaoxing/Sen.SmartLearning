@@ -72,11 +72,18 @@ export interface RawShapeOption {
  * // → [{ id: 'a', text: '正方体', imageKey: 'solid:cube', isCorrect: true }]
  */
 export function toShapeOptions(raw: readonly RawShapeOption[]): ItemOption[] {
-  return raw.slice(0, OPTION_COUNT).map((o, i) => ({
-    id: OPTION_IDS[i] ?? `x${i}`,
-    text: o.label,
-    imageKey: o.key,
-    isCorrect: o.isCorrect,
-    ...(o.tag !== undefined && { misconceptionTag: o.tag }),
-  }))
+  return raw.slice(0, OPTION_COUNT).map((o, i) => {
+    // 片段 key 与图形 kind 同名（'solid:cube' → word.cube）。
+    // OptionButton 点击不发声，这份 ttsParts 只喂两处：
+    // 答错反馈念「答案是 正方体」、家长错题本的点读
+    const kind = o.key.split(':')[1]
+    return {
+      id: OPTION_IDS[i] ?? `x${i}`,
+      text: o.label,
+      ...(kind !== undefined && { ttsParts: [`word.${kind}`] }),
+      imageKey: o.key,
+      isCorrect: o.isCorrect,
+      ...(o.tag !== undefined && { misconceptionTag: o.tag }),
+    }
+  })
 }
