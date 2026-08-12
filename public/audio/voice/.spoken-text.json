@@ -93,7 +93,7 @@
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.de1": {
-  "text": "dē",
+  "text": "的",
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.te4": {
@@ -101,11 +101,11 @@
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.ne4": {
-  "text": "nè",
+  "text": "讷",
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.le4": {
-  "text": "lè",
+  "text": "乐",
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.ge1": {
@@ -265,7 +265,7 @@
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.ei1": {
-  "text": "ēi",
+  "text": "诶",
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.vn1": {
@@ -273,7 +273,7 @@
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.eng1": {
-  "text": "ēng",
+  "text": "鞥",
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  },
  "pinyin.ong1": {
@@ -1547,7 +1547,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jiangnanTitle": {
-  "text": "江南",
+  "text": "江南。汉，汉乐府。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jiangnanL0": {
@@ -1571,7 +1571,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.yongeTitle": {
-  "text": "咏鹅",
+  "text": "咏鹅。唐，骆宾王。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.yongeL0": {
@@ -1595,7 +1595,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huaTitle": {
-  "text": "画",
+  "text": "画。唐，王维。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huaL0": {
@@ -1619,7 +1619,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.minnongTitle": {
-  "text": "悯农",
+  "text": "悯农。唐，李绅。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.minnongL0": {
@@ -1643,7 +1643,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.gulangyuexingTitle": {
-  "text": "古朗月行",
+  "text": "古朗月行。唐，李白。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.gulangyuexingL0": {
@@ -1667,7 +1667,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.fengTitle": {
-  "text": "风",
+  "text": "风。唐，李峤。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.fengL0": {
@@ -1691,7 +1691,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jingyesiTitle": {
-  "text": "静夜思",
+  "text": "静夜思。唐，李白。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jingyesiL0": {
@@ -1715,7 +1715,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chishangTitle": {
-  "text": "池上",
+  "text": "池上。唐，白居易。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chishangL0": {
@@ -1739,7 +1739,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.xiaochiTitle": {
-  "text": "小池",
+  "text": "小池。宋，杨万里。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.xiaochiL0": {
@@ -1763,7 +1763,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chunxiaoTitle": {
-  "text": "春晓",
+  "text": "春晓。唐，孟浩然。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chunxiaoL0": {
@@ -1787,7 +1787,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.xunyinzheTitle": {
-  "text": "寻隐者不遇",
+  "text": "寻隐者不遇。唐，贾岛。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.xunyinzheL0": {
@@ -1811,7 +1811,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.zengwanglunTitle": {
-  "text": "赠汪伦",
+  "text": "赠汪伦。唐，李白。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.zengwanglunL0": {
@@ -1835,7 +1835,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huajiTitle": {
-  "text": "画鸡",
+  "text": "画鸡。明，唐寅。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huajiL0": {
@@ -1859,7 +1859,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.dengguanquelouTitle": {
-  "text": "登鹳雀楼",
+  "text": "登鹳雀楼。唐，王之涣。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.dengguanquelouL0": {
@@ -1883,7 +1883,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.yongliuTitle": {
-  "text": "咏柳",
+  "text": "咏柳。唐，贺知章。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.yongliuL0": {
@@ -1907,7 +1907,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.wanglushanpubuTitle": {
-  "text": "望庐山瀑布",
+  "text": "望庐山瀑布。唐，李白。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.wanglushanpubuL0": {
@@ -1931,7 +1931,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jiangxueTitle": {
-  "text": "江雪",
+  "text": "江雪。唐，柳宗元。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jiangxueL0": {
@@ -1955,7 +1955,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chilegeTitle": {
-  "text": "敕勒歌",
+  "text": "敕勒歌。北朝，北朝民歌。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chilegeL0": {
@@ -1979,7 +1979,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.suojianTitle": {
-  "text": "所见",
+  "text": "所见。清，袁枚。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.suojianL0": {
@@ -2003,7 +2003,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huixiangoushuTitle": {
-  "text": "回乡偶书",
+  "text": "回乡偶书。唐，贺知章。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huixiangoushuL0": {
@@ -2445,5 +2445,13 @@
  "name.pandaXiaopengyou": {
   "text": "小朋友",
   "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "pinyin.ci1": {
+  "text": "呲",
+  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+ },
+ "pinyin.vn4": {
+  "text": "韵",
+  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
  }
 }

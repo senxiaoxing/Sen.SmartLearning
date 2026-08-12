@@ -28,7 +28,13 @@ import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { PageHeader } from '@/components/PageHeader'
 import { poemById } from '@/data/seed/poems'
-import { poemLineClipKey, poemLineClipKeys, poemMeaningClipKey } from '@/domain/poem'
+import {
+  poemLineClipKey,
+  poemLineClipKeys,
+  poemMeaningClipKey,
+  poemTitleClipKey,
+  wholePoemUtterance,
+} from '@/domain/poem'
 import { prefetchClips, say, stopSpeech } from '@/platform/speech'
 
 export function PoemView() {
@@ -45,18 +51,19 @@ export function PoemView() {
    */
   useEffect(() => {
     if (poem === undefined) return
-    prefetchClips([...poemLineClipKeys(poem), poemMeaningClipKey(poem.id)])
+    prefetchClips([
+      poemTitleClipKey(poem.id),
+      ...poemLineClipKeys(poem),
+      poemMeaningClipKey(poem.id),
+    ])
   }, [poem])
 
   // 乱输的 hash（如 #/poems/abc）直接回诗单，不显示错误页——
   // 孩子看不懂错误页，而「回到能选诗的地方」永远是对的
   if (poem === undefined) return <Navigate to="/poems" replace />
 
-  const wholePoem = () =>
-    say({
-      parts: poemLineClipKeys(poem),
-      fallbackText: poem.lines.map((line) => line.text).join(''),
-    })
+  // ⭐ 从「静夜思。唐，李白。」报起——报诗名本来就是背诗的一部分，见 domain/poem.ts
+  const wholePoem = () => say(wholePoemUtterance(poem))
 
   return (
     <AppShell width="narrow" layout="stack">

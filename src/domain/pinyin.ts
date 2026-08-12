@@ -39,6 +39,20 @@ export interface Syllable {
    * 标了调就等于对声调作了声明，而那个声明可能与音频不符。
    */
   toneless?: string
+
+  /**
+   * ⭐ 载体字**只用于发音**，不许出现在以「认字」为目的的题里。
+   *
+   * 声母韵母的呼读音（d 念「的」、eng 念「鞥」、ci 念「呲」）必须用这些字
+   * 才念得准，但它们本身不是一年级该认的字：
+   * 「鞥」「讷」「呲」根本不在识字表里，「的」「乐」是高频多音字。
+   * 把它们摆进 P8.3「听音选字」的选项，考的就成了辨认生僻字——
+   * 那是另一回事，而且会让孩子以为自己学漏了什么。
+   *
+   * ⚠️ 它**不影响**听音选拼音（P2/P4/P5/P8.1）：那些题的选项是拼音文字，
+   * 载体字只在背后发声，正是它该待的位置。
+   */
+  soundOnly?: true
 }
 
 /**
@@ -52,6 +66,20 @@ export interface Syllable {
  */
 export function isUsable(syllable: Syllable): boolean {
   return syllable.char !== undefined
+}
+
+/**
+ * 这个音节能不能出现在「听音选**字**」题里（P8.3）。
+ *
+ * 比 {@link isUsable} 多一条：载体字还得是**孩子该认的字**。
+ * 呼读音的载体（的/讷/乐/诶/韵/鞥/呲）只负责发音，见 {@link Syllable.soundOnly}。
+ *
+ * @example
+ * isCharUsable({ pinyin: 'mā', base: 'ma', tone: 1, char: '妈' })                    // true
+ * isCharUsable({ pinyin: 'ēng', base: 'eng', tone: 1, char: '鞥', soundOnly: true })  // false
+ */
+export function isCharUsable(syllable: Syllable): boolean {
+  return syllable.char !== undefined && syllable.soundOnly !== true
 }
 
 /** 题目里该显示的写法：单韵母显示不带调的形式，其余显示带调拼音 */

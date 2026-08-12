@@ -48,17 +48,21 @@ export type { BlendSyllable, Syllable, TripleSyllable }
  * 这是课堂上的读法，孩子听到的必须和老师一致。
  *
  * ⚠️ 传统教学用字里有几个是多音字或生僻字（得 dé/de/děi、勒 lè/lēi、蚩 生僻），
- * 这里一律换成同音的常用单音字。
+ * 能换的一律换成同音的常用单音字。
+ *
+ * ⭐ **d n l c 只能用教学惯用字**（的 讷 乐 呲）——它们是多音或生僻，
+ * 但呼读音必须和老师教的一模一样，这一点压倒「用常用字」的偏好。
+ * 全部标 `soundOnly`：只负责发音，绝不进「听音选字」的选项（见 domain/pinyin.ts）。
  */
 export const INITIALS: readonly Syllable[] = [
   { pinyin: 'bō', base: 'bo', tone: 1, char: '玻' },
   { pinyin: 'pō', base: 'po', tone: 1, char: '坡' },
   { pinyin: 'mō', base: 'mo', tone: 1, char: '摸' },
   { pinyin: 'fó', base: 'fo', tone: 2, char: '佛' },
-  { pinyin: 'dē', base: 'de', tone: 1 }, // 得/德 有轻声或歧义，无合适单音字
+  { pinyin: 'dē', base: 'de', tone: 1, char: '的', soundOnly: true },
   { pinyin: 'tè', base: 'te', tone: 4, char: '特' },
-  { pinyin: 'nè', base: 'ne', tone: 4 }, // 讷 生僻
-  { pinyin: 'lè', base: 'le', tone: 4 }, // ⚠️ 乐 是多音字（lè/yuè），不能用
+  { pinyin: 'nè', base: 'ne', tone: 4, char: '讷', soundOnly: true },
+  { pinyin: 'lè', base: 'le', tone: 4, char: '乐', soundOnly: true },
   { pinyin: 'gē', base: 'ge', tone: 1, char: '哥' },
   { pinyin: 'kē', base: 'ke', tone: 1, char: '科' },
   { pinyin: 'hē', base: 'he', tone: 1, char: '喝' },
@@ -70,7 +74,9 @@ export const INITIALS: readonly Syllable[] = [
   { pinyin: 'shī', base: 'shi', tone: 1, char: '诗' },
   { pinyin: 'rì', base: 'ri', tone: 4, char: '日' },
   { pinyin: 'zī', base: 'zi', tone: 1, char: '资' },
-  { pinyin: 'cí', base: 'ci', tone: 2, char: '词' },
+  // ⭐ c 的呼读音是 cī（呲）不是 cí（词）——与 z(zī 资)、s(sī 思) 同为一声，
+  //    原来这里是唯一的例外，念出来与老师带读的 z-c-s 三连不齐
+  { pinyin: 'cī', base: 'ci', tone: 1, char: '呲', soundOnly: true },
   { pinyin: 'sī', base: 'si', tone: 1, char: '思' },
   { pinyin: 'yī', base: 'yi', tone: 1, char: '衣' },
   { pinyin: 'wū', base: 'wu', tone: 1, char: '屋' },
@@ -146,13 +152,17 @@ export const COMPOUND_FINALS: readonly Syllable[] = [
   { pinyin: 'āng', base: 'ang', tone: 1, char: '肮' },
   { pinyin: 'yīng', base: 'ing', tone: 1, char: '英' },
 
-  // —— 以下四个**没有干净的汉字载体**，因此暂不进题库，等真人录音补上。
-  //    汉语里它们要么不能独立成音节（eng / ong），
-  //    要么只有多音字可选（诶 ēi/éi/ěi/èi、晕 yūn/yùn）。
-  //    宁可这几个韵母暂时不出题，也不能让孩子听到读错的音。
-  { pinyin: 'ēi', base: 'ei', tone: 1 },
-  { pinyin: 'yūn', base: 'ün', tone: 1 },
-  { pinyin: 'ēng', base: 'eng', tone: 1 },
+  // —— ⭐ 以下三个用的是**教学惯用字**，不是常用单音字。
+  //    「诶」是多音字（ēi/éi/ěi/èi）、「鞥」生僻、「韵」的调与韵母写法不一致，
+  //    但课堂上韵母 ei / ün / eng 就念这几个音，孩子听到的必须和老师一致。
+  //    全部标 soundOnly：只负责发声，不进「听音选字」的选项。
+  //    ⚠️ 这几条**必须人工复听**（npm run pinyin:check）——多音字与生僻字
+  //    正是 TTS 最容易读错的两类，读错就是在教错。
+  { pinyin: 'ēi', base: 'ei', tone: 1, char: '诶', soundOnly: true },
+  { pinyin: 'yùn', base: 'ün', tone: 4, char: '韵', soundOnly: true },
+  { pinyin: 'ēng', base: 'eng', tone: 1, char: '鞥', soundOnly: true },
+  // ong 仍**没有**干净载体：汉语里它不能独立成音节，也没有对应的呼读字。
+  // 拼音墙上它继续借例词「松」发音，等真人录音补上再启用
   { pinyin: 'ōng', base: 'ong', tone: 1 },
 ]
 
@@ -168,7 +178,8 @@ export const INTEGRAL_SYLLABLES: readonly Syllable[] = [
   { pinyin: 'shī', base: 'shi', tone: 1, char: '诗' },
   { pinyin: 'rì', base: 'ri', tone: 4, char: '日' },
   { pinyin: 'zī', base: 'zi', tone: 1, char: '资' },
-  { pinyin: 'cí', base: 'ci', tone: 2, char: '词' },
+  // ⭐ 与声母 c 同一个音：整体认读音节 ci 念 cī（呲），不是 cí（词）
+  { pinyin: 'cī', base: 'ci', tone: 1, char: '呲', soundOnly: true },
   { pinyin: 'sī', base: 'si', tone: 1, char: '思' },
   { pinyin: 'yī', base: 'yi', tone: 1, char: '衣' },
   { pinyin: 'wū', base: 'wu', tone: 1, char: '屋' },

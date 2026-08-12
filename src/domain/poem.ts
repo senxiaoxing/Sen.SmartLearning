@@ -50,11 +50,36 @@ export interface Poem {
 /**
  * 诗题的语音片段 key。
  *
+ * ⚠️ 这一条念的是**「诗名。朝代，作者。」整句**，不只是诗名，
+ * 见 {@link poemHeadText}。
+ *
  * @example
  * poemTitleClipKey('jingyesi')   // 'poem.jingyesiTitle'
  */
 export function poemTitleClipKey(id: string): string {
   return `poem.${id}Title`
+}
+
+/**
+ * 报诗名那一句：「静夜思。唐，李白。」
+ *
+ * ⭐ 读整首必须从这一句开始——**报出诗名、朝代、作者本来就是背诗的一部分**，
+ * 课堂上老师带读、孩子上台背诵，开口第一句都是它。
+ * 只念诗文等于把这首诗从它的来处剥离出来了。
+ *
+ * ⚠️ 这段文本同时是生成脚本合成音频的输入
+ * （`scripts/generate-voices.mjs` 的 `loadPoems()` 必须拼出**逐字相同**的串），
+ * 两边对不上的后果是每次 `npm run voices` 都判定「文本变了」而重生成一遍。
+ *
+ * @param poem - 一首诗
+ * @returns 待朗读的整句
+ *
+ * @example
+ * poemHeadText({ title: '静夜思', dynasty: '唐', author: '李白' })
+ * // '静夜思。唐，李白。'
+ */
+export function poemHeadText(poem: Pick<Poem, 'title' | 'dynasty' | 'author'>): string {
+  return `${poem.title}。${poem.dynasty}，${poem.author}。`
 }
 
 /**
@@ -82,7 +107,7 @@ export function poemMeaningClipKey(id: string): string {
 }
 
 /**
- * 这首诗全部片段的 key，顺序即朗读顺序（诗题不在内）。
+ * 这首诗全部句子的片段 key，顺序即朗读顺序（**不含**报诗名那一句）。
  *
  * @param poem - 一首诗
  * @returns 逐句片段 key
@@ -93,4 +118,22 @@ export function poemMeaningClipKey(id: string): string {
  */
 export function poemLineClipKeys(poem: Pick<Poem, 'id' | 'lines'>): string[] {
   return poem.lines.map((_line, index) => poemLineClipKey(poem.id, index))
+}
+
+/**
+ * 「读整首」要说的话：报诗名那一句 + 全部诗句。
+ *
+ * @param poem - 一首诗
+ * @returns 片段序列与兜底文本，直接交给 `say()`
+ *
+ * @example
+ * wholePoemUtterance(jingyesi)
+ * // { parts: ['poem.jingyesiTitle', 'poem.jingyesiL0', …],
+ * //   fallbackText: '静夜思。唐，李白。床前明月光，…' }
+ */
+export function wholePoemUtterance(poem: Poem): { parts: string[]; fallbackText: string } {
+  return {
+    parts: [poemTitleClipKey(poem.id), ...poemLineClipKeys(poem)],
+    fallbackText: poemHeadText(poem) + poem.lines.map((line) => line.text).join(''),
+  }
 }

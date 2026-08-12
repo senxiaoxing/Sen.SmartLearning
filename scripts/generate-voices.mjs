@@ -381,6 +381,9 @@ function loadPoems() {
   let lineIndex = 0
   /** `meaning:` 后面换行才写字符串，见到它就等下一行 */
   let awaitingMeaning = false
+  /** 诗题那一条要念「诗名。朝代，作者。」，三个字段分散在三行，先攒着 */
+  let title = null
+  let dynasty = null
 
   for (const raw of text.split('\n')) {
     const idMatch = raw.match(/^\s*id:\s*'([a-z0-9]+)',/)
@@ -388,13 +391,29 @@ function loadPoems() {
       id = idMatch[1]
       lineIndex = 0
       awaitingMeaning = false
+      title = null
+      dynasty = null
       continue
     }
     if (id === null) continue
 
     const titleMatch = raw.match(/^\s*title:\s*'([^']+)',/)
     if (titleMatch !== null) {
-      out[`poem.${id}Title`] = titleMatch[1]
+      title = titleMatch[1]
+      continue
+    }
+
+    const dynastyMatch = raw.match(/^\s*dynasty:\s*'([^']+)',/)
+    if (dynastyMatch !== null) {
+      dynasty = dynastyMatch[1]
+      continue
+    }
+
+    // ⚠️ 拼法必须与 domain/poem.ts 的 poemHeadText() **逐字相同**，
+    //    差一个标点就会让 20 首诗每次都被判定「文本变了」而重新合成
+    const authorMatch = raw.match(/^\s*author:\s*'([^']+)',/)
+    if (authorMatch !== null) {
+      out[`poem.${id}Title`] = `${title}。${dynasty}，${authorMatch[1]}。`
       continue
     }
 

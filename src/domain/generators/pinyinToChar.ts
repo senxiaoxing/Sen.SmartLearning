@@ -20,7 +20,7 @@
  */
 
 import { readEnum } from '@/domain/generators/params'
-import { syllableKey, type Syllable } from '@/domain/pinyin'
+import { isCharUsable, syllableKey, type Syllable } from '@/domain/pinyin'
 import { shuffle } from '@/domain/generators/rng'
 import type { Generator, ItemOption, MisconceptionTag } from '@/domain/types'
 
@@ -91,8 +91,14 @@ function readSyllables(params: Record<string, unknown>): Syllable[] {
   if (!Array.isArray(raw) || raw.length === 0) {
     throw new Error('pinyinToChar: 缺少 syllables 参数')
   }
-  // 没有 char 的音节进不来——它们连音频都没有，更谈不上选字
-  const list = (raw as Syllable[]).filter((s) => s.char !== undefined)
-  if (list.length === 0) throw new Error('pinyinToChar: 候选音节都没有汉字载体')
+  /**
+   * 两道过滤（见 `isCharUsable`）：
+   * - 没有 `char` 的进不来——连音频都没有，更谈不上选字
+   * - ⭐ `soundOnly` 的也进不来：呼读音的载体（的 讷 乐 诶 韵 鞥 呲）
+   *   只负责发声。把「鞥」摆进选项，考的就成了辨认生僻字，
+   *   而这道题要考的是「从音找到**她认识的**字」
+   */
+  const list = (raw as Syllable[]).filter(isCharUsable)
+  if (list.length === 0) throw new Error('pinyinToChar: 候选音节都没有可用于认字的汉字载体')
   return list
 }

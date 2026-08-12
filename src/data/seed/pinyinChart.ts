@@ -16,11 +16,14 @@
  * 复韵母用谐音词）。**必须和老师教的一致**——孩子在学校听一套、在这里看另一套，
  * 记忆会互相干扰，而这一页存在的意义恰恰是给课堂做复习。
  *
- * ## ⚠️ 四个韵母念的是例词，不是韵母本身
+ * ## ⚠️ 只剩 `ong` 念的是例词
  *
- * `ei` `ün` `eng` `ong` 没有干净的汉字载体（详见 pinyinSyllables.ts），
- * 硬念拼音串会读错声调。课本的做法就是拿一个含它的词来教（"eng，台灯的 eng"），
- * 这里照办：它们的 `carrier` 指向例词的音节，卡面把那个字显示出来，
+ * 声母韵母一律念**呼读音**（d 念「的」、eng 念「鞥」、ci 念「呲」），
+ * 与老师带读的一致——这是 2026-08 的修正，此前 d/n/l/ei/ün/eng/ci
+ * 借的是例词（弟/你/里/飞/云/风/词），孩子听到的和课堂上不是一个音。
+ *
+ * `ong` 在汉语里不能独立成音节、也没有呼读字，仍借例词「松」发音：
+ * 它的 `carrier` 指向例词的音节，卡面把那个字显示出来，
  * 保证**看到的就是听到的**。
  */
 
@@ -144,13 +147,13 @@ const INITIALS: readonly PinyinChartCard[] = [
   card('p', '右上半圆', 'po', 1),
   card('m', '两个门洞', 'mo', 1),
   card('f', '一根拐棍', 'fo', 2),
-  // ⚠️ 这四个念的是含该声母的常用字，不是呼读音（dē tē nē lē）——
-  //    后三者在汉语里没有干净的单音字（得/讷/乐 不是多音就是生僻），
-  //    见 pinyinSyllables.ts 的 INITIALS。所以和 ei 一样把字标出来
-  card('d', '左下半圆', 'di', 4, '弟'),
-  card('t', '伞把朝下', 'te', 4, '特'),
-  card('n', '一个门洞', 'ni', 3, '你'),
-  card('l', '一根小棍', 'li', 3, '里'),
+  // ⭐ 念呼读音（的 特 讷 乐），与 b p m f 同一套读法。
+  //    不标 carrier：呼读音就是这个声母**本来的读法**，
+  //    不像 ong 借「松」那样是替代品，标出字反而让孩子以为在学那个字
+  card('d', '左下半圆', 'de', 1),
+  card('t', '伞把朝下', 'te', 4),
+  card('n', '一个门洞', 'ne', 4),
+  card('l', '一根小棍', 'le', 4),
   card('g', '鸽子的头', 'ge', 1),
   card('k', '小小蝌蚪', 'ke', 1),
   card('h', '一把椅子', 'he', 1),
@@ -158,7 +161,8 @@ const INITIALS: readonly PinyinChartCard[] = [
   card('q', '气球带线', 'qi', 1),
   card('x', '一把剪刀', 'xi', 1),
   card('z', '像个二字', 'zi', 1),
-  card('c', '像个半圆', 'ci', 2),
+  // 呼读音是 cī（呲）——与 zī、sī 同为一声，带读 z-c-s 才齐
+  card('c', '像个半圆', 'ci', 1),
   card('s', '像条丝带', 'si', 1),
   card('zh', 'z 加椅子', 'zhi', 1),
   card('ch', 'c 加椅子', 'chi', 1),
@@ -172,11 +176,11 @@ const INITIALS: readonly PinyinChartCard[] = [
  * 九张复韵母卡。
  *
  * 口诀是**谐音词**：复韵母没有字形上的抓手，课本一律用「阿姨 ai」这样的词来带。
- * ⚠️ `ei` 借「飞」发音，见文件头。
+ * ⚠️ 口诀只是记忆的抓手，念出来的是韵母本身（`ei` 念「诶」不是「飞」）。
  */
 const COMPOUND_FINALS: readonly PinyinChartCard[] = [
   card('ai', '阿姨', 'ai', 1),
-  card('ei', '飞机', 'fei', 1, '飞'),
+  card('ei', '飞机', 'ei', 1),
   card('ui', '围巾', 'ui', 1),
   card('ao', '奥运', 'ao', 1),
   card('ou', '海鸥', 'ou', 1),
@@ -186,17 +190,17 @@ const COMPOUND_FINALS: readonly PinyinChartCard[] = [
   card('er', '耳朵', 'er', 2),
 ]
 
-/** 五张前鼻韵母卡。⚠️ `ün` 借「云」发音，见文件头 */
+/** 五张前鼻韵母卡。`ün` 念呼读音「韵」 */
 const FRONT_NASALS: readonly PinyinChartCard[] = [
   card('an', '天安门', 'an', 1),
   card('en', '摁门铃', 'en', 1),
   card('in', '树荫', 'in', 1),
   card('un', '蚊子', 'un', 1),
-  card('ün', '白云', 'yun', 2, '云'),
+  card('ün', '白云', 'ün', 4),
 ]
 
 /**
- * 四张后鼻韵母卡。⚠️ 四个里有两个（`eng` `ong`）借例词发音，见文件头。
+ * 四张后鼻韵母卡。⚠️ 只剩 `ong` 借例词「松」发音，见文件头。
  *
  * 前后鼻音是南方孩子最高频的难点（P5.3 是重点知识点），
  * 所以前鼻与后鼻**分成两组并排摆**，而不是混在一张「鼻韵母」表里——
@@ -204,7 +208,7 @@ const FRONT_NASALS: readonly PinyinChartCard[] = [
  */
 const BACK_NASALS: readonly PinyinChartCard[] = [
   card('ang', '山羊', 'ang', 1),
-  card('eng', '台灯', 'feng', 1, '风'),
+  card('eng', '台灯', 'eng', 1),
   card('ing', '老鹰', 'ing', 1),
   card('ong', '闹钟', 'song', 1, '松'),
 ]
@@ -223,7 +227,7 @@ const INTEGRALS: readonly PinyinChartCard[] = [
   card('shi', '直接读', 'shi', 1, '诗'),
   card('ri', '直接读', 'ri', 4, '日'),
   card('zi', '直接读', 'zi', 1, '资'),
-  card('ci', '直接读', 'ci', 2, '词'),
+  card('ci', '直接读', 'ci', 1, '呲'),
   card('si', '直接读', 'si', 1, '思'),
   card('yi', '直接读', 'yi', 1, '衣'),
   card('wu', '直接读', 'wu', 1, '屋'),

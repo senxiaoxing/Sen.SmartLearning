@@ -25,7 +25,7 @@ import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
 import { POEMS } from '@/data/seed/poems'
 import { spokenText, wordKey } from '@/domain/english'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
-import { poemLineClipKey, poemMeaningClipKey, poemTitleClipKey } from '@/domain/poem'
+import { poemHeadText, poemLineClipKey, poemMeaningClipKey, poemTitleClipKey } from '@/domain/poem'
 
 /** 每个片段：key → 要念的文本 */
 export type VoiceManifest = Readonly<Record<string, string>>
@@ -306,7 +306,8 @@ const HANZI: VoiceManifest = Object.fromEntries(
  */
 const POEM_LINES: VoiceManifest = Object.fromEntries(
   POEMS.flatMap((poem) => [
-    [poemTitleClipKey(poem.id), poem.title] as const,
+    // ⭐ 诗题那一条念的是「静夜思。唐，李白。」整句 —— 读整首从它开始
+    [poemTitleClipKey(poem.id), poemHeadText(poem)] as const,
     ...poem.lines.map(
       (line, index) => [poemLineClipKey(poem.id, index), line.spoken ?? line.text] as const,
     ),
