@@ -355,6 +355,20 @@ React 先跑子组件 effect 再跑父组件，后者必然把前者掐掉。
 做完问「还要再来一轮吗」——让「完成」频繁发生，而不是一次漫长跋涉。
 每日总量靠多轮累计，不靠单轮堆长。
 
+### ⭐ 语文三块是「教」不是「练」
+拼音乐园 · 识字 100 · 古诗 20（与字母乐园同类）都是**浏览页**，不是题库。
+
+```
+✅ 全部可点（没学到的也能听）· 没有对错判定 · 随时可走
+❌ 不出题、不落 attempts、不记 mastery、不给积分、不影响宠物经验
+❌ 不要给识字/古诗建知识点 —— 没题库的知识点会在报告里显示成一片永远 0%，
+   那看起来像孩子什么都没学会
+❌ 不要加收藏星标或「今日 N 字」 —— 没有客观判据时，
+   它记录的是「她点过什么」而不是「她认识什么」，会让家长误读
+```
+拼音墙的高亮圈是例外，因为拼音**有**题库，那是真实作答产出的 mastery。
+详见 [design/03-技术方案.md](design/03-技术方案.md) §4.7。
+
 ---
 
 ## 代码规范要点
@@ -441,7 +455,8 @@ npm run preview          # 本地预览生产构建，验证 PWA 是否生效
 
 ```powershell
 npm run voices           # 生成语音 mp3 → public/audio/voice/
-                         #   改了 voiceManifest.ts / englishWords.ts / pinyinSyllables.ts 后必跑
+                         #   改了 voiceManifest.ts / englishWords.ts / pinyinSyllables.ts
+                         #   / hanziCards.ts / poems.ts / pets.ts / explainers.ts 后必跑
                          #   只补缺失的，以及「念的文本变了」的那些（有台账）
 npm run voices -- --force              # 全部重生成（换音色后必须）
 npm run voices -- --voice-en=en-GB-MaisieNeural   # 换英语音色
