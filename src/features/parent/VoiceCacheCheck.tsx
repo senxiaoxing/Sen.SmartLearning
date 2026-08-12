@@ -9,18 +9,21 @@
 
 import { useState } from 'react'
 import { BigButton } from '@/components/BigButton'
-import { VOICE_MANIFEST } from '@/data/seed/voiceManifest'
 import { auditVoiceCache, type VoiceCacheReport } from '@/platform/voiceCacheAudit'
+
+function mb(bytes: number): string {
+  return (bytes / 1024 / 1024).toFixed(1)
+}
 
 /** 自检结果的一句话说明。区分「没缓存系统」与「缓存了一半」——处置方式不同 */
 function verdict(report: VoiceCacheReport): string {
   if (report.unavailable) {
     return '没有检测到缓存。开发预览（npm run dev）没有 Service Worker，属正常；若这是 iPad 上的正式使用，请联网重新打开一次 App，稍等片刻再查。'
   }
-  if (report.cached >= report.total) {
-    return `全部就位（${report.cached} / ${report.total}），断网也能正常出声。`
+  if (report.cachedBytes >= report.totalBytes) {
+    return `全部就位（${mb(report.totalBytes)} MB），断网也能正常出声。`
   }
-  return `已缓存 ${report.cached} / ${report.total}。保持联网、停留一会儿再查一次；一直不满多半是更新没下完。`
+  return `已缓存 ${mb(report.cachedBytes)} / ${mb(report.totalBytes)} MB，还差 ${report.missing.length} 个语音包。保持联网、停留一会儿再查一次。`
 }
 
 export function VoiceCacheCheck() {
@@ -29,7 +32,7 @@ export function VoiceCacheCheck() {
 
   const run = async () => {
     setChecking(true)
-    setReport(await auditVoiceCache(Object.keys(VOICE_MANIFEST)))
+    setReport(await auditVoiceCache())
     setChecking(false)
   }
 
@@ -56,7 +59,7 @@ export function VoiceCacheCheck() {
           <p
             className={[
               'min-w-0 flex-1 text-sm leading-relaxed',
-              !report.unavailable && report.cached >= report.total
+              !report.unavailable && report.cachedBytes >= report.totalBytes
                 ? 'font-bold text-correct'
                 : 'text-ink/60',
             ].join(' ')}

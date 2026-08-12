@@ -12,6 +12,10 @@ dist-ssr/
 build/
 *.local
 
+# 语音包（由 scripts/bundle-voices.mjs 从 public/audio/voice/*.mp3 拼出，
+# npm run build 每次重新生成）。⚠️ 索引 src/data/seed/voiceBundleIndex.ts 要提交
+public/audio/bundles/
+
 # 缓存
 .vite/
 .cache/

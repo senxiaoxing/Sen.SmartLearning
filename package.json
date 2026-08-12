@@ -6,7 +6,7 @@
   "description": "希恩爱学习 App — 一年级数学/拼音/英语 + 宠物养成，PWA 纯本地",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/bundle-voices.mjs && tsc --noEmit && vite build",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist -t",
     "typecheck": "tsc --noEmit",
@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "icons": "node scripts/generate-icons.mjs",
     "sfx": "node scripts/generate-sfx.mjs",
-    "voices": "node scripts/generate-voices.mjs",
+    "voices": "node scripts/generate-voices.mjs && node scripts/bundle-voices.mjs",
+    "voices:bundle": "node scripts/bundle-voices.mjs",
     "pinyin:check": "node scripts/generate-pinyin-check.mjs",
     "pinyin:record": "node scripts/generate-pinyin-record.mjs"
   },

@@ -73,21 +73,32 @@ export default defineConfig({
       },
 
       workbox: {
+        // ⭐ 语音进预缓存的是 **8 个 .bin 语音包**，不是 764 个 mp3。
+        //
+        // 首次安装要把全部语音下到本机，而 764 个 ~15KB 的小文件时间几乎全花在
+        // 「发请求、等响应」上——GitHub Pages 从国内访问延迟高，实测要等好几分钟。
+        // 合并成包后请求数降到个位数，同样的字节按带宽跑满。见 scripts/bundle-voices.mjs。
+        //
+        // ⚠️ mp3 **刻意排除**：它们仍在 dist 里（包损坏时的单文件兜底、也是打包的原料），
+        // 但绝不能进预缓存——那等于把同样的 12.6MB 下两遍。
         // ⚠️ wav 不能漏：6 个音效（tap/correct/wrong/complete/levelUp/place）全是 wav，
-        // 只写 mp3 的话它们不进预缓存，装到主屏幕后**离线时音效全部失效**——
-        // 而「每次交互必有视觉 + 音效双反馈」是硬要求（design/03 §5.2），
-        // 答错时那声柔和提示音尤其不能少。
-        globPatterns: ['**/*.{js,css,html,png,svg,woff2,mp3,wav}'],
+        // 不进预缓存的话装到主屏幕后**离线时音效全部失效**，
+        // 而「每次交互必有视觉 + 音效双反馈」是硬要求（design/03 §5.2）。
+        globPatterns: ['**/*.{js,css,html,png,svg,woff2,wav,bin}'],
+        // ⚠️ 默认上限 2MiB 会把 3MB 的 poem0.bin **静默**排除在预缓存外。
+        // 打包脚本的分卷上限是 3MB，这里留到 4MB
+        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         // ⭐ 音频的「补录层」。预缓存是 install 期一次性的：装到一半断网、
         // 或某次更新没下完，缺的文件不会自己补上——表现是那句话降级成机器音。
         // 这条 CacheFirst 路由让启动自检门（VoiceCacheGate）能主动把缺的拉回来：
-        // 页面 fetch 一条，SW 就缓存一条，下次离线照样有。
+        // 页面 fetch 一个包，SW 就缓存一个，下次离线照样有。
         //
         // ⚠️ 预缓存命中的文件走预缓存路由（带版本修订、更新时自动换新），
         // 这条路由只接「预缓存没有」的漏网文件——CacheFirst 不会让正常文件变陈旧。
+        // mp3 也留在这条路由里：兜底路径取过的单文件同样值得缓存下来。
         runtimeCaching: [
           {
-            urlPattern: /\/audio\/(voice|sfx)\/[^/]+\.(mp3|wav)$/,
+            urlPattern: /\/audio\/(bundles\/[^/]+\.bin|(voice|sfx)\/[^/]+\.(mp3|wav))$/,
             handler: 'CacheFirst',
             options: { cacheName: 'audio-repair' },
           },

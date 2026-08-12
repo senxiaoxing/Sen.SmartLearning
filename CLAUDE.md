@@ -454,12 +454,15 @@ npm run preview          # 本地预览生产构建，验证 PWA 是否生效
 否则表里改了、播出来还是旧的。
 
 ```powershell
-npm run voices           # 生成语音 mp3 → public/audio/voice/
+npm run voices           # 生成语音 mp3 → public/audio/voice/，并重新打包语音包
                          #   改了 voiceManifest.ts / englishWords.ts / pinyinSyllables.ts
                          #   / hanziCards.ts / poems.ts / pets.ts / explainers.ts 后必跑
                          #   只补缺失的，以及「念的文本变了」的那些（有台账）
 npm run voices -- --force              # 全部重生成（换音色后必须）
 npm run voices -- --voice-en=en-GB-MaisieNeural   # 换英语音色
+npm run voices:bundle    # 只重新打包（764 条 mp3 → 8 个 .bin 语音包 + 索引）
+                         #   ⭐ 首装靠它从「几百个请求」降到个位数，见 design/07 §2.5d
+                         #   npm run build 会自动跑，正常不用手动执行
 npm run sfx              # 合成 6 个音效 → public/audio/sfx/
 npm run icons            # 重新生成 PWA 图标（改了图标设计后跑）
 npm run pinyin:check     # 生成拼音试听页，人工复核发音（机器验不了声调）

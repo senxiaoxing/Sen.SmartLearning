@@ -8,8 +8,6 @@
 
 import { useEffect, type ReactNode } from 'react'
 import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
-import { WARMUP_CLIPS } from '@/data/seed/voiceManifest'
-import { prefetchClips } from '@/platform/speech'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { HanziWall } from '@/features/chinese/HanziWall'
@@ -63,25 +61,12 @@ function AppRoutes() {
     void loadProfile()
   }, [init, loadProfile])
 
-  /**
-   * ⭐ 一启动就在后台把常用片段下载并解码好，**不等第一次点击**。
-   *
-   * 原来只在手势里（`unlockAllAudio`）才开始预取，于是第一次点标题时
-   * 才现下载现解码——孩子按下去要等一会儿才出声，而后面每一次都是即时的。
-   * 一个「第一下没反应」的按钮，她会以为是没点到，再点一次。
-   *
-   * ⚠️ 这里**只解码、不播放**：iOS 不允许没有用户手势的播放，
-   * 但 `decodeAudioData` 在 suspended 的 AudioContext 上照常工作。
-   * 真正的解锁（resume + 播一个无声帧）仍然留在手势里，两件事不能混。
-   */
-  useEffect(() => {
-    prefetchClips(WARMUP_CLIPS)
-  }, [])
-
   return (
     <>
-      {/* ⭐ 启动自检：语音缓存不全时盖住整个 App 先补全（design/07 §2.5d）。
-          齐全（绝大多数启动）时它什么也不渲染 */}
+      {/* ⭐ 启动自检：语音包缺失时盖住整个 App 先补全（design/07 §2.5d）。
+          齐全（绝大多数启动）时它什么也不渲染。
+          ⚠️ 首屏预热（WARMUP_CLIPS）也归它管——预热会连带下载整个语音包，
+          在预缓存跑完之前发起会让同一个包下两遍，首装最慢时多花一倍流量 */}
       <VoiceCacheGate />
       <Routes>
         <Route path="/" element={<HomePage />} />

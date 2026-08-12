@@ -20,6 +20,7 @@
  */
 
 import { assetUrl } from '@/platform/assetUrl'
+import { loadClipBytes } from '@/platform/voiceBundles'
 
 /** 判定为人声的能量门限，相对于整段峰值。3% 能滤掉底噪又不会切掉轻辅音 */
 const SPEECH_THRESHOLD = 0.03
@@ -89,6 +90,24 @@ function trim(ctx: AudioContext, buffer: AudioBuffer, start: number, end: number
 }
 
 /**
+ * 取片段的 mp3 字节：**先从语音包里切**，包里没有或取不到才退回单文件。
+ *
+ * 打包是为了把首装的几百个请求压到个位数（见 platform/voiceBundles.ts）。
+ * 单文件路径保留为兜底：包缺失/损坏时仍然出得了声，而不是整个 App 哑掉；
+ * 新加的片段在重新打包之前也走这条路。
+ */
+async function fetchClipBytes(key: string): Promise<ArrayBuffer | null> {
+  const fromBundle = await loadClipBytes(key)
+  if (fromBundle !== null) return fromBundle
+
+  // ⚠️ 必须走 assetUrl：写死 `/audio/...` 在 GitHub Pages 的子路径下会 404，
+  //    而且**只在线上错**（dev server 会顺便在根路径伺服 public/）。
+  //    后果是每一句都降级成机械的系统合成音。见 platform/assetUrl.ts
+  const res = await fetch(assetUrl(`audio/voice/${key}.mp3`))
+  return res.ok ? await res.arrayBuffer() : null
+}
+
+/**
  * 取一个片段的已裁剪音频，带缓存。
  *
  * @returns 解码好的音频；取不到或解码失败时返回 `null`（调用方降级为 TTS）
@@ -106,12 +125,9 @@ export function loadClip(ctx: AudioContext, key: string): Promise<AudioBuffer | 
 
   const task = (async (): Promise<AudioBuffer | null> => {
     try {
-      // ⚠️ 必须走 assetUrl：写死 `/audio/...` 在 GitHub Pages 的子路径下会 404，
-      //    而且**只在线上错**（dev server 会顺便在根路径伺服 public/）。
-      //    后果是每一句都降级成机械的系统合成音。见 platform/assetUrl.ts
-      const res = await fetch(assetUrl(`audio/voice/${key}.mp3`))
-      if (!res.ok) return null
-      const decoded = await ctx.decodeAudioData(await res.arrayBuffer())
+      const bytes = await fetchClipBytes(key)
+      if (bytes === null) return null
+      const decoded = await ctx.decodeAudioData(bytes)
       const { start, end } = findSpeechRange(decoded)
       const trimmed = trim(ctx, decoded, start, end)
       cache.set(key, trimmed)
