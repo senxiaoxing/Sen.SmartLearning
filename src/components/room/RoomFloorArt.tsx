@@ -29,7 +29,17 @@ interface RoomFloorArtProps {
 export function RoomFloorArt({ art }: RoomFloorArtProps) {
   if (art === 'rug') return <Rug />
   if (art === 'lamp') return <Lamp />
-  return <ToyBox />
+  if (art === 'toybox') return <ToyBox />
+
+  /**
+   * ⚠️ 认不出就空着，**绝不兜底成某件家具**。
+   *
+   * 这里原先是 `return <ToyBox />`，于是三样零食（`cookie` / `fruit` / `cake`）
+   * 传进来时全被画成了玩具箱——商店里三张零食卡长得一模一样，
+   * 而且一眼看不出是画错了还是本来就长这样。类型上已经拦住了大部分，
+   * 但兜底分支会把「漏画了一个」变成「悄悄画错了」，后者贵得多。
+   */
+  return null
 }
 
 /**

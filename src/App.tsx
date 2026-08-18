@@ -28,6 +28,7 @@ import { Report } from '@/features/parent/Report'
 import { WrongBook } from '@/features/parent/WrongBook'
 import { PetHome } from '@/features/pet/PetHome'
 import { PetRoom } from '@/features/room/PetRoom'
+import { ShopPage } from '@/features/shop/ShopPage'
 
 /**
  * 用 `HashRouter` 而非 `BrowserRouter`：
@@ -87,6 +88,10 @@ function AppRoutes() {
         {/* 宠物小屋：三只一起住的地方，买来的家具摆在这里。
             与 /pets 分工不同——那里是「看这一只」，这里是「看这个家」 */}
         <Route path="/room" element={<PetRoom />} />
+        {/* 商店只从小屋进：买完东西直接看到它摆进屋里，那个瞬间是整个功能的高光。
+            ⚠️ 刻意**不放**在首页和小结页——每轮做完都被引导去花钱，
+            会把学习变成打工（与「升级提示不在答题中途弹窗」同一个道理） */}
+        <Route path="/shop" element={<ShopPage />} />
         <Route path="/summary" element={<SessionSummary />} />
         {/* 家长区。门禁包在路由这一层，任何直接跳 hash 的路径都绕不过去。
             通行状态存在 parentGateStore，因此子页面之间跳转不会重复验证 */}

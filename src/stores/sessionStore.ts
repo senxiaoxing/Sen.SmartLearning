@@ -135,6 +135,15 @@ interface SessionState {
   finish: () => Promise<void>
   reset: () => void
   countReplay: () => void
+  /**
+   * 直接写入余额。**只有商店买完东西时才调**——
+   * 答题路径上的余额一律由 `answer` 从入账结果里带回来，
+   * 绕过它去手工设置会让「做对一题得几分」和账本脱钩。
+   *
+   * 余额本身留在这里而不是搬去 shopStore：首页、小结页读的都是它，
+   * 花掉之后那两处必须立刻跟上，否则孩子会看到一个已经不存在的数字。
+   */
+  setBalance: (balance: number) => void
 }
 
 export const useSessionStore = create<SessionState>((set, get) => ({
@@ -448,4 +457,6 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   },
 
   countReplay: () => set((s) => ({ ttsReplayCount: s.ttsReplayCount + 1 })),
+
+  setBalance: (balance) => set({ balance }),
 }))

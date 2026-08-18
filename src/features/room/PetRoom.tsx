@@ -16,6 +16,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
+import { BigButton } from '@/components/BigButton'
 import { PageHeader } from '@/components/PageHeader'
 import { RoomScene } from '@/components/room/RoomScene'
 import { ownedRoomItemIds } from '@/data/repositories/purchaseQueries'
@@ -51,6 +52,16 @@ export function PetRoom() {
       <div className="mx-auto mt-4 flex w-full max-w-2xl flex-col gap-4">
         <RoomScene owned={owned} pets={pets} festive={birthday} />
         <RoomProgress owned={owned} balance={balance} />
+        {/* 商店的唯一入口。放在小屋里而不是首页：买完东西直接看到它摆进屋里，
+            那个瞬间是整个功能的高光，别浪费在一个孤立的商店页上 */}
+        <BigButton
+          tone="primary"
+          fullWidth
+          className="py-5 text-2xl"
+          onClick={() => navigate('/shop')}
+        >
+          去商店逛逛
+        </BigButton>
       </div>
     </AppShell>
   )
