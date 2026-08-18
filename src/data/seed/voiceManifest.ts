@@ -21,6 +21,8 @@ import { ALL_HANZI_CARDS } from '@/data/seed/hanziCards'
 import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
 import { PET_NAME_PRESETS } from '@/data/seed/petNamePresets'
 import { PET_DEFINITIONS, PET_LINE_MOMENTS } from '@/data/seed/pets'
+import { REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
+import { ROOM_ITEMS, TREAT_ITEMS } from '@/data/seed/shopItems'
 import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
 import { POEMS } from '@/data/seed/poems'
 import { spokenText, wordKey } from '@/domain/english'
@@ -417,6 +419,20 @@ const EXPLAINER_LINES: VoiceManifest = Object.fromEntries(
 )
 
 /**
+ * 商店商品名（shop.*）。
+ *
+ * ⭐ 孩子不识字，**商品名必须能朗读**——这也正是现实券只能从预设里挑、
+ * 家长不能自由输入的原因：自由输入的名字没有预生成音频，只能整句降级
+ * 成实时 TTS，和同一页里其余的少女音混在一起。
+ * 绝不做「片段 + TTS 混播」（design/07 §2.5b），与昵称、宠物名同一条铁律。
+ */
+const SHOP_ITEMS: VoiceManifest = Object.fromEntries([
+  ...ROOM_ITEMS.map((item) => [item.clipKey, item.label] as const),
+  ...TREAT_ITEMS.map((item) => [item.clipKey, item.label] as const),
+  ...REAL_REWARD_PRESETS.map((preset) => [preset.clipKey, preset.label] as const),
+])
+
+/**
  * 全部语音片段。
  *
  * 当前约 {@link VOICE_CLIP_COUNT} 条，三科齐全。
@@ -435,6 +451,7 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...PET_NAME_PRESET_CLIPS,
   ...PET_LINES,
   ...EXPLAINER_LINES,
+  ...SHOP_ITEMS,
 }
 
 export const VOICE_CLIP_COUNT = Object.keys(VOICE_MANIFEST).length

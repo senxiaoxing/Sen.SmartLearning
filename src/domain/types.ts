@@ -433,7 +433,37 @@ export interface Settings {
   autoReadStem: boolean
   reducedMotion: boolean
 
+  /**
+   * 现实兑换券的家长配置：哪些上架、卖多少分、隔多久能再兑。
+   *
+   * ⚠️ **可选字段，缺失即视为「一张都没上架」**（不是「全部上架」）。
+   * 上架等于家长已经答应了这件事——见 `data/seed/realRewards.ts`。
+   * 默认全关，家长主动勾选才出现在商店里，绝不能反过来。
+   *
+   * 存在 `settings` 而不是单开一张表：它就是一份家长设置，
+   * 和时长限制、音量放在一起最自然；而且 `settings` 本就在备份范围内，
+   * 不需要再动 schema 与备份迁移。
+   */
+  realRewardConfigs?: RealRewardConfig[]
+
   updatedAt: IsoDateTime
+}
+
+/**
+ * 一张现实券的家长配置。
+ *
+ * 价格与冷却存在这里而非只读预设里，是因为「小礼物 / 大礼物」具体是什么
+ * 由家长定，**而价格就是它的定义**。预设给的只是建议值。
+ */
+export interface RealRewardConfig {
+  /** 对应 `REAL_REWARD_PRESETS` 里的 `id` */
+  presetId: string
+  /** 是否上架。⚠️ 下架后即便余额充足也不能兑，见 `canPurchase` */
+  listed: boolean
+  /** 家长定的价格 */
+  price: number
+  /** 家长定的冷却天数，`0` 表示不限 */
+  cooldownDays: number
 }
 
 /**

@@ -55,6 +55,8 @@ const PETS_FILE = join(ROOT, 'src', 'data', 'seed', 'pets.ts')
 const EXPLAINERS_FILE = join(ROOT, 'src', 'data', 'seed', 'explainers.ts')
 const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
 const POEMS_FILE = join(ROOT, 'src', 'data', 'seed', 'poems.ts')
+const SHOP_FILE = join(ROOT, 'src', 'data', 'seed', 'shopItems.ts')
+const REAL_REWARDS_FILE = join(ROOT, 'src', 'data', 'seed', 'realRewards.ts')
 
 /**
  * 默认音色。
@@ -320,6 +322,7 @@ function loadManifest() {
     loadExplainers(),
     loadHanzi(),
     loadPoems(),
+    loadShopItems(),
   )
   return manifest
 }
@@ -579,6 +582,44 @@ function loadPetNames() {
   if (Object.keys(out).length === 0) {
     console.error('✗ petNamePresets.ts 的结构变了，本脚本的 loadPetNames() 必须同步：')
     console.error('  一条 petname.* 都没解析出来')
+    process.exit(1)
+  }
+
+  return out
+}
+
+/**
+ * 商店商品名（shop.*）—— 小屋家具、宠物零食、现实兑换券三份表。
+ *
+ * ⭐ 商品名必须能朗读，孩子不识字，念不出来等于这件东西没有名字。
+ * 这也正是现实券只能从预设里挑、家长不能自由输入的原因：
+ * 自由输入没有预生成音频，只能整句降级 TTS，和同一页的少女音混在一起。
+ *
+ * 音色走默认中文（`voiceFor` 的兜底分支）——商品名就是普通中文短语，
+ * 和界面其余部分同一把嗓子。
+ *
+ * 正则按**整个对象字面量**匹配而非「label 后面跟着 clipKey」：
+ * 这两个字段在三份表里的排列顺序不一定一致，而 `[^{}]*` 在没有嵌套花括号的
+ * 对象里能安全圈出一条记录，字段怎么排都认。
+ */
+function loadShopItems() {
+  const out = {}
+
+  for (const file of [SHOP_FILE, REAL_REWARDS_FILE]) {
+    const text = readFileSync(file, 'utf-8')
+    for (const [chunk, clipKey] of text.matchAll(
+      /\{[^{}]*clipKey:\s*'(shop\.[A-Za-z0-9]+)'[^{}]*\}/g,
+    )) {
+      const label = chunk.match(/label:\s*'([^']+)'/)
+      if (label !== null) out[clipKey] = label[1]
+    }
+  }
+
+  // ⚠️ 硬失败而不是警告，理由与 loadNicknames / loadPetNames 完全一致：
+  //    静默漏生成的表现是「商店里那件东西点了不出声」，而孩子只能靠听
+  if (Object.keys(out).length === 0) {
+    console.error('✗ shopItems.ts / realRewards.ts 的结构变了，本脚本的 loadShopItems() 必须同步：')
+    console.error('  一条 shop.* 都没解析出来')
     process.exit(1)
   }
 
