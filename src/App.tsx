@@ -24,6 +24,7 @@ import { VoiceCacheGate } from '@/features/onboarding/VoiceCacheGate'
 import { Backup } from '@/features/parent/Backup'
 import { ParentGate } from '@/features/parent/ParentGate'
 import { ParentHome } from '@/features/parent/ParentHome'
+import { ParentShop } from '@/features/parent/ParentShop'
 import { Report } from '@/features/parent/Report'
 import { WrongBook } from '@/features/parent/WrongBook'
 import { PetHome } from '@/features/pet/PetHome'
@@ -98,6 +99,7 @@ function AppRoutes() {
         <Route path="/parent" element={<Gated><ParentHome /></Gated>} />
         <Route path="/parent/report" element={<Gated><Report /></Gated>} />
         <Route path="/parent/wrong" element={<Gated><WrongBook /></Gated>} />
+        <Route path="/parent/shop" element={<Gated><ParentShop /></Gated>} />
         <Route path="/parent/backup" element={<Gated><Backup /></Gated>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

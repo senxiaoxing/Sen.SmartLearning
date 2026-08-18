@@ -40,6 +40,12 @@ const ENTRIES: Entry[] = [
     desc: '最近错过、而且还没改对的题',
   },
   {
+    to: '/parent/shop',
+    icon: 'star',
+    title: '奖励',
+    desc: '待兑现的现实奖励、兑换记录，以及商店里上架什么',
+  },
+  {
     to: '/parent/backup',
     icon: 'save',
     title: '数据备份',
