@@ -15,8 +15,8 @@ import { applyBackupMigrations } from '@/domain/backup/migrateBackup'
 import { checksumMatches } from '@/domain/backup/checksum'
 import type { BackupFile } from '@/domain/types'
 
-/** 备份文件里必须存在的数据表，缺一即视为结构损坏 */
-const REQUIRED_DATA_TABLES = [
+/** 自备份功能上线（schema v3）起就必须存在的数据表，缺一即视为结构损坏 */
+const BASE_DATA_TABLES = [
   'attempts',
   'mastery',
   'sessions',
@@ -27,6 +27,27 @@ const REQUIRED_DATA_TABLES = [
   'achievements',
   'assessments',
 ] as const
+
+/**
+ * 各 schema 版本**新增**的数据表，键是引入它的版本号。
+ *
+ * ⚠️ 必检表清单必须跟着备份自己声明的版本走，不能用一份写死的全集：
+ * 结构检查跑在迁移**之前**，拿 v4 的清单去要求一份 v3 备份，
+ * 会把每一份老备份都判成「损坏」——而迁移的全部意义正是让老备份还能用。
+ * 反过来，一份自称 v4 却没有 `purchases` 的文件是真的坏了，必须拦下。
+ */
+const TABLES_ADDED_IN: Readonly<Record<number, readonly string[]>> = {
+  4: ['purchases'],
+}
+
+/** 某个 schema 版本的备份应当具备的全部数据表 */
+function requiredTablesFor(schemaVersion: number): string[] {
+  const tables: string[] = [...BASE_DATA_TABLES]
+  for (const [version, added] of Object.entries(TABLES_ADDED_IN)) {
+    if (Number(version) <= schemaVersion) tables.push(...added)
+  }
+  return tables
+}
 
 export type BackupRejectReason =
   /** 根本不是 JSON 对象 */
@@ -99,7 +120,7 @@ export function validateBackup(raw: unknown, currentSchemaVersion: number): Back
     )
   }
 
-  const structural = checkStructure(candidate)
+  const structural = checkStructure(candidate, candidate.schemaVersion)
   if (structural !== null) return reject('malformed', structural)
 
   const originalVersion = candidate.schemaVersion
@@ -113,8 +134,14 @@ export function validateBackup(raw: unknown, currentSchemaVersion: number): Back
   return {
     ok: true,
     backup,
+    // ⭐ 校验的是**迁移前**的 `candidate.data`，不是迁移后的 `backup.data`。
+    //    校验和在导出那一刻是对着原始 data 算出来的，它回答的问题是
+    //    「这个文件从 iPad 传到 iPad 的路上有没有被截断或改坏」。
+    //    迁移会往 data 里补字段（v3→v4 补 `purchases: []`），拿迁移后的结果去比
+    //    必然不等，于是每一份老备份都会被报成「可能已损坏」——
+    //    那是家长最不该看到的假警报，恰好出现在他最紧张的时刻。
     checksumMatched:
-      typeof candidate.checksum === 'string' && checksumMatches(backup.data, candidate.checksum),
+      typeof candidate.checksum === 'string' && checksumMatches(candidate.data, candidate.checksum),
     ...(originalVersion < currentSchemaVersion && { migratedFrom: originalVersion }),
   }
 }
@@ -125,8 +152,11 @@ export function validateBackup(raw: unknown, currentSchemaVersion: number): Back
  * 只查「形状」不查每条记录的字段：40000 条 attempts 逐条校验既慢又没有额外收益——
  * 备份文件来自本 App 自己的导出，现实中的损坏是截断和编码错乱，
  * 这两种都会被 checksum 抓到，而「选错了别的 JSON 文件」会被这里的形状检查抓到。
+ *
+ * @param schemaVersion - 备份**自己声明的**版本（调用方已确认是整数）。
+ *                        必检表清单据此推导，见 {@link TABLES_ADDED_IN}
  */
-function checkStructure(candidate: Partial<BackupFile>): string | null {
+function checkStructure(candidate: Partial<BackupFile>, schemaVersion: number): string | null {
   if (typeof candidate.profile !== 'object' || candidate.profile === null) {
     return '备份文件缺少档案信息，可能已损坏。'
   }
@@ -141,7 +171,8 @@ function checkStructure(candidate: Partial<BackupFile>): string | null {
   }
 
   const data = candidate.data as Record<string, unknown>
-  const missing = REQUIRED_DATA_TABLES.filter((name) => !Array.isArray(data[name]))
+  // 走备份自己声明的版本：此时尚未迁移，用新版本的清单去要求老文件会全部误判
+  const missing = requiredTablesFor(schemaVersion).filter((name) => !Array.isArray(data[name]))
   if (missing.length > 0) {
     return `备份文件缺少数据：${missing.join('、')}，可能已损坏。`
   }

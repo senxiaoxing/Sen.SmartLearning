@@ -14,7 +14,8 @@ import { applyGrants, type GrantSettlement } from '@/domain/economy/applyGrants'
 import type { RewardGrant } from '@/domain/economy/rewards'
 import { nowIso, parseIso, toIso, todayLocal } from '@/domain/time'
 import { newId } from '@/platform/newId'
-import type { IsoDateTime, LedgerEntry, LocalDate, Uuid } from '@/domain/types'
+import { EARNED_LEDGER_REASONS } from '@/domain/types'
+import type { IsoDateTime, LedgerEntry, LedgerReason, LocalDate, Uuid } from '@/domain/types'
 
 /**
  * 取某档案最新的一条流水。
@@ -123,8 +124,13 @@ export async function appendGrants(
 /**
  * 某一天赚到的积分总额，用于主页与家长报告的「今天得了多少分」。
  *
- * 只统计正数：支出（买东西）不该让「今天赚了多少」这个数字变小，
- * 那会让孩子觉得花钱是在损失努力成果。
+ * 两道过滤，缺一不可：
+ *
+ * 1. **只统计正数**——支出（买东西）不该让「今天赚了多少」这个数字变小，
+ *    那会让孩子觉得花钱是在损失努力成果。
+ * 2. **只统计 {@link EARNED_LEDGER_REASONS}**——退款（`purchase_refund`）也是正数，
+ *    但它是把花掉的分还回来，不是新赚的。少了这道过滤，孩子手滑买错再撤销
+ *    就会显示成「今天多赚了 300 分」，这个数字从此不再是努力的度量。
  *
  * @param profileId - 档案 ID
  * @param localDate - 本地日期 `'YYYY-MM-DD'`
@@ -141,5 +147,9 @@ export async function sumEarnedOnDate(
     .equals([profileId, localDate])
     .toArray()
 
-  return entries.reduce((sum, e) => (e.delta > 0 ? sum + e.delta : sum), 0)
+  const earned = new Set<LedgerReason>(EARNED_LEDGER_REASONS)
+  return entries.reduce(
+    (sum, e) => (e.delta > 0 && earned.has(e.reason) ? sum + e.delta : sum),
+    0,
+  )
 }

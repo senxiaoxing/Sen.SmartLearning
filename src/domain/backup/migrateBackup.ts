@@ -19,23 +19,29 @@ import type { BackupFile } from '@/domain/types'
 export type BackupMigration = (backup: BackupFile) => BackupFile
 
 /**
+ * v3 → v4：积分商店上线，新增 `purchases` 表。
+ *
+ * 老备份里根本没有这个字段，补成空数组即可——v4 之前买不了任何东西，
+ * 所以「什么都没买过」是对这份数据唯一正确的解读。
+ *
+ * ⚠️ 积分本身**不需要迁移**：余额由 `ledger` 推导，那张表 v3 就有了，
+ * 升级前攒的星星原样还在。
+ */
+const migrate3to4: BackupMigration = (backup) => ({
+  ...backup,
+  schemaVersion: 4,
+  data: { ...backup.data, purchases: [] },
+})
+
+/**
  * 迁移表。键是**源版本**，值把它升一级。
  *
- * ⭐ 现在是空表，这是正确的，不是漏写：
  * 备份功能本身是在 `SCHEMA_VERSION === 3` 时才上线的，
- * 世界上不存在 schemaVersion 为 1 或 2 的备份文件。第一条会是 `3: migrate3to4`。
- *
- * @example
- * // 将来加 v4（比如宠物表加字段）时这样写：
- * // export const BACKUP_MIGRATIONS = {
- * //   3: (b) => ({
- * //     ...b,
- * //     schemaVersion: 4,
- * //     data: { ...b.data, petState: b.data.petState.map((p) => ({ ...p, mood: 'happy' })) },
- * //   }),
- * // }
+ * 世界上不存在 schemaVersion 为 1 或 2 的备份文件，所以从 3 开始。
  */
-export const BACKUP_MIGRATIONS: Readonly<Record<number, BackupMigration>> = {}
+export const BACKUP_MIGRATIONS: Readonly<Record<number, BackupMigration>> = {
+  3: migrate3to4,
+}
 
 /**
  * 把备份逐级升到目标版本。

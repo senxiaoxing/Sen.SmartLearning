@@ -24,7 +24,7 @@ import { validateBackup } from '@/domain/backup/validateBackup'
 import { createRng } from '@/domain/generators/rng'
 import { selectNextItems } from '@/domain/scheduler/selectNextItems'
 import { nowIso, todayLocal } from '@/domain/time'
-import type { Attempt, BackupFile, LedgerEntry, Uuid } from '@/domain/types'
+import type { Attempt, BackupFile, LedgerEntry, Purchase, Uuid } from '@/domain/types'
 
 const ANSWERABLE = new Set(ITEM_TEMPLATE_BY_KP.keys())
 
@@ -123,10 +123,63 @@ async function seedUsedProfile(): Promise<Uuid> {
   }
   await db.ledger.add(entry)
 
+  await seedPurchases(profileId)
+
   // 宠物有经验才测得出「导入后宠物没有被降级」
   await addExp(profileId, 'math', 'G1', 48)
 
   return profileId
+}
+
+/**
+ * 造三笔购买，把 `Purchase` 的三种形态都覆盖到。
+ *
+ * ⭐ 特意包含一笔 `pending` 的现实券：它是唯一带**可变状态**的记录，
+ * 导入后要是掉回 `pending` 之外的值、或者 `fulfilledAt` 丢了，
+ * 家长就会重复兑现一次（或者永远兑不了）——而这种错在 UI 上看不出来。
+ */
+async function seedPurchases(profileId: Uuid): Promise<void> {
+  const now = nowIso()
+  const rows: Purchase[] = [
+    {
+      id: crypto.randomUUID(),
+      profileId,
+      shopItemId: 'room-rug',
+      kind: 'room',
+      label: '地毯',
+      pricePaid: 300,
+      status: 'owned',
+      ledgerEntryId: crypto.randomUUID(),
+      createdAt: now,
+      localDate: todayLocal(),
+    },
+    {
+      id: crypto.randomUUID(),
+      profileId,
+      shopItemId: 'treat-cookie',
+      kind: 'treat',
+      label: '小饼干',
+      pricePaid: 10,
+      status: 'fulfilled',
+      ledgerEntryId: crypto.randomUUID(),
+      createdAt: now,
+      localDate: todayLocal(),
+      fulfilledAt: now,
+    },
+    {
+      id: crypto.randomUUID(),
+      profileId,
+      shopItemId: 'real-icecream',
+      kind: 'real',
+      label: '一个冰淇淋',
+      pricePaid: 300,
+      status: 'pending',
+      ledgerEntryId: crypto.randomUUID(),
+      createdAt: now,
+      localDate: todayLocal(),
+    },
+  ]
+  await db.purchases.bulkAdd(rows)
 }
 
 /** 把全部用户表读成一个可直接比对的快照，各表按 id 排序消除顺序差异 */
@@ -203,6 +256,40 @@ describe('备份往返', () => {
 
     const taggedAfter = (await db.attempts.toArray()).filter((a) => a.misconceptionTag !== undefined)
     expect(taggedAfter).toHaveLength(taggedBefore.length)
+  })
+
+  it('⭐ 购买记录原样还原，待兑现的现实券不会变成已兑现', async () => {
+    // 状态错了在界面上看不出来：孩子只看到「已经告诉爸爸妈妈啦」，
+    // 而家长的待兑现列表里那张券消失了 —— 冰淇淋就永远不会来
+    const profileId = await seedUsedProfile()
+    const before = await db.purchases.where('profileId').equals(profileId).toArray()
+    expect(before).toHaveLength(3)
+
+    const backup = await buildBackup(profileId)
+    await db.purchases.clear()
+    const verdict = validateBackup(roundTripThroughFile(backup), SCHEMA_VERSION)
+    if (!verdict.ok) throw new Error(verdict.message)
+    await importBackup(verdict.backup)
+
+    const after = await db.purchases.where('profileId').equals(profileId).toArray()
+    const byItem = (rows: Purchase[]) => new Map(rows.map((p) => [p.shopItemId, p]))
+    expect(after).toHaveLength(before.length)
+    expect(byItem(after).get('real-icecream')?.status).toBe('pending')
+    expect(byItem(after).get('real-icecream')?.fulfilledAt, '待兑现的不该有兑现时间').toBeUndefined()
+    expect(byItem(after).get('treat-cookie')?.fulfilledAt).toBe(
+      byItem(before).get('treat-cookie')?.fulfilledAt,
+    )
+  })
+
+  it('成交价快照原样还原 —— 撤销时要按买当时的价钱退', async () => {
+    const profileId = await seedUsedProfile()
+    const backup = await buildBackup(profileId)
+    await db.purchases.clear()
+    await importBackup(backup)
+
+    const rug = await db.purchases.where('[profileId+shopItemId]').equals([profileId, 'room-rug']).first()
+    expect(rug?.pricePaid).toBe(300)
+    expect(rug?.label, '名称快照也要在，商品下架后靠它显示').toBe('地毯')
   })
 
   it('掌握度里的认知误区计数原样还原', async () => {

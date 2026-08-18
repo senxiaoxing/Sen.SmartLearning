@@ -14,7 +14,7 @@ import { applyBackupMigrations, BACKUP_MIGRATIONS } from '@/domain/backup/migrat
 import { validateBackup } from '@/domain/backup/validateBackup'
 import type { BackupFile, IsoDateTime, Profile, Settings } from '@/domain/types'
 
-const CURRENT_VERSION = 3
+const CURRENT_VERSION = 4
 
 function makeBackup(overrides: Partial<BackupFile> = {}): BackupFile {
   const now = '2026-08-06T02:00:00.000Z' as IsoDateTime
@@ -49,6 +49,7 @@ function makeBackup(overrides: Partial<BackupFile> = {}): BackupFile {
     dailyTasks: [],
     petState: [],
     ledger: [],
+    purchases: [],
     collections: [],
     achievements: [],
     assessments: [],
@@ -73,6 +74,16 @@ function makeBackup(overrides: Partial<BackupFile> = {}): BackupFile {
     checksum: checksumOf(data),
     ...overrides,
   }
+}
+
+/**
+ * 一份**货真价实的 v3 备份**：没有 `purchases` 字段，校验和是对着当时的
+ * data 算出来的。孩子 iPad 上现存的备份长这样，商店上线后必须还能导。
+ */
+function makeV3Backup(): Record<string, unknown> {
+  const v4 = makeBackup()
+  const { purchases: _dropped, ...v3Data } = v4.data
+  return { ...v4, schemaVersion: 3, data: v3Data, checksum: checksumOf(v3Data) }
 }
 
 describe('checksumOf', () => {
@@ -180,8 +191,8 @@ describe('validateBackup 接受的情况', () => {
 })
 
 describe('备份迁移', () => {
-  it('迁移表现在是空的 —— 备份功能在 v3 才上线，不存在 v1/v2 的备份文件', () => {
-    expect(Object.keys(BACKUP_MIGRATIONS)).toHaveLength(0)
+  it('迁移链从 v3 起 —— 备份功能在 v3 才上线，不存在 v1/v2 的备份文件', () => {
+    expect(Object.keys(BACKUP_MIGRATIONS)).toEqual(['3'])
   })
 
   it('已是目标版本时原样返回', () => {
@@ -200,5 +211,68 @@ describe('备份迁移', () => {
     const verdict = validateBackup(makeBackup({ schemaVersion: 1 }), CURRENT_VERSION)
     expect(verdict.ok).toBe(false)
     if (!verdict.ok) expect(verdict.reason).toBe('malformed')
+  })
+
+  it('迁移是纯函数，不改动传入的备份对象', () => {
+    const v3 = makeV3Backup()
+    applyBackupMigrations(v3 as unknown as BackupFile, CURRENT_VERSION)
+    expect(v3.schemaVersion, '入参必须原样').toBe(3)
+    expect(v3.data).not.toHaveProperty('purchases')
+  })
+})
+
+describe('v3 → v4 迁移（积分商店上线）', () => {
+  it('⭐ 商店上线前导出的备份仍然能导入', () => {
+    const verdict = validateBackup(makeV3Backup(), CURRENT_VERSION)
+    expect(verdict.ok, '这是孩子 iPad 上现存备份的形状，必须收').toBe(true)
+    if (!verdict.ok) return
+    expect(verdict.migratedFrom).toBe(3)
+    expect(verdict.backup.schemaVersion).toBe(4)
+  })
+
+  it('老备份补出空的 purchases —— v4 之前买不了东西，「什么都没买过」是唯一正确解读', () => {
+    const verdict = validateBackup(makeV3Backup(), CURRENT_VERSION)
+    if (!verdict.ok) throw new Error(verdict.message)
+    expect(verdict.backup.data.purchases).toEqual([])
+  })
+
+  it('⭐ 迁移不得把老备份误报成损坏', () => {
+    // 校验和是导出那一刻对着**当时的 data** 算的，而迁移会往 data 里补字段。
+    // 若拿迁移后的结果去比校验和，每一份老备份都会跳「文件可能已损坏」——
+    // 恰好出现在家长最紧张的时刻（换设备恢复数据）。
+    const verdict = validateBackup(makeV3Backup(), CURRENT_VERSION)
+    expect(verdict.ok).toBe(true)
+    if (verdict.ok) expect(verdict.checksumMatched, '不该有假警报').toBe(true)
+  })
+
+  it('老备份里的积分流水原样带过来 —— 升级前攒的星星一分不能少', () => {
+    const v3 = makeV3Backup()
+    const data = v3.data as Record<string, unknown>
+    data.ledger = [
+      { id: 'l1', profileId: 'profile-1', delta: 2, balanceAfter: 2, reason: 'correct_answer' },
+      { id: 'l2', profileId: 'profile-1', delta: 15, balanceAfter: 17, reason: 'kp_mastered' },
+    ]
+    v3.checksum = checksumOf(data)
+
+    const verdict = validateBackup(v3, CURRENT_VERSION)
+    if (!verdict.ok) throw new Error(verdict.message)
+    expect(verdict.backup.data.ledger).toHaveLength(2)
+    expect(verdict.backup.data.ledger[1]?.balanceAfter, '余额取自最新一条').toBe(17)
+  })
+
+  it('自称 v4 却缺 purchases 的文件是真损坏，必须拦下', () => {
+    const backup = makeBackup()
+    const broken = { ...backup, data: { ...backup.data, purchases: undefined } }
+    const verdict = validateBackup(broken, CURRENT_VERSION)
+    expect(verdict.ok).toBe(false)
+    if (!verdict.ok) {
+      expect(verdict.reason).toBe('malformed')
+      expect(verdict.message).toContain('purchases')
+    }
+  })
+
+  it('v3 备份缺 purchases 不算损坏 —— 必检清单跟着文件自己的版本走', () => {
+    const verdict = validateBackup(makeV3Backup(), CURRENT_VERSION)
+    expect(verdict.ok).toBe(true)
   })
 })

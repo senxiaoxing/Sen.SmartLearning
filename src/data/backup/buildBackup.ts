@@ -55,18 +55,29 @@ export async function buildBackup(profileId: Uuid): Promise<BackupFile> {
   const byProfile = <T>(table: Table<T, string>): Promise<T[]> =>
     table.where('profileId').equals(profileId).toArray()
 
-  const [attempts, mastery, sessions, dailyTasks, petState, ledger, collections, achievements, assessments] =
-    await Promise.all([
-      byProfile(db.attempts),
-      byProfile(db.mastery),
-      byProfile(db.sessions),
-      byProfile(db.dailyTasks),
-      byProfile(db.petState),
-      byProfile(db.ledger),
-      byProfile(db.collections),
-      byProfile(db.achievements),
-      byProfile(db.assessments),
-    ])
+  const [
+    attempts,
+    mastery,
+    sessions,
+    dailyTasks,
+    petState,
+    ledger,
+    purchases,
+    collections,
+    achievements,
+    assessments,
+  ] = await Promise.all([
+    byProfile(db.attempts),
+    byProfile(db.mastery),
+    byProfile(db.sessions),
+    byProfile(db.dailyTasks),
+    byProfile(db.petState),
+    byProfile(db.ledger),
+    byProfile(db.purchases),
+    byProfile(db.collections),
+    byProfile(db.achievements),
+    byProfile(db.assessments),
+  ])
 
   const data: BackupFile['data'] = {
     attempts,
@@ -75,6 +86,7 @@ export async function buildBackup(profileId: Uuid): Promise<BackupFile> {
     dailyTasks,
     petState,
     ledger,
+    purchases,
     collections,
     achievements,
     assessments,

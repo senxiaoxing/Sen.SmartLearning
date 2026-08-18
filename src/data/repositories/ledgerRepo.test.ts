@@ -267,4 +267,21 @@ describe('sumEarnedOnDate', () => {
     expect(await sumEarnedOnDate(profileId, todayLocal())).toBe(20)
     expect(await getBalance(profileId), '余额仍要反映支出').toBe(10)
   })
+
+  it('⭐ 退款不算「赚到」—— 否则买错再撤销会显示成又赚了一笔', async () => {
+    const profileId = await bootstrap()
+    await appendGrants(profileId, [{ delta: 300, reason: 'correct_answer' }])
+    await appendGrants(profileId, [{ delta: -300, reason: 'buy_item' }])
+    await appendGrants(profileId, [{ delta: 300, reason: 'purchase_refund' }])
+
+    expect(await sumEarnedOnDate(profileId, todayLocal()), '仍然只赚了 300').toBe(300)
+    expect(await getBalance(profileId), '钱退回来了').toBe(300)
+  })
+
+  it('家长手动加分算「赚到」—— 在孩子视角就是我得到了分', async () => {
+    const profileId = await bootstrap()
+    await appendGrants(profileId, [{ delta: 50, reason: 'manual_adjust' }])
+
+    expect(await sumEarnedOnDate(profileId, todayLocal())).toBe(50)
+  })
 })

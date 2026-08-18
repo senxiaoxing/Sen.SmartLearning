@@ -26,6 +26,7 @@ import type {
   MetaRecord,
   PetState,
   Profile,
+  Purchase,
   Session,
   Settings,
 } from '@/domain/types'
@@ -36,7 +37,7 @@ import type {
  * ⚠️ 每次修改表结构都必须递增，并在 `version(n)` 中补写迁移逻辑。
  * 导出的备份文件会带上此值，导入时据此决定跑哪些迁移。
  */
-export const SCHEMA_VERSION = 3
+export const SCHEMA_VERSION = 4
 
 /**
  * 内置静态内容版本（知识点、题库、成就定义）。
@@ -80,6 +81,7 @@ export class SmartLearningDB extends Dexie {
   dailyTasks!: Table<DailyTask, string>
   petState!: Table<PetState, string>
   ledger!: Table<LedgerEntry, string>
+  purchases!: Table<Purchase, string>
   collections!: Table<CollectionCard, string>
   achievements!: Table<Achievement, string>
   assessments!: Table<Assessment, string>
@@ -154,6 +156,23 @@ export class SmartLearningDB extends Dexie {
             pet.gradeLevel ??= 'G1'
           })
       })
+
+    /**
+     * v4：积分商店 —— 新增 `purchases` 表，记录买过什么。
+     *
+     * 纯新增表，**不需要 `upgrade()` 回调**：Dexie 会直接建出空表，
+     * 老数据一条都不用动。积分余额本来就由 `ledger` 推导，那张表没变，
+     * 所以升级前攒的星星一分不少。
+     *
+     * 索引用途：
+     * - `[profileId+status]`     家长区的「待兑现」列表
+     * - `[profileId+shopItemId]` 小屋渲染判断「这件家具买了没」＋现实券的冷却判定
+     * - `createdAt`              兑换记录页倒序展示
+     */
+    this.version(4).stores({
+      purchases:
+        'id, profileId, createdAt, [profileId+status], [profileId+shopItemId]',
+    })
   }
 }
 
@@ -176,6 +195,7 @@ export const USER_DATA_TABLES = [
   'dailyTasks',
   'petState',
   'ledger',
+  'purchases',
   'collections',
   'achievements',
   'assessments',

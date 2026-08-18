@@ -644,9 +644,32 @@ export type LedgerReason =
   | 'streak_bonus' // +N  连续天数奖励
   | 'kp_mastered' // +15 掌握一个知识点
   | 'assessment_complete' // +50 完成摸底测评
-  | 'buy_food' // -10
-  | 'buy_item' // -100
+  | 'buy_food' // -N  给宠物买零食（一次性动画，不产生任何状态）
+  | 'buy_item' // -N  给小屋买家具
+  | 'redeem_real' // -N  兑换现实奖励券，待家长兑现
+  | 'purchase_refund' // +N  撤销一笔购买，按成交价原额退回
   | 'manual_adjust' // 家长手动调整
+
+/**
+ * 「赚到」的流水理由 —— 用于「今天得了多少分」这类累计统计。
+ *
+ * ⚠️ `purchase_refund` 虽然是正数，但**不在此列**：
+ * 它是把已经花掉的分还回来，不是新赚的。算进去会让孩子手滑买错再撤销
+ * 变成「今天多赚了 300 分」，那个数字就不再是努力的度量了。
+ */
+export const EARNED_LEDGER_REASONS: readonly LedgerReason[] = [
+  'correct_answer',
+  'retry_correct',
+  'challenge_bonus',
+  'daily_task',
+  'all_tasks_bonus',
+  'streak_bonus',
+  'kp_mastered',
+  'assessment_complete',
+  // 家长手动加分（做了好事、帮了忙）在孩子视角就是「我得到了分」，算赚到。
+  // 手动**扣**分不会误入统计——调用方还有一层 `delta > 0` 的过滤。
+  'manual_adjust',
+]
 
 /**
  * 积分流水。**账本式设计：余额由流水推导，不设独立可变余额字段**，避免不一致。
@@ -665,6 +688,69 @@ export interface LedgerEntry {
   note?: string
   createdAt: IsoDateTime
   localDate: LocalDate
+}
+
+/**
+ * 商品大类。决定了买下之后会发生什么，以及归哪个界面管。
+ *
+ * - `room`  小屋家具。**永久拥有**，买了就摆在小屋固定位置上，不消耗
+ * - `treat` 宠物零食。买完立刻消耗：三只一起吃，播个动画，各说一句谢谢
+ * - `real`  现实兑换券。需要家长在现实里兑现，因此多一道「待兑现」状态
+ *
+ * ⚠️ `treat` **不产生任何状态**——不加经验、不涨好感、没有饱食度。
+ * 喂养系统在 design/02 §3.11、design/03 §4.5、design/06 §9 三处都被明确移除过，
+ * 理由是它必然带来「没喂 = 宠物变惨」的惩罚感。零食是一次性的开心，仅此而已。
+ */
+export type ShopItemKind = 'room' | 'treat' | 'real'
+
+/**
+ * 购买记录的状态。
+ *
+ * ```
+ * room  → owned                  （终态：家具一直在小屋里）
+ * treat → fulfilled              （终态：买入即吃掉）
+ * real  → pending → fulfilled    （家长在家长区点「已兑现」）
+ * ```
+ *
+ * 没有 `cancelled` 状态：撤销一笔购买是**删除这条记录**并原额退分，
+ * 而不是留一条作废记录。孩子的「我买过什么」里出现一条划掉的东西，
+ * 传达的是「你买错了」，而手滑不该由她背。
+ */
+export type PurchaseStatus = 'owned' | 'pending' | 'fulfilled'
+
+/**
+ * 一笔购买。
+ *
+ * ⭐ **为什么不直接用 ledger 当兑换记录**：`ledger` 是 append-only 的账本，
+ * 而「待兑现 → 已兑现」是可变状态，塞进流水就得靠再记一笔来表达状态变化，
+ * 于是「这张券兑现了没」要靠扫描全部流水来推导——那正是账本式设计
+ * 刻意避免的东西。两张表各司其职：ledger 管钱，purchases 管东西。
+ *
+ * ⭐ **为什么冻结 `label` 和 `pricePaid`**：现实券由家长维护，可以下架、可以改价。
+ * 不冻结的话，家长把「一个冰淇淋」下架后，孩子记录里那条会变成空白，
+ * 已经兑换过的价格也会跟着现价漂移。这和数学题必须写 `itemSnapshot`
+ * 是同一条原则：**历史记录不依赖当前的静态内容表**。
+ *
+ * `shopItemId` 仍然保留，因为小屋渲染要靠它找到对应的 SVG 部件，
+ * 语音 clipKey 也由它推导。
+ */
+export interface Purchase {
+  id: Uuid
+  profileId: Uuid
+  /** 商品的语义 ID，如 `'room-rug'` / `'real-icecream'` */
+  shopItemId: string
+  kind: ShopItemKind
+  /** 名称快照。⚠️ 商品下架或改名后，记录里显示的仍是买当时的名字 */
+  label: string
+  /** 成交价快照，用于撤销时按原额退回 */
+  pricePaid: number
+  status: PurchaseStatus
+  /** 对应的那笔扣分流水，撤销时据此精确反查 */
+  ledgerEntryId: Uuid
+  createdAt: IsoDateTime
+  localDate: LocalDate
+  /** 家长点「已兑现」的时间。`treat` 在买入时即写入 */
+  fulfilledAt?: IsoDateTime
 }
 
 /**
@@ -1133,6 +1219,11 @@ export interface BackupFile {
      */
     petState: PetState[]
     ledger: LedgerEntry[]
+    /**
+     * 买过什么。schema v4 新增——v3 及更早的备份没有这个字段，
+     * 由 `BACKUP_MIGRATIONS[3]` 补成空数组。
+     */
+    purchases: Purchase[]
     collections: CollectionCard[]
     achievements: Achievement[]
     assessments: Assessment[]

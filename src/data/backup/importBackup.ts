@@ -65,6 +65,7 @@ export async function importBackup(backup: BackupFile): Promise<ImportResult> {
     await db.dailyTasks.bulkPut(backup.data.dailyTasks)
     await db.petState.bulkPut(backup.data.petState)
     await db.ledger.bulkPut(backup.data.ledger)
+    await db.purchases.bulkPut(backup.data.purchases)
     await db.collections.bulkPut(backup.data.collections)
     await db.achievements.bulkPut(backup.data.achievements)
     await db.assessments.bulkPut(backup.data.assessments)
@@ -101,6 +102,7 @@ function countRestored(backup: BackupFile): Record<UserDataTableName, number> {
     dailyTasks: backup.data.dailyTasks.length,
     petState: backup.data.petState.length,
     ledger: backup.data.ledger.length,
+    purchases: backup.data.purchases.length,
     collections: backup.data.collections.length,
     achievements: backup.data.achievements.length,
     assessments: backup.data.assessments.length,
