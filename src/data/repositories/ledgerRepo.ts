@@ -60,6 +60,18 @@ export interface AppendGrantsOptions {
 }
 
 /**
+ * {@link appendGrants} 的结果：纯函数算出的结算，外加真正写进库的流水 ID。
+ *
+ * ID 由本层生成（`newId()`），domain 层的 {@link GrantSettlement} 不可能知道，
+ * 所以在这里加宽一层。购买流程要靠它把 `Purchase.ledgerEntryId` 指回那笔扣分——
+ * 没有这个指针，撤销购买时就只能靠「金额 + 时间」去猜是哪一笔，必然出错。
+ */
+export interface AppendedGrants extends GrantSettlement {
+  /** 本次写入的流水 ID，顺序与 `entries` 一一对应。空发放时为空数组 */
+  entryIds: Uuid[]
+}
+
+/**
  * 追加若干笔积分流水，并返回结算结果。
  *
  * 余额在写入前**当场从流水读取**而非由调用方传入：账本的正确性不能依赖
@@ -83,10 +95,10 @@ export async function appendGrants(
   profileId: Uuid,
   grants: readonly RewardGrant[],
   options: AppendGrantsOptions = {},
-): Promise<GrantSettlement> {
+): Promise<AppendedGrants> {
   const latest = await latestEntry(profileId)
   const settlement = applyGrants(latest?.balanceAfter ?? 0, grants)
-  if (settlement.entries.length === 0) return settlement
+  if (settlement.entries.length === 0) return { ...settlement, entryIds: [] }
 
   /**
    * ⭐ 同一档案内 `createdAt` 必须**严格递增**，这是整个账本的地基。
@@ -118,7 +130,7 @@ export async function appendGrants(
   }))
 
   await db.ledger.bulkAdd(rows)
-  return settlement
+  return { ...settlement, entryIds: rows.map((r) => r.id) }
 }
 
 /**
