@@ -24,16 +24,28 @@ interface PlayEntry {
   path: string
   label: string
   icon: IconName
-  /** 图标配色。⚠️ 五个入口各一色，孩子靠颜色 + 形状认路，不靠那两个字 */
+  /**
+   * 图标配色。⚠️ 孩子靠**颜色 + 形状**认路，不靠那两个字。
+   *
+   * 主题只有五个语义色（primary / correct / alert / info / accent），
+   * 第六个入口只能用 `primary-deep`。这里可以接受重复色相，是因为
+   * 房子的轮廓在这六个图标里独一无二——没有第二个东西长得像它，
+   * 形状那一半的区分度足够扛住颜色那一半的妥协。
+   */
   tint: string
 }
 
 /**
- * 五个入口，顺序固定：语文三块 → 英语 → 讲解。
+ * 六个入口，顺序固定：语文三块 → 英语 → 讲解 → 小屋。
  *
  * ⚠️ 顺序**写死**，不要按使用频率重排。孩子记的是「古诗在第三个」这种
  * 位置记忆，入口自己动来动去比多点一次严重得多——
  * 与 `SUBJECT_ORDER` 写死是同一个道理。
+ *
+ * ⚠️ 小屋是后加的，因此**只能追加在末尾**：加在中间会把她已经记住的
+ * 五个位置整体推移一格，那正是上面这条要避免的事。
+ * 它不属于「教」也不属于「练」，但符合这几个入口真正的共同点——
+ * 随时可来、随时可走、不绑在答题流程里。
  */
 const ENTRIES: readonly PlayEntry[] = [
   { path: '/pinyin', label: '拼音乐园', icon: 'pinyin', tint: 'text-primary' },
@@ -41,6 +53,7 @@ const ENTRIES: readonly PlayEntry[] = [
   { path: '/poems', label: '古诗', icon: 'poem', tint: 'text-alert' },
   { path: '/letters', label: '字母乐园', icon: 'letters', tint: 'text-info' },
   { path: '/explain', label: '看讲解', icon: 'bulb', tint: 'text-accent' },
+  { path: '/room', label: '宠物小屋', icon: 'house', tint: 'text-primary-deep' },
 ]
 
 interface PlayEntriesProps {

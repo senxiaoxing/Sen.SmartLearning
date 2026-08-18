@@ -27,6 +27,7 @@ import { ParentHome } from '@/features/parent/ParentHome'
 import { Report } from '@/features/parent/Report'
 import { WrongBook } from '@/features/parent/WrongBook'
 import { PetHome } from '@/features/pet/PetHome'
+import { PetRoom } from '@/features/room/PetRoom'
 
 /**
  * 用 `HashRouter` 而非 `BrowserRouter`：
@@ -83,6 +84,9 @@ function AppRoutes() {
         <Route path="/poems" element={<PoemLibrary />} />
         <Route path="/poems/:id" element={<PoemView />} />
         <Route path="/pets" element={<PetHome />} />
+        {/* 宠物小屋：三只一起住的地方，买来的家具摆在这里。
+            与 /pets 分工不同——那里是「看这一只」，这里是「看这个家」 */}
+        <Route path="/room" element={<PetRoom />} />
         <Route path="/summary" element={<SessionSummary />} />
         {/* 家长区。门禁包在路由这一层，任何直接跳 hash 的路径都绕不过去。
             通行状态存在 parentGateStore，因此子页面之间跳转不会重复验证 */}
