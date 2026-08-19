@@ -182,8 +182,9 @@ export function HomePage() {
           <RetryEntry count={pendingRetry} onClick={beginRetry} />
         )}
 
-        {/* 五个自由入口（拼音 / 识字 / 古诗 / 字母 / 讲解），都不绑在答题流程里。
-            ⚠️ 进去之前必须解锁音频 —— 这几页的全部内容都是听的 */}
+        {/* 六个自由入口（拼音 / 识字 / 古诗 / 字母 / 讲解 / 小屋），都不绑在答题流程里。
+            ⚠️ 进去之前必须解锁音频 —— 这几页的全部内容都是听的，
+            商店也一样（商品名要念给不识字的孩子听），所以它只从小屋进 */}
         <PlayEntries
           onOpen={(path) => {
             unlockAllAudio(nickname)

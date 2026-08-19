@@ -27,7 +27,7 @@ import { plain, utter } from '@/domain/speech'
 import { BuyCelebration } from '@/features/shop/BuyCelebration'
 import { BuyConfirm } from '@/features/shop/BuyConfirm'
 import { ShopItemCard } from '@/features/shop/ShopItemCard'
-import { say } from '@/platform/speech'
+import { prefetchClips, say } from '@/platform/speech'
 import { usePetStore } from '@/stores/petStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useShopStore } from '@/stores/shopStore'
@@ -40,6 +40,19 @@ interface Pending {
   isReal: boolean
 }
 
+/**
+ * 商店里全部商品名的语音片段（21 条）。
+ *
+ * ⭐ 一进店就全部预取。片段是「fetch + 解码」两步，等按下去才开始加载，
+ * 那一下就是「按了没反应」——而孩子点卡片的**唯一目的**就是听它叫什么名字。
+ * 字母乐园当初就是漏了这一步，实测反馈「L 及后面的字母发音有延迟」。
+ */
+const SHOP_CLIPS: readonly string[] = [
+  ...ROOM_ITEMS.map((i) => i.clipKey),
+  ...TREAT_ITEMS.map((i) => i.clipKey),
+  ...REAL_REWARD_PRESETS.map((p) => p.clipKey),
+]
+
 export function ShopPage() {
   const navigate = useNavigate()
   const profileId = useSessionStore((s) => s.profileId)
@@ -50,6 +63,11 @@ export function ShopPage() {
   const loadPets = usePetStore((s) => s.load)
   const { verdicts, configs, celebration, load, buy, dismissCelebration } = useShopStore()
   const [pending, setPending] = useState<Pending | null>(null)
+
+  // ⭐ 进店就把 21 条商品名预取好，见 SHOP_CLIPS 的说明
+  useEffect(() => {
+    prefetchClips(SHOP_CLIPS)
+  }, [])
 
   useEffect(() => {
     if (profileId === null) return
