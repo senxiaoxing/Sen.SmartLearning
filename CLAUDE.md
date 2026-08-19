@@ -446,7 +446,13 @@ npm run typecheck        # tsc --noEmit
 npm run test             # vitest run
 npm run build            # 产出 dist/（含 Service Worker 与 manifest）
 npm run preview          # 本地预览生产构建，验证 PWA 是否生效
+npm run deploy           # ⭐ 上线：build + gh-pages 推到 gh-pages 分支
 ```
+
+**部署固定走 GitHub Pages**，没有特别指定时就用它，不要提议换托管：
+线上地址 https://senxiaoxing.github.io/Sen.SmartLearning/ ，
+`vite.config.ts` 的 `BASE = '/Sen.SmartLearning/'` 必须与仓库名一致。
+详见 [design/04-部署与上机.md](design/04-部署与上机.md) §2。
 
 ### 资源生成（构建期联网，运行时纯本地）
 
