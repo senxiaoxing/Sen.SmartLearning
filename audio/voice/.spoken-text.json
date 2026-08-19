@@ -2537,5 +2537,805 @@
  "shop.giftBig": {
   "text": "一个自己想要的大礼物",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "hanzi.u996d": {
+  "text": "饭。米饭的饭。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9762": {
+  "text": "面。面条的面。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u83dc": {
+  "text": "菜。青菜的菜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8089": {
+  "text": "肉。牛肉的肉。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u86cb": {
+  "text": "蛋。鸡蛋的蛋。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6c64": {
+  "text": "汤。喝汤的汤。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8336": {
+  "text": "茶。喝茶的茶。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7cd6": {
+  "text": "糖。糖果的糖。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u74dc": {
+  "text": "瓜。西瓜的瓜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6843": {
+  "text": "桃。桃子的桃。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5e3d": {
+  "text": "帽。帽子的帽。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u978b": {
+  "text": "鞋。鞋子的鞋。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u889c": {
+  "text": "袜。袜子的袜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u88e4": {
+  "text": "裤。裤子的裤。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7a7f": {
+  "text": "穿。穿衣的穿。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6d17": {
+  "text": "洗。洗手的洗。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4f1e": {
+  "text": "伞。雨伞的伞。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5dfe": {
+  "text": "巾。毛巾的巾。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u955c": {
+  "text": "镜。眼镜的镜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8868": {
+  "text": "表。手表的表。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u623f": {
+  "text": "房。房子的房。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5e8a": {
+  "text": "床。小床的床。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u684c": {
+  "text": "桌。桌子的桌。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7a97": {
+  "text": "窗。窗户的窗。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u706f": {
+  "text": "灯。台灯的灯。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u697c": {
+  "text": "楼。楼上的楼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u56ed": {
+  "text": "园。公园的园。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6751": {
+  "text": "村。山村的村。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6865": {
+  "text": "桥。大桥的桥。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8def": {
+  "text": "路。走路的路。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8239": {
+  "text": "船。小船的船。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7968": {
+  "text": "票。车票的票。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u884c": {
+  "text": "行。自行车的行。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9a91": {
+  "text": "骑。骑车的骑。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8dd1": {
+  "text": "跑。跑步的跑。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8df3": {
+  "text": "跳。跳高的跳。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6e38": {
+  "text": "游。游泳的游。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5feb": {
+  "text": "快。很快的快。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6162": {
+  "text": "慢。很慢的慢。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u505c": {
+  "text": "停。停下的停。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u590f": {
+  "text": "夏。夏天的夏。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u51ac": {
+  "text": "冬。冬天的冬。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5e74": {
+  "text": "年。过年的年。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u65e9": {
+  "text": "早。早上的早。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u665a": {
+  "text": "晚。晚上的晚。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5348": {
+  "text": "午。中午的午。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4eca": {
+  "text": "今。今天的今。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u660e": {
+  "text": "明。明天的明。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8282": {
+  "text": "节。过节的节。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u751f": {
+  "text": "生。生日的生。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5b66": {
+  "text": "学。学校的学。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6821": {
+  "text": "校。学校的校。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5199": {
+  "text": "写。写字的写。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5b57": {
+  "text": "字。汉字的字。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bfb": {
+  "text": "读。读书的读。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u753b": {
+  "text": "画。画画的画。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8001": {
+  "text": "老。老师的老。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5e08": {
+  "text": "师。老师的师。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bfe": {
+  "text": "课。上课的课。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u95ee": {
+  "text": "问。问好的问。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u62ff": {
+  "text": "拿。拿起的拿。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u627e": {
+  "text": "找。找到的找。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7761": {
+  "text": "睡。睡觉的睡。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7b11": {
+  "text": "笑。笑脸的笑。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5531": {
+  "text": "唱。唱歌的唱。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u73a9": {
+  "text": "玩。好玩的玩。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u60f3": {
+  "text": "想。想念的想。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7ed9": {
+  "text": "给。给你的给。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u505a": {
+  "text": "做。做饭的做。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7528": {
+  "text": "用。用力的用。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9f3b": {
+  "text": "鼻。鼻子的鼻。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u820c": {
+  "text": "舌。舌头的舌。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8138": {
+  "text": "脸。洗脸的脸。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u773c": {
+  "text": "眼。眼睛的眼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u775b": {
+  "text": "睛。眼睛的睛。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6c57": {
+  "text": "汗。出汗的汗。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u529b": {
+  "text": "力。用力的力。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7d2f": {
+  "text": "累。很累的累。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u997f": {
+  "text": "饿。很饿的饿。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u75c5": {
+  "text": "病。生病的病。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8349": {
+  "text": "草。小草的草。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6811": {
+  "text": "树。大树的树。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53f6": {
+  "text": "叶。树叶的叶。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6797": {
+  "text": "林。树林的林。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6d77": {
+  "text": "海。大海的海。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6cb3": {
+  "text": "河。小河的河。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6c99": {
+  "text": "沙。沙子的沙。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5149": {
+  "text": "光。月光的光。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7535": {
+  "text": "电。电话的电。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u51b0": {
+  "text": "冰。冰水的冰。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8c61": {
+  "text": "象。大象的象。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7334": {
+  "text": "猴。猴子的猴。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u718a": {
+  "text": "熊。小熊的熊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u72ee": {
+  "text": "狮。狮子的狮。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u732a": {
+  "text": "猪。小猪的猪。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u86c7": {
+  "text": "蛇。小蛇的蛇。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8702": {
+  "text": "蜂。蜜蜂的蜂。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8776": {
+  "text": "蝶。蝴蝶的蝶。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8681": {
+  "text": "蚁。蚂蚁的蚁。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u867e": {
+  "text": "虾。小虾的虾。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u524d": {
+  "text": "前。前面的前。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u540e": {
+  "text": "后。后面的后。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5de6": {
+  "text": "左。左右的左。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53f3": {
+  "text": "右。左右的右。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u91cc": {
+  "text": "里。里面的里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5916": {
+  "text": "外。外面的外。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e2d": {
+  "text": "中。中间的中。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u95f4": {
+  "text": "间。中间的间。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8fdc": {
+  "text": "远。很远的远。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8fd1": {
+  "text": "近。很近的近。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e0d": {
+  "text": "不。不要的不。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8981": {
+  "text": "要。不要的要。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u662f": {
+  "text": "是。就是的是。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6709": {
+  "text": "有。没有的有。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6ca1": {
+  "text": "没。没有的没。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5f88": {
+  "text": "很。很好的很。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u518d": {
+  "text": "再。再见的再。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u89c1": {
+  "text": "见。再见的见。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8c22": {
+  "text": "谢。谢谢的谢。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bf7": {
+  "text": "请。请坐的请。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u84dd": {
+  "text": "蓝。蓝色的蓝。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7eff": {
+  "text": "绿。绿色的绿。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7d2b": {
+  "text": "紫。紫色的紫。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7070": {
+  "text": "灰。灰色的灰。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8272": {
+  "text": "色。颜色的色。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5f69": {
+  "text": "彩。彩虹的彩。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5706": {
+  "text": "圆。圆圆的圆。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u65b9": {
+  "text": "方。方块的方。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5c16": {
+  "text": "尖。尖尖的尖。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4eae": {
+  "text": "亮。明亮的亮。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u767e": {
+  "text": "百。一百的百。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5343": {
+  "text": "千。一千的千。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e07": {
+  "text": "万。一万的万。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u534a": {
+  "text": "半。一半的半。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53cc": {
+  "text": "双。一双的双。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53ea": {
+  "text": "只。一只的只。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u96f6": {
+  "text": "零。零下的零。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5143": {
+  "text": "元。一元的元。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u65a4": {
+  "text": "斤。一斤的斤。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9ad8": {
+  "text": "高。长高的高。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u670b": {
+  "text": "朋。朋友的朋。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53cb": {
+  "text": "友。朋友的友。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5979": {
+  "text": "她。她们的她。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u540d": {
+  "text": "名。名字的名。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u59d3": {
+  "text": "姓。姓名的姓。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5973": {
+  "text": "女。女孩的女。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7537": {
+  "text": "男。男孩的男。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5b69": {
+  "text": "孩。小孩的孩。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u738b": {
+  "text": "王。国王的王。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7231": {
+  "text": "爱。爱心的爱。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u559c": {
+  "text": "喜。喜欢的喜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6b22": {
+  "text": "欢。喜欢的欢。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e50": {
+  "text": "乐。快乐的乐。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9759": {
+  "text": "静。安静的静。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u5b89": {
+  "text": "安。平安的安。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7f8e": {
+  "text": "美。美丽的美。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u4e3d": {
+  "text": "丽。美丽的丽。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u771f": {
+  "text": "真。真好的真。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u751c": {
+  "text": "甜。甜甜的甜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9999": {
+  "text": "香。花香的香。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7403": {
+  "text": "球。皮球的球。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7434": {
+  "text": "琴。弹琴的琴。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9f13": {
+  "text": "鼓。打鼓的鼓。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u68cb": {
+  "text": "棋。下棋的棋。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6b4c": {
+  "text": "歌。唱歌的歌。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u821e": {
+  "text": "舞。跳舞的舞。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u620f": {
+  "text": "戏。游戏的戏。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7b5d": {
+  "text": "筝。风筝的筝。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u79ef": {
+  "text": "积。积木的积。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6ce1": {
+  "text": "泡。泡泡的泡。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7897": {
+  "text": "碗。小碗的碗。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7b77": {
+  "text": "筷。筷子的筷。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u676f": {
+  "text": "杯。水杯的杯。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u74f6": {
+  "text": "瓶。瓶子的瓶。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u76d2": {
+  "text": "盒。盒子的盒。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u888b": {
+  "text": "袋。口袋的袋。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7ebf": {
+  "text": "线。毛线的线。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u94b1": {
+  "text": "钱。零钱的钱。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u94a5": {
+  "text": "钥。钥匙的钥。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9501": {
+  "text": "锁。锁上的锁。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u58f0": {
+  "text": "声。声音的声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u97f3": {
+  "text": "音。声音的音。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u54cd": {
+  "text": "响。很响的响。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bdd": {
+  "text": "话。说话的话。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bed": {
+  "text": "语。语文的语。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6587": {
+  "text": "文。语文的文。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u558a": {
+  "text": "喊。大喊的喊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u53eb": {
+  "text": "叫。大叫的叫。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u94c3": {
+  "text": "铃。铃声的铃。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u8bd7": {
+  "text": "诗。古诗的诗。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u9633": {
+  "text": "阳。太阳的阳。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u592a": {
+  "text": "太。太阳的太。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u7a7a": {
+  "text": "空。天空的空。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6c14": {
+  "text": "气。天气的气。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6e29": {
+  "text": "温。温水的温。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u51b7": {
+  "text": "冷。很冷的冷。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u70ed": {
+  "text": "热。很热的热。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u6696": {
+  "text": "暖。暖和的暖。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u51c9": {
+  "text": "凉。凉快的凉。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "hanzi.u96f7": {
+  "text": "雷。打雷的雷。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  }
 }
