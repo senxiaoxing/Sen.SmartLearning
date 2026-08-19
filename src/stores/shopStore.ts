@@ -18,11 +18,16 @@ import { REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
 import { ROOM_ITEMS, TREAT_ITEMS } from '@/data/seed/shopItems'
 import { canPurchase, type PurchaseVerdict } from '@/domain/economy/canPurchase'
 import { todayLocal } from '@/domain/time'
-import type { Purchase, RealRewardConfig, Uuid } from '@/domain/types'
+import type { Purchase, RealRewardConfig, ShopItemKind, Uuid } from '@/domain/types'
 
-/** 刚买到的东西，驱动「星星变成了它」那段动画 */
+/** 刚买到的东西，驱动买完那段动画 */
 export interface Celebration {
   label: string
+  /**
+   * 商品大类。决定放哪一段动画：
+   * `treat` 是三只一起吃掉，`room` / `real` 是「星星变成了它」。
+   */
+  kind: ShopItemKind
   /** 虚拟商品的图形名；现实券没有 */
   art?: string
   /** 现实券的 emoji；虚拟商品没有 */
@@ -150,6 +155,7 @@ function celebrationOf(purchase: Purchase): Celebration {
 
   return {
     label: purchase.label,
+    kind: purchase.kind,
     ...(virtual !== undefined && { art: virtual.art }),
     ...(preset !== undefined && { emoji: preset.emoji }),
     pending: purchase.status === 'pending',

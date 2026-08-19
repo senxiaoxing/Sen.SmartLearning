@@ -19,6 +19,8 @@ import { motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { BigButton } from '@/components/BigButton'
 import { ShopItemArt } from '@/components/room/ShopItemArt'
+import { TreatFeast } from '@/features/shop/TreatFeast'
+import type { PetState } from '@/domain/types'
 import type { Celebration } from '@/stores/shopStore'
 
 /** 星星淡出到物品浮现之间的间隔（秒）。太快看不出「变成」，太慢会等得不耐烦 */
@@ -26,15 +28,26 @@ const MORPH_DELAY = 0.45
 
 interface BuyCelebrationProps {
   celebration: Celebration
+  /** 三只伙伴。买零食时它们要出来一起吃 */
+  pets: readonly PetState[]
   /** 说一句庆祝语。⚠️ 一次只说一句 —— 见 CLAUDE.md 产品红线 */
   onSpeak: (text: string) => void
   onClose: () => void
 }
 
-export function BuyCelebration({ celebration, onSpeak, onClose }: BuyCelebrationProps) {
+export function BuyCelebration({ celebration, pets, onSpeak, onClose }: BuyCelebrationProps) {
+  const isFeast = celebration.kind === 'treat'
+
+  /**
+   * ⚠️ 三种情况各一句，**都是一整句**，不要拆成两段分别播。
+   * 同一屏里两个组件各自 `say()` 会互相打断（CLAUDE.md 产品红线），
+   * 升级横幅就踩过这个坑。要加话就往这句里拼。
+   */
   const line = celebration.pending
     ? `${celebration.label}，已经告诉爸爸妈妈啦`
-    : `${celebration.label}，是你的啦`
+    : isFeast
+      ? `${celebration.label}，大家一起吃，谢谢你`
+      : `${celebration.label}，是你的啦`
 
   // ⚠️ 整屏只有这一处发声。要加新播报就拼进 `line`，不要新开 effect——
   //    React 先跑子组件 effect 再跑父组件，后开的必然把先开的掐掉
@@ -58,34 +71,42 @@ export function BuyCelebration({ celebration, onSpeak, onClose }: BuyCelebration
         onClick={(e) => e.stopPropagation()}
         className="flex w-full max-w-sm flex-col items-center gap-6 rounded-blob bg-surface p-8 shadow-card"
       >
-        <span className="relative flex h-32 w-32 items-center justify-center">
-          {/* 星星：先在，然后缩小消失 */}
-          <motion.span
-            aria-hidden
-            className="absolute text-7xl"
-            initial={{ scale: 1, opacity: 1 }}
-            animate={{ scale: 0.2, opacity: 0 }}
-            transition={{ duration: MORPH_DELAY, ease: 'easeIn' }}
-          >
-            ⭐
-          </motion.span>
+        {isFeast ? (
+          /*
+            零食走另一段动画：它不会被留下，所以「星星变成了它」讲不通。
+            零食掉下来、三只凑过来吃掉，那才是买它的全部意义。
+          */
+          <TreatFeast art={celebration.art ?? ''} pets={pets} />
+        ) : (
+          <span className="relative flex h-32 w-32 items-center justify-center">
+            {/* 星星：先在，然后缩小消失 */}
+            <motion.span
+              aria-hidden
+              className="absolute text-7xl"
+              initial={{ scale: 1, opacity: 1 }}
+              animate={{ scale: 0.2, opacity: 0 }}
+              transition={{ duration: MORPH_DELAY, ease: 'easeIn' }}
+            >
+              ⭐
+            </motion.span>
 
-          {/* 物品：从星星消失的地方长出来 */}
-          <motion.span
-            aria-hidden
-            className="flex h-full w-full items-center justify-center"
-            initial={{ scale: 0.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{
-              delay: MORPH_DELAY,
-              type: 'spring',
-              stiffness: 260,
-              damping: 16,
-            }}
-          >
-            <Prize celebration={celebration} />
-          </motion.span>
-        </span>
+            {/* 物品：从星星消失的地方长出来 */}
+            <motion.span
+              aria-hidden
+              className="flex h-full w-full items-center justify-center"
+              initial={{ scale: 0.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                delay: MORPH_DELAY,
+                type: 'spring',
+                stiffness: 260,
+                damping: 16,
+              }}
+            >
+              <Prize celebration={celebration} />
+            </motion.span>
+          </span>
+        )}
 
         <p className="text-center text-2xl font-bold leading-snug">{line}</p>
 

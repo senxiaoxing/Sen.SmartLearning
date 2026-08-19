@@ -14,30 +14,21 @@ import { useState, type ReactNode } from 'react'
 import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
+import { newParentChallenge } from '@/domain/parent/parentChallenge'
 import { useParentGateStore } from '@/stores/parentGateStore'
 
-/** 两个加数各自的取值范围。两位数且必然进位，超出一年级上学期范围 */
-const ADDEND_MIN = 23
-const ADDEND_MAX = 79
-
-interface Challenge {
-  a: number
-  b: number
-}
-
 /**
- * 这里用 `Math.random()` 是可以的：CLAUDE.md 那条「禁止 Math.random」
- * 针对的是 `domain/generators/*`，因为出题逻辑要靠固定种子做单测。
- * 门禁题目不参与任何业务计算，也没有需要复现的输出。
+ * 出一道新题。
+ *
+ * ⚠️ 题目生成**已经搬到 `domain/parent/parentChallenge.ts`**，不要挪回来。
+ * 它原先内联在这里，写成「抽了不进位就重抽 b」，而当 a 的个位为 0 时
+ * 那个 while 永远退不出——页面直接卡死，且九次里有八次是好的，
+ * 极难定位。搬进 domain 是为了能用固定随机源把「一定会返回」测出来。
+ *
+ * 在这里调 `Math.random` 是可以的：CLAUDE.md 那条「禁止 Math.random」
+ * 针对的是 `domain/` 内部，而这里是边界层——随机源正是从这里注入进去的。
  */
-function newChallenge(): Challenge {
-  const pick = () => ADDEND_MIN + Math.floor(Math.random() * (ADDEND_MAX - ADDEND_MIN + 1))
-  let a = pick()
-  let b = pick()
-  // 必须进位：不进位的两位数加法（如 21+34）孩子掰手指也能凑出来
-  while ((a % 10) + (b % 10) < 10) b = pick()
-  return { a, b }
-}
+const newChallenge = () => newParentChallenge(Math.random)
 
 interface ParentGateProps {
   children: ReactNode

@@ -17,7 +17,7 @@
  * 孩子点下去只会撞在「不能兑」上——那比看不见更伤。
  */
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
@@ -28,6 +28,7 @@ import { BuyCelebration } from '@/features/shop/BuyCelebration'
 import { BuyConfirm } from '@/features/shop/BuyConfirm'
 import { ShopItemCard } from '@/features/shop/ShopItemCard'
 import { say } from '@/platform/speech'
+import { usePetStore } from '@/stores/petStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useShopStore } from '@/stores/shopStore'
 import type { BuyRequest } from '@/data/repositories/purchaseRepo'
@@ -42,14 +43,21 @@ interface Pending {
 export function ShopPage() {
   const navigate = useNavigate()
   const profileId = useSessionStore((s) => s.profileId)
+  const gradeLevel = useSessionStore((s) => s.gradeLevel)
   const balance = useSessionStore((s) => s.balance)
   const setBalance = useSessionStore((s) => s.setBalance)
+  const pets = usePetStore((s) => s.pets)
+  const loadPets = usePetStore((s) => s.load)
   const { verdicts, configs, celebration, load, buy, dismissCelebration } = useShopStore()
   const [pending, setPending] = useState<Pending | null>(null)
 
   useEffect(() => {
-    if (profileId !== null) void load(profileId)
-  }, [profileId, load])
+    if (profileId === null) return
+    void load(profileId)
+    // 零食买完要让三只出来一起吃，所以进店就先把它们备好——
+    // 等按下去才加载，那一下会是「点了没反应」
+    void loadPets(profileId, gradeLevel)
+  }, [profileId, gradeLevel, load, loadPets])
 
   const confirm = async () => {
     if (profileId === null || pending === null) return
@@ -58,6 +66,13 @@ export function ShopPage() {
     const newBalance = await buy(profileId, { ...request, profileId })
     if (newBalance !== null) setBalance(newBalance)
   }
+
+  /**
+   * ⚠️ 必须 `useCallback`。`BuyCelebration` 的朗读 effect 依赖这个函数，
+   * 写成内联箭头函数的话每次渲染都是新引用，effect 就会反复重跑——
+   * 表现为同一句庆祝语被念好几遍，而且每次都把上一次掐断。
+   */
+  const speak = useCallback((text: string) => say(plain(text)), [])
 
   /** 上架了的现实券才出现在商店里 */
   const listedReals = REAL_REWARD_PRESETS.filter((p) => configs[p.id]?.listed === true)
@@ -160,7 +175,8 @@ export function ShopPage() {
       {celebration !== null && (
         <BuyCelebration
           celebration={celebration}
-          onSpeak={(text) => say(plain(text))}
+          pets={pets}
+          onSpeak={speak}
           onClose={dismissCelebration}
         />
       )}
