@@ -2453,5 +2453,89 @@
  "pinyin.vn4": {
   "text": "韵",
   "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+ },
+ "shop.rug": {
+  "text": "地毯",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.picture": {
+  "text": "挂画",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.curtain": {
+  "text": "窗帘",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.lamp": {
+  "text": "小台灯",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.shelf": {
+  "text": "小书架",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.toybox": {
+  "text": "玩具箱",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.cookie": {
+  "text": "小饼干",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.fruit": {
+  "text": "水果篮",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.cake": {
+  "text": "大蛋糕",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.bedtimeStory": {
+  "text": "今晚睡前故事你来选",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.tv20": {
+  "text": "看二十分钟电视",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.play20": {
+  "text": "再多玩二十分钟",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.pickDinner": {
+  "text": "今天吃什么你决定",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.playTogether": {
+  "text": "陪你玩一次你选的游戏",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.candy": {
+  "text": "一颗糖果",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.snackSmall": {
+  "text": "一包小零食",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.icecream": {
+  "text": "一个冰淇淋",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.snackBig": {
+  "text": "一包大零食",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.book": {
+  "text": "一本自己想要的书",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.giftSmall": {
+  "text": "一个自己想要的小礼物",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "shop.giftBig": {
+  "text": "一个自己想要的大礼物",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }
