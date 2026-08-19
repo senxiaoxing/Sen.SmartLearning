@@ -157,6 +157,14 @@ const LETTER_PREFIX = 'en.letter'
 const HANZI_PREFIX = 'hanzi.'
 const POEM_PREFIX = 'poem.'
 
+/**
+ * 识字卡的总字数，3 辑 × 10 组 × 10 字。
+ *
+ * `loadHanzi()` 拿它做硬失败断言——字表加辑了就同步改这里，
+ * 与 `hanziCards.test.ts` 的「3 辑，每辑 10 组 100 字」是同一条约束的两半。
+ */
+const EXPECTED_HANZI_COUNT = 300
+
 /** 语速。儿童建议略慢，与原来 Web Speech 的 0.85 对齐 */
 const RATE = '-15%'
 /** 音调略高更亲切，与原 TTS 的 pitch 1.1 对齐 */
@@ -328,7 +336,7 @@ function loadManifest() {
 }
 
 /**
- * 识字卡的 100 个字。
+ * 识字卡的 300 个字（3 辑 × 10 组 × 10 字）。
  *
  * ⭐ 念的是「天。蓝天的天。」而**不是孤立的「天」**，句式必须与
  * `domain/hanzi.ts` 的 `hanziSpokenText()` 逐字一致——两边不一致时台账会判定
@@ -338,7 +346,7 @@ function loadManifest() {
  * 这是拼音那边用学费换来的同一条结论。
  *
  * key 用汉字的 Unicode 码点（`hanzi.u5929`），与 `hanziClipKey()` 同规则：
- * 拼音会撞车（十/石、木/目），码点不会。
+ * 拼音会撞车（十/石、木/目、师/狮/诗），码点不会。
  */
 function loadHanzi() {
   const text = readFileSync(HANZI_FILE, 'utf-8')
@@ -353,9 +361,12 @@ function loadHanzi() {
   // ⚠️ 硬失败而不是警告：字表结构变了却不同步这里，后果是识字卡**整片没有音频**，
   //    而孩子不识字，这一页的全部内容都是听的——等于这一页作废。
   //    与英语字母、宠物台词几处的处理保持一致
-  if (Object.keys(out).length !== 100) {
+  //
+  // ⚠️ 加辑之后要同步改这个数：字表是 3 辑 × 100 字，
+  //    hanziCards.test.ts 的「3 辑，每辑 10 组 100 字」是同一条约束的另一半
+  if (Object.keys(out).length !== EXPECTED_HANZI_COUNT) {
     console.error('✗ hanziCards.ts 的结构变了，本脚本的 loadHanzi() 必须同步：')
-    console.error(`  解析出 ${Object.keys(out).length} 个字（应为 100）`)
+    console.error(`  解析出 ${Object.keys(out).length} 个字（应为 ${EXPECTED_HANZI_COUNT}）`)
     process.exit(1)
   }
 

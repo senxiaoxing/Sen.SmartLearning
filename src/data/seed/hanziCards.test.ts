@@ -11,14 +11,14 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { ALL_HANZI_CARDS, HANZI_GROUPS } from '@/data/seed/hanziCards'
+import { ALL_HANZI_CARDS, HANZI_GROUPS, HANZI_VOLUMES } from '@/data/seed/hanziCards'
 import { hasClip } from '@/data/seed/voiceManifest'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
 
-describe('识字 100', () => {
-  it('正好 100 个字，分 10 组', () => {
-    expect(ALL_HANZI_CARDS).toHaveLength(100)
-    expect(HANZI_GROUPS).toHaveLength(10)
+describe('识字 300', () => {
+  it('正好 300 个字，分 30 组', () => {
+    expect(ALL_HANZI_CARDS).toHaveLength(300)
+    expect(HANZI_GROUPS).toHaveLength(30)
   })
 
   it('没有重复的字', () => {
@@ -38,6 +38,50 @@ describe('识字 100', () => {
         expect(card.groupId, `「${card.char}」的 groupId 对不上`).toBe(group.id)
       }
     }
+  })
+
+  it('组 id 互不相同 —— 撞了会让两组共用同一批 groupId', () => {
+    const ids = HANZI_GROUPS.map((group) => group.id)
+    expect(new Set(ids).size, `重复的组 id：${ids.join(' ')}`).toBe(ids.length)
+  })
+})
+
+/**
+ * ⭐ 分辑守的是**每一辑都摆得满、且长度一致**。
+ *
+ * 墙顶三个按钮上写着「100 字」，如果某一辑实际只有 90 个，
+ * 页面不会报任何错——她只会觉得第三辑「怎么这么快就到底了」。
+ */
+describe('分辑', () => {
+  it('3 辑，每辑 10 组 100 字', () => {
+    expect(HANZI_VOLUMES).toHaveLength(3)
+    for (const volume of HANZI_VOLUMES) {
+      expect(volume.groups.length, `${volume.name}的组数不对`).toBe(10)
+      const cards = volume.groups.flatMap((group) => group.cards)
+      expect(cards.length, `${volume.name}的字数不对`).toBe(100)
+    }
+  })
+
+  it('每辑都有序号、名字和说明 —— 孩子不识字，认的是那个数字', () => {
+    for (const volume of HANZI_VOLUMES) {
+      expect(volume.badge.length, `${volume.id} 缺序号图标`).toBeGreaterThan(0)
+      expect(volume.name.length, `${volume.id} 缺名字`).toBeGreaterThan(0)
+      expect(volume.hint.length, `${volume.id} 缺说明`).toBeGreaterThan(0)
+    }
+  })
+
+  it('辑 id 互不相同', () => {
+    const ids = HANZI_VOLUMES.map((volume) => volume.id)
+    expect(new Set(ids).size, `重复的辑 id：${ids.join(' ')}`).toBe(ids.length)
+  })
+
+  /**
+   * ⚠️ 第一辑是她已经认完的那 100 个字，位置记忆全靠它稳定
+   * （见 hanziCards.ts 文件头「辑的顺序与内容都不要重排」）。
+   * 新内容只能往后加辑，第一辑第一个字永远是「天」。
+   */
+  it('第一辑仍从「天地人」开头 —— 新内容只能往后加辑', () => {
+    expect(HANZI_VOLUMES[0]?.groups[0]?.cards[0]?.char).toBe('天')
   })
 })
 

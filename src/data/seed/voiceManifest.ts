@@ -280,7 +280,7 @@ const ENGLISH: VoiceManifest = Object.fromEntries(
 )
 
 /**
- * 识字卡的 100 个字。
+ * 识字卡的 300 个字（3 辑 × 100）。
  *
  * ⭐ 念的是「天。蓝天的天。」而**不是孤立的「天」**——理由见 `domain/hanzi.ts`
  * 的 {@link hanziSpokenText}：孤立单字既挑不准多音字的读音，声调也读得发飘。
