@@ -17,16 +17,19 @@
  * 孩子点下去只会撞在「不能兑」上——那比看不见更伤。
  */
 
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
-import { REAL_REWARD_CATEGORIES, REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
+import { REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
 import { ROOM_ITEMS, TREAT_ITEMS } from '@/data/seed/shopItems'
-import { plain, utter } from '@/domain/speech'
+import { CELEBRATION_TAIL_CLIPS } from '@/domain/economy/celebrationLine'
+import { utter, type Utterance } from '@/domain/speech'
 import { BuyCelebration } from '@/features/shop/BuyCelebration'
 import { BuyConfirm } from '@/features/shop/BuyConfirm'
+import { RealRewardSections } from '@/features/shop/RealRewardSections'
 import { ShopItemCard } from '@/features/shop/ShopItemCard'
+import { ShopSection } from '@/features/shop/ShopSection'
 import { prefetchClips, say } from '@/platform/speech'
 import { usePetStore } from '@/stores/petStore'
 import { useSessionStore } from '@/stores/sessionStore'
@@ -41,16 +44,20 @@ interface Pending {
 }
 
 /**
- * 商店里全部商品名的语音片段（21 条）。
+ * 商店里全部商品名的语音片段，加上庆祝语的三条后半句。
  *
  * ⭐ 一进店就全部预取。片段是「fetch + 解码」两步，等按下去才开始加载，
  * 那一下就是「按了没反应」——而孩子点卡片的**唯一目的**就是听它叫什么名字。
  * 字母乐园当初就是漏了这一步，实测反馈「L 及后面的字母发音有延迟」。
+ *
+ * 后半句（「是你的啦」等）同样要预取：它紧跟在商品名之后播，
+ * 卡在那儿的话整句会断成两半，听起来比没声音还怪。
  */
 const SHOP_CLIPS: readonly string[] = [
   ...ROOM_ITEMS.map((i) => i.clipKey),
   ...TREAT_ITEMS.map((i) => i.clipKey),
   ...REAL_REWARD_PRESETS.map((p) => p.clipKey),
+  ...CELEBRATION_TAIL_CLIPS,
 ]
 
 export function ShopPage() {
@@ -90,10 +97,7 @@ export function ShopPage() {
    * 写成内联箭头函数的话每次渲染都是新引用，effect 就会反复重跑——
    * 表现为同一句庆祝语被念好几遍，而且每次都把上一次掐断。
    */
-  const speak = useCallback((text: string) => say(plain(text)), [])
-
-  /** 上架了的现实券才出现在商店里 */
-  const listedReals = REAL_REWARD_PRESETS.filter((p) => configs[p.id]?.listed === true)
+  const speak = useCallback((utterance: Utterance) => say(utterance), [])
 
   return (
     <AppShell width="wide" layout="stack">
@@ -107,7 +111,7 @@ export function ShopPage() {
       </PageHeader>
 
       <div className="mx-auto mt-5 flex w-full max-w-3xl flex-col gap-8 pb-8">
-        <Section title="给小屋">
+        <ShopSection title="给小屋">
           {ROOM_ITEMS.map((item) => (
             <ShopItemCard
               key={item.id}
@@ -124,9 +128,9 @@ export function ShopPage() {
               }
             />
           ))}
-        </Section>
+        </ShopSection>
 
-        <Section title="给伙伴吃">
+        <ShopSection title="给伙伴吃">
           {TREAT_ITEMS.map((item) => (
             <ShopItemCard
               key={item.id}
@@ -143,41 +147,13 @@ export function ShopPage() {
               }
             />
           ))}
-        </Section>
+        </ShopSection>
 
-        {REAL_REWARD_CATEGORIES.map(({ id, label }) => {
-          const items = listedReals.filter((p) => p.category === id)
-          if (items.length === 0) return null
-
-          return (
-            <Section key={id} title={label}>
-              {items.map((preset) => {
-                const config = configs[preset.id]
-                const price = config?.price ?? preset.suggestedPrice
-                return (
-                  <ShopItemCard
-                    key={preset.id}
-                    label={preset.label}
-                    price={price}
-                    verdict={verdicts[preset.id] ?? { ok: true }}
-                    emoji={preset.emoji}
-                    onSpeak={() => say(utter([preset.clipKey], preset.label))}
-                    onPick={() =>
-                      setPending({
-                        request: {
-                          ...buyRequestOf(preset.id, 'real', preset.label, price),
-                          cooldownDays: config?.cooldownDays ?? preset.suggestedCooldownDays,
-                          listed: true,
-                        },
-                        isReal: true,
-                      })
-                    }
-                  />
-                )
-              })}
-            </Section>
-          )
-        })}
+        <RealRewardSections
+          configs={configs}
+          verdicts={verdicts}
+          onPick={(request) => setPending({ request, isReal: true })}
+        />
       </div>
 
       {pending !== null && (
@@ -202,6 +178,7 @@ export function ShopPage() {
   )
 }
 
+/** 虚拟商品（家具 / 零食）的购买请求。现实券多带冷却与上架，在 `RealRewardSections` 里拼 */
 function buyRequestOf(
   shopItemId: string,
   kind: ShopItemKind,
@@ -209,13 +186,4 @@ function buyRequestOf(
   price: number,
 ): Omit<BuyRequest, 'profileId'> {
   return { shopItemId, kind, label, price }
-}
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-xl font-bold text-ink/70">{title}</h2>
-      <div className="flex flex-wrap justify-center gap-3 sm:justify-start sm:gap-4">{children}</div>
-    </section>
-  )
 }

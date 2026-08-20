@@ -191,6 +191,13 @@ const PHRASES: VoiceManifest = {
   'phrase.tooHardHere': '这里有点难，我们回头再来',
   'phrase.finishedAll': '你全部都走完了，太厉害了',
   'phrase.startHere': '找到啦，我们从这里开始练习',
+
+  // —— 商店庆祝语的后半句（拼在商品名后面，合成一句话说完）。
+  //    ⚠️ 文本必须与 `domain/economy/celebrationLine.ts` 的 TAIL 逐字一致，
+  //    由 celebrationLine.test.ts 校验。对不上会「屏幕写着 A、耳朵听到 B」
+  'phrase.itsYours': '是你的啦',
+  'phrase.feastThanks': '大家一起吃，谢谢你',
+  'phrase.toldParents': '已经告诉爸爸妈妈啦',
 }
 
 /**

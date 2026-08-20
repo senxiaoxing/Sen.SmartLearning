@@ -3337,5 +3337,17 @@
  "hanzi.u96f7": {
   "text": "雷。打雷的雷。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "phrase.itsYours": {
+  "text": "是你的啦",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.feastThanks": {
+  "text": "大家一起吃，谢谢你",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.toldParents": {
+  "text": "已经告诉爸爸妈妈啦",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

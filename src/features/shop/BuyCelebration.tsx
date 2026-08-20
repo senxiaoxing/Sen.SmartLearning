@@ -16,10 +16,12 @@
  */
 
 import { motion } from 'framer-motion'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { BigButton } from '@/components/BigButton'
 import { ShopItemArt } from '@/components/room/ShopItemArt'
+import { celebrationLine } from '@/domain/economy/celebrationLine'
 import { TreatFeast } from '@/features/shop/TreatFeast'
+import type { Utterance } from '@/domain/speech'
 import type { PetState } from '@/domain/types'
 import type { Celebration } from '@/stores/shopStore'
 
@@ -30,8 +32,13 @@ interface BuyCelebrationProps {
   celebration: Celebration
   /** 三只伙伴。买零食时它们要出来一起吃 */
   pets: readonly PetState[]
-  /** 说一句庆祝语。⚠️ 一次只说一句 —— 见 CLAUDE.md 产品红线 */
-  onSpeak: (text: string) => void
+  /**
+   * 说一句庆祝语。⚠️ 一次只说一句 —— 见 CLAUDE.md 产品红线。
+   *
+   * 收的是 {@link Utterance} 而不是字符串：字符串只能走实时 TTS，
+   * 而孩子实测听出来「谢谢你」和别处不是同一个声音。
+   */
+  onSpeak: (utterance: Utterance) => void
   onClose: () => void
 }
 
@@ -41,19 +48,25 @@ export function BuyCelebration({ celebration, pets, onSpeak, onClose }: BuyCeleb
   /**
    * ⚠️ 三种情况各一句，**都是一整句**，不要拆成两段分别播。
    * 同一屏里两个组件各自 `say()` 会互相打断（CLAUDE.md 产品红线），
-   * 升级横幅就踩过这个坑。要加话就往这句里拼。
+   * 升级横幅就踩过这个坑。要加话就拼进 `celebrationLine`。
    */
-  const line = celebration.pending
-    ? `${celebration.label}，已经告诉爸爸妈妈啦`
-    : isFeast
-      ? `${celebration.label}，大家一起吃，谢谢你`
-      : `${celebration.label}，是你的啦`
+  const speech = useMemo(
+    () =>
+      celebrationLine({
+        label: celebration.label,
+        ...(celebration.clipKey !== undefined && { clipKey: celebration.clipKey }),
+        kind: celebration.kind,
+        pending: celebration.pending,
+      }),
+    [celebration],
+  )
+  const line = speech.text
 
-  // ⚠️ 整屏只有这一处发声。要加新播报就拼进 `line`，不要新开 effect——
+  // ⚠️ 整屏只有这一处发声。要加新播报就拼进那句话，不要新开 effect——
   //    React 先跑子组件 effect 再跑父组件，后开的必然把先开的掐掉
   useEffect(() => {
-    onSpeak(line)
-  }, [line, onSpeak])
+    onSpeak(speech.utterance)
+  }, [speech, onSpeak])
 
   return (
     <motion.div

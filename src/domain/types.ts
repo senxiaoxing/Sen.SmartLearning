@@ -661,6 +661,19 @@ export interface PetState {
   exp: number
   /** 上次见面时间，用于生成「好几天没来了，我有点想你」的问候 */
   lastSeenAt: IsoDateTime
+  /**
+   * 小屋里的站位：舞台宽/高的比例（0~1），指向宠物盒子的**左上角**。
+   *
+   * ⚠️ 两个字段**可缺失**，缺了就是「她还没摆过」，由
+   * `domain/pet/roomSpot.ts` 的 `roomSpotOf()` 回落到默认站位。
+   * 不给默认值写进库里：那样分不清「摆到了默认位置」和「从没摆过」，
+   * 以后想调默认布局就再也动不了已有档案。
+   *
+   * 存比例而不是像素——换个设备打开屏幕尺寸就变了，像素会让三只跑到屏幕外。
+   * 不建索引，因此新增这两个字段**不需要升 Dexie schema 版本**。
+   */
+  roomX?: number
+  roomY?: number
   createdAt: IsoDateTime
   updatedAt: IsoDateTime
 }

@@ -4,8 +4,9 @@
  */
 
 import { create } from 'zustand'
-import { addExp, loadPets, renamePet } from '@/data/repositories/petRepo'
+import { addExp, loadPets, movePetInRoom, renamePet } from '@/data/repositories/petRepo'
 import { EXP_REWARDS } from '@/domain/pet/growth'
+import { clampRoomSpot, type RoomSpot } from '@/domain/pet/roomSpot'
 import type { GradeLevel, PetState, Subject, Uuid } from '@/domain/types'
 
 /** 一轮结束后待展示的升级消息 */
@@ -37,6 +38,8 @@ interface PetStoreState {
     gradeLevel: GradeLevel,
     name: string,
   ) => Promise<void>
+  /** 把伙伴摆到小屋的某个位置 */
+  moveInRoom: (petId: Uuid, spot: RoomSpot) => Promise<void>
   clearNotice: () => void
 }
 
@@ -81,6 +84,23 @@ export const usePetStore = create<PetStoreState>((set, get) => ({
   rename: async (profileId, subject, gradeLevel, name) => {
     await renamePet(profileId, subject, gradeLevel, name)
     await get().load(profileId, gradeLevel)
+  },
+
+  /**
+   * 摆放伙伴。
+   *
+   * ⭐ **先改内存再落库，落库后不重新 load**。拖动松手那一刻画面已经在新位置上了，
+   * 再等一次 IndexedDB 往返然后整表刷新，只会让三只闪一下——
+   * 而且 `load()` 会重排数组，正在拖的那只可能被换掉 key。
+   */
+  moveInRoom: async (petId, spot) => {
+    const clamped = clampRoomSpot(spot)
+    set({
+      pets: get().pets.map((p) =>
+        p.id === petId ? { ...p, roomX: clamped.x, roomY: clamped.y } : p,
+      ),
+    })
+    await movePetInRoom(petId, clamped)
   },
 
   clearNotice: () => set({ levelUpNotice: null }),

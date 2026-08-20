@@ -554,10 +554,29 @@ interface PetState {
   exp: number
 
   lastSeenAt: string          // 用于生成"想你了"的问候
+
+  /**
+   * ⭐ 小屋里的站位：舞台宽/高的比例（0~1），指向宠物盒子的左上角。
+   *
+   * 存比例而不是像素——换个设备打开屏幕尺寸就变了，像素会让三只跑到屏幕外。
+   * 两个字段**可缺失**，缺了就是「她还没摆过」，由 domain/pet/roomSpot.ts 的
+   * roomSpotOf() 回落到默认布局。不给默认值写进库里：那样分不清
+   * 「摆到了默认位置」和「从没摆过」，以后想调默认布局就再也动不了已有档案。
+   *
+   * ⚠️ 不建索引，因此新增这两个字段**不需要升 schemaVersion**，
+   * 也不需要备份迁移——旧备份导进来就是 undefined，正好等于「没摆过」。
+   */
+  roomX?: number
+  roomY?: number
+
   createdAt: string
   updatedAt: string
 }
 ```
+
+> ⚠️ 任何整条 `put()` 回去的写入路径（`addExp` / `renamePet` / 以后新增的）
+> 都必须带上这两个字段，漏一次她摆好的布置就没了。
+> 由 `petRepo.test.ts`「站位不会被别的写入抹掉」守着。
 
 **设计红线（已写入 CLAUDE.md）**
 

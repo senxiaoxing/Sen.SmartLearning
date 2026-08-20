@@ -32,6 +32,14 @@ export interface Celebration {
   art?: string
   /** 现实券的 emoji；虚拟商品没有 */
   emoji?: string
+  /**
+   * 商品名的语音片段（`shop.*`）。
+   *
+   * ⭐ 有它庆祝语才是少女音——没有就整句降级成 TTS，
+   * 而买到东西那一下是整个商店的高光，最不该出现机器音。
+   * 见 `domain/economy/celebrationLine.ts`。
+   */
+  clipKey?: string
   /** 现实券要等家长兑现，庆祝语得跟着换一句 */
   pending: boolean
 }
@@ -153,11 +161,16 @@ function celebrationOf(purchase: Purchase): Celebration {
   const preset = REAL_REWARD_PRESETS.find((p) => p.id === purchase.shopItemId)
   const virtual = [...ROOM_ITEMS, ...TREAT_ITEMS].find((i) => i.id === purchase.shopItemId)
 
+  // 片段 key 跟着商品定义走，两类各在一处。查不到就不带，
+  // 由 celebrationLine 整句降级为 TTS —— 绝不半片段半 TTS
+  const clipKey = virtual?.clipKey ?? preset?.clipKey
+
   return {
     label: purchase.label,
     kind: purchase.kind,
     ...(virtual !== undefined && { art: virtual.art }),
     ...(preset !== undefined && { emoji: preset.emoji }),
+    ...(clipKey !== undefined && { clipKey }),
     pending: purchase.status === 'pending',
   }
 }

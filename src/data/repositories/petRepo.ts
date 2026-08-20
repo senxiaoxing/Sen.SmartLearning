@@ -115,6 +115,30 @@ export async function addExp(
 }
 
 /**
+ * 记下伙伴在小屋里被摆到了哪儿。
+ *
+ * ⚠️ 传进来的站位必须**已经 `clampRoomSpot()` 过**——这里只负责落库，
+ * 不做范围判定。范围是业务规则，归 `domain/pet/roomSpot.ts`。
+ *
+ * 不写 `lastSeenAt`：挪个位置不算「见了一面」，
+ * 否则拖一下就会把「好几天没见，我有点想你」那句话洗掉。
+ *
+ * @param petId - 宠物记录 ID
+ * @param spot - 已夹到可及范围内的站位（舞台归一化坐标）
+ *
+ * @example
+ * await movePetInRoom(pet.id, clampRoomSpot({ x: 0.62, y: 0.66 }))
+ */
+export async function movePetInRoom(
+  petId: Uuid,
+  spot: { x: number; y: number },
+): Promise<void> {
+  const pet = await db.petState.get(petId)
+  if (pet === undefined) return
+  await db.petState.put({ ...pet, roomX: spot.x, roomY: spot.y, updatedAt: nowIso() })
+}
+
+/**
  * 给宠物改名。
  *
  * ⭐ 让孩子自己起名是最强的情感绑定手段，成本几乎为零。
