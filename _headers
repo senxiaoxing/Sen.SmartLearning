@@ -1,5 +1,14 @@
 # Cloudflare Pages / Netlify 缓存策略
 #
+# ⛔ 当前**不生效**：本项目部署在 GitHub Pages，而它根本不读这个文件
+#    （`_headers` 是 Cloudflare / Netlify 的格式）。留着只是为了将来换回去时不用重写。
+#
+#    ⚠️ 不要因为这里写了 no-cache 就以为「新版本推不下去」的问题已经解决了。
+#    在 GitHub Pages 上，让新版本落地的是 Service Worker 自己的更新流程——
+#    App 在会话空闲时主动让 waiting 的 SW 接管，见 src/platform/appUpdate.ts。
+#    曾经就是误以为这里配好了、SW 那边又漏了关键一步，导致 iPad 上连续多个版本
+#    都没更新上，最后逼出一次删图标重装。
+#
 # 关键：sw.js 与 index.html 绝不能被长期缓存，否则新版本推不下去——
 # 浏览器会一直用旧的 Service Worker，孩子那边永远停在老版本。
 # assets/ 下的文件名带内容哈希，可以放心永久缓存。
