@@ -8,7 +8,7 @@
  * 不再重复检查格式与版本——重复检查会让「到底哪一层负责拒绝」变得含糊。
  */
 
-import { USER_DATA_TABLES, db, type UserDataTableName } from '@/data/db'
+import { USER_DATA_TABLES, db, ensureOpen, type UserDataTableName } from '@/data/db'
 import { nowIso } from '@/domain/time'
 import type { BackupFile, IsoDateTime, Uuid } from '@/domain/types'
 
@@ -47,6 +47,11 @@ export interface ImportResult {
  * window.location.reload()     // 内存里的 store 全是旧数据，整页重来最干净
  */
 export async function importBackup(backup: BackupFile): Promise<ImportResult> {
+  // ⭐ 家长刚从「文件」App 挑完备份回来，这一趟离开很可能已经让 iOS
+  //    关掉了 IndexedDB 连接。不先确认连接，事务在第一步就抛
+  //    DatabaseClosedError——而这正是他最需要它成功的时刻。见 data/db.ts
+  await ensureOpen()
+
   const now = nowIso()
   const tables = [...USER_DATA_TABLES.map((name) => db.table(name)), db.meta]
 

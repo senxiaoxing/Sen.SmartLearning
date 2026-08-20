@@ -1,7 +1,7 @@
 {
   "name": "sen-smartlearning",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "希恩爱学习 App — 一年级数学/拼音/英语 + 宠物养成，PWA 纯本地",
   "scripts": {

@@ -6,8 +6,11 @@
  * 一年级孩子的导航能力有限，任何深层结构都会让她迷路。
  */
 
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-dom'
+import { ensureOpen } from '@/data/db'
+import { applyPendingUpdate, watchForUpdate } from '@/platform/appUpdate'
+import { onPageResume } from '@/platform/onPageResume'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { HanziWall } from '@/features/chinese/HanziWall'
@@ -53,6 +56,8 @@ export function App() {
 function AppRoutes() {
   const init = useSessionStore((s) => s.init)
   const loadProfile = useProfileStore((s) => s.load)
+  const sessionStatus = useSessionStore((s) => s.status)
+  const [updateReady, setUpdateReady] = useState(false)
 
   // 在这里初始化而不是首页：宠物页、讲解库都可能被直接打开
   // （刷新、从主屏图标进入某个 hash），每个页面各自 init 容易漏
@@ -63,6 +68,23 @@ function AppRoutes() {
     void init()
     void loadProfile()
   }, [init, loadProfile])
+
+  // ⭐ 切出去再回来时把数据库连接接活。iOS 会在页面转入后台时关掉
+  // IndexedDB 连接，而 Dexie 被动关闭后不再自动重开——之后每一次读写都
+  // 静默失败到整页重载为止。孩子中途看一眼别的 App、家长去「文件」App
+  // 挑备份，都会走到这一步。见 data/db.ts 的 ensureOpen()
+  useEffect(() => onPageResume(() => void ensureOpen()), [])
+
+  // ⭐ 让新版本真的能装上。旧配置把新 Service Worker 下载完就搁在 waiting 里，
+  // 等一个「所有页面都关闭」的时机——那个时机在 iOS 的 PWA 上几乎不会到来，
+  // 于是 iPad 上永远是旧版本。见 platform/appUpdate.ts
+  useEffect(() => watchForUpdate(() => setUpdateReady(true)), [])
+
+  // 接管会整页刷新，因此只在会话空闲时下手：
+  // 答题中（active/feedback）刷新会冲掉整段题目，小结页（finished）刷新会丢掉刚做完的成绩。
+  useEffect(() => {
+    if (updateReady && sessionStatus === 'idle') void applyPendingUpdate()
+  }, [updateReady, sessionStatus])
 
   return (
     <>

@@ -20,6 +20,7 @@ import { addExp } from '@/data/repositories/petRepo'
 import { loadMasteryMap, recordAttempt } from '@/data/repositories/masteryRepo'
 import { ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
 import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
+import { checksumOf } from '@/domain/backup/checksum'
 import { validateBackup } from '@/domain/backup/validateBackup'
 import { createRng } from '@/domain/generators/rng'
 import { selectNextItems } from '@/domain/scheduler/selectNextItems'
@@ -308,6 +309,83 @@ describe('备份往返', () => {
       const after = await db.mastery.where('[profileId+kpId]').equals([profileId, m.kpId]).first()
       expect(after?.misconceptionCounts).toEqual(m.misconceptionCounts)
     }
+  })
+})
+
+/**
+ * 这一组用例复刻 2026-08-20 那次真实事故的完整路径：
+ * 更新推不下去 → 家长导出备份 → 删掉主屏幕图标重装 → 回来导入，结果什么都没恢复。
+ *
+ * 事故里数据层其实是好的，坏在**通往它的路上**。但那条路上的两个坑
+ * （文件选取误判取消、连接被 iOS 关掉）中，后者会一路烧到这一层，
+ * 所以必须在这里钉死。
+ */
+describe('⭐ 换设备/重装后的恢复（事故回归）', () => {
+  it('数据库被 iOS 在后台关掉之后，导入仍然能成功', async () => {
+    // 恢复备份是整个 App 里**唯一需要离开再回来**的操作——家长得去「文件」App
+    // 挑那个 .json。这一趟离开足以让 iOS 关掉 IndexedDB 连接，
+    // 而 Dexie 被动关闭后不再自动重开：修复前这里必抛 DatabaseClosedError，
+    // 家长看到的就是「恢复失败」，而他刚把图标删掉重装过
+    const profileId = await seedUsedProfile()
+    const backup = await buildBackup(profileId)
+    const expected = backup.data.attempts.length
+    expect(expected).toBeGreaterThan(0)
+
+    for (const name of USER_DATA_TABLES) {
+      await db.table(name).clear()
+    }
+
+    db.close()
+    expect(db.isOpen(), '前置条件：连接确实断了').toBe(false)
+
+    await importBackup(backup)
+
+    expect(await db.attempts.count()).toBe(expected)
+  })
+
+  it('⭐ 旧版本(v3)导出的备份，导进全新装好的新版本，进度完整回来', async () => {
+    // 事故当天的确切形态：iPad 上跑的是没有积分商店的 v3，
+    // 从那里导出的备份要能落进一个刚装好、档案 ID 完全不同的 v4 里。
+    // 原有用例全是「同一个档案导出再导入」，测不到换档案这一层
+    const oldProfileId = await seedUsedProfile()
+    const v4 = await buildBackup(oldProfileId)
+    const attemptsExpected = v4.data.attempts.length
+    const ledgerExpected = v4.data.ledger.length
+
+    // 退化成 v3 导出的样子：那时还没有 purchases 表，校验和也是对着当时的 data 算的
+    const { purchases: _dropped, ...v3data } = v4.data
+    const v3text = JSON.stringify({
+      ...v4,
+      schemaVersion: 3,
+      data: v3data,
+      checksum: checksumOf(v3data),
+    })
+
+    // 模拟「删掉主屏幕图标 → 重新添加 → 打开」：数据全没了，App 自己建了个新档案
+    await db.delete()
+    await db.open()
+    const freshProfileId = await bootstrap()
+    expect(freshProfileId, '前置条件：这是一个全新的档案').not.toBe(oldProfileId)
+    expect(await db.attempts.count(), '前置条件：确实是初始状态').toBe(0)
+
+    const verdict = validateBackup(JSON.parse(v3text), SCHEMA_VERSION)
+    expect(verdict.ok).toBe(true)
+    if (!verdict.ok) return
+    expect(verdict.migratedFrom, '应认出这是 v3 老备份并升级').toBe(3)
+    expect(verdict.checksumMatched, '迁移补的 purchases 不该让老备份被报成损坏').toBe(true)
+
+    await importBackup(verdict.backup)
+    await bootstrap()
+
+    expect(await db.attempts.count()).toBe(attemptsExpected)
+    expect(await db.ledger.count()).toBe(ledgerExpected)
+    expect(
+      (await db.meta.get('activeProfileId'))?.value,
+      '活跃档案要切回备份里那个，否则界面还是空的',
+    ).toBe(oldProfileId)
+    // 新版本多出来的知识点由 bootstrap 补齐，一个都不能少
+    expect(await db.mastery.count()).toBe(KNOWLEDGE_POINTS.length)
+    expect(await db.petState.where('profileId').equals(oldProfileId).count()).toBe(3)
   })
 })
 

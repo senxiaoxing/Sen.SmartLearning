@@ -180,6 +180,34 @@ export class SmartLearningDB extends Dexie {
 export const db = new SmartLearningDB()
 
 /**
+ * 确保数据库连接可用，必要时重新打开。
+ *
+ * ## ⭐ 为什么需要它：iOS 会在背后关掉连接，而 Dexie 不会自己重开
+ *
+ * 页面进入后台时（WebKit 把页面放进 back/forward cache，或系统回收内存），
+ * iOS 会关闭该页面持有的全部 IndexedDB 连接。Dexie 收到关闭通知后把自己标记为
+ * closed，并且**关掉自动重开**——此后每一次读写都抛 `DatabaseClosedError`，
+ * 一直到整页重载为止。表现是 App 看着好好的，写进去的东西全部无声消失。
+ *
+ * 这在恢复备份这条路上几乎必然发生：**它是整个 App 里唯一需要离开再回来的操作**
+ * （去「文件」App 挑那个 .json）。家长回到 App 点「确认恢复」，
+ * 事务在第一步就抛错，而他刚刚才把主屏幕图标删掉重装过。
+ *
+ * 答题路径同样受益：孩子中途切出去看一眼别的再回来，
+ * 接着做的那几道题不会因为连接已断而写不进去。
+ *
+ * @returns 连接就绪后 resolve；`db.open()` 本身是幂等的，并发调用共享同一次打开
+ *
+ * @example
+ * await ensureOpen()
+ * await db.attempts.add(attempt)
+ */
+export async function ensureOpen(): Promise<void> {
+  if (db.isOpen()) return
+  await db.open()
+}
+
+/**
  * 用户数据表名清单 —— 备份导出、导入清空、重置进度都以此为准。
  *
  * ⚠️ 静态内容表（knowledgePoints / items / itemTemplates / assetCache）**不在其中**：

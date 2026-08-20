@@ -908,6 +908,31 @@ MVP 策略：整体替换（先清空用户表，再写入）—— 简单可靠
 > **MVP 用"整体替换"而非合并。** 合并需要处理"两台设备各做了一部分"的冲突，
 > 逻辑复杂且容易静默出错。等阶段 2 做同步码时再实现按 UUID + `updatedAt` 的合并。
 
+#### ⭐ 4.3a 导入前必须 `ensureOpen()`
+
+恢复备份是**整个 App 里唯一需要离开再回来的操作**——家长得切到「文件」App
+去挑那个 `.json`。而 iOS 会在页面转入后台时关掉它持有的 IndexedDB 连接，
+Dexie 被动关闭后**不会自己重开**：此后每一次读写都抛 `DatabaseClosedError`，
+一直到整页重载为止。
+
+于是最坏的组合出现了：家长回到 App、点「确认恢复」，事务在第一步就炸——
+而他往往刚刚为了拿到新版本把主屏幕图标删掉重装过，本机已经没有别的副本了。
+
+```ts
+export async function importBackup(backup: BackupFile) {
+  await ensureOpen()        // ⭐ 少了这一行，换设备恢复会在真机上随机失败
+  await db.transaction('rw', tables, async () => { … })
+}
+```
+
+`ensureOpen()` 定义在 `src/data/db.ts`，`buildBackup` / `bootstrap` 同样要先调。
+另有一道全局保障：`App.tsx` 通过 `platform/onPageResume.ts` 在页面回到前台时
+统一体检一次，孩子中途切出去再回来接着做的题也不会写不进去。
+
+> 回归测试见 `importBackup.test.ts` 的「换设备/重装后的恢复（事故回归）」一组，
+> 其中一条会先 `db.close()` 再导入。把 `ensureOpen()` 去掉，它立刻以
+> `DatabaseClosedError` 失败。
+
 ### 4.4 备份提醒机制
 
 ```ts

@@ -30,14 +30,23 @@ export function Backup() {
   const [lastExport, setLastExport] = useState<IsoDateTime | undefined>(undefined)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   // ⚠️ 进页面就把备份内容准备好，不等到点击时再读数据库。
   // iOS 只在用户手势的短暂窗口内允许调起分享面板，
   // 点击后再 await 一次全表读取，窗口会过期，表现为「点了没反应」。
+  //
+  // ⚠️ 读失败必须说出来。不接 catch 的话页面会永远停在「读取中…」、
+  // 按钮一直灰着，家长只会以为备份功能坏了——而这恰恰是他最需要它的时候。
   useEffect(() => {
     if (profileId === null) return
-    void buildBackup(profileId).then(setBackup)
-    void lastExportAt().then(setLastExport)
+    setLoadError(null)
+    void buildBackup(profileId)
+      .then(setBackup)
+      .catch((error: unknown) => {
+        setLoadError(error instanceof Error ? error.message : '读取失败')
+      })
+    void lastExportAt().then(setLastExport).catch(() => undefined)
   }, [profileId])
 
   const handleSave = async () => {
@@ -71,7 +80,7 @@ export function Backup() {
           </BigButton>
         </header>
 
-        <ProgressSummary backup={backup} />
+        <ProgressSummary backup={backup} loadError={loadError} />
         <ExportReminder lastExport={lastExport} />
 
         <BigButton
@@ -107,7 +116,21 @@ export function Backup() {
 }
 
 /** 当前进度摘要，让家长确认「要保存的确实是这份数据」 */
-function ProgressSummary({ backup }: { backup: BackupFile | null }) {
+function ProgressSummary({
+  backup,
+  loadError,
+}: {
+  backup: BackupFile | null
+  loadError: string | null
+}) {
+  if (loadError !== null) {
+    return (
+      <p className="rounded-blob bg-alert/15 px-5 py-3 text-base leading-relaxed text-ink/70">
+        读不出当前进度：{loadError}。请退出 App 重新打开一次再试。
+      </p>
+    )
+  }
+
   if (backup === null) {
     return <div className="rounded-blob bg-surface/60 p-5 text-base text-ink/40">读取中…</div>
   }

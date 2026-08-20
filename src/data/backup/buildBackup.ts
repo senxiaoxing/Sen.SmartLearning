@@ -10,7 +10,7 @@
  */
 
 import type { Table } from 'dexie'
-import { APP_VERSION, CONTENT_VERSION, SCHEMA_VERSION, db } from '@/data/db'
+import { APP_VERSION, CONTENT_VERSION, SCHEMA_VERSION, db, ensureOpen } from '@/data/db'
 import { checksumOf } from '@/domain/backup/checksum'
 import { isoToLocalDate, nowIso } from '@/domain/time'
 import type { BackupFile, IsoDateTime, Uuid } from '@/domain/types'
@@ -44,6 +44,9 @@ const FILE_NAME_PREFIX = '希恩爱学习'
  * // → 交给 platform/share.ts 保存或分享
  */
 export async function buildBackup(profileId: Uuid): Promise<BackupFile> {
+  // 导出页可能是家长切回 App 后打开的第一个页面，连接未必还活着。见 data/db.ts
+  await ensureOpen()
+
   const profile = await db.profiles.get(profileId)
   if (profile === undefined) throw new Error(`档案不存在，无法导出备份：${profileId}`)
 

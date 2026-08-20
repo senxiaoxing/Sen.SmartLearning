@@ -37,7 +37,25 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      /**
+       * ⭐ `prompt` 而不是 `autoUpdate` —— 由 App 自己挑时机接管，见 platform/appUpdate.ts。
+       *
+       * 这里原先是 `autoUpdate` 配 `skipWaiting: false`，那是一对**自相矛盾**的设置，
+       * 也是「iPad 上点开图标，更新死活下不来」的根本原因：
+       * autoUpdate 生成的注册脚本只负责周期性 `registration.update()`，
+       * 把新 Service Worker 下载到 **waiting** 就完事了；而真正让它上任的
+       * `skipWaiting()` 被关掉了，于是新版本永远排在队里不接管。
+       *
+       * 当时以为「等下次冷启动自然就生效」——并不会。waiting 的 SW 要等到
+       * **所有**受控页面全部关闭才激活，而 iOS 上 PWA 只是转入后台、
+       * 页面并没有真正销毁，这个条件常年不成立。
+       *
+       * 关掉 skipWaiting 的初衷（别在孩子答题途中刷新页面）是对的，
+       * 现在由 App 在会话空闲时主动调用来满足，而不是靠一个永远不发生的时机。
+       */
+      registerType: 'prompt',
+      // 注册与更新时机全部由 platform/appUpdate.ts 掌握，不要再注入一份自动脚本
+      injectRegister: null,
       includeAssets: ['icons/apple-touch-icon-180.png'],
 
       manifest: {
@@ -104,9 +122,12 @@ export default defineConfig({
           },
         ],
         cleanupOutdatedCaches: true,
-        // ⚠️ 刻意不启用 skipWaiting/clientsClaim：
-        // 新版本立即接管会在孩子答题途中刷新页面，当前会话的题目存在内存里会全部丢失。
-        // 让新 Service Worker 等到下次冷启动再生效——自用场景每天打开一次，完全够用。
+        // ⚠️ 不自动 skipWaiting：新版本立即接管会在孩子答题途中刷新页面，
+        // 当前会话的题目存在内存里会全部丢失。
+        //
+        // ⭐ 但「不自动」不等于「不发生」——`registerType: 'prompt'` 会在 SW 里装上
+        // SKIP_WAITING 消息监听，App 在会话空闲时发一条消息就能让新版本立刻上任。
+        // 见 platform/appUpdate.ts。少了那一步，新版本会永远排在 waiting 里。
         skipWaiting: false,
         clientsClaim: false,
       },

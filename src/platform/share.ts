@@ -1,12 +1,14 @@
 /**
- * @file 文件保存与选取 —— 把备份交给 iOS，以及从 iOS 拿回来
+ * @file 文件保存 —— 把备份交给 iOS
  * @layer platform  浏览器 API 封装，不含任何业务逻辑
  * @see design/02-数据库Schema.md §4.2 导出实现（iOS 友好）
  *
- * ⚠️ **两个函数都必须在用户手势（click）里调用**，且调用前不要 await 长耗时操作。
- * iOS Safari 只在「短暂用户激活」窗口内允许调起分享面板和文件选择器，
+ * ⚠️ **必须在用户手势（click）里调用**，且调用前不要 await 长耗时操作。
+ * iOS Safari 只在「短暂用户激活」窗口内允许调起分享面板，
  * 中间插一次 IndexedDB 查询就可能超时，表现为点了按钮什么都没发生。
  * 正确做法：进页面时就把备份内容准备好，点击时只负责递出去。
+ *
+ * 反方向（选文件读回来）不在这里，原因见文件末尾。
  */
 
 /** 备份文件的 MIME 类型 */
@@ -82,58 +84,14 @@ function downloadBlob(blob: Blob, fileName: string): void {
 }
 
 /**
- * 弹出系统文件选择器，读取用户选中的 JSON 文本。
+ * ⛔ 这里**刻意没有** `pickJsonFile()`。
  *
- * @returns 文件内容；用户没选文件则为 `null`
+ * 曾经有过：临时插一个 `<input type="file">`，再靠监听 `window.focus`
+ * 猜「家长是不是取消了」。那个猜测在 iPad 上是错的——文件选择器是浮动面板，
+ * 宿主页面并不真正失去焦点，面板弹出的瞬间 window 就可能收到 focus，
+ * 于是代码判定「取消」、退回初始态、注销 change 监听，
+ * 家长随后真的选中的文件再也没人接。**恢复功能因此静默失效。**
  *
- * @throws 文件读取失败时抛错（文件被删除、权限问题等）
- *
- * @example
- * const text = await pickJsonFile()
- * if (text === null) return          // 家长取消了，静默返回
- * const verdict = validateBackup(JSON.parse(text), SCHEMA_VERSION)
+ * 选文件必须由持有 `<input>` 的 React 组件自己做，只认 `change` 事件，
+ * 取消则什么都不做。见 `features/parent/RestoreBackup.tsx` 的说明。
  */
-export async function pickJsonFile(): Promise<string | null> {
-  const input = document.createElement('input')
-  input.type = 'file'
-  // 同时给 MIME 和扩展名：iOS 的「文件」App 对 JSON 的 MIME 识别并不稳定，
-  // 只写 application/json 会让备份文件显示为灰色不可选。
-  input.accept = `${JSON_MIME},.json`
-  input.style.display = 'none'
-  document.body.append(input)
-
-  try {
-    const file = await pickOne(input)
-    return file === null ? null : await file.text()
-  } finally {
-    input.remove()
-  }
-}
-
-/**
- * 等待用户选完文件。
- *
- * ⚠️ 取消选择时 iOS Safari **不会**触发任何事件，因此这里额外监听
- * `window.focus`：页面重新拿到焦点却仍然没有文件，就当作取消。
- * 少了这一步，家长点了取消之后界面会永远停在「读取中」。
- */
-function pickOne(input: HTMLInputElement): Promise<File | null> {
-  return new Promise((resolve) => {
-    let settled = false
-    const finish = (file: File | null) => {
-      if (settled) return
-      settled = true
-      window.removeEventListener('focus', onFocus)
-      resolve(file)
-    }
-
-    const onFocus = () => {
-      // 选择器关闭到 change 事件派发之间有几十毫秒的间隙，等一等再判定取消
-      setTimeout(() => finish(input.files?.[0] ?? null), 500)
-    }
-
-    input.addEventListener('change', () => finish(input.files?.[0] ?? null), { once: true })
-    window.addEventListener('focus', onFocus)
-    input.click()
-  })
-}

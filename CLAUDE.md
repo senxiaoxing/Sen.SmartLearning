@@ -435,6 +435,16 @@ localDate: string   // 'YYYY-MM-DD' 本地时区，用于按天统计，写入�
 ⚠️ iOS Safari 不支持 Vibration API，haptics 做空实现，用音效补偿。
 ```
 
+### iOS 会在后台关掉 IndexedDB 连接 ⭐
+```
+Dexie 被动关闭后不会自己重开，之后每次读写都抛 DatabaseClosedError，
+直到整页重载 —— 表现是「App 看着好好的，写进去的东西全没了」。
+```
+`App.tsx` 已通过 `platform/onPageResume.ts` 在回到前台时统一 `ensureOpen()` 兜底。
+但**任何跨越「离开 App 再回来」的流程，必须自己先 `await ensureOpen()`**——
+兜底跑在 React effect 里，不保证赶在你那次写入之前。
+恢复备份就是这样一条路（要去「文件」App 挑文件），见 design/02 §4.3a。
+
 ### 积分
 余额从 `ledger` 流水推导（取最新一条的 `balanceAfter`），**不设独立可变余额字段**。
 

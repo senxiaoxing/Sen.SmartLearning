@@ -8,7 +8,7 @@
  * - 用户数据只在缺失时创建，绝不覆盖已有进度
  */
 
-import { CONTENT_VERSION, SCHEMA_VERSION, db } from '@/data/db'
+import { CONTENT_VERSION, SCHEMA_VERSION, db, ensureOpen } from '@/data/db'
 import { ITEM_TEMPLATES } from '@/data/seed/itemTemplates'
 import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
 import {
@@ -72,6 +72,9 @@ export function bootstrap(): Promise<Uuid> {
 }
 
 async function runBootstrap(): Promise<Uuid> {
+  // 导入备份后会再跑一次 bootstrap 补新知识点，那时连接刚经历过一趟前后台切换
+  await ensureOpen()
+
   await syncStaticContent()
   const profileId = await ensureProfile()
   await ensureMastery(profileId)
