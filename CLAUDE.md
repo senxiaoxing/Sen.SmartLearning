@@ -21,7 +21,7 @@
 
 | 文档 | 内容 |
 |---|---|
-| [design/01-知识点图谱.md](design/01-知识点图谱.md) | 112 个知识点、前置依赖、认知误区（misconception）定义、摸底测评 |
+| [design/01-知识点图谱.md](design/01-知识点图谱.md) | 113 个知识点、前置依赖、认知误区（misconception）定义、摸底测评 |
 | [design/02-数据库Schema.md](design/02-数据库Schema.md) | 16 张表、掌握度算法、导出导入格式、迁移机制 |
 | [design/03-技术方案.md](design/03-技术方案.md) | 架构、目录结构、核心模块契约、PWA 配置、性能规范 |
 | [design/04-部署与上机.md](design/04-部署与上机.md) | 部署步骤、iPad 添加到主屏幕、故障排查、当前已知限制 |

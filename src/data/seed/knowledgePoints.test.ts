@@ -2,7 +2,7 @@
  * @file 知识点图谱完整性测试
  * @layer data
  *
- * 手写 112 条依赖关系必然出错，而这类错误在 UI 上看不出来——
+ * 手写 113 条依赖关系必然出错，而这类错误在 UI 上看不出来——
  * 悬空的前置引用会让知识点**永远无法解锁**，环形依赖会让解锁判定**无限递归**。
  * 这些测试是唯一能在动手写调度器之前发现问题的手段。
  */
@@ -29,10 +29,10 @@ describe('知识点图谱完整性', () => {
   })
 
   it('各科目数量符合设计文档', () => {
-    expect(KNOWLEDGE_POINTS_BY_SUBJECT.math).toHaveLength(47)
+    expect(KNOWLEDGE_POINTS_BY_SUBJECT.math).toHaveLength(48)
     expect(KNOWLEDGE_POINTS_BY_SUBJECT.pinyin).toHaveLength(35)
     expect(KNOWLEDGE_POINTS_BY_SUBJECT.english).toHaveLength(30)
-    expect(KNOWLEDGE_POINTS).toHaveLength(112)
+    expect(KNOWLEDGE_POINTS).toHaveLength(113)
   })
 
   it('ID 索引覆盖全部知识点', () => {

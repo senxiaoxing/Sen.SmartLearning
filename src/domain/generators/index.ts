@@ -38,16 +38,18 @@ import { shapes } from '@/domain/generators/shapes'
 import { splitTen } from '@/domain/generators/splitTen'
 import { storyProblem } from '@/domain/generators/storyProblem'
 import { subWithBorrow } from '@/domain/generators/subWithBorrow'
+import { teenArithmetic } from '@/domain/generators/teenArithmetic'
 import type { Difficulty, GeneratedItem, Generator, ItemTemplate } from '@/domain/types'
 
 /**
  * 生成器注册表。键名与 `ItemTemplate.generator` 一一对应。
  *
- * 覆盖三科：数学 M1/M3/M4/M5/M6、拼音 P1~P7、英语 E1~E10。
- * 其中 `orderSequence` / `matchPairs` / `splitTen` 产出拖拽题型，
- * 与填空版并存供同一知识点轮换（见 data/seed/itemTemplates.ts）。
+ * 覆盖三科全部知识点：数学 M1~M9、拼音 P1~P8、英语 E1~E10。
+ * 其中 `orderSequence` / `matchPairs` / `splitTen` / `pinyinBlend` / `pinyinTriple`
+ * 产出拖拽题型，与填空版并存供同一知识点轮换（见 data/seed/itemTemplates.ts）。
  *
- * M2 位置、M7 图形、M8 钟表、M9 应用题需要图片资源，待美术就位后补充。
+ * 图形与钟表由手绘 SVG 渲染（components/shape/，含 ClockFace），
+ * 不依赖位图素材——因此 M2/M7/M8/M9 与计算题一样是程序生成、题量无限。
  */
 export const GENERATORS: Readonly<Record<string, Generator>> = {
   addWithCarry,
@@ -81,6 +83,7 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   splitTen,
   storyProblem,
   subWithBorrow,
+  teenArithmetic,
 }
 
 /** 同一签名最多重试几次以避开 `exclude`。超过后接受重复，避免死循环。 */

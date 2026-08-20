@@ -4,7 +4,7 @@
  * @see design/01-知识点图谱.md
  *
  * 本文件不是 barrel file：除了聚合三个科目，它还提供索引结构和图完整性校验。
- * 校验由 `knowledgePoints.test.ts` 在每次测试时执行——手写 112 条依赖关系必然出错，
+ * 校验由 `knowledgePoints.test.ts` 在每次测试时执行——手写 113 条依赖关系必然出错，
  * 悬空引用和环形依赖会让调度器死循环或永久锁死知识点，必须在编译期之外强制拦截。
  */
 
@@ -13,7 +13,7 @@ import { mathKnowledgePoints } from '@/data/seed/mathKnowledgePoints'
 import { pinyinKnowledgePoints } from '@/data/seed/pinyinKnowledgePoints'
 import type { KnowledgePoint, Subject } from '@/domain/types'
 
-/** 全部知识点，共 112 个（数学 47 / 拼音 35 / 英语 30）。 */
+/** 全部知识点，共 113 个（数学 48 / 拼音 35 / 英语 30）。 */
 export const KNOWLEDGE_POINTS: KnowledgePoint[] = [
   ...mathKnowledgePoints,
   ...pinyinKnowledgePoints,

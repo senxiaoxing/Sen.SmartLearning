@@ -23,7 +23,7 @@ import type { Attempt, Subject, Uuid } from '@/domain/types'
  * 各科当前出得了题的知识点。
  *
  * 与 `sessionStore` 的 `ANSWERABLE_KP_IDS` 同源：报告里的「掌握 12/28」
- * 分母必须是**真正能练的**知识点数。拿图谱总数 112 当分母，
+ * 分母必须是**真正能练的**知识点数。拿图谱总数 113 当分母，
  * 家长看到的进度会被 M7 图形、M8 钟表这些还没做的内容永久拖住。
  */
 const ANSWERABLE_BY_SUBJECT: Record<Subject, ReadonlySet<string>> = (() => {
