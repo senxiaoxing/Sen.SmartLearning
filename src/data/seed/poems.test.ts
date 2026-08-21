@@ -12,9 +12,14 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { POEM_COVERS, POEMS, poemById } from '@/data/seed/poems'
+import { POEM_COVERS, POEM_VOLUMES, POEMS, poemById } from '@/data/seed/poems'
 import { hasClip } from '@/data/seed/voiceManifest'
-import { poemLineClipKey, poemMeaningClipKey, poemTitleClipKey } from '@/domain/poem'
+import {
+  poemHeadText,
+  poemLineClipKey,
+  poemMeaningClipKey,
+  poemTitleClipKey,
+} from '@/domain/poem'
 
 /** 诗句里的标点，计字数时要去掉 */
 const PUNCTUATION = /[，。？！、；：]/g
@@ -29,15 +34,27 @@ function syllableCount(pinyin: string): number {
   return pinyin.trim().split(/\s+/).length
 }
 
-describe('古诗 20 首', () => {
-  it('正好 20 首，id 不重复', () => {
-    expect(POEMS).toHaveLength(20)
-    expect(new Set(POEMS.map((p) => p.id)).size).toBe(20)
+describe('古诗 60 首', () => {
+  it('正好 60 首，id 不重复', () => {
+    expect(POEMS).toHaveLength(60)
+    expect(new Set(POEMS.map((p) => p.id)).size).toBe(60)
   })
 
   it('id 只含小写字母与数字 —— 它要进语音片段 key', () => {
     for (const poem of POEMS) {
       expect(poem.id, `${poem.title} 的 id 不合规`).toMatch(/^[a-z0-9]+$/)
+    }
+  })
+
+  /**
+   * ⭐ `scripts/generate-voices.mjs` 的 `loadPoems()` 是逐行扫这个文件的，
+   * 见到一行 `id: 'xxx',` 就当成「一首新诗开始」。辑的声明里也有 `id: 'vol1',`，
+   * 脚本靠 `vol` 前缀把它认出来跳过——诗的 id 要是也叫 volxxx，
+   * 那首诗的全部片段会被静默丢掉，表现是「点进去整首没声音」。
+   */
+  it('诗的 id 不以 vol 开头 —— 那是辑的前缀，语音脚本靠它区分', () => {
+    for (const poem of POEMS) {
+      expect(poem.id.startsWith('vol'), `${poem.title} 的 id 与辑的前缀撞了`).toBe(false)
     }
   })
 
@@ -55,6 +72,40 @@ describe('古诗 20 首', () => {
       expect(poemById(poem.id)).toBe(poem)
     }
     expect(poemById('不存在的诗')).toBeUndefined()
+  })
+})
+
+/**
+ * ⭐ 分辑守的是**每一辑都摆得满、且长度一致**（与识字墙同一条约束）。
+ *
+ * 某一辑要是只有十几首，页面不会报任何错——她只会觉得第三辑
+ * 「怎么这么快就到底了」，而那正是她说「像幼儿园小朋友做的题目」的那种落差。
+ */
+describe('分辑', () => {
+  it('3 辑，每辑 20 首', () => {
+    expect(POEM_VOLUMES).toHaveLength(3)
+    for (const volume of POEM_VOLUMES) {
+      expect(volume.poems.length, `${volume.name}的首数不对`).toBe(20)
+    }
+  })
+
+  it('每辑都有序号、名字和说明 —— 孩子不识字，认的是那个数字', () => {
+    for (const volume of POEM_VOLUMES) {
+      expect(volume.badge.length, `${volume.id} 缺序号图标`).toBeGreaterThan(0)
+      expect(volume.name.length, `${volume.id} 缺名字`).toBeGreaterThan(0)
+      expect(volume.hint.length, `${volume.id} 缺说明`).toBeGreaterThan(0)
+    }
+  })
+
+  it('辑 id 互不相同', () => {
+    const ids = POEM_VOLUMES.map((volume) => volume.id)
+    expect(new Set(ids).size, `重复的辑 id：${ids.join(' ')}`).toBe(ids.length)
+  })
+
+  it('POEMS 就是三辑按顺序摊平 —— 顺序即难度梯度，不能被重排', () => {
+    expect(POEMS.map((poem) => poem.id)).toEqual(
+      POEM_VOLUMES.flatMap((volume) => volume.poems.map((poem) => poem.id)),
+    )
   })
 })
 
@@ -89,7 +140,6 @@ describe('⭐ 改写给 TTS 的句子只换字、不改结构', () => {
       poem.lines.filter((line) => line.spoken !== undefined).map((line) => [poem, line] as const),
     )
 
-    // 这不是断言而是提示：改写是有代价的手段，数量应该保持在个位数
     expect(rewritten.length).toBeGreaterThan(0)
 
     for (const [poem, line] of rewritten) {
@@ -98,6 +148,77 @@ describe('⭐ 改写给 TTS 的句子只换字、不改结构', () => {
         `${poem.title}「${line.text}」的改写「${line.spoken}」字数变了`,
       ).toBe(charCount(line.text))
     }
+  })
+
+  /**
+   * ⭐ 改写只换**个别字**，不是重写句子。
+   *
+   * 字数相同还不够：整句换成另外七个同音字，字数也一样，
+   * 但那已经不是「把这个字念对」而是另一句话了。
+   * 逐位比对能钉住「动过的位置屈指可数」这件事。
+   */
+  it('改写与原文只差个别字', () => {
+    const MAX_CHANGED_CHARS = 3
+
+    for (const poem of POEMS) {
+      for (const line of poem.lines) {
+        if (line.spoken === undefined) continue
+        const before = [...line.text]
+        const after = [...line.spoken]
+        const changed = before.filter((ch, i) => ch !== after[i]).length
+
+        expect(
+          changed,
+          `${poem.title}「${line.text}」→「${line.spoken}」改了 ${changed} 个字，不像换字了`,
+        ).toBeLessThanOrEqual(MAX_CHANGED_CHARS)
+      }
+    }
+  })
+
+  /**
+   * ⭐ 改写**只增不减**。
+   *
+   * 每一处都是实测读错、或照着多音字表逐首排查出来的，
+   * 删掉一处就是放一个错音回到孩子耳朵里（见 poems.ts 文件头：
+   * 「鬓毛衰」实测念成了 cuī）。所以这里守的是下限，不是上限——
+   * 加诗时这个数只会往上走。
+   */
+  it('已有的改写一处都不少', () => {
+    const rewrittenLines = POEMS.flatMap((poem) =>
+      poem.lines.filter((line) => line.spoken !== undefined),
+    )
+    const rewrittenHeads = POEMS.filter((poem) => poem.headSpoken !== undefined)
+
+    expect(rewrittenLines.length, '有诗句的改写被删掉了').toBeGreaterThanOrEqual(29)
+    expect(rewrittenHeads.length, '有诗题的改写被删掉了').toBeGreaterThanOrEqual(5)
+  })
+
+  /**
+   * ⭐ 诗题的改写与报题句**字数一致**。
+   *
+   * 报题句是「诗名。朝代，作者。」整句，改写只该换掉其中一个多音字。
+   * 字数变了说明连标点或结构都动了，那朗读出来就不是同一句话。
+   */
+  it('headSpoken 与报题句字数一致', () => {
+    for (const poem of POEMS) {
+      if (poem.headSpoken === undefined) continue
+
+      expect(
+        [...poem.headSpoken].length,
+        `${poem.title} 的诗题改写「${poem.headSpoken}」与「${poemHeadText(poem)}」字数不一样`,
+      ).toBe([...poemHeadText(poem)].length)
+    }
+  })
+
+  /**
+   * 用户实测那一条，单独钉住：这是整条方针（多音字一律改写）的由来。
+   * 见 poems.ts 文件头。
+   */
+  it('⭐《回乡偶书》「鬓毛衰」必须带改写 —— 实测念成了 cuī', () => {
+    const poem = POEMS.find((p) => p.id === 'huixiangoushu')
+    const line = poem?.lines.find((l) => l.text.includes('鬓毛衰'))
+
+    expect(line?.spoken, '「鬓毛衰」的改写没了，它会念回 cuī').toBeDefined()
   })
 })
 

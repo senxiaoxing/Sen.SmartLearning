@@ -40,8 +40,8 @@ import { PageHeader } from '@/components/PageHeader'
 import { HANZI_VOLUMES } from '@/data/seed/hanziCards'
 import { hanziClipKey } from '@/domain/hanzi'
 import { prefetchClips } from '@/platform/speech'
+import { VolumePicker } from '@/components/VolumePicker'
 import { HanziCard } from '@/features/chinese/HanziCard'
-import { HanziVolumePicker } from '@/features/chinese/HanziVolumePicker'
 
 /** 兜底用的第一辑。字表是静态内容，这个分支实际走不到 */
 const FIRST_VOLUME = HANZI_VOLUMES[0]
@@ -81,9 +81,10 @@ export function HanziWall() {
         <span className="h-12 w-12 shrink-0" />
       </PageHeader>
 
-      <HanziVolumePicker
+      <VolumePicker
         volumes={HANZI_VOLUMES}
         activeId={volume?.id ?? ''}
+        countLabel="100 个字"
         onSelect={setVolumeId}
       />
 

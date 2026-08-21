@@ -27,7 +27,12 @@ import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
 import { POEMS } from '@/data/seed/poems'
 import { spokenText, wordKey } from '@/domain/english'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
-import { poemHeadText, poemLineClipKey, poemMeaningClipKey, poemTitleClipKey } from '@/domain/poem'
+import {
+  poemHeadSpokenText,
+  poemLineClipKey,
+  poemMeaningClipKey,
+  poemTitleClipKey,
+} from '@/domain/poem'
 
 /** 每个片段：key → 要念的文本 */
 export type VoiceManifest = Readonly<Record<string, string>>
@@ -315,8 +320,10 @@ const HANZI: VoiceManifest = Object.fromEntries(
  */
 const POEM_LINES: VoiceManifest = Object.fromEntries(
   POEMS.flatMap((poem) => [
-    // ⭐ 诗题那一条念的是「静夜思。唐，李白。」整句 —— 读整首从它开始
-    [poemTitleClipKey(poem.id), poemHeadText(poem)] as const,
+    // ⭐ 诗题那一条念的是「静夜思。唐，李白。」整句 —— 读整首从它开始。
+    //    走 poemHeadSpokenText 而不是 poemHeadText：诗名与作者里的多音字
+    //    （咏华山的华 huà、汉乐府的乐 yuè）只有换字才念得对，见 domain/poem.ts
+    [poemTitleClipKey(poem.id), poemHeadSpokenText(poem)] as const,
     ...poem.lines.map(
       (line, index) => [poemLineClipKey(poem.id, index), line.spoken ?? line.text] as const,
     ),

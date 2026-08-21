@@ -1,7 +1,7 @@
 /**
  * @file 古诗的类型与 key 规则
  * @layer domain  纯函数/纯类型，禁止 import React / Dexie / 浏览器 API / data 层
- * @see src/data/seed/poems.ts  实际的 20 首（数据在 data 层）
+ * @see src/data/seed/poems.ts  实际的 60 首、3 辑（数据在 data 层）
  *
  * 与 `domain/pinyin.ts`、`domain/hanzi.ts` 同一个分工：
  * 类型与 key 规则在 domain，诗本身在 data/seed。
@@ -47,6 +47,18 @@ export interface Poem {
   lines: readonly PoemLine[]
   /** 白话译文。⚠️ 写给**孩子听**，不是给大人看的注释，见 poems.ts 文件头 */
   meaning: string
+  /**
+   * 报诗名那一句送去 TTS 的文本，**仅当诗名或作者会被读错时才填**。
+   *
+   * ⭐ 与 {@link PoemLine.spoken} 是同一个手法，只是作用在诗题上——
+   * 而诗题恰恰是 `spoken` 够不着的地方：「咏华山」的华读 huà、
+   * 「汉乐府」的乐读 yuè、「李峤」的峤读 qiáo、「韦应物」的应读 yìng，
+   * 这几个 TTS 全都会按常用音念，而报诗名是每次「读整首」的第一句。
+   *
+   * ⚠️ 屏幕上显示的永远是 `title` / `dynasty` / `author`，只有音频用这一份。
+   * 由 `poems.test.ts` 校验它与 {@link poemHeadText} 的字数一致。
+   */
+  headSpoken?: string
 }
 
 /**
@@ -82,6 +94,30 @@ export function poemTitleClipKey(id: string): string {
  */
 export function poemHeadText(poem: Pick<Poem, 'title' | 'dynasty' | 'author'>): string {
   return `${poem.title}。${poem.dynasty}，${poem.author}。`
+}
+
+/**
+ * 报诗名那一句**送去合成**的文本：有 `headSpoken` 就用它，否则就是原文。
+ *
+ * ⭐ 屏幕与兜底朗读一律走 {@link poemHeadText}，只有预生成音频走这里。
+ * 两者分开的理由见 {@link Poem.headSpoken}：诗名里的多音字
+ * （华 huà · 乐 yuè · 峤 qiáo）必须换字才念得对，而屏幕上不能换。
+ *
+ * @param poem - 一首诗
+ * @returns 待合成的报题句
+ *
+ * @example
+ * poemHeadSpokenText({ title: '咏华山', dynasty: '宋', author: '寇准',
+ *                      headSpoken: '咏化山。宋，寇准。' })
+ * // '咏化山。宋，寇准。'  —— 屏幕上仍是「咏华山」
+ *
+ * poemHeadSpokenText({ title: '静夜思', dynasty: '唐', author: '李白' })
+ * // '静夜思。唐，李白。'  —— 没有多音字，与原文相同
+ */
+export function poemHeadSpokenText(
+  poem: Pick<Poem, 'title' | 'dynasty' | 'author' | 'headSpoken'>,
+): string {
+  return poem.headSpoken ?? poemHeadText(poem)
 }
 
 /**
@@ -158,7 +194,11 @@ const POEM_LINE_GAP = 0.4
 export function wholePoemUtterance(poem: Poem): Utterance {
   return {
     parts: [poemTitleClipKey(poem.id), ...poemLineClipKeys(poem)],
-    fallbackText: poemHeadText(poem) + poem.lines.map((line) => line.text).join(''),
+    // ⚠️ 兜底文本也走改写版（`spoken` / `headSpoken`）。
+    //    这一份是片段缺失时喂给系统 TTS 的，那边同样按常用音念多音字——
+    //    用原文兜底等于「有音频时读对、掉回兜底就读错」，而掉回兜底恰恰没人会发现
+    fallbackText:
+      poemHeadSpokenText(poem) + poem.lines.map((line) => line.spoken ?? line.text).join(''),
     gap: POEM_LINE_GAP,
   }
 }

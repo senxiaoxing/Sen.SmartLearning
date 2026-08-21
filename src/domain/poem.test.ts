@@ -12,6 +12,7 @@
 import { describe, expect, it } from 'vitest'
 import { POEMS } from '@/data/seed/poems'
 import {
+  poemHeadSpokenText,
   poemHeadText,
   poemLineClipKeys,
   poemTitleClipKey,
@@ -19,6 +20,8 @@ import {
 } from '@/domain/poem'
 
 const JINGYESI = POEMS.find((poem) => poem.id === 'jingyesi')!
+/** 诗名里带多音字的那首：「华山」的华读 huà，报题句必须换字才念得对 */
+const HUASHAN = POEMS.find((poem) => poem.id === 'yonghuashan')!
 
 describe('poemHeadText', () => {
   it('念的是「诗名。朝代，作者。」', () => {
@@ -35,6 +38,20 @@ describe('poemHeadText', () => {
   })
 })
 
+describe('poemHeadSpokenText', () => {
+  it('没填 headSpoken 时就是报题句本身', () => {
+    expect(poemHeadSpokenText(JINGYESI)).toBe('静夜思。唐，李白。')
+  })
+
+  it('⭐ 填了就用改写版 —— 诗名里的多音字只有换字才念得对', () => {
+    expect(poemHeadSpokenText(HUASHAN)).toBe('咏化山。宋，寇准。')
+  })
+
+  it('⭐ 屏幕上的那一份不受影响，仍是原文', () => {
+    expect(poemHeadText(HUASHAN)).toBe('咏华山。宋，寇准。')
+  })
+})
+
 describe('wholePoemUtterance', () => {
   it('⭐ 从报诗名那一句开始 —— 报诗名本来就是背诗的一部分', () => {
     const utterance = wholePoemUtterance(JINGYESI)
@@ -45,6 +62,18 @@ describe('wholePoemUtterance', () => {
 
   it('兜底文本也从报诗名开始 —— 片段缺失时不能只念诗文', () => {
     expect(wholePoemUtterance(JINGYESI).fallbackText.startsWith('静夜思。唐，李白。')).toBe(true)
+  })
+
+  /**
+   * ⭐ 掉回系统 TTS 时读音也得对。
+   *
+   * 兜底那条路平时不走，一走就是「音频没下全」这种本来就没人盯着的时候——
+   * 如果它念的是原文，表现就是「平时读对、偶尔读错」，比一直读错更难发现。
+   */
+  it('⭐ 兜底文本走改写版，不会掉回错读音', () => {
+    const fallback = wholePoemUtterance(HUASHAN).fallbackText
+
+    expect(fallback.startsWith('咏化山。宋，寇准。'), '报诗名掉回了会读错的原文').toBe(true)
   })
 
   it('⭐ 句间留出换气的停顿，明显长于播放器 80ms 的词间默认值', () => {

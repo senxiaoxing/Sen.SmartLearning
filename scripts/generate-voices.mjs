@@ -165,6 +165,17 @@ const POEM_PREFIX = 'poem.'
  */
 const EXPECTED_HANZI_COUNT = 300
 
+/**
+ * 古诗的总首数，3 辑 × 20 首。
+ *
+ * 与 `EXPECTED_HANZI_COUNT` 同一个用途：`loadPoems()` 拿它做硬失败断言，
+ * 加辑了就同步改这里，另一半在 `poems.test.ts` 的「3 辑，每辑 20 首」。
+ */
+const EXPECTED_POEM_COUNT = 60
+
+/** 辑声明的 id 前缀。⚠️ 见 loadPoems()：诗与辑都写 `id:`，靠它区分 */
+const POEM_VOLUME_ID_PREFIX = 'vol'
+
 /** 语速。儿童建议略慢，与原来 Web Speech 的 0.85 对齐 */
 const RATE = '-15%'
 /** 音调略高更亲切，与原 TTS 的 pitch 1.1 对齐 */
@@ -402,6 +413,14 @@ function loadPoems() {
   for (const raw of text.split('\n')) {
     const idMatch = raw.match(/^\s*id:\s*'([a-z0-9]+)',/)
     if (idMatch !== null) {
+      // ⚠️ 辑的声明里也有 `id: 'vol1',`，它后面跟的是 name/badge/hint 而不是诗。
+      //    不跳过的话，`title:` 拿不到、`author:` 也拿不到，倒不会产出错片段，
+      //    但下一首诗的 id 会被这一行覆盖成 vol1 —— 那首诗的片段全落到 poem.vol1L0 上。
+      //    诗的 id 不许以 vol 开头，由 poems.test.ts 拦
+      if (idMatch[1].startsWith(POEM_VOLUME_ID_PREFIX)) {
+        id = null
+        continue
+      }
       id = idMatch[1]
       lineIndex = 0
       awaitingMeaning = false
@@ -424,10 +443,20 @@ function loadPoems() {
     }
 
     // ⚠️ 拼法必须与 domain/poem.ts 的 poemHeadText() **逐字相同**，
-    //    差一个标点就会让 20 首诗每次都被判定「文本变了」而重新合成
+    //    差一个标点就会让 60 首诗每次都被判定「文本变了」而重新合成
     const authorMatch = raw.match(/^\s*author:\s*'([^']+)',/)
     if (authorMatch !== null) {
       out[`poem.${id}Title`] = `${title}。${dynasty}，${authorMatch[1]}。`
+      continue
+    }
+
+    // ⭐ headSpoken 覆盖刚刚拼好的报题句：诗名与作者里的多音字
+    //   （咏华山的华 huà · 汉乐府的乐 yuè · 李峤的峤 qiáo · 韦应物的应 yìng）
+    //   只有换字才念得对，见 domain/poem.ts 的 poemHeadSpokenText。
+    //   ⚠️ 它必须写在 author 之后 —— 这里是「后写的赢」，写在前面会被覆盖掉
+    const headMatch = raw.match(/^\s*headSpoken:\s*'([^']+)',/)
+    if (headMatch !== null) {
+      out[`poem.${id}Title`] = headMatch[1]
       continue
     }
 
@@ -460,9 +489,12 @@ function loadPoems() {
 
   // ⚠️ 硬失败：与 loadHanzi() 同一个理由。另外**诗题、译文、诗句三者必须都在**——
   //    只有诗句而没有诗题，表现是点进一首诗、标题不出声，很容易被当成没点到
-  if (titles !== 20 || meanings !== 20 || lines === 0) {
+  if (titles !== EXPECTED_POEM_COUNT || meanings !== EXPECTED_POEM_COUNT || lines === 0) {
     console.error('✗ poems.ts 的结构变了，本脚本的 loadPoems() 必须同步：')
-    console.error(`  诗题 ${titles} 首（应为 20）· 译文 ${meanings} 条（应为 20）· 诗句 ${lines} 句`)
+    console.error(
+      `  诗题 ${titles} 首（应为 ${EXPECTED_POEM_COUNT}）· ` +
+        `译文 ${meanings} 条（应为 ${EXPECTED_POEM_COUNT}）· 诗句 ${lines} 句`,
+    )
     process.exit(1)
   }
 

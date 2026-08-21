@@ -17,6 +17,7 @@
     "voices": "node scripts/generate-voices.mjs && node scripts/bundle-voices.mjs",
     "voices:bundle": "node scripts/bundle-voices.mjs",
     "pinyin:check": "node scripts/generate-pinyin-check.mjs",
+    "poem:check": "node scripts/generate-poem-check.mjs",
     "pinyin:record": "node scripts/generate-pinyin-record.mjs"
   },
   "dependencies": {
