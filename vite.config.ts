@@ -3,12 +3,50 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import type { Plugin } from 'vite'
 
 // 备份文件要记录导出它的 App 版本。从 package.json 读而不是在代码里再写一遍，
 // 否则两处迟早不一致，而不一致的版本号比没有版本号更误导人。
 const { version: appVersion } = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf-8'),
 ) as { version: string }
+
+/**
+ * 本次构建的时间戳。
+ *
+ * ⚠️ 必须**只算一次**，由 `define`（注入进代码）和 `version.json`（发到线上）共用。
+ * 各自 `new Date()` 会差出几毫秒，于是同一份构建自己跟自己都对不上，
+ * 家长区永远显示「有新版本」。
+ */
+const builtAt = new Date().toISOString()
+
+/**
+ * 在产物根目录写一份 `version.json`，供家长区「版本检查」比对线上是否已更新。
+ *
+ * 不手写 `public/version.json` 的理由同上面 `appVersion`：
+ * 版本号有两处来源就迟早对不上，而对不上的版本号比没有更误导人。
+ *
+ * ⭐ `builtAt` 才是实际判据。`npm run deploy` 只是 build + gh-pages，
+ * **不会**自动 bump package.json 的 version——只比版本号的话，连续部署十次
+ * 都显示「已是最新」，这个功能等于不存在。版本号仍然照常发出去，用于显示。
+ *
+ * ⚠️ 扩展名 `.json` 是刻意的：Workbox 的 globPatterns 不含 json，
+ * 它因此不会进预缓存。否则 Service Worker 会拿缓存里的旧文件回答
+ * 「线上是哪个版本」——那就成了自己问自己，永远一致。
+ */
+function emitVersionManifest(): Plugin {
+  return {
+    name: 'emit-version-manifest',
+    apply: 'build',
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'version.json',
+        source: JSON.stringify({ version: appVersion, builtAt }),
+      })
+    },
+  }
+}
 
 /**
  * 站点根路径。GitHub Pages 把仓库部署在 `/<仓库名>/` 子路径下，
@@ -32,10 +70,12 @@ export default defineConfig({
 
   define: {
     __APP_VERSION__: JSON.stringify(appVersion),
+    __APP_BUILT_AT__: JSON.stringify(builtAt),
   },
 
   plugins: [
     react(),
+    emitVersionManifest(),
     VitePWA({
       /**
        * ⭐ `prompt` 而不是 `autoUpdate` —— 由 App 自己挑时机接管，见 platform/appUpdate.ts。
