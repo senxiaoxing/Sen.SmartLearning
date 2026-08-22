@@ -8,15 +8,17 @@
  */
 
 import { describe, expect, it } from 'vitest'
+import { allOrderPartitions, ORDER_BASE, ORDER_SPAN } from '@/data/seed/gradeOrder'
 import {
   KEY_NODE_IDS,
   KNOWLEDGE_POINTS,
+  KNOWLEDGE_POINTS_BY_GRADE,
   KNOWLEDGE_POINTS_BY_SUBJECT,
   KNOWLEDGE_POINT_BY_ID,
   validateKnowledgeGraph,
   type GraphValidationError,
 } from '@/data/seed/knowledgePoints'
-import type { KnowledgePoint } from '@/domain/types'
+import { GRADE_LEVELS, gradeLevelOf, type KnowledgePoint, type Subject } from '@/domain/types'
 
 function format(errors: GraphValidationError[]): string {
   return errors.map((e) => `[${e.kind}] ${e.detail}`).join('\n')
@@ -95,6 +97,87 @@ describe('校验器本身能发现问题', () => {
   it('检出自依赖', () => {
     const errors = validateKnowledgeGraph([{ ...base, prerequisites: ['M1.1'] }])
     expect(errors.some((e) => e.kind === 'self_prerequisite')).toBe(true)
+  })
+
+  it('⭐ 检出「前置排在自己后面」——那会让知识点永远解不开锁', () => {
+    const errors = validateKnowledgeGraph([
+      { ...base, id: 'M1.1', order: 2000, prerequisites: ['M1.2'] },
+      { ...base, id: 'M1.2', order: 3000, prerequisites: [], collectionCardId: 'card-M1.2' },
+    ])
+    expect(errors.some((e) => e.kind === 'prerequisite_order_inverted')).toBe(true)
+  })
+
+  it('跨年级前置是合法的 —— 三年级的内容本来就该依赖二年级', () => {
+    const errors = validateKnowledgeGraph([
+      { ...base, id: 'M2.1', grade: '2A', order: 2000, prerequisites: [] },
+      {
+        ...base,
+        id: 'M3.1',
+        grade: '3A',
+        order: 3000,
+        prerequisites: ['M2.1'],
+        collectionCardId: 'card-M3.1',
+      },
+    ])
+    expect(errors).toEqual([])
+  })
+})
+
+describe('order 年级分区', () => {
+  it('各 (科目 × 年级) 分区互不重叠', () => {
+    const partitions = allOrderPartitions()
+
+    for (const a of partitions) {
+      for (const b of partitions) {
+        if (a.subject === b.subject && a.gradeLevel === b.gradeLevel) continue
+        const overlap = a.range[0] < b.range[1] && b.range[0] < a.range[1]
+        expect(
+          overlap,
+          `${a.subject}/${a.gradeLevel} 与 ${b.subject}/${b.gradeLevel} 的 order 区间重叠`,
+        ).toBe(false)
+      }
+    }
+  })
+
+  it('⭐ 同科目内年级序与 order 序一致 —— frontier 靠它判断新旧', () => {
+    // 顺序反了不会报错，只会让新年级被判成「前沿之前的遗漏」，
+    // 表现是「升了年级却一直在做旧题」
+    for (const subject of Object.keys(ORDER_BASE) as Subject[]) {
+      for (let i = 1; i < GRADE_LEVELS.length; i++) {
+        const prev = ORDER_BASE[subject][GRADE_LEVELS[i - 1]!]
+        const curr = ORDER_BASE[subject][GRADE_LEVELS[i]!]
+        expect(curr, `${subject} ${GRADE_LEVELS[i]} 的起点应大于 ${GRADE_LEVELS[i - 1]}`).toBeGreaterThan(prev)
+      }
+    }
+  })
+
+  it('每个知识点的 order 落在自己那个分区内', () => {
+    for (const kp of KNOWLEDGE_POINTS) {
+      const start = ORDER_BASE[kp.subject][gradeLevelOf(kp.grade)]
+      expect(kp.order, `${kp.id} 的 order ${kp.order} 不在 ${kp.subject}/${kp.grade} 的分区内`)
+        .toBeGreaterThanOrEqual(start)
+      expect(kp.order).toBeLessThan(start + ORDER_SPAN)
+    }
+  })
+})
+
+describe('年级索引', () => {
+  it('按年级分组覆盖全部知识点', () => {
+    const total = GRADE_LEVELS.reduce((n, g) => n + KNOWLEDGE_POINTS_BY_GRADE[g].length, 0)
+    expect(total).toBe(KNOWLEDGE_POINTS.length)
+  })
+
+  it('当前内容全部属于一年级，其余年级为空', () => {
+    expect(KNOWLEDGE_POINTS_BY_GRADE.G1).toHaveLength(KNOWLEDGE_POINTS.length)
+    for (const g of GRADE_LEVELS.filter((g) => g !== 'G1')) {
+      expect(KNOWLEDGE_POINTS_BY_GRADE[g], `${g} 还没有内容`).toHaveLength(0)
+    }
+  })
+
+  it('1A 与 1B 都归到 G1 —— 一个年级横跨两个学期', () => {
+    const hasSecondTerm = KNOWLEDGE_POINTS.some((kp) => kp.grade === '1B')
+    expect(hasSecondTerm, 'M2 位置整单元在一下，应存在 1B 的知识点').toBe(true)
+    expect(KNOWLEDGE_POINTS_BY_GRADE.G1.some((kp) => kp.grade === '1B')).toBe(true)
   })
 })
 

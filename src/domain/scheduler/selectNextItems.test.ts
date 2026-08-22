@@ -7,11 +7,19 @@
  */
 
 import { describe, expect, it } from 'vitest'
+import { ORDER_BASE } from '@/data/seed/gradeOrder'
 import { KNOWLEDGE_POINTS, KNOWLEDGE_POINT_BY_ID } from '@/data/seed/knowledgePoints'
 import { createMastery } from '@/domain/mastery/updateMastery'
 import { selectNextItems } from '@/domain/scheduler/selectNextItems'
 import { addDays, isoFromString } from '@/domain/time'
-import type { Mastery, MasteryState, ScheduleInput, Subject } from '@/domain/types'
+import type {
+  Grade,
+  KnowledgePoint,
+  Mastery,
+  MasteryState,
+  ScheduleInput,
+  Subject,
+} from '@/domain/types'
 
 const NOW = isoFromString('2026-08-05T10:00:00.000Z')
 
@@ -345,5 +353,145 @@ describe('复习优先级', () => {
     const plan = selectNextItems(inputWith(entries, { count: 10 }))
     const learning = plan.filter((i) => i.source === 'learning')
     expect(learning[0]!.kpId).toBe('M4.6')
+  })
+})
+
+describe('⭐ 年级天花板：只挡超前，不挡补漏', () => {
+  /**
+   * 造一个指定年级的知识点。
+   *
+   * 真实图谱目前只有一年级（`KNOWLEDGE_POINTS_BY_GRADE.G2` 是空的），
+   * 跨年级行为只能靠构造来测——而这恰恰是最该提前锁住的部分：
+   * 等二年级内容做出来才发现回退被年级墙挡住，那时已经错得很深了。
+   */
+  function kpAt(id: string, grade: Grade, order: number, pre: string[] = []): KnowledgePoint {
+    return {
+      id,
+      subject: 'math',
+      unit: 'M1',
+      unitName: '测试单元',
+      name: id,
+      grade,
+      order,
+      prerequisites: pre,
+      itemTypes: ['input_number'],
+      difficulty: 1,
+      isKeyNode: false,
+      targetMastery: 0.85,
+      estimatedItems: 20,
+      misconceptions: [],
+      collectionCardId: `card-${id}`,
+    }
+  }
+
+  // order 取真实分区值，让「G2 大于 G1」这件事和线上完全一致
+  const G1 = ORDER_BASE.math.G1
+  const G2 = ORDER_BASE.math.G2
+
+  const kpG1 = kpAt('T1.1', '1A', G1 + 1)
+  const kpG1Next = kpAt('T1.2', '1A', G1 + 2)
+  /** 二年级内容，前置在一年级 —— 跨年级前置是合法且必要的 */
+  const kpG2 = kpAt('T2.1', '2A', G2 + 1, ['T1.1'])
+  const kpG2Next = kpAt('T2.2', '2A', G2 + 2)
+  const points = [kpG1, kpG1Next, kpG2, kpG2Next]
+
+  function m(kp: KnowledgePoint, over: Partial<Mastery> = {}): Mastery {
+    return { ...createMastery(`m-${kp.id}`, 'p1', kp, NOW), ...over }
+  }
+
+  function planWith(entries: Mastery[], over: Partial<ScheduleInput> = {}) {
+    return selectNextItems({
+      profileId: 'p1',
+      mode: 'daily',
+      count: 12,
+      masteryMap: new Map(entries.map((e) => [e.kpId, e])),
+      knowledgePoints: points,
+      now: NOW,
+      ...over,
+    })
+  }
+
+  it('新内容只从当前年级开，不越级取更高年级', () => {
+    const plan = planWith(
+      [m(kpG1Next, { state: 'available' }), m(kpG2Next, { state: 'available' })],
+      { gradeLevel: 'G1' },
+    )
+    const kps = new Set(plan.map((i) => i.kpId))
+
+    expect(kps.has('T1.2'), '当前年级的新内容应该开').toBe(true)
+    expect(kps.has('T2.2'), '不该跳到下一个年级').toBe(false)
+  })
+
+  it('不传 gradeLevel 时不做任何年级限制', () => {
+    const plan = planWith([
+      m(kpG1Next, { state: 'available' }),
+      m(kpG2Next, { state: 'available' }),
+    ])
+    expect(new Set(plan.map((i) => i.kpId)).has('T2.2')).toBe(true)
+  })
+
+  it('⭐⭐ 前置回退能跨年级往下 —— 挡住它等于废掉诊断能力', () => {
+    // 二年级内容一直错，真正的问题在一年级的地基上。
+    // 这正是「两位数乘法一直错，其实是乘法口诀没记牢」的模型。
+    const entries = [
+      m(kpG2, { state: 'learning', masteryScore: 0.4, totalAttempts: 10 }),
+      m(kpG1, { state: 'learning', masteryScore: 0.3, totalAttempts: 10 }),
+    ]
+    const plan = planWith(entries, { gradeLevel: 'G2' })
+
+    expect(
+      plan.some((i) => i.kpId === 'T1.1' && i.source === 'remedial'),
+      '在二年级答题区也必须能退回一年级的薄弱前置',
+    ).toBe(true)
+  })
+
+  it('复习池跨年级：低年级到期的内容照常复习', () => {
+    const entries = [
+      m(kpG1, {
+        state: 'mastered',
+        masteryScore: 0.8,
+        totalAttempts: 10,
+        dueAt: addDays(NOW, -3),
+      }),
+      m(kpG2Next, { state: 'learning', masteryScore: 0.7, totalAttempts: 10 }),
+    ]
+    const plan = planWith(entries, { gradeLevel: 'G2' })
+
+    expect(plan.some((i) => i.kpId === 'T1.1' && i.source === 'review')).toBe(true)
+  })
+
+  it('巩固池跨年级：低年级学会的内容仍可用来暖场', () => {
+    const entries = [
+      m(kpG1, {
+        state: 'mastered',
+        masteryScore: 0.9,
+        totalAttempts: 15,
+        dueAt: addDays(NOW, 20),
+      }),
+      m(kpG2Next, { state: 'learning', masteryScore: 0.7, totalAttempts: 10 }),
+    ]
+    const plan = planWith(entries, { gradeLevel: 'G2' })
+
+    expect(plan[0]!.kpId, '首题暖场应能取低年级已学会的内容').toBe('T1.1')
+    expect(plan[0]!.source).toBe('confidence')
+  })
+
+  it('当前年级没有新内容时，回头补低年级的遗漏', () => {
+    // frontier 落在 G2、G2 已无 available，此时 T1.2 这个遗漏应该补上
+    const entries = [
+      m(kpG2Next, {
+        state: 'mastered',
+        masteryScore: 0.8,
+        totalAttempts: 10,
+        dueAt: addDays(NOW, 20),
+      }),
+      m(kpG1Next, { state: 'available' }),
+    ]
+    const plan = planWith(entries, { gradeLevel: 'G2' })
+
+    expect(
+      plan.some((i) => i.kpId === 'T1.2'),
+      '天花板只挡超前；前沿之后没内容时，补漏不受年级限制',
+    ).toBe(true)
   })
 })

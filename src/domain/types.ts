@@ -37,19 +37,43 @@ export type Uuid = string
 export type Subject = 'math' | 'pinyin' | 'english'
 
 /** 学期。`1A` = 一年级上学期，`1B` = 一年级下学期。 */
-export type Grade = '1A' | '1B'
+export type Grade =
+  | '1A'
+  | '1B'
+  | '2A'
+  | '2B'
+  | '3A'
+  | '3B'
+  | '4A'
+  | '4B'
+  | '5A'
+  | '5B'
+  | '6A'
+  | '6B'
 
 /**
- * 年级。宠物按「科目 × 年级」划分——每升一个年级换一批新宠物，
+ * 年级 —— **内容的分区键**。
+ *
+ * 一年级和三年级不是同一批知识点的难易差异，是两批不同的知识点。
+ * 宠物同样按「科目 × 年级」划分：每升一个年级换一批新伙伴，
  * 让每学年有明确的终点和新的期待。
+ *
+ * ⚠️ 年级是「**新内容的天花板**」，不是「内容的围墙」——
+ * 开新知识点只从当前年级取，但复习、巩固、前置回退一律允许跨年级往下。
+ * 挡住回退会让 `findWeakestPrerequisite()` 失效，那是本项目诊断能力的落点。
+ * 见 design/08-年级分区与内容扩展.md §1.1。
  */
 export type GradeLevel = 'G1' | 'G2' | 'G3' | 'G4' | 'G5' | 'G6'
+
+/** 全部年级，按学段顺序。遍历年级时用它，加年级只改这一处。 */
+export const GRADE_LEVELS: readonly GradeLevel[] = ['G1', 'G2', 'G3', 'G4', 'G5', 'G6']
 
 /**
  * 从学期推导年级。`'1A'` / `'1B'` 都属于 `'G1'`。
  *
  * @example
  * gradeLevelOf('1B')   // 'G1'
+ * gradeLevelOf('3A')   // 'G3'
  */
 export function gradeLevelOf(grade: Grade): GradeLevel {
   return `G${grade.charAt(0)}` as GradeLevel
@@ -505,6 +529,24 @@ export interface Attempt {
   ttsReplayCount: number
   /** 是否为错题订正。⭐ 订正也给积分，否则孩子会回避错题 */
   isRetry: boolean
+  /**
+   * 这次作答来自哪。**缺失即视为 `'practice'`**（本字段之前的旧数据）。
+   *
+   * - `practice` —— 日常答题。题目由生成器产出，每个错误选项都带 `misconceptionTag`，
+   *   正常进 `misconceptionCounts`
+   * - `quiz` —— 单元测评。题目来自外部题库，**没有 `misconceptionTag`**
+   *
+   * ⛔ **`quiz` 的作答只计对错，绝不进 `misconceptionCounts`。**
+   * 题库的错误选项是命题人随手凑的，不承载任何诊断信息；混进误区统计
+   * 会稀释定向补救的触发阈值——补救该在孩子错 3 次 `bd_confusion` 时触发，
+   * 而不是被一堆无标签作答冲淡到永远不触发。
+   *
+   * ⚠️ 可选字段且不建索引，因此 Dexie 的 `stores()` 定义不用动，
+   * 也**不需要递增 SCHEMA_VERSION**。理由同 {@link Profile.aliases}。
+   *
+   * @see design/08-年级分区与内容扩展.md §2.5 · §9
+   */
+  source?: 'practice' | 'quiz'
   createdAt: IsoDateTime
   localDate: LocalDate
 }
@@ -1200,6 +1242,17 @@ export interface ScheduleInput {
   profileId: Uuid
   mode: SessionMode
   subject?: Subject
+  /**
+   * 这次要学哪个年级。省略则不限年级。
+   *
+   * ⚠️ **它只挡「新开的知识点」**——复习、巩固、补救、前置回退一律不受它影响。
+   * 三年级的「两位数乘法」前置是二年级的「乘法口诀」，挡住往下的路
+   * 会让 `findWeakestPrerequisite()` 失效，而回退是本项目诊断能力的落点。
+   *
+   * 换句话说：年级天花板**只挡超前，不挡补漏**。
+   * 见 {@link GradeLevel} 与 design/08-年级分区与内容扩展.md §1.1。
+   */
+  gradeLevel?: GradeLevel
   /** 本段题量，默认 25 */
   count: number
   masteryMap: Map<string, Mastery>

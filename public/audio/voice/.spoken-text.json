@@ -4317,5 +4317,13 @@
  "poem.sujiandejiangMeaning": {
   "text": "把小船停到烟雾蒙蒙的小沙洲边，天黑下来，离家的人心里又添了一点愁。旷野上，天空显得比树还低；江水清清的，水里的月亮好像离人特别近。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "phrase.thenCame": {
+  "text": "又来了",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.ateUp": {
+  "text": "吃掉了",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

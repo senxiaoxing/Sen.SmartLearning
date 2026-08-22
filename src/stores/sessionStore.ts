@@ -26,6 +26,7 @@ import { answerParts } from '@/domain/speech'
 import { nowIso, todayLocal } from '@/domain/time'
 import { newId } from '@/platform/newId'
 import { usePetStore } from '@/stores/petStore'
+import { useProfileStore } from '@/stores/profileStore'
 import {
   gradeLevelOf,
   type Attempt,
@@ -35,6 +36,15 @@ import {
   type Subject,
   type Uuid,
 } from '@/domain/types'
+
+/**
+ * 她**在读几年级**（档案事实）。唯一真相在 `profileStore`。
+ *
+ * ⭐ 宠物结算一律用它，**不用 `contentGradeLevel`**：
+ * 三年级的孩子切回一年级复习几道题，经验该给她正在养的三年级伙伴，
+ * 而不该让往届的团团重新开始长——「往届不再成长」是 design/08 §5.2 的红线。
+ */
+const profileGradeLevel = (): GradeLevel => gradeLevelOf(useProfileStore.getState().grade)
 
 /**
  * 一轮的题量。
@@ -95,8 +105,20 @@ interface SessionState {
   isRetrySession: boolean
   /** 本轮科目，结算经验时决定加给哪只宠物 */
   subject: Subject
-  /** 当前年级。宠物按「科目 × 年级」划分，结算时需要它定位 */
-  gradeLevel: GradeLevel
+  /**
+   * ⭐ 这次要做**哪个年级**的题。`null` 表示跟随档案年级（`profileStore.grade`）。
+   *
+   * ⚠️ 与「她在读几年级」是两回事：三年级的孩子可以切回一年级复习，
+   * 那时 `contentGradeLevel` 是 `'G1'`，而档案年级仍然是 `'G3'`。
+   *
+   * ⛔ **它不参与宠物结算**。经验永远算给档案年级的那批伙伴——
+   * 否则她切回一年级做几道题，往届的团团就又开始长了，
+   * 而「往届不再成长」是 design/08 §5.2 的红线。
+   *
+   * 做成可空而不是存一个具体年级：家长改了档案年级之后它自动跟上，
+   * 不需要两个 store 互相同步。
+   */
+  contentGradeLevel: GradeLevel | null
   /** 本轮新掌握的知识点数，用于经验结算 */
   masteredCount: number
 
@@ -117,6 +139,12 @@ interface SessionState {
   ttsReplayCount: number
 
   init: () => Promise<void>
+  /**
+   * 切到某个年级的答题区。传 `null` 回到「跟随档案年级」。
+   *
+   * 只影响出题范围，不影响宠物——理由见 {@link contentGradeLevel}。
+   */
+  setContentGrade: (gradeLevel: GradeLevel | null) => void
   start: (mode?: SessionMode, subject?: Subject) => Promise<void>
   /**
    * 由排期计划启动一段会话。`start` 与 `startWrongBookRetry` 的公共部分，
@@ -158,7 +186,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   wrongItems: [],
   isRetrySession: false,
   subject: 'math',
-  gradeLevel: 'G1',
+  contentGradeLevel: null,
   masteredCount: 0,
   pointsEarned: 0,
   balance: 0,
@@ -168,13 +196,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   /** 首次进入 App 时初始化数据库 */
   init: async () => {
     const profileId = await bootstrap()
-    const profile = await db.profiles.get(profileId)
-    set({
-      profileId,
-      gradeLevel: gradeLevelOf(profile?.grade ?? '1A'),
-      balance: await getBalance(profileId),
-    })
+    set({ profileId, balance: await getBalance(profileId) })
   },
+
+  setContentGrade: (gradeLevel) => set({ contentGradeLevel: gradeLevel }),
 
   /** 开始一段学习：排期 → 生成题目 → 建会话记录 */
   start: async (mode = 'daily', subject = 'math') => {
@@ -188,6 +213,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       profileId,
       mode,
       subject,
+      // 新内容只从这个年级开；复习与回退仍然跨年级通行（见 ScheduleInput.gradeLevel）
+      gradeLevel: get().contentGradeLevel ?? profileGradeLevel(),
       count: DEFAULT_ITEM_COUNT,
       masteryMap,
       knowledgePoints: KNOWLEDGE_POINTS,
@@ -405,7 +432,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     if (state.profileId !== null && !state.isRetrySession && state.answeredCount > 0) {
       await usePetStore
         .getState()
-        .settleSession(state.profileId, state.subject, state.gradeLevel, {
+        .settleSession(state.profileId, state.subject, profileGradeLevel(), {
           correct: state.correctCount,
           retryCorrect: 0,
           masteredCount: state.masteredCount,
@@ -414,7 +441,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       // 订正轮只按「订正答对」计经验，额度低于首次答对
       await usePetStore
         .getState()
-        .settleSession(state.profileId, state.subject, state.gradeLevel, {
+        .settleSession(state.profileId, state.subject, profileGradeLevel(), {
           correct: 0,
           retryCorrect: state.correctCount,
           masteredCount: 0,

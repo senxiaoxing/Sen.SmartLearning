@@ -115,6 +115,11 @@ const PHRASES: VoiceManifest = {
   'phrase.altogetherHowMany': '一共有几个',
   'phrase.originallyHas': '原来有',
   'phrase.tookAway': '拿走了',
+  // ⭐ 只为换一种说法而加的动词，见 data/seed/storyFrames.ts：
+  //    骨架不动、只换动词，是加句式最省语音的做法
+  'phrase.thenCame': '又来了',
+  /** ⚠️ 只配 `edible` 的物品——「吃掉了 3 颗星星」不成话 */
+  'phrase.ateUp': '吃掉了',
   'phrase.howManyLeft': '还剩几个',
   'phrase.topMoreHowMany': '上面比下面多几个',
   'phrase.questionGroupHas': '问号那一组有几个',

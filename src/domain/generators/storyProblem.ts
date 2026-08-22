@@ -18,11 +18,11 @@
  * 孩子选了它就精确命中，补救是回去练「变多还是变少」的判断。
  */
 
-import { COUNTABLES } from '@/domain/generators/countables'
+import { COUNTABLES, type Countable } from '@/domain/generators/countables'
 import { buildNumericOptions } from '@/domain/generators/distractors'
 import { readEnum, readRange } from '@/domain/generators/params'
 import { randomInt, randomPick } from '@/domain/generators/rng'
-import { num } from '@/domain/speech'
+import { fillFrame, framesFor, type StoryFrame } from '@/domain/storyFrame'
 import type { Generator, ItemVisual } from '@/domain/types'
 
 /**
@@ -31,17 +31,21 @@ import type { Generator, ItemVisual } from '@/domain/types'
  * @param ctx.params.mode - `'add'` 合并 | `'remove'` 去掉 | `'compare'` 比多少
  * @param ctx.params.story - 题干是否用一句话情境（M9）而非直白提问（M4）
  * @param ctx.params.totalRange - 数量上限区间
+ * @param ctx.params.frames - 句式表（`STORY_FRAMES`）。⚠️ 由 `itemTemplates` 注入，
+ *                            不在这里 import——domain 不依赖 data 是分层铁律
  *
  * @example
- * storyProblem({ kpId: 'M9.2', difficulty: 2, params: { mode: 'remove', story: true }, rng })
- * // 5 只小鸟飞走 2 只：3 正确 · 7 wrong_operation（做成了加法）· 4 off_by_one
+ * storyProblem({ kpId: 'M9.2', difficulty: 2, params: { mode: 'remove', story: true, frames }, rng })
+ * // 5 个饼干吃掉 2 个：3 正确 · 7 wrong_operation（做成了加法）· 4 off_by_one
  */
 export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
   const mode = readEnum(params, 'mode', ['add', 'remove', 'compare'] as const, 'add')
   const story = params['story'] === true
   const [lo, hi] = readRange(params, 'totalRange', [3, 9])
 
-  const thing = randomPick(rng, COUNTABLES)
+  // ⭐ 先挑说法，再按说法挑物品——顺序反过来会撞出「吃掉了 3 颗星星」
+  const frame = randomPick(rng, framesFor(readFrames(params), mode, story))
+  const thing = randomPick(rng, thingsFor(frame))
 
   /** 三个分支的配图只有 groups 与 operation 不同，抽出来省掉重复 */
   const scene = (groups: number[], operation: 'add' | 'remove' | 'compare'): ItemVisual => ({
@@ -62,26 +66,7 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
       kpId,
       type: 'choice_image',
       difficulty,
-      stem: story
-        ? {
-            text: `左边有 ${a} 个${thing.name}，右边有 ${b} 个，一共有几个？`,
-            ttsText: `左边有 ${a} 个${thing.name}，右边有 ${b} 个，一共有几个`,
-            ttsParts: [
-              'phrase.leftHas',
-              ...num(a),
-              'phrase.unitGe',
-              thing.clipKey,
-              'phrase.rightHas',
-              ...num(b),
-              'phrase.unitGe',
-              'phrase.altogetherHowMany',
-            ],
-          }
-        : {
-            text: `一共有几个${thing.name}？`,
-            ttsText: `一共有几个${thing.name}`,
-            ttsParts: ['phrase.altogetherHowMany', thing.clipKey],
-          },
+      stem: fillFrame(frame, { a, b, thing }),
       options: buildNumericOptions(
         answer,
         [
@@ -107,26 +92,7 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
       kpId,
       type: 'choice_image',
       difficulty,
-      stem: story
-        ? {
-            text: `原来有 ${total} 个${thing.name}，拿走了 ${taken} 个，还剩几个？`,
-            ttsText: `原来有 ${total} 个${thing.name}，拿走了 ${taken} 个，还剩几个`,
-            ttsParts: [
-              'phrase.originallyHas',
-              ...num(total),
-              'phrase.unitGe',
-              thing.clipKey,
-              'phrase.tookAway',
-              ...num(taken),
-              'phrase.unitGe',
-              'phrase.howManyLeft',
-            ],
-          }
-        : {
-            text: `还剩几个${thing.name}？`,
-            ttsText: `还剩几个${thing.name}`,
-            ttsParts: ['phrase.howManyLeft', thing.clipKey],
-          },
+      stem: fillFrame(frame, { a: total, b: taken, thing }),
       options: buildNumericOptions(
         answer,
         [
@@ -153,11 +119,7 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
     kpId,
     type: 'choice_image',
     difficulty,
-    stem: {
-      text: `上面比下面多几个${thing.name}？`,
-      ttsText: `上面比下面多几个${thing.name}`,
-      ttsParts: ['phrase.topMoreHowMany', thing.clipKey],
-    },
+    stem: fillFrame(frame, { a: more, b: less, thing }),
     options: buildNumericOptions(
       answer,
       [
@@ -172,4 +134,35 @@ export const storyProblem: Generator = ({ kpId, difficulty, params, rng }) => {
     answer: String(answer),
     visual: scene([more, less], 'compare'),
   }
+}
+
+/**
+ * 从参数里读出句式表。
+ *
+ * @throws 缺失或为空时抛错——静默回落会让题干变成空字符串，
+ *         而孩子看到的是一道**没有题目的题**，比直接失败糟糕得多
+ */
+function readFrames(params: Record<string, unknown>): readonly StoryFrame[] {
+  const raw = params['frames']
+  if (!Array.isArray(raw) || raw.length === 0) {
+    throw new Error('生成器参数 frames 应为非空句式数组，检查 data/seed/itemTemplates.ts')
+  }
+  return raw as StoryFrame[]
+}
+
+/**
+ * 这个句式能配哪些物品。
+ *
+ * @throws 一个都配不上时抛错——那是 `thingKinds` 写了个 `COUNTABLES` 里没有的类别，
+ *         属于 seed 配置错误，必须显式失败
+ */
+function thingsFor(frame: StoryFrame): readonly Countable[] {
+  if (frame.thingKinds === undefined) return COUNTABLES
+
+  const kinds = frame.thingKinds
+  const matched = COUNTABLES.filter((c) => kinds.includes(c.kind))
+  if (matched.length === 0) {
+    throw new Error(`句式「${frame.text}」限定的 thingKinds 在 COUNTABLES 里一个都没有`)
+  }
+  return matched
 }

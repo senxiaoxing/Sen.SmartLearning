@@ -42,8 +42,13 @@ export const SCHEMA_VERSION = 4
 /**
  * 内置静态内容版本（知识点、题库、成就定义）。
  * 与 `SCHEMA_VERSION` 独立：内容更新不需要改数据库结构。
+ *
+ * ⚠️ 改了任何静态内容表都要递增，否则 `syncStaticContent()` 会直接 return，
+ * 新内容根本写不进库——表现是「改了没反应」，很难查。
+ *
+ * - v2：知识点 order 改为按 `(科目 × 年级)` 分区（`data/seed/gradeOrder.ts`）
  */
-export const CONTENT_VERSION = 1
+export const CONTENT_VERSION = 2
 
 /**
  * 构建期注入的 App 版本号，取自 `package.json` 的 `version`。

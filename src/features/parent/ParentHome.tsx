@@ -12,6 +12,7 @@ import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
 import { BirthdaySetting } from '@/features/parent/BirthdaySetting'
+import { GradeSetting } from '@/features/parent/GradeSetting'
 import { MessageSetting } from '@/features/parent/MessageSetting'
 import { NicknameSetting } from '@/features/parent/NicknameSetting'
 import { SkinPicker } from '@/features/parent/SkinPicker'
@@ -97,6 +98,7 @@ export function ParentHome() {
             版本都是旧的，查语音查的也是旧那版的语音 */}
         <MessageSetting />
         <NicknameSetting />
+        <GradeSetting />
         <BirthdaySetting />
         <SkinPicker />
         <VersionCheck />

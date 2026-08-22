@@ -1,55 +1,25 @@
 /**
- * @file 宠物成长曲线 —— 经验、等级与形态的换算
+ * @file 宠物成长换算 —— 由经验推导等级、形态与进度
  * @layer domain  纯函数
  * @see design/06-宠物系统.md
+ * @see src/domain/pet/levelCurves.ts  各年级的曲线表与两端约束
  *
- * 曲线设计的核心是**前面极快**：第一轮做完就必定升级，
- * 约四轮见到破壳。孩子在第一次使用时就要看到「我让它变了」，
- * 否则养成系统对她只是个不动的图标。
+ * ⚠️ 等级与形态**一律由 exp 推导，不存冗余的 level 字段**（宠物红线第 5 条）——
+ * 存了迟早会和 exp 不一致，而不一致的表现是「宠物等级莫名其妙变了」，
+ * 对孩子来说非常伤。
  *
- * 后期逐渐拉长，但因为三个科目各有一只宠物，
- * 总有一只接近升级——这是三宠物设计相对单宠物的核心优势。
+ * ⭐ 换算全部需要 `gradeLevel`：曲线是一个年级一条（见 levelCurves.ts）。
+ * 参数做成必填而不是默认 G1，是因为曲线用错在 UI 上完全看不出来——
+ * 六年级套一年级曲线只会表现为「学到半学期就满级了」。
  */
 
-/** 最高等级 */
-export const MAX_LEVEL = 12
+import { curveOf, MAX_LEVEL, STAGE_COUNT } from '@/domain/pet/levelCurves'
+import type { GradeLevel } from '@/domain/types'
 
 /** 每个形态覆盖的等级数。6 个形态 × 2 级 = 12 级 */
 const LEVELS_PER_STAGE = 2
 
-/** 形态总数 */
-export const STAGE_COUNT = 6
-
-/**
- * 升到第 N 级所需的**累计**经验。索引即等级（`LEVEL_THRESHOLDS[2]` 是升到 2 级所需）。
- *
- * 曲线要同时满足两个目标：
- *
- * **① 开头极快** —— 一轮 10 题全对约 25 exp，
- * 因此第一轮必到 2 级、第二轮就能看到第一次形态变化（3 级）。
- * 孩子首次使用若看不到变化，养成系统对她就只是个不动的图标。
- *
- * **② 满级 ≈ 学完一个年级** —— 一年级数学 47 个知识点、
- * 平均每点 30 题，合计约 1400 题 ≈ 140 轮。满级定在 3000 exp
- * （约 120 轮全对）与之匹配，学完一年正好把宠物养到最终形态。
- */
-export const LEVEL_THRESHOLDS: readonly number[] = [
-  0, // Lv1 起始
-  0, // Lv1   🥚 蛋
-  15, // Lv2  ⭐ 第一轮就能到
-  45, // Lv3  🐣 破壳，形态变化（第二轮）
-  100, // Lv4
-  190, // Lv5 🐧 幼体
-  320, // Lv6
-  500, // Lv7 🧣 学徒
-  750, // Lv8
-  1080, // Lv9 🎒 高手
-  1500, // Lv10
-  2100, // Lv11 👑 最终形态
-  3000, // Lv12 满级 ≈ 学完一个年级
-]
-
-/** 各类学习行为的经验奖励 */
+/** 各类学习行为的经验奖励。与年级无关——同样的努力得同样的经验 */
 export const EXP_REWARDS = {
   /** 答对一题 */
   correct: 2,
@@ -65,16 +35,18 @@ export const EXP_REWARDS = {
  * 由累计经验算出等级。
  *
  * @param exp - 累计经验，只增不减
+ * @param gradeLevel - 宠物所属年级，决定用哪条曲线
  * @returns 1 ~ {@link MAX_LEVEL}
  *
  * @example
- * levelFromExp(0)    // 1
- * levelFromExp(20)   // 2  —— 一轮之后
- * levelFromExp(100)  // 4  —— 破壳
+ * levelFromExp(0, 'G1')    // 1
+ * levelFromExp(20, 'G1')   // 2  —— 一轮之后
+ * levelFromExp(100, 'G1')  // 4  —— 破壳
  */
-export function levelFromExp(exp: number): number {
+export function levelFromExp(exp: number, gradeLevel: GradeLevel): number {
+  const curve = curveOf(gradeLevel)
   for (let level = MAX_LEVEL; level >= 1; level--) {
-    if (exp >= (LEVEL_THRESHOLDS[level] ?? 0)) return level
+    if (exp >= (curve[level] ?? 0)) return level
   }
   return 1
 }
@@ -88,6 +60,9 @@ export type StageIndex = 0 | 1 | 2 | 3 | 4 | 5
  * **每 2 级一变**：形态是视觉上的大变化，等级是形态内的小进阶。
  * 两级一变让孩子做完两三轮就能看到宠物真的不一样了，
  * 而不是练很久还停在同一个样子。
+ *
+ * 不需要 `gradeLevel`：形态与等级的对应关系所有年级一致，
+ * 随年级变的是「练多少到几级」，不是「几级长什么样」。
  *
  * @example
  * stageFromLevel(1)   // 0  蛋
@@ -115,12 +90,16 @@ export interface LevelProgress {
 /**
  * 计算完整的等级进度，供 UI 直接使用。
  *
+ * @param exp - 累计经验
+ * @param gradeLevel - 宠物所属年级
+ *
  * @example
- * levelProgress(50)
- * // { level: 3, stage: 0, expInLevel: 10, expToNextLevel: 30, ratio: 0.25, isMax: false }
+ * levelProgress(50, 'G1')
+ * // { level: 3, stage: 1, expInLevel: 5, expToNextLevel: 50, ratio: 0.09, isMax: false }
  */
-export function levelProgress(exp: number): LevelProgress {
-  const level = levelFromExp(exp)
+export function levelProgress(exp: number, gradeLevel: GradeLevel): LevelProgress {
+  const curve = curveOf(gradeLevel)
+  const level = levelFromExp(exp, gradeLevel)
   const stage = stageFromLevel(level)
   const isMax = level >= MAX_LEVEL
 
@@ -128,8 +107,8 @@ export function levelProgress(exp: number): LevelProgress {
     return { level, stage, expInLevel: 0, expToNextLevel: 0, ratio: 1, isMax: true }
   }
 
-  const current = LEVEL_THRESHOLDS[level] ?? 0
-  const next = LEVEL_THRESHOLDS[level + 1] ?? current + 1
+  const current = curve[level] ?? 0
+  const next = curve[level + 1] ?? current + 1
   const span = Math.max(1, next - current)
   const expInLevel = exp - current
 
@@ -147,15 +126,17 @@ export function levelProgress(exp: number): LevelProgress {
  * 增加经验后的变化结果，用于判断要不要播升级动画。
  *
  * @param currentExp - 当前累计经验
- * @param gained - 本次获得
+ * @param gained - 本次获得。负数被忽略（宠物红线第 5 条：经验只增不减）
+ * @param gradeLevel - 宠物所属年级
  *
  * @example
- * applyExpGain(10, 20)
- * // { exp: 30, leveledUp: true, fromLevel: 1, toLevel: 2, stageChanged: false }
+ * applyExpGain(10, 20, 'G1')
+ * // { exp: 30, leveledUp: true, stageChanged: false, fromLevel: 1, toLevel: 2 }
  */
 export function applyExpGain(
   currentExp: number,
   gained: number,
+  gradeLevel: GradeLevel,
 ): {
   exp: number
   leveledUp: boolean
@@ -164,8 +145,8 @@ export function applyExpGain(
   toLevel: number
 } {
   const exp = Math.max(0, currentExp + Math.max(0, gained))
-  const fromLevel = levelFromExp(currentExp)
-  const toLevel = levelFromExp(exp)
+  const fromLevel = levelFromExp(currentExp, gradeLevel)
+  const toLevel = levelFromExp(exp, gradeLevel)
 
   return {
     exp,

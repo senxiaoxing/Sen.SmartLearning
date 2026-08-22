@@ -25,6 +25,7 @@ import { REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
 import { ROOM_ITEMS, TREAT_ITEMS } from '@/data/seed/shopItems'
 import { CELEBRATION_TAIL_CLIPS } from '@/domain/economy/celebrationLine'
 import { utter, type Utterance } from '@/domain/speech'
+import { gradeLevelOf } from '@/domain/types'
 import { BuyCelebration } from '@/features/shop/BuyCelebration'
 import { BuyConfirm } from '@/features/shop/BuyConfirm'
 import { RealRewardSections } from '@/features/shop/RealRewardSections'
@@ -32,6 +33,7 @@ import { ShopItemCard } from '@/features/shop/ShopItemCard'
 import { ShopSection } from '@/features/shop/ShopSection'
 import { prefetchClips, say } from '@/platform/speech'
 import { usePetStore } from '@/stores/petStore'
+import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { useShopStore } from '@/stores/shopStore'
 import type { BuyRequest } from '@/data/repositories/purchaseRepo'
@@ -63,7 +65,8 @@ const SHOP_CLIPS: readonly string[] = [
 export function ShopPage() {
   const navigate = useNavigate()
   const profileId = useSessionStore((s) => s.profileId)
-  const gradeLevel = useSessionStore((s) => s.gradeLevel)
+  // 零食是给正在养的那批吃的
+  const gradeLevel = gradeLevelOf(useProfileStore((s) => s.grade))
   const balance = useSessionStore((s) => s.balance)
   const setBalance = useSessionStore((s) => s.setBalance)
   const pets = usePetStore((s) => s.pets)

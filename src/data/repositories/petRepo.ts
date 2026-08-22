@@ -10,7 +10,14 @@ import { petDefinitionOf, petsOfGrade } from '@/data/seed/pets'
 import { applyExpGain } from '@/domain/pet/growth'
 import { nowIso } from '@/domain/time'
 import { newId } from '@/platform/newId'
-import type { GradeLevel, IsoDateTime, PetState, Subject, Uuid } from '@/domain/types'
+import {
+  GRADE_LEVELS,
+  type GradeLevel,
+  type IsoDateTime,
+  type PetState,
+  type Subject,
+  type Uuid,
+} from '@/domain/types'
 
 /**
  * 确保某年级的三只宠物都已创建。
@@ -65,6 +72,22 @@ export async function loadPets(
   return pets.sort((a, b) => (order.get(a.subject) ?? 9) - (order.get(b.subject) ?? 9))
 }
 
+/**
+ * 她**养过**哪些年级的伙伴，按学段顺序。
+ *
+ * ⚠️ 只列真的有宠物记录的年级，不列未来年级——
+ * 那里空无一物，点进去只有失望。这和「未开放科目的宠物在睡觉」是同一条原则：
+ * 给出的预期必须是诚实的。
+ *
+ * @example
+ * await loadOwnedGrades(profileId)   // ['G1'] —— 刚开始用；升到二年级后是 ['G1','G2']
+ */
+export async function loadOwnedGrades(profileId: Uuid): Promise<GradeLevel[]> {
+  const pets = await db.petState.where('profileId').equals(profileId).toArray()
+  const owned = new Set(pets.map((p) => p.gradeLevel))
+  return GRADE_LEVELS.filter((g) => owned.has(g))
+}
+
 export async function loadPet(
   profileId: Uuid,
   subject: Subject,
@@ -101,7 +124,9 @@ export async function addExp(
   const pet = await loadPet(profileId, subject, gradeLevel)
   if (pet === undefined) return undefined
 
-  const result = applyExpGain(pet.exp, gained)
+  // 曲线一个年级一条：用 pet 自己的年级，不是调用方传进来的那个
+  // （往届宠物不再成长，但读它的进度时也必须用它当年那条曲线）
+  const result = applyExpGain(pet.exp, gained, pet.gradeLevel)
   const updated: PetState = { ...pet, exp: result.exp, lastSeenAt: now, updatedAt: now }
   await db.petState.put(updated)
 

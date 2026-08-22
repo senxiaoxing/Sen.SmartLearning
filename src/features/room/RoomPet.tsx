@@ -23,7 +23,7 @@
 import { motion, useAnimationControls, useMotionValue } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { PetAvatar } from '@/components/PetAvatar'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { levelProgress } from '@/domain/pet/growth'
 import { ROOM_SPOT_BOUNDS, type RoomSpot } from '@/domain/pet/roomSpot'
 import type { ElementSize } from '@/platform/useElementSize'
@@ -142,10 +142,10 @@ export function RoomPet({ pet, spot, stage, festive, bubble, onTap, onMoved }: R
         <motion.div animate={hop} className="origin-bottom">
           <PetAvatar
             def={def}
-            stageIndex={levelProgress(pet.exp).stage}
+            stageIndex={levelProgress(pet.exp, pet.gradeLevel).stage}
             size="md"
             // 未开放科目的伙伴在睡觉，不是没养好 —— 宠物红线第 4 条
-            asleep={!isSubjectOpened(pet.subject)}
+            asleep={!isOpened(pet.subject, pet.gradeLevel)}
             animated
             festive={festive}
           />

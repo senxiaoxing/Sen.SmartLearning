@@ -117,7 +117,7 @@ const SPECS: KpSpec[] = [
 /** 英语知识点，共 30 个。`order` 占用 201~230。 */
 export const englishKnowledgePoints: KnowledgePoint[] = buildKnowledgePoints(
   'english',
+  'G1',
   UNIT_NAMES,
   SPECS,
-  201,
 )

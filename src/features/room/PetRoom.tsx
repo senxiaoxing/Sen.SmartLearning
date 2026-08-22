@@ -34,6 +34,7 @@ import { ownedRoomItemIds } from '@/data/repositories/purchaseQueries'
 import { ROOM_ITEMS } from '@/data/seed/shopItems'
 import { isBirthday } from '@/domain/encourage/birthdayLine'
 import { todayLocal } from '@/domain/time'
+import { gradeLevelOf } from '@/domain/types'
 import { RoomPets } from '@/features/room/RoomPets'
 import { usePetStore } from '@/stores/petStore'
 import { useProfileStore } from '@/stores/profileStore'
@@ -42,7 +43,8 @@ import { useSessionStore } from '@/stores/sessionStore'
 export function PetRoom() {
   const navigate = useNavigate()
   const profileId = useSessionStore((s) => s.profileId)
-  const gradeLevel = useSessionStore((s) => s.gradeLevel)
+  // 小屋里住的是正在养的那批伙伴
+  const gradeLevel = gradeLevelOf(useProfileStore((s) => s.grade))
   const balance = useSessionStore((s) => s.balance)
   const birthDate = useProfileStore((s) => s.birthDate)
   const pets = usePetStore((s) => s.pets)

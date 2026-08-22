@@ -10,7 +10,14 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { bootstrap } from '@/data/bootstrap'
 import { db } from '@/data/db'
-import { addExp, loadPets, movePetInRoom, renamePet } from '@/data/repositories/petRepo'
+import {
+  addExp,
+  ensurePets,
+  loadOwnedGrades,
+  loadPets,
+  movePetInRoom,
+  renamePet,
+} from '@/data/repositories/petRepo'
 import { clampRoomSpot, roomSpotOf } from '@/domain/pet/roomSpot'
 import type { PetState, Uuid } from '@/domain/types'
 
@@ -122,5 +129,37 @@ describe('从没摆过的伙伴', () => {
 
     expect(pet.roomX).toBeUndefined()
     expect(pet.roomY).toBeUndefined()
+  })
+})
+
+describe('⭐ 升年级', () => {
+  /**
+   * 养到满级的团团在升年级那天凭空消失，比任何别的改动都伤人。
+   * 这条锁住的正是「上一批伙伴留在回忆里」这件事的数据前提。
+   *
+   * @see design/08-年级分区与内容扩展.md §5.2
+   */
+  it('上一批伙伴原封不动地留着 —— 名字、经验、站位都在', async () => {
+    const profileId = await bootstrap()
+    await addExp(profileId, 'math', 'G1', 250)
+    await renamePet(profileId, 'math', 'G1', '毛毛')
+    const before = await mathPetOf(profileId)
+    await movePetInRoom(before.id, { x: 0.42, y: 0.58 })
+
+    // 升到二年级（宠物定义尚未做，因此这一步不会新建任何一只）
+    await ensurePets(profileId, 'G2')
+
+    const after = await mathPetOf(profileId)
+    expect(after.id, '还是原来那一只，不是被重建的').toBe(before.id)
+    expect(after.name).toBe('毛毛')
+    expect(after.exp).toBe(before.exp)
+    expect(after.roomX).toBe(0.42)
+  })
+
+  it('loadOwnedGrades 只列真的养过的年级，不列未来年级', async () => {
+    const profileId = await bootstrap()
+
+    // 六个年级里目前只有一年级有宠物定义，因此也只养过这一个
+    expect(await loadOwnedGrades(profileId)).toEqual(['G1'])
   })
 })

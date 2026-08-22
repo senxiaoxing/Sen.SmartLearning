@@ -12,7 +12,7 @@
  */
 
 import { PetAvatar } from '@/components/PetAvatar'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { levelProgress } from '@/domain/pet/growth'
 import type { PetState } from '@/domain/types'
 
@@ -44,10 +44,10 @@ export function HomePets({ pets, festive = false, onOpen }: HomePetsProps) {
           <PetAvatar
             key={pet.id}
             def={def}
-            stageIndex={levelProgress(pet.exp).stage}
+            stageIndex={levelProgress(pet.exp, pet.gradeLevel).stage}
             size={pet.subject === 'math' ? 'md' : 'sm'}
             // 未开放科目的伙伴在睡觉，不是没养好 —— 宠物红线第 4 条
-            asleep={!isSubjectOpened(pet.subject)}
+            asleep={!isOpened(pet.subject, pet.gradeLevel)}
             animated={false}
             festive={festive}
           />

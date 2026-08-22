@@ -15,10 +15,12 @@ import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Icon } from '@/components/Icon'
 import { PetAvatar, PetLevelBar } from '@/components/PetAvatar'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { GRADE_NAME } from '@/data/seed/gradeLabels'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { addressed } from '@/domain/encourage/addressed'
 import { pickNickname } from '@/domain/encourage/pickNickname'
-import { levelProgress, MAX_LEVEL } from '@/domain/pet/growth'
+import { levelProgress } from '@/domain/pet/growth'
+import { MAX_LEVEL } from '@/domain/pet/levelCurves'
 import { greetingMoment, pickLine } from '@/domain/pet/personality'
 import { utter } from '@/domain/speech'
 import { nowIso } from '@/domain/time'
@@ -29,6 +31,8 @@ import type { PetState } from '@/domain/types'
 
 interface PetDetailProps {
   pet: PetState
+  /** 往届伙伴：已经陪她读完那一年，不再成长。见下面的说明 */
+  archived?: boolean
   renaming: boolean
   draftName: string
   onDraftChange: (v: string) => void
@@ -41,14 +45,22 @@ interface PetDetailProps {
  * 一只伙伴的详情面板。
  *
  * @param pet - 当前选中的宠物
+ * @param archived - 往届伙伴。⛔ **不显示经验条、不显示「还差多少升级」**——
+ *                   它已经完成了，再挂一个永远走不完的进度条，
+ *                   等于告诉她「你当年没养满」。也不提供改名：
+ *                   起名是养育动作的一部分，那一程已经走完了。
+ *                   ✅ 但它仍然会说话、仍然可以点着玩——回忆里的伙伴还认得她，
+ *                   这正是「存档」和「删掉」的全部区别
  * @param renaming - 是否处于改名态。起名从预录名单里点选（PetNamePicker），
  *                   不再用键盘——预设之外的名字没有语音片段，升级播报会掉成机器音
  *
  * @example
  * <PetDetail pet={pet} renaming={false} draftName="" … />
+ * <PetDetail pet={lastYearPet} archived renaming={false} draftName="" … />
  */
 export function PetDetail({
   pet,
+  archived = false,
   renaming,
   draftName,
   onDraftChange,
@@ -60,8 +72,8 @@ export function PetDetail({
   const nicknames = useProfileStore((s) => s.nicknames)
   const [line, setLine] = useState('')
 
-  const progress = levelProgress(pet.exp)
-  const opened = def !== undefined && isSubjectOpened(pet.subject)
+  const progress = levelProgress(pet.exp, pet.gradeLevel)
+  const opened = def !== undefined && isOpened(pet.subject, pet.gradeLevel)
 
   /**
    * 见面第一句叫名字：「小恩宝，我有点想你」。
@@ -128,7 +140,13 @@ export function PetDetail({
             <span className="text-base text-ink/40">{def.species}</span>
           </div>
 
-          {opened ? (
+          {archived ? (
+            // ⛔ 往届只说陪伴，不说成绩：既不显示等级进度，也不提「最终形态」——
+            // 任何暗示「养到了第几阶」的说法，都会让没养满的那一只变成遗憾
+            <p className="max-w-xs text-center text-base text-ink/50">
+              {def.species}陪你上完了{GRADE_NAME[pet.gradeLevel]}，现在住在回忆里～
+            </p>
+          ) : opened ? (
             <>
               <div className="w-64">
                 <PetLevelBar
@@ -153,15 +171,17 @@ export function PetDetail({
             </p>
           )}
 
-          {/* ⭐ 起名是最强的情感绑定，入口要好找 */}
-          <button
-            type="button"
-            onClick={onStartRename}
-            className="flex items-center gap-2 rounded-full bg-surface px-5 py-2 text-base text-ink/60 shadow-card"
-          >
-            <Icon name="pencil" className="h-5 w-5" />
-            给它起个名字
-          </button>
+          {/* ⭐ 起名是最强的情感绑定，入口要好找。往届不给改：那一程已经走完了 */}
+          {!archived && (
+            <button
+              type="button"
+              onClick={onStartRename}
+              className="flex items-center gap-2 rounded-full bg-surface px-5 py-2 text-base text-ink/60 shadow-card"
+            >
+              <Icon name="pencil" className="h-5 w-5" />
+              给它起个名字
+            </button>
+          )}
         </div>
       )}
     </main>

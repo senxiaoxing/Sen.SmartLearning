@@ -31,7 +31,7 @@
 import { motion } from 'framer-motion'
 import { PetAvatar } from '@/components/PetAvatar'
 import { ShopItemArt } from '@/components/room/ShopItemArt'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { levelProgress } from '@/domain/pet/growth'
 import type { PetState } from '@/domain/types'
 
@@ -113,9 +113,9 @@ export function TreatFeast({ art, pets }: TreatFeastProps) {
             >
               <PetAvatar
                 def={def}
-                stageIndex={levelProgress(pet.exp).stage}
+                stageIndex={levelProgress(pet.exp, pet.gradeLevel).stage}
                 size="md"
-                asleep={!isSubjectOpened(pet.subject)}
+                asleep={!isOpened(pet.subject, pet.gradeLevel)}
                 animated={false}
               />
             </motion.span>

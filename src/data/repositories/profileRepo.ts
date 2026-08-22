@@ -21,7 +21,7 @@ import { db } from '@/data/db'
 import { toNickname } from '@/data/seed/nicknamePresets'
 import { nowIso } from '@/domain/time'
 import { NO_NICKNAME, type Nickname } from '@/domain/encourage/addressed'
-import type { ParentMessage, Uuid } from '@/domain/types'
+import type { Grade, ParentMessage, Uuid } from '@/domain/types'
 
 /**
  * 昵称长度上限。
@@ -58,6 +58,35 @@ export async function loadNicknames(profileId: Uuid): Promise<Nickname[]> {
   return [profile.name, ...(profile.aliases ?? [])]
     .map(toNickname)
     .filter((nickname) => nickname !== NO_NICKNAME)
+}
+
+/** 读孩子在读几年级。档案不存在时回落到一年级上学期 */
+export async function loadGrade(profileId: Uuid): Promise<Grade> {
+  return (await db.profiles.get(profileId))?.grade ?? '1A'
+}
+
+/**
+ * 改孩子在读几年级。
+ *
+ * ⚠️ 这是个**牵连很广**的设置：它同时决定答题区默认出哪个年级的内容、
+ * 首页养的是哪一批伙伴、以及学习成果结算给谁。
+ * 因此只放在家长区，且 ⛔ **绝不按日期自动升级**——
+ * 自动跳意味着某天她打开 App 发现一切都变了，而没有任何人跟她说过。
+ *
+ * 只负责落库；**创建新一批宠物由调用方编排**（`profileStore.setGrade`），
+ * 仓储之间互相调用会让「改个年级」这件事的副作用藏进两层调用栈里。
+ *
+ * @returns 存下的年级
+ *
+ * @example
+ * await saveGrade(profileId, '2A')   // 升二年级
+ */
+export async function saveGrade(profileId: Uuid, grade: Grade): Promise<Grade> {
+  const profile = await db.profiles.get(profileId)
+  if (profile === undefined) return '1A'
+
+  await db.profiles.put({ ...profile, grade, updatedAt: nowIso() })
+  return grade
 }
 
 /**

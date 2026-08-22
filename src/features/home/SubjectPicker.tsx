@@ -12,18 +12,27 @@
 
 import { motion } from 'framer-motion'
 import { PetAvatar } from '@/components/PetAvatar'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { petDefinitionOf } from '@/data/seed/pets'
 import { SUBJECT_LABEL } from '@/data/seed/subjects'
 import { levelProgress } from '@/domain/pet/growth'
 import type { PetState, Subject } from '@/domain/types'
 
 interface SubjectPickerProps {
+  /** 她正在养的那批伙伴（档案年级的），只作形象 */
   pets: readonly PetState[]
+  /**
+   * 这次要学的年级开放了哪些科目。
+   *
+   * ⚠️ 与 `pets` 的年级**可以不同**：三年级的孩子切回一年级答题区时，
+   * 陪她的仍然是三年级那三只伙伴（她正在养的），
+   * 但能做的科目由一年级的内容决定。宠物代表「我在养谁」，不是「我在做哪年级的题」。
+   */
+  openSubjects: readonly Subject[]
   onPick: (subject: Subject) => void
 }
 
-export function SubjectPicker({ pets, onPick }: SubjectPickerProps) {
-  const openPets = pets.filter((p) => isSubjectOpened(p.subject))
+export function SubjectPicker({ pets, openSubjects, onPick }: SubjectPickerProps) {
+  const openPets = pets.filter((p) => openSubjects.includes(p.subject))
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -44,7 +53,12 @@ export function SubjectPicker({ pets, onPick }: SubjectPickerProps) {
               // 只动 scale / y（GPU 合成属性），不碰尺寸属性
               className="flex min-h-touch min-w-touch flex-col items-center gap-2 rounded-blob bg-surface px-8 py-5 shadow-drop-surface"
             >
-              <PetAvatar def={def} stageIndex={levelProgress(pet.exp).stage} size="md" animated />
+              <PetAvatar
+                def={def}
+                stageIndex={levelProgress(pet.exp, pet.gradeLevel).stage}
+                size="md"
+                animated
+              />
               <span className="text-2xl font-bold" style={{ color: def.themeColor }}>
                 {SUBJECT_LABEL[pet.subject]}
               </span>

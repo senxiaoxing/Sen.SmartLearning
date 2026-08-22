@@ -9,7 +9,7 @@
 
 import { motion } from 'framer-motion'
 import { PetAvatar, PetLevelBar } from '@/components/PetAvatar'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { levelProgress } from '@/domain/pet/growth'
 import type { PetState } from '@/domain/types'
 
@@ -23,8 +23,8 @@ export function PetCard({ pet, onTap, compact = false }: PetCardProps) {
   const def = petDefinitionOf(pet.subject, pet.gradeLevel)
   if (def === undefined) return null
 
-  const progress = levelProgress(pet.exp)
-  const opened = isSubjectOpened(pet.subject)
+  const progress = levelProgress(pet.exp, pet.gradeLevel)
+  const opened = isOpened(pet.subject, pet.gradeLevel)
 
   return (
     <motion.button

@@ -22,6 +22,7 @@ import { pickNickname } from '@/domain/encourage/pickNickname'
 import { praiseLine } from '@/domain/encourage/praiseLine'
 import { pickLine } from '@/domain/pet/personality'
 import { plain, utter, type Utterance } from '@/domain/speech'
+import { gradeLevelOf } from '@/domain/types'
 import type { PetLine } from '@/data/seed/pets'
 import { playSfx } from '@/platform/audio'
 import { say } from '@/platform/speech'
@@ -55,7 +56,8 @@ function wrongUtterance(feedback: AnswerFeedback, consolation: PetLine | null): 
 export function Feedback({ feedback, onNext, isLast }: FeedbackProps) {
   const nicknames = useProfileStore((s) => s.nicknames)
   const subject = useSessionStore((s) => s.subject)
-  const gradeLevel = useSessionStore((s) => s.gradeLevel)
+  // 陪她做题的是**正在养的**那只，与这轮做的是哪个年级的题无关
+  const gradeLevel = gradeLevelOf(useProfileStore((s) => s.grade))
   const pet = petDefinitionOf(subject, gradeLevel)
 
   /**

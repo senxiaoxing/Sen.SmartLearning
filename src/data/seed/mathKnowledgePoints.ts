@@ -146,7 +146,7 @@ const SPECS: KpSpec[] = [
 /** 数学知识点，共 48 个。`order` 占用 1~48。 */
 export const mathKnowledgePoints: KnowledgePoint[] = buildKnowledgePoints(
   'math',
+  'G1',
   UNIT_NAMES,
   SPECS,
-  1,
 )

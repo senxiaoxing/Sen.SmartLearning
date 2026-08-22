@@ -16,27 +16,44 @@
  * 漏登记的表现是那道题整句降级成机器音（由 voiceManifest.test.ts 采样抓出）。
  */
 
+/**
+ * 物品类别 —— ⭐ 决定情境题里**哪些动词说得通**。
+ *
+ * 「吃掉了 3 颗星星」「送走了 2 朵向日葵」都不成话，而情境题的句式一旦
+ * 从代码里提成数据表（`data/seed/storyFrames.ts`），动词就会和物品自由组合，
+ * 撞出这类句子。类别是那道闸门：句式声明它要什么类的东西，生成器只从里面挑。
+ *
+ * - `edible` 能吃的（吃掉了、分着吃）
+ * - `creature` 活的（跑走了、又来了几只）
+ * - `object` 死物（拿走了、送给别人）
+ *
+ * 「又来了」「拿走了」这类通用动词不限类别，句式里不写 `thingKinds` 即可。
+ */
+export type ThingKind = 'edible' | 'creature' | 'object'
+
 /** 可数对象。计数、序数、应用题共用 */
 export const COUNTABLES = [
-  { emoji: '🍎', name: '苹果', clipKey: 'word.apple' },
-  { emoji: '🐱', name: '小猫', clipKey: 'word.cat' },
-  { emoji: '⭐', name: '星星', clipKey: 'word.star' },
-  { emoji: '🌸', name: '花', clipKey: 'word.flower' },
-  { emoji: '🚗', name: '小汽车', clipKey: 'word.car' },
-  { emoji: '🐟', name: '小鱼', clipKey: 'word.fish' },
-  { emoji: '🍓', name: '草莓', clipKey: 'word.strawberry' },
-  { emoji: '🎈', name: '气球', clipKey: 'word.balloon' },
-  { emoji: '🦆', name: '小鸭子', clipKey: 'word.duck' },
-  { emoji: '🐰', name: '小兔子', clipKey: 'word.rabbit' },
-  { emoji: '🍪', name: '饼干', clipKey: 'word.cookie' },
-  { emoji: '🌻', name: '向日葵', clipKey: 'word.sunflower' },
-] as const
+  { emoji: '🍎', name: '苹果', clipKey: 'word.apple', kind: 'edible' },
+  { emoji: '🐱', name: '小猫', clipKey: 'word.cat', kind: 'creature' },
+  { emoji: '⭐', name: '星星', clipKey: 'word.star', kind: 'object' },
+  { emoji: '🌸', name: '花', clipKey: 'word.flower', kind: 'object' },
+  { emoji: '🚗', name: '小汽车', clipKey: 'word.car', kind: 'object' },
+  { emoji: '🐟', name: '小鱼', clipKey: 'word.fish', kind: 'creature' },
+  { emoji: '🍓', name: '草莓', clipKey: 'word.strawberry', kind: 'edible' },
+  { emoji: '🎈', name: '气球', clipKey: 'word.balloon', kind: 'object' },
+  { emoji: '🦆', name: '小鸭子', clipKey: 'word.duck', kind: 'creature' },
+  { emoji: '🐰', name: '小兔子', clipKey: 'word.rabbit', kind: 'creature' },
+  { emoji: '🍪', name: '饼干', clipKey: 'word.cookie', kind: 'edible' },
+  { emoji: '🌻', name: '向日葵', clipKey: 'word.sunflower', kind: 'object' },
+] as const satisfies readonly Countable[]
 
 export interface Countable {
   emoji: string
   name: string
   /** 名词的语音片段 key，见 voiceManifest 的 WORDS 段 */
   clipKey: string
+  /** 能跟哪些动词搭配。见 {@link ThingKind} */
+  kind: ThingKind
 }
 
 /**
@@ -46,14 +63,14 @@ export interface Countable {
  * 而问「它排第几」时也得让孩子能认出被指的是哪一个。
  */
 export const ORDINAL_LINEUP: readonly Countable[] = [
-  { emoji: '🐱', name: '小猫', clipKey: 'word.cat' },
-  { emoji: '🐶', name: '小狗', clipKey: 'word.dog' },
-  { emoji: '🐰', name: '小兔子', clipKey: 'word.rabbit' },
-  { emoji: '🐻', name: '小熊', clipKey: 'word.bear' },
-  { emoji: '🐼', name: '熊猫', clipKey: 'word.panda' },
-  { emoji: '🦊', name: '小狐狸', clipKey: 'word.fox' },
-  { emoji: '🐸', name: '小青蛙', clipKey: 'word.frog' },
-  { emoji: '🐷', name: '小猪', clipKey: 'word.pig' },
+  { emoji: '🐱', name: '小猫', clipKey: 'word.cat', kind: 'creature' },
+  { emoji: '🐶', name: '小狗', clipKey: 'word.dog', kind: 'creature' },
+  { emoji: '🐰', name: '小兔子', clipKey: 'word.rabbit', kind: 'creature' },
+  { emoji: '🐻', name: '小熊', clipKey: 'word.bear', kind: 'creature' },
+  { emoji: '🐼', name: '熊猫', clipKey: 'word.panda', kind: 'creature' },
+  { emoji: '🦊', name: '小狐狸', clipKey: 'word.fox', kind: 'creature' },
+  { emoji: '🐸', name: '小青蛙', clipKey: 'word.frog', kind: 'creature' },
+  { emoji: '🐷', name: '小猪', clipKey: 'word.pig', kind: 'creature' },
 ]
 
 /**

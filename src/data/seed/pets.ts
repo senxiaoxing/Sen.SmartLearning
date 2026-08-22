@@ -14,7 +14,7 @@
  * 只会让她对落后的那只产生愧疚——那是在惩罚她的兴趣。
  */
 
-import type { GradeLevel, Subject } from '@/domain/types'
+import { GRADE_LEVELS, type GradeLevel, type Subject } from '@/domain/types'
 
 /**
  * 配饰的挂载点。渲染层据此决定画在身体的哪个位置。
@@ -369,19 +369,48 @@ export function petsOfGrade(gradeLevel: GradeLevel): PetDefinition[] {
 }
 
 /**
- * 当前已开放内容的科目。
+ * 当前已开放内容的 `科目|年级` 组合。
  *
- * ⚠️ 一个科目只有在**真的出得了题**之后才能列进来。
+ * ⚠️ 一个组合只有在**真的出得了题**之后才能列进来。
  * 没题库却让宠物醒着，孩子点进去发现什么都没有，那是明确的失望；
  * 而「还在睡觉，等课程准备好就醒来」至少给了诚实的预期，
  * 也不会让她觉得是自己没养好（那正是产品红线第 4 条要避免的）。
  * 由 `pets.test.ts`「开放的科目必须真的出得了题」强制校验。
  *
- * 三科现已全部开放：数学（M1/M3~M6）、拼音（P1~P7，阶段 ⑧）、
+ * ⭐ **按「科目 × 年级」而不是只按科目**：「三年级英语开了但三年级拼音还没开」
+ * 是一定会发生的——内容一个年级一个科目地做出来，不会三科齐步走。
+ * 只按科目判会让还没做的那科的宠物醒着，点进去一片空白。
+ *
+ * 一年级三科现已全部开放：数学（M1/M3~M6）、拼音（P1~P7，阶段 ⑧）、
  * 英语（E1~E10 的 27 个知识点，阶段 ⑨）。
  */
-export const OPENED_SUBJECTS: readonly Subject[] = ['math', 'pinyin', 'english']
+const OPENED: ReadonlySet<string> = new Set([KEY('math', 'G1'), KEY('pinyin', 'G1'), KEY('english', 'G1')])
 
-export function isSubjectOpened(subject: Subject): boolean {
-  return OPENED_SUBJECTS.includes(subject)
+/**
+ * 这个科目在这个年级有内容了吗。
+ *
+ * @example
+ * isOpened('math', 'G1')   // true
+ * isOpened('math', 'G2')   // false —— 二年级内容还没做
+ */
+export function isOpened(subject: Subject, gradeLevel: GradeLevel): boolean {
+  return OPENED.has(KEY(subject, gradeLevel))
+}
+
+/**
+ * 某个年级已开放的科目，按 `SUBJECT_ORDER` 之外的固定顺序（宠物定义顺序）排列。
+ *
+ * @example
+ * openedSubjectsOf('G1')   // ['math', 'pinyin', 'english']
+ * openedSubjectsOf('G2')   // []
+ */
+export function openedSubjectsOf(gradeLevel: GradeLevel): Subject[] {
+  return petsOfGrade(gradeLevel)
+    .map((p) => p.subject)
+    .filter((s) => isOpened(s, gradeLevel))
+}
+
+/** 至少有一个科目已开放的年级，按学段顺序 */
+export function openedGradeLevels(): GradeLevel[] {
+  return GRADE_LEVELS.filter((g) => openedSubjectsOf(g).length > 0)
 }

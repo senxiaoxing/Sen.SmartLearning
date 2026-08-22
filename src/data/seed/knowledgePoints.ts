@@ -11,7 +11,7 @@
 import { englishKnowledgePoints } from '@/data/seed/englishKnowledgePoints'
 import { mathKnowledgePoints } from '@/data/seed/mathKnowledgePoints'
 import { pinyinKnowledgePoints } from '@/data/seed/pinyinKnowledgePoints'
-import type { KnowledgePoint, Subject } from '@/domain/types'
+import { gradeLevelOf, type GradeLevel, type KnowledgePoint, type Subject } from '@/domain/types'
 
 /** 全部知识点，共 113 个（数学 48 / 拼音 35 / 英语 30）。 */
 export const KNOWLEDGE_POINTS: KnowledgePoint[] = [
@@ -33,6 +33,34 @@ export const KNOWLEDGE_POINTS_BY_SUBJECT: Record<Subject, KnowledgePoint[]> = {
 }
 
 /**
+ * 按年级分组 —— 调度器据此限定「**新内容**只从当前年级开」。
+ *
+ * ⚠️ 只用来挡新知识点。复习、巩固、前置回退一律不查这张表，
+ * 它们必须能跨年级往下（见 `domain/types.ts` 的 {@link GradeLevel} 与
+ * design/08-年级分区与内容扩展.md §1.1）。
+ *
+ * 一个年级可能横跨两个学期（`'1A'` 与 `'1B'` 都归 `'G1'`），
+ * 因此分组键取 `gradeLevelOf(kp.grade)` 而不是 `kp.grade`。
+ */
+export const KNOWLEDGE_POINTS_BY_GRADE: Record<GradeLevel, KnowledgePoint[]> =
+  groupByGrade(KNOWLEDGE_POINTS)
+
+function groupByGrade(points: readonly KnowledgePoint[]): Record<GradeLevel, KnowledgePoint[]> {
+  const byGrade: Record<GradeLevel, KnowledgePoint[]> = {
+    G1: [],
+    G2: [],
+    G3: [],
+    G4: [],
+    G5: [],
+    G6: [],
+  }
+  for (const kp of points) {
+    byGrade[gradeLevelOf(kp.grade)].push(kp)
+  }
+  return byGrade
+}
+
+/**
  * 关键节点 —— 卡住会阻塞大量后续内容。
  * 调度器对它们有特殊保护：后继知识点大面积出错时无条件回退到此。
  */
@@ -51,6 +79,7 @@ export type GraphErrorKind =
   | 'self_prerequisite'
   | 'cycle'
   | 'duplicate_order'
+  | 'prerequisite_order_inverted'
 
 export interface GraphValidationError {
   kind: GraphErrorKind
@@ -68,6 +97,11 @@ export interface GraphValidationError {
  * - `self_prerequisite` —— 自依赖，永久锁死
  * - `cycle` —— 环形依赖会让解锁判定**无限递归**
  * - `duplicate_order` —— order 冲突导致教学顺序不确定
+ * - ⭐ `prerequisite_order_inverted` —— 前置排在自己**后面**。
+ *   加了年级之后这个错会真的发生（三年级知识点误挂一个四年级前置），
+ *   后果是它**永远解锁不了**：`refreshUnlocks()` 要等前置 `mastered`，
+ *   而前置在更晚的年级、孩子根本还没学到。不崩溃、不报错，
+ *   那个知识点只是静默地从图谱里消失了
  *
  * @param points - 待校验的知识点数组，默认校验全量图谱
  * @returns 错误列表，空数组表示图谱健康
@@ -126,6 +160,18 @@ export function validateKnowledgeGraph(
           kind: 'cross_subject_prerequisite',
           kpId: kp.id,
           detail: `${kp.id}(${kp.subject}) 依赖了 ${preId}(${pre.subject})`,
+        })
+        // 跨科目时两边的 order 落在不同分区，比大小没有意义
+        continue
+      }
+
+      // ⚠️ 跨**年级**的前置是合法的（三年级的乘法依赖二年级的口诀表），
+      // 这里拦的是「依赖了排在自己后面的内容」——那会让本知识点永远解不开锁
+      if (pre.order >= kp.order) {
+        errors.push({
+          kind: 'prerequisite_order_inverted',
+          kpId: kp.id,
+          detail: `${kp.id}(order ${kp.order}) 的前置 ${preId}(order ${pre.order}) 排在它之后`,
         })
       }
     }

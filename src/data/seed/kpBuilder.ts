@@ -8,9 +8,11 @@
  * 「这个知识点和别的有什么不同」一眼可见。
  */
 
+import { ORDER_BASE, ORDER_SPAN } from '@/data/seed/gradeOrder'
 import type {
   Difficulty,
   Grade,
+  GradeLevel,
   ItemType,
   KnowledgePoint,
   MisconceptionTag,
@@ -63,7 +65,10 @@ export interface KpSpec {
   mis?: MisconceptionTag[]
   /** 覆盖默认题量估算 */
   items?: number
-  /** 学期，默认 `'1A'` */
+  /**
+   * 学期。默认取所属年级的**上学期**（G1 → `'1A'`）。
+   * 只有教材把这个知识点编在下学期时才显式写，如 M2 位置整单元在一下。
+   */
   grade?: Grade
   /** 覆盖默认掌握阈值 */
   mastery?: number
@@ -75,30 +80,48 @@ export interface KpSpec {
  * 自动推导的字段：
  * - `unit` ← 从 `id` 取小数点前的部分（`'M5.2'` → `'M5'`）
  * - `unitName` ← 查 `unitNames` 表
- * - `order` ← 数组顺序，从 `startOrder` 起递增（教学顺序即声明顺序）
+ * - `order` ← `ORDER_BASE[subject][gradeLevel]` + 数组下标（教学顺序即声明顺序）
+ * - `grade` ← 该年级的上学期（G1 → `'1A'`），教材编在下学期的在 spec 里显式覆盖
  * - `targetMastery` / `estimatedItems` ← 按是否关键节点和难度档取默认值
  * - `collectionCardId` ← `'card-' + id`（每掌握一个知识点解锁一张图鉴卡）
  *
+ * ⭐ order 起点由 `gradeLevel` 查表得出，**不再由调用方传数字**——
+ * 手工传起点在三个科目时还能维持，六个年级 × 三科之后每加一批都要重算全部起点，
+ * 而算错的后果是调度器把新年级判成「前沿之前的遗漏」（见 `gradeOrder.ts` 文件头）。
+ *
  * @param subject - 科目，决定默认题型
+ * @param gradeLevel - 所属年级，决定 order 分区与默认学期
  * @param unitNames - 单元 ID 到单元名的映射，如 `{ M5: '20以内进位加法' }`
  * @param specs - 知识点声明，**数组顺序即教学顺序**
- * @param startOrder - 全局 order 起始值，用于让三个科目的 order 不重叠
  * @returns 完整知识点数组
  * @throws 当 spec 的 unit 在 `unitNames` 中缺失时抛错（防止漏配单元名）
+ * @throws 当 specs 数量超出 {@link ORDER_SPAN} 时抛错（防止 order 溢出到下一个年级的区间）
  *
  * @example
- * buildKnowledgePoints('math', { M3: '分与合' }, [
+ * buildKnowledgePoints('math', 'G1', { M3: '分与合' }, [
  *   { id: 'M3.1', name: '2~5 的分与合', pre: ['M1.3'] },
  *   { id: 'M3.3', name: '10 的分与合', pre: ['M3.2'], diff: 2, key: true },
- * ], 1)
- * // M3.3 自动获得 targetMastery: 0.95、estimatedItems: 60、collectionCardId: 'card-M3.3'
+ * ])
+ * // M3.1 → order 1000、grade '1A'
+ * // M3.3 → order 1001、targetMastery 0.95、estimatedItems 60、collectionCardId 'card-M3.3'
  */
 export function buildKnowledgePoints(
   subject: Subject,
+  gradeLevel: GradeLevel,
   unitNames: Record<string, string>,
   specs: KpSpec[],
-  startOrder: number,
 ): KnowledgePoint[] {
+  if (specs.length > ORDER_SPAN) {
+    throw new Error(
+      `${subject} ${gradeLevel} 有 ${specs.length} 个知识点，超出单个分区上限 ${ORDER_SPAN}——` +
+        `order 会溢出到下一个年级的区间。请调大 ORDER_SPAN 并同步改 ORDER_BASE。`,
+    )
+  }
+
+  const startOrder = ORDER_BASE[subject][gradeLevel]
+  /** 该年级的上学期，如 G1 → '1A'。教材编在下学期的知识点在 spec 里显式覆盖 */
+  const defaultGrade = `${gradeLevel.charAt(1)}A` as Grade
+
   return specs.map((spec, index) => {
     const unit = spec.id.split('.')[0] ?? spec.id
     const unitName = unitNames[unit]
@@ -115,7 +138,7 @@ export function buildKnowledgePoints(
       unit,
       unitName,
       name: spec.name,
-      grade: spec.grade ?? '1A',
+      grade: spec.grade ?? defaultGrade,
       order: startOrder + index,
       prerequisites: spec.pre ?? [],
       itemTypes: spec.types ?? DEFAULT_ITEM_TYPES[subject],

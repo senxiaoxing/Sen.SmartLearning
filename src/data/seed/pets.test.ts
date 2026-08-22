@@ -10,17 +10,18 @@ import { describe, expect, it } from 'vitest'
 import {
   PET_DEFINITIONS,
   PET_LINE_MOMENTS,
-  isSubjectOpened,
-  OPENED_SUBJECTS,
+  isOpened,
+  openedGradeLevels,
+  openedSubjectsOf,
   petDefinitionOf,
   petsOfGrade,
 } from '@/data/seed/pets'
 import { ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
 import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
 import { petNameClipKey, VOICE_MANIFEST } from '@/data/seed/voiceManifest'
-import { STAGE_COUNT } from '@/domain/pet/growth'
+import { STAGE_COUNT } from '@/domain/pet/levelCurves'
+import { GRADE_LEVELS, gradeLevelOf, type Subject } from '@/domain/types'
 import type { AccessorySlot } from '@/data/seed/pets'
-import type { Subject } from '@/domain/types'
 
 const ALL_SUBJECTS: Subject[] = ['math', 'pinyin', 'english']
 
@@ -211,20 +212,36 @@ describe('台词', () => {
 })
 
 describe('科目开放状态', () => {
-  it('三科题库齐备，三只宠物都醒着', () => {
-    expect(isSubjectOpened('math')).toBe(true)
-    expect(isSubjectOpened('pinyin'), '阶段 ⑧ 已建拼音题库').toBe(true)
-    expect(isSubjectOpened('english'), '阶段 ⑨ 已建英语题库').toBe(true)
+  it('一年级三科题库齐备，三只宠物都醒着', () => {
+    expect(isOpened('math', 'G1')).toBe(true)
+    expect(isOpened('pinyin', 'G1'), '阶段 ⑧ 已建拼音题库').toBe(true)
+    expect(isOpened('english', 'G1'), '阶段 ⑨ 已建英语题库').toBe(true)
   })
 
-  it('⭐ 开放的科目必须真的出得了题 —— 否则宠物醒了却没内容', () => {
+  it('尚未做内容的年级一律未开放', () => {
+    for (const grade of GRADE_LEVELS.filter((g) => g !== 'G1')) {
+      expect(openedSubjectsOf(grade), `${grade} 还没有内容，不该开放`).toEqual([])
+    }
+    expect(openedGradeLevels()).toEqual(['G1'])
+  })
+
+  it('⭐ 开放的「科目 × 年级」必须真的出得了题 —— 否则宠物醒了却没内容', () => {
     // 「醒着但一道题都出不来」比「还在睡觉」更糟：
     // 孩子点进去发现什么都没有，那是明确的失望，
     // 而睡觉状态至少给了「还没做好」的诚实预期。
-    for (const subject of OPENED_SUBJECTS) {
-      const kpIds = KNOWLEDGE_POINTS.filter((kp) => kp.subject === subject).map((kp) => kp.id)
-      const answerable = kpIds.filter((id) => ITEM_TEMPLATE_BY_KP.has(id))
-      expect(answerable.length, `${subject} 已开放但没有任何可出题的知识点`).toBeGreaterThan(0)
+    for (const grade of openedGradeLevels()) {
+      for (const subject of openedSubjectsOf(grade)) {
+        const answerable = KNOWLEDGE_POINTS.filter(
+          (kp) =>
+            kp.subject === subject &&
+            gradeLevelOf(kp.grade) === grade &&
+            ITEM_TEMPLATE_BY_KP.has(kp.id),
+        )
+        expect(
+          answerable.length,
+          `${subject} ${grade} 已开放但没有任何可出题的知识点`,
+        ).toBeGreaterThan(0)
+      }
     }
   })
 })

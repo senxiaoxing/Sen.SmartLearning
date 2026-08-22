@@ -16,7 +16,9 @@ import { BigButton } from '@/components/BigButton'
 import { hasCompletedAssessment } from '@/data/repositories/assessmentRepo'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
 import { loadPendingRetry } from '@/data/repositories/reportRepo'
-import { OPENED_SUBJECTS } from '@/data/seed/pets'
+import { VolumePicker } from '@/components/VolumePicker'
+import { GRADE_BADGE, GRADE_NAME } from '@/data/seed/gradeLabels'
+import { openedGradeLevels, openedSubjectsOf } from '@/data/seed/pets'
 import { birthdayLine, isBirthday } from '@/domain/encourage/birthdayLine'
 import { greetingLine } from '@/domain/encourage/greetingLine'
 import { pickNickname } from '@/domain/encourage/pickNickname'
@@ -37,12 +39,16 @@ import { say } from '@/platform/speech'
 import { usePetStore } from '@/stores/petStore'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
-import type { Subject } from '@/domain/types'
+import { gradeLevelOf, type GradeLevel, type Subject } from '@/domain/types'
 
 export function HomePage() {
   const navigate = useNavigate()
   const profileId = useSessionStore((s) => s.profileId)
-  const gradeLevel = useSessionStore((s) => s.gradeLevel)
+  /** 她在读几年级 —— 养的是这一批伙伴，成果也结算给它们 */
+  const gradeLevel = gradeLevelOf(useProfileStore((s) => s.grade))
+  /** 这次想做哪个年级的题。`null` = 跟着档案年级走 */
+  const contentGrade = useSessionStore((s) => s.contentGradeLevel)
+  const setContentGrade = useSessionStore((s) => s.setContentGrade)
   const start = useSessionStore((s) => s.start)
   const startWrongBookRetry = useSessionStore((s) => s.startWrongBookRetry)
   const pets = usePetStore((s) => s.pets)
@@ -66,7 +72,12 @@ export function HomePage() {
     )
   }, [profileId, gradeLevel, loadPets])
 
-  const openSubjects = OPENED_SUBJECTS
+  /** 这次实际要做哪个年级的题 */
+  const activeGrade = contentGrade ?? gradeLevel
+  /** 已经做好内容的年级。只有多于一个时才值得让她选 */
+  const grades = openedGradeLevels()
+  // 开放的科目按「要做哪个年级」算——二年级英语做出来之前，那只熊猫还睡着
+  const openSubjects = useMemo(() => openedSubjectsOf(activeGrade), [activeGrade])
 
   /**
    * 这次停留期间用哪个称呼。
@@ -150,7 +161,11 @@ export function HomePage() {
           </div>
         ) : openSubjects.length > 1 ? (
           // 开放了多个科目就让她自己挑 —— 宠物即标签，她认形象不认字
-          <SubjectPicker pets={pets} onPick={(subject) => beginSession(subject)} />
+          <SubjectPicker
+            pets={pets}
+            openSubjects={openSubjects}
+            onPick={(subject) => beginSession(subject)}
+          />
         ) : (
           <BigButton
             tone="primary"
@@ -159,6 +174,23 @@ export function HomePage() {
           >
             开始学习
           </BigButton>
+        )}
+
+        {/* ⭐ 年级切换。只在做好了一个以上年级时出现——只有一个年级时，
+            多这一层对她是纯粹的干扰（同 SubjectPicker 的出现条件）。
+            复用识字墙/诗单那个 VolumePicker：她已经学会「按数字换一批」了 */}
+        {grades.length > 1 && (
+          <VolumePicker
+            volumes={grades.map((g) => ({
+              id: g,
+              name: GRADE_NAME[g],
+              badge: GRADE_BADGE[g],
+              hint: g === gradeLevel ? '你现在读的年级' : '换这个年级的题做做看',
+            }))}
+            activeId={activeGrade}
+            countLabel="一个年级的题"
+            onSelect={(id) => setContentGrade(id === gradeLevel ? null : (id as GradeLevel))}
+          />
         )}
 
         {/* 爸妈的留言。排在「开始学习」之后：它是惊喜，不是必经的关卡，

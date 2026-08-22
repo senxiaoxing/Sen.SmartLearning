@@ -13,6 +13,7 @@
  */
 
 import { ENGLISH_TEMPLATES } from '@/data/seed/englishTemplates'
+import { STORY_FRAMES } from '@/data/seed/storyFrames'
 import {
   ALL_SYLLABLES,
   BLEND_SYLLABLES,
@@ -93,33 +94,37 @@ export const ITEM_TEMPLATES: ItemTemplate[] = [
 
   // ── M4.1 / M4.3 加减法的意义 ─────────────────────────────────────
   // 看图列式：题干直白提问，图里两堆/一堆划掉，为后面的应用题打底
+  //
+  // ⚠️ `frames: STORY_FRAMES` 是**句式表注入**，五条模板都要带上——
+  // 生成器不自己 import 它（domain 不依赖 data 是分层铁律，
+  // 同 pinyinTemplates 注入音节表）。漏传会在出题时立刻抛错，不会静默出一道空题。
   tpl('M4.1', 'storyProblem', {
-    1: { mode: 'add', totalRange: [3, 5] },
-    2: { mode: 'add', totalRange: [4, 8] },
-    3: { mode: 'add', totalRange: [5, 10] },
+    1: { mode: 'add', totalRange: [3, 5], frames: STORY_FRAMES },
+    2: { mode: 'add', totalRange: [4, 8], frames: STORY_FRAMES },
+    3: { mode: 'add', totalRange: [5, 10], frames: STORY_FRAMES },
   }, 'choice_image'),
   tpl('M4.3', 'storyProblem', {
-    1: { mode: 'remove', totalRange: [3, 5] },
-    2: { mode: 'remove', totalRange: [4, 8] },
-    3: { mode: 'remove', totalRange: [5, 10] },
+    1: { mode: 'remove', totalRange: [3, 5], frames: STORY_FRAMES },
+    2: { mode: 'remove', totalRange: [4, 8], frames: STORY_FRAMES },
+    3: { mode: 'remove', totalRange: [5, 10], frames: STORY_FRAMES },
   }, 'choice_image'),
 
   // ── M9 解决问题 ──────────────────────────────────────────────────
   // 与 M4.1/M4.3 同一个生成器，区别是 story: true —— 题干变成一句话情境
   tpl('M9.1', 'storyProblem', {
-    1: { mode: 'add', story: true, totalRange: [3, 6] },
-    2: { mode: 'add', story: true, totalRange: [4, 9] },
-    3: { mode: 'add', story: true, totalRange: [5, 10] },
+    1: { mode: 'add', story: true, totalRange: [3, 6], frames: STORY_FRAMES },
+    2: { mode: 'add', story: true, totalRange: [4, 9], frames: STORY_FRAMES },
+    3: { mode: 'add', story: true, totalRange: [5, 10], frames: STORY_FRAMES },
   }, 'choice_image'),
   tpl('M9.2', 'storyProblem', {
-    1: { mode: 'remove', story: true, totalRange: [3, 6] },
-    2: { mode: 'remove', story: true, totalRange: [4, 9] },
-    3: { mode: 'remove', story: true, totalRange: [5, 10] },
+    1: { mode: 'remove', story: true, totalRange: [3, 6], frames: STORY_FRAMES },
+    2: { mode: 'remove', story: true, totalRange: [4, 9], frames: STORY_FRAMES },
+    3: { mode: 'remove', story: true, totalRange: [5, 10], frames: STORY_FRAMES },
   }, 'choice_image'),
   tpl('M9.3', 'storyProblem', {
-    1: { mode: 'compare', totalRange: [3, 6] },
-    2: { mode: 'compare', totalRange: [4, 9] },
-    3: { mode: 'compare', totalRange: [5, 10] },
+    1: { mode: 'compare', totalRange: [3, 6], frames: STORY_FRAMES },
+    2: { mode: 'compare', totalRange: [4, 9], frames: STORY_FRAMES },
+    3: { mode: 'compare', totalRange: [5, 10], frames: STORY_FRAMES },
   }, 'choice_image'),
   // 难度递进：先只求总数（加法），再混入求部分（减法）——
   // 「问号在哪决定用加还是减」是这个知识点的全部难点

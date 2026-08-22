@@ -13,12 +13,14 @@
 import { findRemedialTargets } from '@/domain/scheduler/remedial'
 import { findWeakestPrerequisite } from '@/domain/scheduler/unlockGraph'
 import { isDue } from '@/domain/time'
-import type {
-  Difficulty,
-  KnowledgePoint,
-  Mastery,
-  ScheduleInput,
-  ScheduledItem,
+import {
+  gradeLevelOf,
+  type Difficulty,
+  type GradeLevel,
+  type KnowledgePoint,
+  type Mastery,
+  type ScheduleInput,
+  type ScheduledItem,
 } from '@/domain/types'
 
 /** 各来源的题量配比。三者之和为 1 */
@@ -76,6 +78,10 @@ const MAX_CONFIDENCE_POOL = 5
  * 3. **难度自适应**：分数 >0.85 升档；<0.6 降档并回退到最薄弱前置
  * 4. **排序**：首题必为已掌握的简单题（暖场），末题必为能答对的题（好心情结束）
  *
+ * ⚠️ `input.gradeLevel` **只挡新开的知识点**——复习、巩固、补救、前置回退
+ * 一律跨年级通行。年级天花板只挡超前，不挡补漏。
+ * 见 {@link ScheduleInput.gradeLevel}。
+ *
  * 各模式的差异：
  * - `daily` / `free` —— 完整配比
  * - `review` —— 只出到期复习题
@@ -100,7 +106,7 @@ export function selectNextItems(input: ScheduleInput): ScheduledItem[] {
       (input.answerableKpIds === undefined || input.answerableKpIds.has(m.kpId)),
   )
 
-  const pools = buildPools(all, input.now, kpById)
+  const pools = buildPools(all, input.now, kpById, input.gradeLevel)
   const plan: ScheduledItem[] = []
 
   if (input.mode === 'review') {
@@ -152,11 +158,16 @@ interface Pools {
  * `available`（可学但没做过）的知识点会按教学顺序取前
  * {@link MAX_NEW_KNOWLEDGE_POINTS} 个并入学习池——它们是新内容的入口，
  * 排在正在学的知识点之后，保证「先学完手上的，再开新的」。
+ *
+ * ⚠️ `gradeLevel` **只作用于「前沿之后的新内容」**（`ahead`），
+ * 复习池、巩固池、以及回头补遗漏的 `behind` 一律不过滤——
+ * 年级天花板只挡超前，不挡补漏。
  */
 function buildPools(
   all: readonly Mastery[],
   now: ScheduleInput['now'],
   kpById: ReadonlyMap<string, KnowledgePoint>,
+  gradeLevel: GradeLevel | undefined,
 ): Pools {
   const review: Mastery[] = []
   const learning: Mastery[] = []
@@ -197,8 +208,26 @@ function buildPools(
       .map((m) => kpById.get(m.kpId)?.order ?? 0),
   )
   const orderOf = (m: Mastery): number => kpById.get(m.kpId)?.order ?? 0
+
+  /**
+   * ⭐ 年级天花板：**只挡超前，不挡补漏**。
+   *
+   * 只用在 `ahead`（前沿之后的新内容）上。她选了三年级答题区，
+   * 新内容就该从三年级开，不该跳到四年级去——但二年级的缺口
+   * 仍然要能由复习、回退、以及 `behind` 补上。
+   *
+   * 知识点查不到时放行：那是 seed 数据的问题，不该表现为「这道题不出了」。
+   */
+  const withinGrade = (m: Mastery): boolean => {
+    if (gradeLevel === undefined) return true
+    const grade = kpById.get(m.kpId)?.grade
+    return grade === undefined || gradeLevelOf(grade) === gradeLevel
+  }
+
   // 前沿之后的按教学顺序正着取；前沿之前遗漏的按逆序取（离她水平最近的先补）
-  const ahead = available.filter((m) => orderOf(m) > frontier).sort((a, b) => orderOf(a) - orderOf(b))
+  const ahead = available
+    .filter((m) => orderOf(m) > frontier && withinGrade(m))
+    .sort((a, b) => orderOf(a) - orderOf(b))
   const behind = available.filter((m) => orderOf(m) <= frontier).sort((a, b) => orderOf(b) - orderOf(a))
   // ⚠️ 只有前沿之后完全没内容可学时才回头补遗漏。
   // 否则会出现「学会 15-9 之后被安排学『认识 0』」这种倒退观感。

@@ -20,7 +20,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { pickLine } from '@/domain/pet/personality'
 import { roomSpotOf, type RoomSpot } from '@/domain/pet/roomSpot'
 import { utter } from '@/domain/speech'
@@ -79,7 +79,7 @@ export function RoomPets({ pets, festive = false, onMove }: RoomPetsProps) {
     const def = petDefinitionOf(pet.subject, pet.gradeLevel)
     if (def === undefined) return
 
-    if (!isSubjectOpened(pet.subject)) {
+    if (!isOpened(pet.subject, pet.gradeLevel)) {
       setTalking({ petId: pet.id, text: SLEEPING_BUBBLE })
       return
     }

@@ -50,9 +50,7 @@ const SPECS: KpSpec[] = [
   // ⭐ u_umlaut_kept（jü 而不是 ju）是拼音全科最高频错误
   { id: 'P3.3', name: 'j q x 与 ü 相拼去两点', pre: ['P2.4', 'P1.2'], types: ['choice_text'],
     diff: 3, key: true, mis: ['u_umlaut_kept'] },
-  // 规则：有 a 找 a，没 a 找 o e，i u 并列标在后
-  { id: 'P3.4', name: '声调标注规则', pre: ['P1.3', 'P4.1'], types: ['choice_text'], diff: 3,
-    key: true, mis: ['tone_wrong_position'] },
+  // ⚠️ P3.4「声调标注规则」归在 P3 单元，但**排在 P4 之后**，见那里的说明。
 
   // ── P4 复韵母 ────────────────────────────────────────────────────
   { id: 'P4.1', name: '复韵母 ai ei ui', pre: ['P3.1'], diff: 2,
@@ -61,6 +59,20 @@ const SPECS: KpSpec[] = [
   { id: 'P4.3', name: '复韵母 ie üe er', pre: ['P4.2'], diff: 3, mis: ['ei_ie_swap'] },
   { id: 'P4.4', name: '单/复韵母辨析', pre: ['P4.3'], diff: 3,
     mis: ['ui_iu_swap', 'ei_ie_swap'] },
+
+  // ⭐ 规则：有 a 找 a，没 a 找 o e，i u 并列标在后
+  //
+  // ⚠️ **id 归 P3 单元，教学顺序却排在 P4 之后**，是刻意的：
+  // 单韵母的标调位置是唯一的，压根用不着规则；这条规则真正要解决的是
+  // `liu` / `gui` 这种 i u 并列的情况，而那要先认识复韵母才谈得上
+  // （itemTemplates.ts 里 P3.4 难度 3 的参数正是 liu·gui·xiu）。
+  //
+  // 前置 P4.1 因此是对的，错的曾经是位置——它一度声明在 P4.1 **前面**，
+  // order 比自己的前置还小。后果不会报错，只是它在该出现的时候是 locked，
+  // 等 P4.1 掌握后才解锁，那时 frontier 已经越过它，它就成了「前沿之前的遗漏」，
+  // 只有在前沿之后无内容可学时才补得上。由 `prerequisite_order_inverted` 校验守住。
+  { id: 'P3.4', name: '声调标注规则', pre: ['P1.3', 'P4.1'], types: ['choice_text'], diff: 3,
+    key: true, mis: ['tone_wrong_position'] },
 
   // ── P5 鼻韵母 ────────────────────────────────────────────────────
   { id: 'P5.1', name: '前鼻韵母 an en in un ün', pre: ['P4.3'], diff: 2,
@@ -102,7 +114,7 @@ const SPECS: KpSpec[] = [
 /** 拼音知识点，共 35 个。`order` 占用 101~135。 */
 export const pinyinKnowledgePoints: KnowledgePoint[] = buildKnowledgePoints(
   'pinyin',
+  'G1',
   UNIT_NAMES,
   SPECS,
-  101,
 )

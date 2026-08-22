@@ -4,15 +4,18 @@
  */
 
 import { describe, expect, it } from 'vitest'
+import { STORY_FRAMES } from '@/data/seed/storyFrames'
+import { COUNTABLES } from '@/domain/generators/countables'
 import { createRng } from '@/domain/generators/rng'
 import { storyProblem } from '@/domain/generators/storyProblem'
+import { framesFor } from '@/domain/storyFrame'
 import type { GeneratedItem } from '@/domain/types'
 
 function gen(mode: string, seed: number, story = false): GeneratedItem {
   return storyProblem({
     kpId: story ? 'M9.1' : 'M4.1',
     difficulty: 2,
-    params: { mode, story, totalRange: [4, 9] },
+    params: { mode, story, totalRange: [4, 9], frames: STORY_FRAMES },
     rng: createRng(seed),
   })
 }
@@ -23,6 +26,13 @@ function all(mode: string, story = false) {
 
 function groupsOf(item: GeneratedItem): number[] {
   return item.visual?.kind === 'storyGroups' ? item.visual.groups : []
+}
+
+/** 把数字与物品名抹掉，剩下的就是句式本身，用来数「换了几种说法」 */
+function frameOf(item: GeneratedItem): string {
+  let text = item.stem.text.replace(/\d+/g, 'N')
+  for (const c of COUNTABLES) text = text.replaceAll(c.name, 'X')
+  return text
 }
 
 describe('storyProblem', () => {
@@ -96,14 +106,62 @@ describe('storyProblem', () => {
   })
 
   describe('story 开关', () => {
-    it('M4 直白提问，不带情境铺垫', () => {
-      expect(gen('add', 3, false).stem.text).toMatch(/^一共有几个.+？$/)
-      expect(gen('remove', 3, false).stem.text).toMatch(/^还剩几个.+？$/)
+    /**
+     * ⚠️ 这两条刻意**不断言具体措辞**，只断言 story 开关的真正含义：
+     * 条件在图里还是在话里。句式已经是数据（`storyFrames.ts`），
+     * 写死某一句话会让「加个新说法」变成「测试红了」。
+     */
+    it('M4 直白提问，条件全在图里，题干不出现数字', () => {
+      for (const mode of ['add', 'remove']) {
+        for (const item of all(mode, false)) {
+          expect(item.stem.text, item.stem.text).not.toMatch(/\d/)
+        }
+      }
     })
 
     it('M9 把已知条件说进题干——应用题要练的是从话里提取数', () => {
-      expect(gen('add', 3, true).stem.text).toMatch(/^左边有 \d+ 个.+右边有 \d+ 个，一共有几个？$/)
-      expect(gen('remove', 3, true).stem.text).toMatch(/^原来有 \d+ 个.+拿走了 \d+ 个，还剩几个？$/)
+      for (const mode of ['add', 'remove']) {
+        for (const item of all(mode, true)) {
+          const numbers = item.stem.text.match(/\d+/g) ?? []
+          expect(numbers.length, item.stem.text).toBe(2)
+        }
+      }
+    })
+  })
+
+  describe('⭐ 换着说法问 —— 孩子的原话是「重复的题目有点多」', () => {
+    it('同一个知识点会轮到句式表里的每一种说法', () => {
+      for (const [mode, story] of [
+        ['add', false],
+        ['add', true],
+        ['remove', false],
+        ['remove', true],
+        ['compare', false],
+      ] as const) {
+        const expected = framesFor(STORY_FRAMES, mode, story).length
+        const seen = new Set(all(mode, story).map(frameOf))
+        expect(seen.size, `${mode}/story=${story} 只轮到了 ${[...seen].join(' | ')}`).toBe(expected)
+      }
+    })
+
+    it('⭐ 动词挑得动物品 ——「吃掉了 3 颗星星」不该出现', () => {
+      const edible = COUNTABLES.filter((c) => c.kind === 'edible').map((c) => c.name)
+
+      for (const item of all('remove', true)) {
+        if (!item.stem.text.includes('吃掉了')) continue
+        expect(
+          edible.some((name) => item.stem.text.includes(name)),
+          `「${item.stem.text}」——只有能吃的东西才吃得掉`,
+        ).toBe(true)
+      }
+    })
+
+    it('题干朗读片段与显示文本同步替换，不会漏掉槽位', () => {
+      for (const item of [...all('add', true), ...all('remove', true)]) {
+        expect(item.stem.ttsParts, item.stem.text).toBeDefined()
+        expect(item.stem.ttsParts!.some((p) => p.startsWith('{')), '槽位没被展开').toBe(false)
+        expect(item.stem.ttsText).not.toMatch(/[？?]$/)
+      }
     })
   })
 

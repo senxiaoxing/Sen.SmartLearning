@@ -1,7 +1,19 @@
 /**
- * @file 宠物页 —— 在三只伙伴之间切换
+ * @file 宠物页 —— 在三只伙伴之间切换，也能翻回往届的伙伴
  * @layer features
  * @see src/features/pet/PetDetail.tsx  单只伙伴的详情与起名
+ * @see design/08-年级分区与内容扩展.md §5.2  为什么必须有「回忆」这个地方
+ *
+ * ## ⭐ 往届伙伴不会消失
+ *
+ * 宠物按「科目 × 年级」划分，升年级会换一批新的。没有这一页的话，
+ * 孩子养到满级的团团会在升年级那天**直接从首页消失**——
+ * 那比二升三失去语音伤人得多。
+ *
+ * 年级切换条复用 `VolumePicker`：她在识字墙和诗单上已经学会
+ * 「按数字换一批」，这里原样再用一次。只在**养过一个以上年级**时才出现，
+ * 与 `SubjectPicker`「只在开放科目多于一个时才出现」同构——
+ * 现在只有一年级，这一页看起来和以前一模一样。
  */
 
 import { useEffect, useState } from 'react'
@@ -9,36 +21,83 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
 import { PetAvatar } from '@/components/PetAvatar'
-import { isSubjectOpened, petDefinitionOf } from '@/data/seed/pets'
+import { VolumePicker } from '@/components/VolumePicker'
+import { loadOwnedGrades, loadPets } from '@/data/repositories/petRepo'
+import { GRADE_BADGE, GRADE_NAME } from '@/data/seed/gradeLabels'
+import { isOpened, petDefinitionOf } from '@/data/seed/pets'
 import { levelProgress } from '@/domain/pet/growth'
 import { PetDetail } from '@/features/pet/PetDetail'
 import { usePetStore } from '@/stores/petStore'
+import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
+import { gradeLevelOf, type GradeLevel, type PetState } from '@/domain/types'
 
 export function PetHome() {
   const navigate = useNavigate()
   const profileId = useSessionStore((s) => s.profileId)
-  const gradeLevel = useSessionStore((s) => s.gradeLevel)
+  // 她**在读**几年级——正在养的就是这一批。与首页「做哪个年级的题」无关：
+  // 切到往届答题区不会让往届的伙伴重新开始长
+  const gradeLevel = gradeLevelOf(useProfileStore((s) => s.grade))
   const pets = usePetStore((s) => s.pets)
   const load = usePetStore((s) => s.load)
   const rename = usePetStore((s) => s.rename)
+  const [viewGrade, setViewGrade] = useState<GradeLevel>(gradeLevel)
+  const [ownedGrades, setOwnedGrades] = useState<GradeLevel[]>([])
+  const [archivePets, setArchivePets] = useState<PetState[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const [renaming, setRenaming] = useState(false)
   const [draftName, setDraftName] = useState('')
 
   useEffect(() => {
-    if (profileId !== null) void load(profileId, gradeLevel)
+    if (profileId === null) return
+    void load(profileId, gradeLevel)
+    void loadOwnedGrades(profileId).then(setOwnedGrades)
   }, [profileId, gradeLevel, load])
 
-  const pet = pets[activeIndex]
+  /**
+   * 往届的伙伴单独读，**不塞进 petStore**——那里的 `pets` 是「当前年级」的，
+   * 首页、小屋、商店都在用。翻一下回忆就把全局改掉，那三处会跟着一起变。
+   */
+  useEffect(() => {
+    if (profileId === null || viewGrade === gradeLevel) return
+    void loadPets(profileId, viewGrade).then(setArchivePets)
+  }, [profileId, viewGrade, gradeLevel])
+
+  const archived = viewGrade !== gradeLevel
+  // 当前年级走 store：改完名字要立刻反映出来
+  const shown = archived ? archivePets : pets
+  const pet = shown[activeIndex]
+
+  const switchTo = (grade: GradeLevel) => {
+    setViewGrade(grade)
+    setActiveIndex(0)
+    setRenaming(false)
+  }
 
   return (
     <AppShell width="wide" layout="stack">
       <PageHeader onBack={() => navigate('/')} title="我的伙伴" />
 
+      {/* 只养过一个年级时不出现——多一层选择对她是纯粹的干扰 */}
+      {ownedGrades.length > 1 && (
+        <div className="mt-3">
+          <VolumePicker
+            volumes={ownedGrades.map((g) => ({
+              id: g,
+              name: GRADE_NAME[g],
+              badge: GRADE_BADGE[g],
+              hint: g === gradeLevel ? '正在一起学习' : '陪你走过的伙伴',
+            }))}
+            activeId={viewGrade}
+            countLabel="三个伙伴"
+            onSelect={(id) => switchTo(id as GradeLevel)}
+          />
+        </div>
+      )}
+
       {/* 三只切换。刻意用平铺的头像而非排行榜式列表，避免暗示高下 */}
       <nav className="mt-4 flex items-center justify-center gap-3">
-        {pets.map((p, i) => {
+        {shown.map((p, i) => {
           const def = petDefinitionOf(p.subject, p.gradeLevel)
           if (def === undefined) return null
           return (
@@ -57,10 +116,10 @@ export function PetHome() {
             >
               <PetAvatar
                 def={def}
-                stageIndex={levelProgress(p.exp).stage}
+                stageIndex={levelProgress(p.exp, p.gradeLevel).stage}
                 size="sm"
                 animated={false}
-                asleep={!isSubjectOpened(p.subject)}
+                asleep={!isOpened(p.subject, p.gradeLevel)}
               />
             </button>
           )
@@ -71,6 +130,7 @@ export function PetHome() {
         <PetDetail
           key={pet.id}
           pet={pet}
+          archived={archived}
           renaming={renaming}
           draftName={draftName}
           onDraftChange={setDraftName}

@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { bootstrap } from '@/data/bootstrap'
 import { db } from '@/data/db'
 import {
+  loadGrade,
   loadNicknames,
   loadParentMessage,
   markMessageRead,
@@ -18,6 +19,7 @@ import {
   NICKNAME_MAX_COUNT,
   NICKNAME_MAX_LENGTH,
   saveBirthDate,
+  saveGrade,
   saveNicknames,
   saveParentMessage,
 } from '@/data/repositories/profileRepo'
@@ -29,6 +31,21 @@ beforeEach(async () => {
 afterEach(async () => {
   await db.delete()
   db.close()
+})
+
+describe('年级读写', () => {
+  it('新档案从一年级上学期开始', async () => {
+    expect(await loadGrade(await bootstrap())).toBe('1A')
+  })
+
+  it('改年级会落库，并且不动昵称', async () => {
+    const profileId = await bootstrap()
+
+    await saveGrade(profileId, '3A')
+
+    expect(await loadGrade(profileId)).toBe('3A')
+    expect(await loadNicknames(profileId)).toEqual([{ text: '小恩宝', clipKey: 'name.xiaoenbao' }])
+  })
 })
 
 describe('昵称读写', () => {
