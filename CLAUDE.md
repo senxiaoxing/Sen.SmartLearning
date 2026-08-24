@@ -577,6 +577,10 @@ npm run icons            # 重新生成 PWA 图标（改了图标设计后跑）
 npm run pinyin:check     # 生成拼音试听页，人工复核发音（机器验不了声调）
 npm run poem:check       # 生成古诗读音校验页：把含多音字的句子挑出来逐条听
                          #   未改写的排最前标红，键盘 ← → 过一遍，可导出问题清单
+npm run story:check      # 生成情境题试听页：每种说法逐条听（M4/M9 的 order 排在
+                         #   数学最后，正常答题要推过 M1~M8 才碰得到）
+                         #   ⚠️ 播放**必须**复用 platform/speechClips.ts 的裁静音，
+                         #      自己另写一套听到的就不是 App —— 这一页第一版就是这么错的
 npm run pinyin:record    # 生成录音页，补录没有汉字载体的音节
 ```
 
