@@ -15,7 +15,7 @@
 
 import { buildNumericOptions, buildTextOptions, type NumericDistractor } from '@/domain/generators/distractors'
 import { MEASURABLES, type Measurable } from '@/domain/generators/measurables'
-import { readEnum } from '@/domain/generators/params'
+import { readEnum, readItemType } from '@/domain/generators/params'
 import { randomInt, randomPick, shuffle } from '@/domain/generators/rng'
 import { num, type ClipKey } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
@@ -97,7 +97,7 @@ function buildConvert(
   return {
     signature: `${ctx.kpId}#${shown}${fromUnit}->${toUnit}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${shown} ${fromUnit} = ? ${toUnit}`,

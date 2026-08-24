@@ -15,7 +15,7 @@
 
 import { chineseNumber, MAX_CHINESE_NUMBER } from '@/domain/chineseNumber'
 import { buildNumericOptions, buildTextOptions } from '@/domain/generators/distractors'
-import { readEnum, readNumber } from '@/domain/generators/params'
+import { readEnum, readItemType, readNumber } from '@/domain/generators/params'
 import { randomInt } from '@/domain/generators/rng'
 import { num, type ClipKey } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext, MisconceptionTag } from '@/domain/types'
@@ -128,7 +128,7 @@ function buildWrite(ctx: GeneratorContext, value: number): GeneratedItem {
   return {
     signature: `${ctx.kpId}#write:${value}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${text} 写作几？`,
@@ -186,7 +186,7 @@ function buildCompose(ctx: GeneratorContext, value: number): GeneratedItem {
   return {
     signature: `${ctx.kpId}#compose:${value}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${words.join('')}，合起来是几？`,

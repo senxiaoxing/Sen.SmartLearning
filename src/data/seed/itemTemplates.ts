@@ -13,6 +13,7 @@
  */
 
 import { ENGLISH_TEMPLATES } from '@/data/seed/englishTemplates'
+import { MATH_G2_TEMPLATES } from '@/data/seed/mathG2Templates'
 import { STORY_FRAMES } from '@/data/seed/storyFrames'
 import {
   ALL_SYLLABLES,
@@ -25,48 +26,12 @@ import {
   usable,
   USABLE_SYLLABLES,
 } from '@/data/seed/pinyinSyllables'
+import { altTpl, tpl } from '@/data/seed/templateBuilder'
 import type { Syllable } from '@/domain/pinyin'
-import type { Difficulty, ItemTemplate, ItemType } from '@/domain/types'
-
-type ParamsByDifficulty = Record<Difficulty, Record<string, unknown>>
-
-/**
- * 构造一条模板配置。`id` 统一为 `<kpId>-gen`。
- *
- * @param kpId - 知识点 ID
- * @param generator - 生成器注册名
- * @param params - 三档难度的参数
- * @param type - 题型，默认 `'input_number'`
- */
-function tpl(
-  kpId: string,
-  generator: string,
-  params: ParamsByDifficulty,
-  type: ItemType = 'input_number',
-): ItemTemplate {
-  return { id: `${kpId}-gen`, kpId, generator, type, params }
-}
-
-/**
- * 构造同一知识点的**备选**模板（拖拽版），`id` 后缀区分。
- *
- * ⚠️ 一个知识点可以有多条模板，出题时随机轮换——
- * 孩子的原话是「答题界面单一，都是题目 + 4 个选项」
- * （design/05-孩子反馈与响应.md 第 4 条）。
- * 只把某个知识点从填空**换成**拖拽，单一性只是从一种变成了另一种；
- * 让同一个知识点时而填空、时而拖拽，才真正解决问题。
- */
-function altTpl(
-  kpId: string,
-  suffix: string,
-  generator: string,
-  params: ParamsByDifficulty,
-  type: ItemType,
-): ItemTemplate {
-  return { id: `${kpId}-${suffix}`, kpId, generator, type, params }
-}
+import type { ItemTemplate } from '@/domain/types'
 
 export const ITEM_TEMPLATES: ItemTemplate[] = [
+  ...MATH_G2_TEMPLATES,
   // ── M1.4 序数 ────────────────────────────────────────────────────
   // 难度递进：只从左数 → 可能从右数 → 队伍更长
   tpl('M1.4', 'ordinal', {

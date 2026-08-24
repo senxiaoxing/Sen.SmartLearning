@@ -4325,5 +4325,177 @@
  "phrase.ateUp": {
   "text": "吃掉了",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "num.hundred": {
+  "text": "百",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "num.thousand": {
+  "text": "千",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.times": {
+  "text": "乘",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.dividedBy": {
+  "text": "除以",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.remainder": {
+  "text": "余",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.parenL": {
+  "text": "左括号",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.parenR": {
+  "text": "右括号",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.m": {
+  "text": "米",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.cm": {
+  "text": "厘米",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.kg": {
+  "text": "千克",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.g": {
+  "text": "克",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.hour": {
+  "text": "时",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.min": {
+  "text": "分",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.timesWhatEquals": {
+  "text": "乘几等于",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.dividedByWhatEquals": {
+  "text": "除以几等于",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.equalsWhatRemainder": {
+  "text": "等于几余几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.remainderWhat": {
+  "text": "余几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichIsAboutLong": {
+  "text": "哪个大约长",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichIsAboutHeavy": {
+  "text": "哪个大约重",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.hundredsDigitWhat": {
+  "text": "的百位上是几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.thousandsDigitWhat": {
+  "text": "的千位上是几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.writtenAsWhat": {
+  "text": "写作几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howToReadThis": {
+  "text": "这个数读作什么",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countOnes": {
+  "text": "个一",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countTens": {
+  "text": "个十",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countHundreds": {
+  "text": "个百",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countThousands": {
+  "text": "个千",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.topsAnd": {
+  "text": "件上衣和",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.bottomsHowMany": {
+  "text": "条裤子，一共有几种穿法",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.usingTheseDigits": {
+  "text": "用这几个数字",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howManyTwoDigits": {
+  "text": "能组成几个不同的两位数",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.animalsLineUp": {
+  "text": "小动物们排成一排",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.isNotAt": {
+  "text": "不排",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whoRanksAt": {
+  "text": "谁排",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.first": {
+  "text": "第一",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.second": {
+  "text": "第二",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.third": {
+  "text": "第三",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.fourth": {
+  "text": "第四",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.oclock": {
+  "text": "点",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.minuteHandAt": {
+  "text": "分针指着",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howManyMinutes": {
+  "text": "是多少分",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.afterMinutes": {
+  "text": "再过",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whatTimeThen": {
+  "text": "分是几点几分",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

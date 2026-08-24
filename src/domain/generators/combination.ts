@@ -13,7 +13,7 @@
  */
 
 import { buildNumericOptions, type NumericDistractor } from '@/domain/generators/distractors'
-import { readEnum, readRange } from '@/domain/generators/params'
+import { readEnum, readItemType, readRange } from '@/domain/generators/params'
 import { randomInt, shuffle } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
@@ -60,7 +60,7 @@ function buildOutfit(ctx: GeneratorContext): GeneratedItem {
   return {
     signature: `${ctx.kpId}#outfit:${tops}x${bottoms}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${tops} 件上衣和 ${bottoms} 条裤子，一共有几种穿法？`,
@@ -97,7 +97,7 @@ function buildDigits(ctx: GeneratorContext): GeneratedItem {
   return {
     signature: `${ctx.kpId}#digits:${digits.join('')}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `用 ${digits.join('、')}，能组成几个不同的两位数？`,

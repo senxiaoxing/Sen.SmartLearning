@@ -14,7 +14,7 @@
  */
 
 import { buildNumericOptions, type NumericDistractor } from '@/domain/generators/distractors'
-import { readEnum, readNumberList, readRange } from '@/domain/generators/params'
+import { readEnum, readItemType, readNumberList, readRange } from '@/domain/generators/params'
 import { randomInt, randomPick } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
@@ -76,7 +76,7 @@ function buildProduct(ctx: GeneratorContext, a: number, b: number): GeneratedIte
   return {
     signature: `${ctx.kpId}#${a}x${b}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${a} × ${b} = ?`,
@@ -107,7 +107,7 @@ function buildMissingFactor(ctx: GeneratorContext, a: number, b: number): Genera
   return {
     signature: `${ctx.kpId}#${a}x?=${total}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${a} × ? = ${total}`,

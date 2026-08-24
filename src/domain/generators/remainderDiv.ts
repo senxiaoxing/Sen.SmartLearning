@@ -12,8 +12,8 @@
  * `buildTextOptions` 而不是 `buildNumericOptions`。
  */
 
-import { buildTextOptions } from '@/domain/generators/distractors'
-import { readRange } from '@/domain/generators/params'
+import { buildNumericOptions, buildTextOptions } from '@/domain/generators/distractors'
+import { readEnum, readRange } from '@/domain/generators/params'
 import { randomInt } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
 import type {
@@ -22,6 +22,8 @@ import type {
   GeneratorContext,
   MisconceptionTag,
 } from '@/domain/types'
+
+const MODES = ['both', 'remainderOnly'] as const
 
 /** 把商与余数拼成答案文本。⚠️ 与 `answerParts()` 的分词规则一致，改一处要改两处 */
 function format(quotient: number, remainder: number): string {
@@ -47,12 +49,17 @@ function format(quotient: number, remainder: number): string {
 export const remainderDiv: Generator = (ctx: GeneratorContext): GeneratedItem => {
   const [dMin, dMax] = readRange(ctx.params, 'divisorRange', [2, 9])
   const [qMin, qMax] = readRange(ctx.params, 'quotientRange', [2, 9])
+  const mode = readEnum(ctx.params, 'mode', MODES, 'both')
 
   const divisor = randomInt(ctx.rng, dMin, dMax)
   const quotient = randomInt(ctx.rng, qMin, qMax)
   // 余数恒在 [1, divisor-1]：取 0 就成了表内除法，这道题就白出了
   const remainder = randomInt(ctx.rng, 1, divisor - 1)
   const dividend = divisor * quotient + remainder
+
+  if (mode === 'remainderOnly') {
+    return buildRemainderOnly(ctx, dividend, divisor, quotient, remainder)
+  }
 
   const correct = format(quotient, remainder)
   const swapped = format(remainder, quotient)
@@ -91,5 +98,53 @@ export const remainderDiv: Generator = (ctx: GeneratorContext): GeneratedItem =>
     },
     options: buildTextOptions(correct, candidates, ctx.rng),
     answer: correct,
+  }
+}
+
+/**
+ * `13 ÷ 4 = 3 余 ?` —— 商已给出，只填余数。
+ *
+ * 存在的理由有两个：一是 M2-12 三个知识点都靠它凑齐「≥2 条题型不同的模板」
+ * （主模板是四选一的文本题，这条是数字输入）；
+ * 二是它把 `remainder_too_big` 单独拎出来练——商不用算，
+ * 她全部的注意力都在「剩下的还够不够再分一轮」上。
+ */
+function buildRemainderOnly(
+  ctx: GeneratorContext,
+  dividend: number,
+  divisor: number,
+  quotient: number,
+  remainder: number,
+): GeneratedItem {
+  return {
+    signature: `${ctx.kpId}#only:${dividend}/${divisor}`,
+    kpId: ctx.kpId,
+    type: 'input_number',
+    difficulty: ctx.difficulty,
+    stem: {
+      text: `${dividend} ÷ ${divisor} = ${quotient} 余 ?`,
+      ttsText: `${dividend} 除以 ${divisor} 等于 ${quotient} 余几`,
+      ttsParts: [
+        ...num(dividend),
+        'op.dividedBy',
+        ...num(divisor),
+        'op.equals',
+        ...num(quotient),
+        'phrase.remainderWhat',
+      ],
+    },
+    options: buildNumericOptions(
+      remainder,
+      [
+        // ⭐ 余数比除数还大 —— 其实还能再分一轮
+        { value: remainder + divisor, tag: 'remainder_too_big' },
+        // 以为除得尽
+        { value: 0, tag: 'remainder_ignored' },
+        // 把商填了进来
+        { value: quotient, tag: 'quotient_remainder_swap' },
+      ],
+      ctx.rng,
+    ),
+    answer: String(remainder),
   }
 }

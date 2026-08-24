@@ -135,6 +135,8 @@ const PHRASES: VoiceManifest = {
   'phrase.timesWhatEquals': '乘几等于',
   'phrase.dividedByWhatEquals': '除以几等于',
   'phrase.equalsWhatRemainder': '等于几余几',
+  /** 只问余数那一档（商已给出）：「13 除以 4 等于 3 余几」 */
+  'phrase.remainderWhat': '余几',
   // 量感题（M2-1.4 / M2-14.3）。长短和轻重各一条，因为它们接的量词不同
   'phrase.whichIsAboutLong': '哪个大约长',
   'phrase.whichIsAboutHeavy': '哪个大约重',

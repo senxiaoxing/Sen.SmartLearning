@@ -16,7 +16,7 @@ import {
   type ClockTime,
 } from '@/domain/generators/clockTime'
 import { buildNumericOptions } from '@/domain/generators/distractors'
-import { readEnum, readNumber } from '@/domain/generators/params'
+import { readEnum, readItemType, readNumber } from '@/domain/generators/params'
 import { randomInt, shuffle } from '@/domain/generators/rng'
 import { num, type ClipKey } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext, ItemOption } from '@/domain/types'
@@ -128,7 +128,7 @@ function buildMinuteFromMark(ctx: GeneratorContext): GeneratedItem {
   return {
     signature: `${ctx.kpId}#mark:${mark}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `分针指着 ${mark}，是多少分？`,

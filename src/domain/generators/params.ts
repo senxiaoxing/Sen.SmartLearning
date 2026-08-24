@@ -126,6 +126,31 @@ export function readEnum<T extends string>(
 }
 
 /**
+ * 读取「这道题以哪种题型呈现」。
+ *
+ * ⭐ 只允许 `input_number` 与 `choice_text` 互换，因为这两者的**数据结构完全相同**
+ * （都是四个选项加一个答案字符串），差别只在 UI 怎么渲染——
+ * 一个敲数字键盘、一个点选项。放开到 `drag_match` 之类会让 UI 拿到对不上的数据。
+ *
+ * 它存在的理由是 CLAUDE.md 的「题型必须多样」：二年级起每个知识点要挂
+ * ≥2 条题型不同的模板。对纯计算题来说，「自己算出来」和「从四个里挑」
+ * 是孩子真能感觉到的两种题，而且后者可以用排除法——难度也确实不同。
+ *
+ * @param params - 生成器参数对象
+ * @param fallback - 该生成器的默认题型
+ *
+ * @example
+ * readItemType({ as: 'choice_text' }, 'input_number')   // 'choice_text'
+ * readItemType({}, 'input_number')                      // 'input_number'
+ */
+export function readItemType(
+  params: Record<string, unknown>,
+  fallback: 'input_number' | 'choice_text',
+): 'input_number' | 'choice_text' {
+  return readEnum(params, 'as', ['input_number', 'choice_text'] as const, fallback)
+}
+
+/**
  * 读取布尔参数。
  *
  * @example

@@ -13,7 +13,7 @@
  */
 
 import { buildNumericOptions, type NumericDistractor } from '@/domain/generators/distractors'
-import { readEnum, readNumberList, readRange } from '@/domain/generators/params'
+import { readEnum, readItemType, readNumberList, readRange } from '@/domain/generators/params'
 import { randomInt, randomPick } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
@@ -73,7 +73,7 @@ function buildQuotient(
   return {
     signature: `${ctx.kpId}#${dividend}/${divisor}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${dividend} ÷ ${divisor} = ?`,
@@ -107,7 +107,7 @@ function buildDivisor(
   return {
     signature: `${ctx.kpId}#${dividend}/?=${quotient}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${dividend} ÷ ? = ${quotient}`,

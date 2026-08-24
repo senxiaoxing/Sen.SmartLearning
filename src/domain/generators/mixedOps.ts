@@ -12,7 +12,7 @@
  */
 
 import { buildNumericOptions, type NumericDistractor } from '@/domain/generators/distractors'
-import { readEnum, readNumber } from '@/domain/generators/params'
+import { readEnum, readItemType, readNumber } from '@/domain/generators/params'
 import { randomInt } from '@/domain/generators/rng'
 import { num, type ClipKey } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
@@ -176,7 +176,7 @@ function assemble(
   return {
     signature: `${ctx.kpId}#${parts.join('')}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${text} = ?`,
