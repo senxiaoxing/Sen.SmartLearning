@@ -74,6 +74,13 @@ const CLAUSE_STARTS = new Set([
   'phrase.altogetherHowMany',
   'phrase.togetherIsWhat',
   'phrase.howManyLeft',
+  // —— 二年级文字应用题的分句起点
+  'phrase.shareEqually',
+  'phrase.xiaohongMore',
+  'phrase.xiaohongLess',
+  'phrase.xiaohongHasHowMany',
+  'phrase.eachBoxHas',
+  'phrase.eachBoxHolds',
 ])
 
 /**
@@ -99,6 +106,45 @@ const SAMPLES_BY_OP = {
     [7, 2],
     [6, 5],
   ],
+
+  // —— 二年级文字应用题。数值取得像真题：除法恒整除（atLeast 除外，
+  //    那个恰恰要除不尽），两步题的第三个数放在 `[a, b, c]` 的第三位
+  share: [
+    [12, 3],
+    [24, 4],
+    [45, 9],
+  ],
+  group: [
+    [12, 3],
+    [20, 5],
+    [42, 6],
+  ],
+  moreThan: [
+    [25, 8],
+    [46, 12],
+    [70, 5],
+  ],
+  lessThan: [
+    [25, 8],
+    [46, 12],
+    [70, 5],
+  ],
+  twoStepLess: [
+    [3, 5, 4],
+    [4, 6, 9],
+    [6, 8, 20],
+  ],
+  twoStepMore: [
+    [3, 5, 4],
+    [4, 6, 9],
+    [6, 8, 20],
+  ],
+  // ⚠️ 必须除不尽 —— 除得尽就没有「剩下的还得再来一条船」这回事了
+  atLeast: [
+    [22, 4],
+    [30, 7],
+    [17, 5],
+  ],
 }
 
 const things = loadThings()
@@ -118,17 +164,26 @@ for (const frame of frames) {
   const samples = frame.text.includes('{a}') ? pool : [pool[0]]
 
   for (const thing of allowed.filter(Boolean)) {
-    for (const [a, b] of samples) {
+    for (const [a, b, c] of samples) {
       const text = frame.text
         .replaceAll('{a}', String(a))
         .replaceAll('{b}', String(b))
+        .replaceAll('{c}', String(c ?? ''))
         .replaceAll('{thing}', thing.name)
 
       // 每个片段带上「它前面是不是逗号」，播放时据此选间隔还是停顿
       const clips = []
       for (const p of frame.parts) {
         const keys =
-          p === '{a}' ? numClips(a) : p === '{b}' ? numClips(b) : p === '{thing}' ? [thing.clipKey] : [p]
+          p === '{a}'
+            ? numClips(a)
+            : p === '{b}'
+              ? numClips(b)
+              : p === '{c}'
+                ? numClips(c ?? 0)
+                : p === '{thing}'
+                  ? [thing.clipKey]
+                  : [p]
         keys.forEach((key, i) => {
           clips.push({ key, clause: i === 0 && CLAUSE_STARTS.has(p) })
         })
