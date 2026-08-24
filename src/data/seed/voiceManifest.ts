@@ -37,10 +37,20 @@ import {
 /** 每个片段：key → 要念的文本 */
 export type VoiceManifest = Readonly<Record<string, string>>
 
-/** 数字 0~20。数学题的绝对主力，出现频率远超其他任何片段 */
-const NUMBERS: VoiceManifest = Object.fromEntries(
-  Array.from({ length: 21 }, (_, n) => [`num.${n}`, String(n)]),
-)
+/**
+ * 数字 0~20，加两条位值片段。数学题的绝对主力，出现频率远超其他任何片段。
+ *
+ * ⭐ **位值片段念的是「百」「千」，不是「一百」「一千」**。
+ * `num()` 把 300 拼成 `num.3` + `num.hundred`，片段若念「一百」就成了「三一百」。
+ * 也正因为文本不等于 key 里的数字，这两条才没有并进上面那个 `Array.from`——
+ * 混进去会被下一个人「顺手」改成 `String(n)`，而错法只有听才发现。
+ * 见 `domain/speech.ts` 的 `num()`。
+ */
+const NUMBERS: VoiceManifest = {
+  ...Object.fromEntries(Array.from({ length: 21 }, (_, n) => [`num.${n}`, String(n)])),
+  'num.hundred': '百',
+  'num.thousand': '千',
+}
 
 /**
  * 运算词。
@@ -54,6 +64,33 @@ const OPERATORS: VoiceManifest = {
   'op.equals': '等于',
   'op.and': '和',
   'op.he': '合起来是',
+  // —— 二年级：乘除法。加这两条就够整个表内乘除法用，题干骨架复用
+  //    现成的 `phrase.equalsWhat`——这正是 §4.2 说的「只换那个动词」
+  'op.times': '乘',
+  'op.dividedBy': '除以',
+  /**
+   * 有余数除法答案里的「余」（`3 余 1`）。⚠️ 孤立单字，同 `phrase.at`、
+   * `phrase.unitGe`——生成后要复听，读飘就进 `TAIL_FIX_KEYS`。
+   * 加这一条是为了让答错反馈能拼出完整答案，而不是整句降级成 TTS。
+   */
+  'op.remainder': '余',
+  /**
+   * 带括号的混合运算念作「20 减 左括号 5 加 3 右括号 等于几」。
+   *
+   * 念「5 加 3 的和」更像人话，但那要给每种外层运算各配一句尾巴
+   * （的和 / 的差 / 倍…），而念括号只要两条片段，且**和屏幕上的算式一一对应**——
+   * 她正在学的就是「看见括号先算里面」，听到「括号」两个字是对的提示。
+   */
+  'op.parenL': '左括号',
+  'op.parenR': '右括号',
+  // —— 二年级：计量单位。「3 米等于几厘米」的骨架是
+  //    num + 单位 + `phrase.equalsWhat` + 单位，等于几那句直接复用加减法的
+  'unit.m': '米',
+  'unit.cm': '厘米',
+  'unit.kg': '千克',
+  'unit.g': '克',
+  'unit.hour': '时',
+  'unit.min': '分',
   // 比较符号的名字（M1.6/M1.8）：屏幕上是「>」，念出来是「大于号」——
   // 裸符号喂给 TTS 读不读、怎么读全凭运气
   'op.greaterSign': '大于号',
@@ -91,6 +128,16 @@ const PHRASES: VoiceManifest = {
   'phrase.intoAndWhat': '分成几和几',
   'phrase.firstCompute': '先算',
   'phrase.splitInto': '分成',
+
+  // —— 题干：乘除法求未知数（M2-4 / M2-9）。
+  //    「3 乘几等于 12」不拆成「乘」+「几」+「等于」三条：孤立的单字「几」
+  //    读起来会飘（同 phrase.at 的教训），三字短语的韵律稳得多
+  'phrase.timesWhatEquals': '乘几等于',
+  'phrase.dividedByWhatEquals': '除以几等于',
+  'phrase.equalsWhatRemainder': '等于几余几',
+  // 量感题（M2-1.4 / M2-14.3）。长短和轻重各一条，因为它们接的量词不同
+  'phrase.whichIsAboutLong': '哪个大约长',
+  'phrase.whichIsAboutHeavy': '哪个大约重',
 
   // —— 题干：数序 / 比较 / 数位（M1.x）
   'phrase.afterIsWhat': '的后面是几',

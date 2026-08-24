@@ -12,14 +12,18 @@ import { arithmetic } from '@/domain/generators/arithmetic'
 import { braceProblem } from '@/domain/generators/braceProblem'
 import { classifyShape } from '@/domain/generators/classifyShape'
 import { clock } from '@/domain/generators/clock'
+import { columnArithmetic } from '@/domain/generators/columnArithmetic'
 import { comparison } from '@/domain/generators/comparison'
 import { countShapes } from '@/domain/generators/countShapes'
 import { counting } from '@/domain/generators/counting'
 import { decomposition } from '@/domain/generators/decomposition'
+import { divTable } from '@/domain/generators/divTable'
 import { englishListen } from '@/domain/generators/englishListen'
 import { fourFacts } from '@/domain/generators/fourFacts'
 import { matchPairs } from '@/domain/generators/matchPairs'
 import { memoryPair } from '@/domain/generators/memoryPair'
+import { mixedOps } from '@/domain/generators/mixedOps'
+import { mulTable } from '@/domain/generators/mulTable'
 import { orderSequence } from '@/domain/generators/orderSequence'
 import { ordinal } from '@/domain/generators/ordinal'
 import { placeValue } from '@/domain/generators/placeValue'
@@ -34,11 +38,13 @@ import { pinyinRule } from '@/domain/generators/pinyinRule'
 import { pinyinToChar } from '@/domain/generators/pinyinToChar'
 import { pinyinTriple } from '@/domain/generators/pinyinTriple'
 import { position } from '@/domain/generators/position'
+import { remainderDiv } from '@/domain/generators/remainderDiv'
 import { shapes } from '@/domain/generators/shapes'
 import { splitTen } from '@/domain/generators/splitTen'
 import { storyProblem } from '@/domain/generators/storyProblem'
 import { subWithBorrow } from '@/domain/generators/subWithBorrow'
 import { teenArithmetic } from '@/domain/generators/teenArithmetic'
+import { unitConvert } from '@/domain/generators/unitConvert'
 import type { Difficulty, GeneratedItem, Generator, ItemTemplate } from '@/domain/types'
 
 /**
@@ -57,14 +63,18 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   braceProblem,
   classifyShape,
   clock,
+  columnArithmetic,
   comparison,
   countShapes,
   counting,
   decomposition,
+  divTable,
   englishListen,
   fourFacts,
   matchPairs,
   memoryPair,
+  mixedOps,
+  mulTable,
   orderSequence,
   ordinal,
   placeValue,
@@ -79,11 +89,13 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   pinyinToChar,
   pinyinTriple,
   position,
+  remainderDiv,
   shapes,
   splitTen,
   storyProblem,
   subWithBorrow,
   teenArithmetic,
+  unitConvert,
 }
 
 /** 同一签名最多重试几次以避开 `exclude`。超过后接受重复，避免死循环。 */

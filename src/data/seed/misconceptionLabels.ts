@@ -143,16 +143,6 @@ export const MISCONCEPTION_LABELS: Record<MisconceptionTag, MisconceptionLabel> 
     example: '35 + 7 把 7 写在了十位下面，算成了 35 + 70',
     advice: '用方格纸列竖式，一格一个数字。先只盯住一件事：末位对末位',
   },
-  carry_chain: {
-    label: '连续进位漏了一次',
-    example: '68 + 75 个位进了 1，十位又满十却没再进',
-    advice: '她会进位，只是第二次忘了。让她把每个进位的小 1 都写在竖式上，别在心里记',
-  },
-  borrow_chain: {
-    label: '连续退位漏了一次',
-    example: '200 - 47 从百位退到十位之后，十位再退给个位时漏了',
-    advice: '同样是写出来——每退一位就在上面划掉改写，不靠脑子记着',
-  },
   op_order: {
     label: '没有先乘除后加减',
     example: '2 + 3 × 4 从左往右算成了 20',

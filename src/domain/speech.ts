@@ -30,7 +30,7 @@
  *
  * | 前缀 | 内容 | 数量级 |
  * |---|---|---|
- * | `num.*` | 数字 0~20 | 21 |
+ * | `num.*` | 数字 0~20，加位值片段 `num.hundred` / `num.thousand` | 23 |
  * | `op.*` | 运算词（加/减/等于） | ~6 |
  * | `phrase.*` | 固定短语（「等于几」「把它们从小到大排好」） | ~60 |
  * | `word.*` | 名词（苹果/小猫…，数数题用） | ~15 |
@@ -73,13 +73,85 @@ export interface Utterance {
   gap?: number
 }
 
-/** 数字片段。超出 0~20 时返回逐位拼读（如 21 → 二十 一） */
+/**
+ * `num()` 能正确拼读的上限。定在 9999 是因为二年级「万以内数的认识」到此为止，
+ * 而三年级起不再朗读中文题干（CLAUDE.md 产品红线），这个上限不会再往上抬。
+ */
+export const MAX_SPOKEN_NUMBER = 9999
+
+/**
+ * 数字片段，覆盖 0~9999（二年级「万以内数的认识」的上限）。
+ *
+ * ⭐ **位值片段念的是「百」「千」，不是「一百」「一千」**——
+ * 三百 = `num.3` + `num.hundred`，片段本身若念「一百」就会拼出「三一百」。
+ * 因此这两个 key 特意不叫 `num.100` / `num.1000`：那个名字会让人
+ * 想当然地把文本填成 100，而错法在测试里看不出来，只有听才发现。
+ *
+ * 中文数字的三个坑，都在下面的分支里处理掉了：
+ *
+ * - **零的占位**：3005 念「三千零五」而不是「三千五」。
+ *   缺了那个「零」，孩子听到的和 305 一模一样。
+ * - **一十**：110 念「一百一十」，而单独的 10 念「十」。
+ *   所以百位以内的两位数不能复用 `num.10` 那条单片段。
+ * - **整十不带尾**：30 念「三十」，不是「三十零」。
+ *
+ * @param n - 非负整数。超过 9999 会退化成逐位拼读（那是错的读法，
+ *            但三年级起不再朗读中文题干，不会走到这里）
+ * @returns 片段 key 序列，按播放顺序
+ *
+ * @example
+ * num(9)      // ['num.9']                              九
+ * num(35)     // ['num.3', 'num.10', 'num.5']           三十五
+ * num(110)    // ['num.1', 'num.hundred', 'num.1', 'num.10']   一百一十
+ * num(3005)   // ['num.3', 'num.thousand', 'num.0', 'num.5']   三千零五
+ */
 export function num(n: number): ClipKey[] {
-  if (Number.isInteger(n) && n >= 0 && n <= 20) return [`num.${n}`]
-  // 目前一年级内容不会超过 20，留这条只为不至于产出空片段
+  if (!Number.isInteger(n) || n < 0) return [`num.${n}`]
+  if (n <= 20) return [`num.${n}`]
+  if (n < 100) return tensParts(n)
+  if (n < 1000) return hundredsParts(n)
+  if (n < 10_000) return thousandsParts(n)
+
+  // 万以上没有内容会用到，留这条只为不至于产出空片段
   return String(n)
     .split('')
     .map((d) => `num.${d}`)
+}
+
+/**
+ * 两位数 21~99 的读法，同时用于更大数的末两位。
+ *
+ * ⚠️ 与 `num()` 的 0~20 分支不同，这里 10~19 一律读「一十几」——
+ * 「一百**一十**」对，「一百十」不对。
+ */
+function tensParts(n: number): ClipKey[] {
+  const tens = Math.floor(n / 10)
+  const ones = n % 10
+  const head: ClipKey[] = [`num.${tens}`, 'num.10']
+  return ones === 0 ? head : [...head, `num.${ones}`]
+}
+
+/** 三位数 100~999。末两位不足十时补「零」：305 → 三百零五 */
+function hundredsParts(n: number): ClipKey[] {
+  const hundreds = Math.floor(n / 100)
+  const rest = n % 100
+  const head: ClipKey[] = [`num.${hundreds}`, 'num.hundred']
+
+  if (rest === 0) return head
+  if (rest < 10) return [...head, 'num.0', `num.${rest}`]
+  return [...head, ...tensParts(rest)]
+}
+
+/** 四位数 1000~9999。百位为空时补「零」：3050 → 三千零五十 */
+function thousandsParts(n: number): ClipKey[] {
+  const thousands = Math.floor(n / 1000)
+  const rest = n % 1000
+  const head: ClipKey[] = [`num.${thousands}`, 'num.thousand']
+
+  if (rest === 0) return head
+  if (rest < 10) return [...head, 'num.0', `num.${rest}`]
+  if (rest < 100) return [...head, 'num.0', ...tensParts(rest)]
+  return [...head, ...hundredsParts(rest)]
 }
 
 /**
@@ -107,7 +179,7 @@ export function utter(
  * 返回 `undefined`，由调用方整句降级——**宁可整句 TTS 也不能拼出漏词的句子**。
  *
  * @param text - 正确答案的展示文本
- * @returns 片段序列；含非数字词或数字超过 20 时返回 `undefined`
+ * @returns 片段序列；含非数字词或数字超过 {@link MAX_SPOKEN_NUMBER} 时返回 `undefined`
  *
  * @example
  * answerParts('10 和 3')      // ['num.10', 'op.and', 'num.3']
@@ -124,8 +196,14 @@ export function answerParts(text: string): ClipKey[] | undefined {
       parts.push('op.and')
       continue
     }
-    // 20 以上 num() 会退化成逐位拼读（25 → 「二 五」），那是错的读法，宁可不拼
-    if (!/^\d+$/.test(token) || Number(token) > 20) return undefined
+    // 有余数除法的答案是「3 余 1」——不认这个字就得整句降级成 TTS，
+    // 而那个单元每道题的答案都长这样
+    if (token === '余') {
+      parts.push('op.remainder')
+      continue
+    }
+    // 超出 num() 能正确拼读的范围就整句降级 —— 宁可整句 TTS，也不能念出错的读法
+    if (!/^\d+$/.test(token) || Number(token) > MAX_SPOKEN_NUMBER) return undefined
     parts.push(...num(Number(token)))
   }
   return parts

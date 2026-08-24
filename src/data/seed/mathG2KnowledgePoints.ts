@@ -68,13 +68,13 @@ const SPECS: KpSpec[] = [
     mis: ['column_misaligned', 'op_confusion'] },
   // ⭐ 关键节点：后面的连加连减、整百整千加减、乃至三年级的多位数笔算全压在它上面
   { id: 'M2-2.2', name: '两位数加两位数（进位）', pre: ['M2-2.1'], diff: 2, key: true,
-    mis: ['no_carry', 'carry_chain', 'column_misaligned'] },
+    mis: ['no_carry', 'column_misaligned', 'op_confusion'] },
   { id: 'M2-2.3', name: '两位数减两位数（不退位）', pre: ['M2-2.1'], diff: 2,
     mis: ['column_misaligned', 'op_confusion'] },
   { id: 'M2-2.4', name: '两位数减两位数（退位）', pre: ['M2-2.3', 'M6.5'], diff: 3,
-    mis: ['no_borrow', 'borrow_chain', 'column_misaligned'] },
+    mis: ['no_borrow', 'column_misaligned', 'op_confusion'] },
   { id: 'M2-2.5', name: '连加连减与加减混合（100以内）', pre: ['M2-2.2', 'M2-2.4'], diff: 3,
-    mis: ['op_confusion', 'carry_chain', 'borrow_chain'] },
+    mis: ['op_confusion', 'no_carry', 'no_borrow'] },
   { id: 'M2-2.6', name: '求比一个数多几·少几的数', pre: ['M2-2.2', 'M9.3'],
     types: ['choice_image'], diff: 3, mis: ['wrong_operation', 'add_instead', 'sub_instead'] },
 
