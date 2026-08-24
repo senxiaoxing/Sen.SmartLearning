@@ -59,6 +59,44 @@ export function candidateTimes(hour: number, minute: number): ClockTime[] {
 }
 
 /**
+ * 二年级「几时几分」的干扰候选，**每个各带自己的标签**。
+ *
+ * 与 {@link candidateTimes} 的区别是它不再一律标 `hand_swap`：
+ * 一年级只读整时半时，读错基本只有看反指针一个原因；
+ * 到了几时几分，两个新错误反而更常见，而它们的补救完全不同——
+ *
+ * - `minute_misread` 分针指向 3 读成「3 分」：不知道一大格是 5 分，要绕钟面数一遍
+ * - `hour_overread` 3:55 读成 4:55：时针快到 4 了就当成 4，要强调「走过谁才是谁」
+ *
+ * @param hour - 正确的时（1~12）
+ * @param minute - 正确的分（1~59）
+ * @returns 候选时刻，按诊断价值排序
+ *
+ * @example
+ * minuteCandidates(3, 15)
+ * // [{ time: 3:3,  tag: 'minute_misread' },   把 15 分读成了格数 3
+ * //  { time: 4:15, tag: 'hour_overread'  },   时针读快了一格
+ * //  { time: 3:45, tag: 'minute_misread' }, … ]
+ */
+export function minuteCandidates(
+  hour: number,
+  minute: number,
+): Array<{ time: ClockTime; tag: 'minute_misread' | 'hour_overread' | 'hand_swap' }> {
+  const mark = minute / 5
+  return [
+    // 分针指向的大格数直接当成分钟数
+    ...(Number.isInteger(mark) && mark !== minute
+      ? [{ time: { hour, minute: mark }, tag: 'minute_misread' as const }]
+      : []),
+    { time: { hour: (hour % 12) + 1, minute }, tag: 'hour_overread' as const },
+    { time: swapHands(hour, minute), tag: 'hand_swap' as const },
+    // 分针方向读反了（顺时针数成逆时针）：15 分读成 45 分
+    { time: { hour, minute: (60 - minute) % 60 }, tag: 'minute_misread' as const },
+    { time: { hour, minute: (minute + 5) % 60 }, tag: 'minute_misread' as const },
+  ]
+}
+
+/**
  * 挑出与正确答案**不重合**的干扰项。
  *
  * ⭐ 必须以正确项为基准去重，不能反过来：

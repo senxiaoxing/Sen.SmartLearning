@@ -12,7 +12,9 @@ import { arithmetic } from '@/domain/generators/arithmetic'
 import { braceProblem } from '@/domain/generators/braceProblem'
 import { classifyShape } from '@/domain/generators/classifyShape'
 import { clock } from '@/domain/generators/clock'
+import { clockMinutes } from '@/domain/generators/clockMinutes'
 import { columnArithmetic } from '@/domain/generators/columnArithmetic'
+import { combination } from '@/domain/generators/combination'
 import { comparison } from '@/domain/generators/comparison'
 import { countShapes } from '@/domain/generators/countShapes'
 import { counting } from '@/domain/generators/counting'
@@ -20,11 +22,13 @@ import { decomposition } from '@/domain/generators/decomposition'
 import { divTable } from '@/domain/generators/divTable'
 import { englishListen } from '@/domain/generators/englishListen'
 import { fourFacts } from '@/domain/generators/fourFacts'
+import { logicReasoning } from '@/domain/generators/logicReasoning'
 import { matchPairs } from '@/domain/generators/matchPairs'
 import { memoryPair } from '@/domain/generators/memoryPair'
 import { mixedOps } from '@/domain/generators/mixedOps'
 import { mulTable } from '@/domain/generators/mulTable'
 import { orderSequence } from '@/domain/generators/orderSequence'
+import { numberComposition } from '@/domain/generators/numberComposition'
 import { ordinal } from '@/domain/generators/ordinal'
 import { placeValue } from '@/domain/generators/placeValue'
 import { pinyinBlend } from '@/domain/generators/pinyinBlend'
@@ -63,7 +67,9 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   braceProblem,
   classifyShape,
   clock,
+  clockMinutes,
   columnArithmetic,
+  combination,
   comparison,
   countShapes,
   counting,
@@ -71,10 +77,12 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   divTable,
   englishListen,
   fourFacts,
+  logicReasoning,
   matchPairs,
   memoryPair,
   mixedOps,
   mulTable,
+  numberComposition,
   orderSequence,
   ordinal,
   placeValue,

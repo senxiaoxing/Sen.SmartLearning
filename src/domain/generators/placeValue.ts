@@ -15,10 +15,37 @@ import { randomInt } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
 import type { Generator } from '@/domain/types'
 
+/** 数位：索引即「第几位」，0 是个位。扩到千位是为二年级万以内数（M2-13.4） */
+const PLACES = ['ones', 'tens', 'hundreds', 'thousands'] as const
+type Place = (typeof PLACES)[number]
+
+const PLACE_NAMES: Record<Place, string> = {
+  ones: '个位',
+  tens: '十位',
+  hundreds: '百位',
+  thousands: '千位',
+}
+
+const PLACE_CLIPS: Record<Place, string> = {
+  ones: 'phrase.onesDigitWhat',
+  tens: 'phrase.tensDigitWhat',
+  hundreds: 'phrase.hundredsDigitWhat',
+  thousands: 'phrase.thousandsDigitWhat',
+}
+
+/** 取某一位上的数字 */
+function digitAt(value: number, place: Place): number {
+  return Math.floor(value / 10 ** PLACES.indexOf(place)) % 10
+}
+
 /**
  * 生成一道数位题。
  *
- * @param ctx.params.ask - 问哪一位：`'tens'` 十位 | `'ones'` 个位 | `'both'` 随机
+ * ⭐ 从一年级的个位/十位扩到千位是**扩参数而不是新生成器**：
+ * 误区还是 `place_value_swap`（说成了另一位上的数），干扰项策略一个字没变。
+ * 判据见 design/08-年级分区与内容扩展.md §4.1。
+ *
+ * @param ctx.params.ask - 问哪一位：`'ones'` | `'tens'` | `'hundreds'` | `'thousands'` | `'both'` 随机
  * @param ctx.params.range - 被问的数的区间，默认 11~19
  *
  * @example
@@ -27,35 +54,39 @@ import type { Generator } from '@/domain/types'
  * //   1 → 正确（十位上是 1）
  * //   5 → place_value_swap  说成了个位上的数
  * //  15 → place_value_swap  答成了整个数
+ *
+ * placeValue({ kpId: 'M2-13.4', difficulty: 3, params: { ask: 'hundreds', range: [1000, 9999] }, rng })
+ * // 「3527 的百位上是几」→ 5
  */
 export const placeValue: Generator = ({ kpId, difficulty, params, rng }) => {
-  const ask = readEnum(params, 'ask', ['tens', 'ones', 'both'] as const, 'both')
+  const ask = readEnum(params, 'ask', [...PLACES, 'both'] as const, 'both')
   const [lo, hi] = readRange(params, 'range', [11, 19])
 
   const value = randomInt(rng, lo, hi)
-  const tens = Math.floor(value / 10)
-  const ones = value % 10
+  // 只在这个数真有的位里挑，免得问「15 的千位上是几」
+  const available = PLACES.filter((p) => hi >= 10 ** PLACES.indexOf(p))
+  const place: Place =
+    ask === 'both' ? available[Math.floor(rng() * available.length)]! : ask
 
-  const askTens = ask === 'tens' || (ask === 'both' && rng() < 0.5)
-  const answer = askTens ? tens : ones
-  const other = askTens ? ones : tens
-  const placeName = askTens ? '十位' : '个位'
+  const answer = digitAt(value, place)
+  const others = available.filter((p) => p !== place).map((p) => digitAt(value, p))
+  const placeName = PLACE_NAMES[place]
 
   return {
-    signature: `${kpId}-place#${askTens ? 'tens' : 'ones'}:${value}`,
+    signature: `${kpId}-place#${place}:${value}`,
     kpId,
     type: 'input_number',
     difficulty,
     stem: {
       text: `${value} 的${placeName}上是几？`,
       ttsText: `${value} 的${placeName}上是几`,
-      ttsParts: [...num(value), askTens ? 'phrase.tensDigitWhat' : 'phrase.onesDigitWhat'],
+      ttsParts: [...num(value), PLACE_CLIPS[place]],
     },
     options: buildNumericOptions(
       answer,
       [
-        // ⭐ 说反了：把另一位的数当成答案
-        { tag: 'place_value_swap', value: other },
+        // ⭐ 说反了：把别的位上的数当成答案
+        ...others.map((v) => ({ tag: 'place_value_swap' as const, value: v })),
         // 答成了整个数，完全没理解「某一位上」是什么意思
         { tag: 'place_value_swap', value },
         { tag: 'off_by_one', value: answer + 1 },
@@ -63,9 +94,16 @@ export const placeValue: Generator = ({ kpId, difficulty, params, rng }) => {
       rng,
     ),
     answer: String(answer),
-    // 难度 1 给十格阵脚手架；⚠️ 高难度必须撤掉，否则孩子只是在读图不是在理解数位
-    ...(difficulty === 1
-      ? { visual: { kind: 'tenFrame' as const, frame: tens * 10, loose: ones } }
+    // 难度 1 给十格阵脚手架；⚠️ 高难度必须撤掉，否则孩子只是在读图不是在理解数位。
+    // 只在两位数内给：十格阵摆不下三位数，那是二年级的内容
+    ...(difficulty === 1 && value < 100
+      ? {
+          visual: {
+            kind: 'tenFrame' as const,
+            frame: digitAt(value, 'tens') * 10,
+            loose: digitAt(value, 'ones'),
+          },
+        }
       : {}),
   }
 }

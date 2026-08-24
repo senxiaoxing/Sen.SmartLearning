@@ -146,12 +146,39 @@ const PHRASES: VoiceManifest = {
   'phrase.compareWhatSymbol': '比，中间该填什么符号',
   'phrase.tensDigitWhat': '的十位上是几',
   'phrase.onesDigitWhat': '的个位上是几',
+  // —— 二年级：万以内数的读写与组成（M2-13.x）
+  'phrase.hundredsDigitWhat': '的百位上是几',
+  'phrase.thousandsDigitWhat': '的千位上是几',
+  'phrase.writtenAsWhat': '写作几',
+  /**
+   * ⭐ 只说「这个数」，**不念题干里的那个数**——念出来就等于把答案告诉她了。
+   * 同 `phrase.toneMark1` 的处理：考写法的题，题干只能给提示语。
+   */
+  'phrase.howToReadThis': '这个数读作什么',
+  'phrase.countOnes': '个一',
+  'phrase.countTens': '个十',
+  'phrase.countHundreds': '个百',
+  'phrase.countThousands': '个千',
 
   // —— 题干：序数与位置（M1.4 / M2.x）
   // ⚠️ 'phrase.at' 是孤立单字「在」，生成后要复听，读飘就进 TAIL_FIX_KEYS
   'phrase.fromLeftCount': '从左边数',
   'phrase.fromRightCount': '从右边数',
   'phrase.rankWhich': '排第几',
+  // —— 二年级数学广角（M2-7 搭配 · M2-15 推理）
+  //    搭配题固定「上衣配裤子」、排列题只用数字，都不做物品词表：
+  //    换成十几种物品要十几条 mp3，换来的只是题干看着热闹一点
+  'phrase.topsAnd': '件上衣和',
+  'phrase.bottomsHowMany': '条裤子，一共有几种穿法',
+  'phrase.usingTheseDigits': '用这几个数字',
+  'phrase.howManyTwoDigits': '能组成几个不同的两位数',
+  'phrase.animalsLineUp': '小动物们排成一排',
+  'phrase.isNotAt': '不排',
+  'phrase.whoRanksAt': '谁排',
+  'ord.first': '第一',
+  'ord.second': '第二',
+  'ord.third': '第三',
+  'ord.fourth': '第四',
   'phrase.at': '在',
   'phrase.whatPosition': '的什么位置',
 
@@ -185,6 +212,14 @@ const PHRASES: VoiceManifest = {
   'phrase.whichClockShows': '哪个钟面是',
   'phrase.oclockSharp': '点整',
   'phrase.halfPast': '点半',
+  // —— 二年级「几时几分」（M2-6.x）。「3 点 15 分」= 3 + 点 + 15 + 分，
+  //    末尾的「分」复用单位换算那条 `unit.min`
+  /** ⚠️ 孤立单字，同 `phrase.at`——生成后要复听，读飘就进 `TAIL_FIX_KEYS` */
+  'phrase.oclock': '点',
+  'phrase.minuteHandAt': '分针指着',
+  'phrase.howManyMinutes': '是多少分',
+  'phrase.afterMinutes': '再过',
+  'phrase.whatTimeThen': '分是几点几分',
 
   // —— 题干：拼音固定题干（P 系列，整句一条，不拼接）
   'phrase.oddInitial': '点一点听一听，哪个的声母和其他三个不一样',
