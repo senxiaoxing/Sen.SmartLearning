@@ -43,12 +43,14 @@ import { pinyinToChar } from '@/domain/generators/pinyinToChar'
 import { pinyinTriple } from '@/domain/generators/pinyinTriple'
 import { position } from '@/domain/generators/position'
 import { remainderDiv } from '@/domain/generators/remainderDiv'
+import { roundNumber } from '@/domain/generators/roundNumber'
 import { shapes } from '@/domain/generators/shapes'
 import { splitTen } from '@/domain/generators/splitTen'
 import { storyProblem } from '@/domain/generators/storyProblem'
 import { subWithBorrow } from '@/domain/generators/subWithBorrow'
 import { teenArithmetic } from '@/domain/generators/teenArithmetic'
 import { unitConvert } from '@/domain/generators/unitConvert'
+import { wordProblem } from '@/domain/generators/wordProblem'
 import type { Difficulty, GeneratedItem, Generator, ItemTemplate } from '@/domain/types'
 
 /**
@@ -98,12 +100,14 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   pinyinTriple,
   position,
   remainderDiv,
+  roundNumber,
   shapes,
   splitTen,
   storyProblem,
   subWithBorrow,
   teenArithmetic,
   unitConvert,
+  wordProblem,
 }
 
 /** 同一签名最多重试几次以避开 `exclude`。超过后接受重复，避免死循环。 */

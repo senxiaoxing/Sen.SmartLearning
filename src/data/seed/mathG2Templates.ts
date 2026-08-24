@@ -27,8 +27,43 @@
  * 而不是把因数从 5 换成 9。
  */
 
+import { STORY_FRAMES } from '@/data/seed/storyFrames'
 import { altTpl, tpl } from '@/data/seed/templateBuilder'
 import type { ItemTemplate } from '@/domain/types'
+
+/**
+ * 文字应用题的两条模板：同一种运算，主模板填空、备选四选一。
+ *
+ * ⚠️ `frames: STORY_FRAMES` 是**句式表注入**，每一档都要带上——
+ * 生成器不自己 import 它（domain 不依赖 data 是分层铁律）。
+ * 漏传会在出题时立刻抛错，不会静默出一道空题。
+ */
+function wordPair(kpId: string, modes: [string, string, string]): ItemTemplate[] {
+  return [
+    tpl(kpId, 'wordProblem', {
+      1: { mode: modes[0], frames: STORY_FRAMES, factorRange: [2, 5], quotientRange: [2, 5] },
+      2: { mode: modes[1], frames: STORY_FRAMES },
+      3: { mode: modes[2], frames: STORY_FRAMES },
+    }),
+    altTpl(
+      kpId,
+      'pick',
+      'wordProblem',
+      {
+        1: {
+          mode: modes[1],
+          frames: STORY_FRAMES,
+          factorRange: [2, 5],
+          quotientRange: [2, 5],
+          as: 'choice_text',
+        },
+        2: { mode: modes[2], frames: STORY_FRAMES, as: 'choice_text' },
+        3: { mode: modes[0], frames: STORY_FRAMES, as: 'choice_text' },
+      },
+      'choice_text',
+    ),
+  ]
+}
 
 /** 表内乘法：一句口诀一条模板，三档为 求积 → 求积 → 求因数 */
 function mulPair(kpId: string, factors: number[]): ItemTemplate[] {
@@ -166,6 +201,10 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
     3: { mode: 'sameLevel', as: 'choice_text' },
   }, 'choice_text'),
 
+  // 求比一个数多几·少几：三档在「多」与「少」之间交替，
+  // 她得每道题都听清是哪一个——这本身就是这个知识点要练的
+  ...wordPair('M2-2.6', ['moreThan', 'lessThan', 'moreThan']),
+
   // ── M2-4 表内乘法 ────────────────────────────────────────────────
   ...mulPair('M2-4.3', [5]),
   ...mulPair('M2-4.4', [2, 3, 4]),
@@ -251,10 +290,18 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   ...divPair('M2-9.3', [2, 3, 4, 5, 6]),
   ...divPair('M2-9.4', [7, 8, 9]),
 
+  // ⭐ 平均分与包含除是**两种除法**：一个问「每份几个」，一个问「能分几份」。
+  // 算式一样、想的东西不一样，所以三档在两者之间来回换
+  ...wordPair('M2-9.6', ['share', 'group', 'share']),
+
   // ── M2-11 混合运算 ───────────────────────────────────────────────
   ...mixedPair('M2-11.1', 'sameLevel'),
   ...mixedPair('M2-11.2', 'mixed'),
   ...mixedPair('M2-11.3', 'paren'),
+
+  // 两步计算：先乘后减 / 先乘后加交替。同一个句法只换动词，
+  // 但第二步的运算变了——她不能靠记句式蒙
+  ...wordPair('M2-11.4', ['twoStepLess', 'twoStepMore', 'twoStepLess']),
 
   // ── M2-12 有余数的除法 ───────────────────────────────────────────
   // 主模板连商带余数一起答，备选只填余数——后者把「还够不够再分一轮」单独拎出来练
@@ -291,7 +338,24 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
     3: { mode: 'remainderOnly', divisorRange: [2, 9] },
   }, 'input_number'),
 
+  // ⭐ 「至少要几条船」的答案是商 + 1。这是余数唯一真正有用武之地的地方——
+  // 剩下的 2 个人也得有船坐
+  ...wordPair('M2-12.4', ['atLeast', 'atLeast', 'atLeast']),
+
   // ── M2-13 万以内数的认识 ─────────────────────────────────────────
+  // 数的顺序：三档不是「换更大的数」，而是 连续 → 有间隔 → 从大到小，
+  // 与一年级 M1.3 同一套难度设计，只把 range 抬到千位
+  tpl('M2-13.1', 'orderSequence', {
+    1: { range: [100, 999], mode: 'consecutive' },
+    2: { range: [100, 999], mode: 'gapped' },
+    3: { range: [1000, 9999], mode: 'descending' },
+  }, 'drag_order'),
+  altTpl('M2-13.1', 'compare', 'comparison', {
+    1: { range: [100, 999], mode: 'which' },
+    2: { range: [100, 999] },
+    3: { range: [1000, 9999] },
+  }, 'choice_text'),
+
   // 写数与读数互为逆向，正好是两种题型
   tpl('M2-13.2', 'numberComposition', {
     1: { mode: 'write', digits: 3 },
@@ -314,6 +378,42 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
     2: { mode: 'write', digits: 4 },
     3: { mode: 'compose', digits: 4 },
   }, 'input_number'),
+
+  // 大小比较：符号题与择大题分离，正是为了区分「不知道谁大」和「知道但符号写反」
+  tpl('M2-13.4', 'comparison', {
+    1: { range: [100, 999] },
+    2: { range: [1000, 9999] },
+    3: { range: [1000, 9999] },
+  }, 'choice_text'),
+  altTpl('M2-13.4', 'order', 'orderSequence', {
+    1: { range: [100, 999], mode: 'gapped' },
+    2: { range: [1000, 9999], mode: 'gapped' },
+    3: { range: [1000, 9999], mode: 'descending' },
+  }, 'drag_order'),
+
+  // 近似数：先约到百，再约到千
+  tpl('M2-13.5', 'roundNumber', {
+    1: { unit: 100 },
+    2: { unit: 100 },
+    3: { unit: 1000 },
+  }),
+  altTpl('M2-13.5', 'pick', 'roundNumber', {
+    1: { unit: 100, as: 'choice_text' },
+    2: { unit: 1000, as: 'choice_text' },
+    3: { unit: 1000, as: 'choice_text' },
+  }, 'choice_text'),
+
+  // 整百整千加减：本质是「几个百」相加，误区还是数位那一套
+  tpl('M2-13.6', 'columnArithmetic', {
+    1: { op: 'add', unit: 100 },
+    2: { op: 'mixed', unit: 100 },
+    3: { op: 'mixed', unit: 1000 },
+  }),
+  altTpl('M2-13.6', 'pick', 'columnArithmetic', {
+    1: { op: 'mixed', unit: 100, as: 'choice_text' },
+    2: { op: 'mixed', unit: 1000, as: 'choice_text' },
+    3: { op: 'mixed', unit: 1000, as: 'choice_text' },
+  }, 'choice_text'),
 
   // ── M2-14 克和千克 ───────────────────────────────────────────────
   tpl('M2-14.1', 'unitConvert', {
@@ -366,8 +466,6 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
 export const PENDING_G2_KP_IDS: readonly string[] = [
   // 需要尺子 / 线段 SVG
   'M2-1.1', 'M2-1.2', 'M2-1.5',
-  // 需要情境骨架铺到二年级（§4.2 的 storyFrames）
-  'M2-2.6', 'M2-9.6', 'M2-11.4', 'M2-12.4',
   // 需要角的 SVG
   'M2-3.1', 'M2-3.2', 'M2-3.3', 'M2-3.4',
   // 需要「几个几」的分组图
@@ -380,8 +478,6 @@ export const PENDING_G2_KP_IDS: readonly string[] = [
   'M2-9.5',
   // 需要轴对称 / 平移 / 旋转 SVG
   'M2-10.1', 'M2-10.2', 'M2-10.3', 'M2-10.4',
-  // 数的顺序、大小比较、近似数、整百整千加减：现有生成器的数值范围还没扩上去
-  'M2-13.1', 'M2-13.4', 'M2-13.5', 'M2-13.6',
   // 推理只产 choice_image，还缺一种题型才够两条
   'M2-15.1', 'M2-15.2',
 ]

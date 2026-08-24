@@ -212,6 +212,11 @@ export const MISCONCEPTION_LABELS: Record<MisconceptionTag, MisconceptionLabel> 
     example: '给铅笔选了「米」，给一个苹果选了「千克」',
     advice: '找几样身边的东西当尺子：一根手指宽约 1 厘米、一袋盐 500 克，让她拿在手上比',
   },
+  estimate_truncate: {
+    label: '取近似数只砍不进',
+    example: '4985 约等于几千，答成了 4000',
+    advice: '画一条数轴，把 4985 点上去，问她离 4000 近还是离 5000 近',
+  },
   ruler_start_wrong: {
     label: '量长度没从 0 开始',
     example: '把物体左端对在刻度 1 上，直接读了右端的数',

@@ -50,12 +50,69 @@ export const columnArithmetic: Generator = (ctx: GeneratorContext): GeneratedIte
   const op = readEnum(ctx.params, 'op', OPS, 'add')
   const carry = readEnum(ctx.params, 'carry', CARRY_MODES, 'any')
   const bDigits = readNumber(ctx.params, 'bDigits', 2)
+  const unit = readNumber(ctx.params, 'unit', 1)
 
   const resolved = op === 'mixed' ? (ctx.rng() < 0.5 ? 'add' : 'sub') : op
+
+  if (unit > 1) return buildWholeUnits(ctx, resolved, unit)
+
   const [a, b] =
     resolved === 'add' ? makeAddPair(ctx, carry, bDigits) : makeSubPair(ctx, carry, bDigits)
 
   return build(ctx, resolved, a, b, bDigits)
+}
+
+/**
+ * 整百整千数的加减（M2-13.6）：`500 + 300 = ?`
+ *
+ * ⭐ 本质是 `5 + 3` 再挂上两个零，所以**误区也是数位那一套**——
+ * 算对了 8 却写成 8 或 8000，正是 `place_value_swap`。
+ * 按 §4.1 的判据这属于扩参数，不是新生成器：干扰项策略一个字没变。
+ */
+function buildWholeUnits(
+  ctx: GeneratorContext,
+  op: 'add' | 'sub',
+  unit: number,
+): GeneratedItem {
+  // 用「几个百」来构造，保证两数都是整的，且结果不越过万
+  const maxUnits = Math.min(9, Math.floor(9999 / unit))
+  const headA =
+    op === 'add' ? randomInt(ctx.rng, 1, maxUnits - 1) : randomInt(ctx.rng, 2, maxUnits)
+  const headB =
+    op === 'add' ? randomInt(ctx.rng, 1, maxUnits - headA) : randomInt(ctx.rng, 1, headA - 1)
+
+  const a = headA * unit
+  const b = headB * unit
+  const answer = op === 'add' ? a + b : a - b
+  const symbol = op === 'add' ? '+' : '-'
+
+  return {
+    signature: `${ctx.kpId}#unit${unit}:${a}${symbol}${b}`,
+    kpId: ctx.kpId,
+    type: readItemType(ctx.params, 'input_number'),
+    difficulty: ctx.difficulty,
+    stem: {
+      text: `${a} ${symbol} ${b} = ?`,
+      ttsText: `${a} ${op === 'add' ? '加' : '减'} ${b} 等于几`,
+      ttsParts: [
+        ...num(a),
+        op === 'add' ? 'op.plus' : 'op.minus',
+        ...num(b),
+        'phrase.equalsWhat',
+      ],
+    },
+    options: buildNumericOptions(
+      answer,
+      [
+        // ⭐ 算对了「几个百」，零却写错了个数
+        { value: (op === 'add' ? headA + headB : headA - headB) * unit * 10, tag: 'place_value_swap' },
+        { value: op === 'add' ? headA + headB : headA - headB, tag: 'place_value_swap' },
+        { value: op === 'add' ? a - b : a + b, tag: 'op_confusion' },
+      ],
+      ctx.rng,
+    ),
+    answer: String(answer),
+  }
 }
 
 /** 构造一对加数。`carry` 为 `'any'` 时随机决定这一题进不进位 */

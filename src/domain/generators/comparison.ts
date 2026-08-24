@@ -55,7 +55,7 @@ export const comparison: Generator = (ctx: GeneratorContext): GeneratedItem => {
   const equal = ctx.rng() < 0.15
   const b = equal ? a : pickDifferent(ctx, min, max, a)
 
-  return mode === 'which' ? buildWhichItem(ctx, a, b) : buildSymbolItem(ctx, a, b)
+  return mode === 'which' ? buildWhichItem(ctx, a, b, max) : buildSymbolItem(ctx, a, b)
 }
 
 /** 取一个与 `a` 不同的数。区间退化为单点时回退为 `a`，由上层的相等分支兜住。 */
@@ -110,10 +110,17 @@ function buildSymbolItem(ctx: GeneratorContext, a: number, b: number): Generated
  *
  * 绕开符号，只考数感。用于 M1.5「比多少」，也用于复测 `symbol_reversed` 的成因。
  */
-function buildWhichItem(ctx: GeneratorContext, a: number, b: number): GeneratedItem {
-  // 相等时无法问「哪个更大」，强制拉开差距
+function buildWhichItem(
+  ctx: GeneratorContext,
+  a: number,
+  b: number,
+  max: number,
+): GeneratedItem {
+  // 相等时无法问「哪个更大」，强制拉开差距。
+  // ⚠️ 上界取参数里的 max 而不是写死 20：二年级要比到万以内（M2-13.4），
+  // 写死的话 5000 那种数会一律走 -1 分支，题目全变成「比小 1 的数」
   const left = a
-  const right = a === b ? (a < 20 ? a + 1 : a - 1) : b
+  const right = a === b ? (a < max ? a + 1 : a - 1) : b
   const answer = String(Math.max(left, right))
   const wrong = String(Math.min(left, right))
 

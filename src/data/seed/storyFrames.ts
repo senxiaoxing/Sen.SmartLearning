@@ -157,4 +157,142 @@ export const STORY_FRAMES: readonly StoryFrame[] = [
     text: '上面比下面多几个{thing}？',
     parts: ['phrase.topMoreHowMany', '{thing}'],
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // 二年级：文字应用题（`wordProblem.ts`）
+  //
+  // ⚠️ 以下全部 `story: true` 且**不配图**——数值大到画不出来，
+  // 「22 个小朋友坐船」摆 22 个 emoji 在 iPad 上是一片糊，
+  // 而教材里这类题本来就是纯文字。题干靠朗读。
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 平均分（M2-9.6）───────────────────────────────────────────────
+  // 「分给几个人，每人几个」是除法最原始的样子，比「12÷3」先出现
+  {
+    op: 'share',
+    story: true,
+    text: '{a} 个{thing}，平均分给 {b} 个小朋友，每人分几个？',
+    parts: [
+      '{a}',
+      'phrase.unitGe',
+      '{thing}',
+      'phrase.shareEqually',
+      '{b}',
+      'phrase.kidsEachGets',
+    ],
+  },
+  {
+    // 同一个算式，把「分给」换成「一起分」——语序变了，她得重新读一遍
+    op: 'share',
+    story: true,
+    text: '{a} 个{thing}，{b} 个小朋友平均分，每人分几个？',
+    parts: ['{a}', 'phrase.unitGe', '{thing}', '{b}', 'phrase.kidsShareEqually'],
+  },
+
+  // ── 包含除（M2-9.6）───────────────────────────────────────────────
+  // ⭐ 与平均分是**两种除法**：那个问「每份几个」，这个问「能分成几份」。
+  // 算式一样，想的东西不一样，所以两种说法都要出
+  {
+    op: 'group',
+    story: true,
+    text: '{a} 个{thing}，{b} 个装一盒，能装几盒？',
+    parts: ['{a}', 'phrase.unitGe', '{thing}', '{b}', 'phrase.perBoxCanPack'],
+  },
+  {
+    op: 'group',
+    story: true,
+    text: '{a} 个{thing}，{b} 个分一组，能分几组？',
+    parts: ['{a}', 'phrase.unitGe', '{thing}', '{b}', 'phrase.perGroupCanMake'],
+  },
+
+  // ── 求比一个数多几·少几的数（M2-2.6）──────────────────────────────
+  // 只用一个方向（小明 → 小红）：主角对调要再加三条人名片段，
+  // 而「多」与「少」的交替本身已经是变化——她得先听清是多还是少
+  {
+    op: 'moreThan',
+    story: true,
+    text: '小明有 {a} 个{thing}，小红比他多 {b} 个，小红有几个？',
+    parts: [
+      'phrase.xiaomingHas',
+      '{a}',
+      'phrase.unitGe',
+      '{thing}',
+      'phrase.xiaohongMore',
+      '{b}',
+      'phrase.unitGe',
+      'phrase.xiaohongHasHowMany',
+    ],
+  },
+  {
+    op: 'lessThan',
+    story: true,
+    text: '小明有 {a} 个{thing}，小红比他少 {b} 个，小红有几个？',
+    parts: [
+      'phrase.xiaomingHas',
+      '{a}',
+      'phrase.unitGe',
+      '{thing}',
+      'phrase.xiaohongLess',
+      '{b}',
+      'phrase.unitGe',
+      'phrase.xiaohongHasHowMany',
+    ],
+  },
+
+  // ── 两步计算（M2-11.4）────────────────────────────────────────────
+  // 先乘后减 / 先乘后加分成两个 op：句式看着只差一个动词，
+  // 但第二步的运算不同，答案也不同——用同一个 op 会让题干与答案对不上
+  {
+    // ⚠️ 只配能吃的东西
+    op: 'twoStepLess',
+    story: true,
+    text: '{a} 盒{thing}，每盒 {b} 个，吃掉了 {c} 个，还剩几个？',
+    thingKinds: ['edible'],
+    parts: [
+      '{a}',
+      'phrase.boxesOf',
+      '{thing}',
+      'phrase.eachBoxHas',
+      '{b}',
+      'phrase.unitGe',
+      'phrase.ateUp',
+      '{c}',
+      'phrase.unitGe',
+      'phrase.howManyLeft',
+    ],
+  },
+  {
+    // ⭐ 零新增片段：「又来了」「一共有几个」全是一年级就有的
+    op: 'twoStepMore',
+    story: true,
+    text: '{a} 盒{thing}，每盒 {b} 个，又来了 {c} 个，一共有几个？',
+    parts: [
+      '{a}',
+      'phrase.boxesOf',
+      '{thing}',
+      'phrase.eachBoxHas',
+      '{b}',
+      'phrase.unitGe',
+      'phrase.thenCame',
+      '{c}',
+      'phrase.unitGe',
+      'phrase.altogetherHowMany',
+    ],
+  },
+
+  // ── 有余数的应用（M2-12.4）────────────────────────────────────────
+  // ⭐ 这类题的答案是「商 + 1」：22 个人每船坐 4 个，5 条船只坐得下 20 个，
+  // 剩下的 2 个还得再来一条。remainder_ignored 在这里最致命
+  {
+    op: 'atLeast',
+    story: true,
+    text: '{a} 个小朋友坐船，每条船坐 {b} 个，至少要几条船？',
+    parts: ['{a}', 'phrase.kidsTakeBoat', '{b}', 'phrase.atLeastBoats'],
+  },
+  {
+    op: 'atLeast',
+    story: true,
+    text: '{a} 个{thing}，每个盒子装 {b} 个，至少要几个盒子？',
+    parts: ['{a}', 'phrase.unitGe', '{thing}', 'phrase.eachBoxHolds', '{b}', 'phrase.atLeastBoxes'],
+  },
 ]

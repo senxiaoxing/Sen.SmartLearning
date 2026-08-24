@@ -4497,5 +4497,73 @@
  "phrase.whatTimeThen": {
   "text": "分是几点几分",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.aboutHowManyHundreds": {
+  "text": "大约是几百",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.aboutHowManyThousands": {
+  "text": "大约是几千",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.shareEqually": {
+  "text": "平均分给",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.kidsEachGets": {
+  "text": "个小朋友，每人分几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.kidsShareEqually": {
+  "text": "个小朋友平均分，每人分几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.perBoxCanPack": {
+  "text": "个装一盒，能装几盒",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.perGroupCanMake": {
+  "text": "个分一组，能分几组",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaomingHas": {
+  "text": "小明有",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaohongMore": {
+  "text": "小红比他多",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaohongLess": {
+  "text": "小红比他少",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaohongHasHowMany": {
+  "text": "小红有几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.boxesOf": {
+  "text": "盒",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.eachBoxHas": {
+  "text": "每盒有",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.kidsTakeBoat": {
+  "text": "个小朋友坐船，每条船坐",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.atLeastBoats": {
+  "text": "个，至少要几条船",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.eachBoxHolds": {
+  "text": "每个盒子装",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.atLeastBoxes": {
+  "text": "个，至少要几个盒子",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

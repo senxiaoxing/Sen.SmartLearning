@@ -161,6 +161,8 @@ const PHRASES: VoiceManifest = {
   'phrase.countTens': '个十',
   'phrase.countHundreds': '个百',
   'phrase.countThousands': '个千',
+  'phrase.aboutHowManyHundreds': '大约是几百',
+  'phrase.aboutHowManyThousands': '大约是几千',
 
   // —— 题干：序数与位置（M1.4 / M2.x）
   // ⚠️ 'phrase.at' 是孤立单字「在」，生成后要复听，读飘就进 TAIL_FIX_KEYS
@@ -197,6 +199,25 @@ const PHRASES: VoiceManifest = {
   /** ⚠️ 只配 `edible` 的物品——「吃掉了 3 颗星星」不成话 */
   'phrase.ateUp': '吃掉了',
   'phrase.howManyLeft': '还剩几个',
+  // ⭐ 二年级文字应用题（M2-2.6 / 9.6 / 11.4 / 12.4）。
+  //    尽量复用一年级已有的收尾句：「又来了」「吃掉了」「还剩几个」
+  //    「一共有几个」四条一条没新加，只补了各自开头那半句
+  'phrase.shareEqually': '平均分给',
+  'phrase.kidsEachGets': '个小朋友，每人分几个',
+  'phrase.kidsShareEqually': '个小朋友平均分，每人分几个',
+  'phrase.perBoxCanPack': '个装一盒，能装几盒',
+  'phrase.perGroupCanMake': '个分一组，能分几组',
+  'phrase.xiaomingHas': '小明有',
+  'phrase.xiaohongMore': '小红比他多',
+  'phrase.xiaohongLess': '小红比他少',
+  'phrase.xiaohongHasHowMany': '小红有几个',
+  /** ⚠️ 孤立单字，同 `phrase.unitGe`——生成后要复听 */
+  'phrase.boxesOf': '盒',
+  'phrase.eachBoxHas': '每盒有',
+  'phrase.kidsTakeBoat': '个小朋友坐船，每条船坐',
+  'phrase.atLeastBoats': '个，至少要几条船',
+  'phrase.eachBoxHolds': '每个盒子装',
+  'phrase.atLeastBoxes': '个，至少要几个盒子',
   'phrase.topMoreHowMany': '上面比下面多几个',
   'phrase.questionGroupHas': '问号那一组有几个',
   'phrase.whichEquationFits': '哪个算式说的是这幅图',

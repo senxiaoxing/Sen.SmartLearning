@@ -44,9 +44,44 @@ import { num } from '@/domain/speech'
  *           'phrase.tookAway', '{b}', 'phrase.unitGe', 'phrase.howManyLeft'],
  * }
  */
+/**
+ * 句式在说哪种运算。
+ *
+ * 前三种是一年级的**看图列式**（`storyProblem.ts`，配 emoji 分组图）；
+ * 后六种是二年级的**文字应用题**（`wordProblem.ts`，不配图）。
+ *
+ * ⚠️ 二年级那几种为什么不配图：数值大到画不出来——
+ * 「22 个小朋友坐船」摆 22 个 emoji 在 iPad 上是一片糊，
+ * 而教材里这类题本来就是纯文字。题干靠朗读，这也正是二年级还有语音的意义。
+ */
+export type StoryOp =
+  | 'add'
+  | 'remove'
+  | 'compare'
+  /** 平均分：12 个分给 3 人，每人几个 */
+  | 'share'
+  /** 包含除：12 个，每 3 个装一盒，能装几盒 */
+  | 'group'
+  /** 求比一个数多几的数 */
+  | 'moreThan'
+  /** 求比一个数少几的数 */
+  | 'lessThan'
+  /**
+   * 两步计算，先乘后减：`a` 盒每盒 `b` 个，去掉 `c` 个。
+   *
+   * ⚠️ 与 `twoStepMore` 分成两个 op 而不是共用一个：句式看着只差一个动词
+   * （吃掉了 / 又来了），但第二步的运算不同、答案也不同——
+   * 共用一个 op 会让生成器按加法算、题干却在说减法。
+   */
+  | 'twoStepLess'
+  /** 两步计算，先乘后加 */
+  | 'twoStepMore'
+  /** 有余数的应用：至少要几条船（商要进一） */
+  | 'atLeast'
+
 export interface StoryFrame {
   /** 这个句式在说哪种运算。必须与生成器算出的答案一致，否则题干与答案对不上 */
-  op: 'add' | 'remove' | 'compare'
+  op: StoryOp
   /**
    * 是否把已知条件说进题干。
    *
@@ -74,6 +109,8 @@ export interface StoryValues {
   a: number
   /** 第二个数量。`compare` 时是少的那排 */
   b: number
+  /** 第三个数量。只有两步计算（`twoStep`）用得上 */
+  c?: number
   /** 物品。`name` 进文本，`clipKey` 进语音 */
   thing: { name: string; clipKey: string }
 }
@@ -109,14 +146,16 @@ export interface FilledStem {
  * //            'phrase.rightHas','num.4','phrase.unitGe','phrase.altogetherHowMany']
  */
 export function fillFrame(frame: StoryFrame, values: StoryValues): FilledStem {
-  const text = frame.text
+  let text = frame.text
     .replaceAll('{a}', String(values.a))
     .replaceAll('{b}', String(values.b))
     .replaceAll('{thing}', values.thing.name)
+  if (values.c !== undefined) text = text.replaceAll('{c}', String(values.c))
 
   const ttsParts = frame.parts.flatMap((part) => {
     if (part === '{a}') return num(values.a)
     if (part === '{b}') return num(values.b)
+    if (part === '{c}') return values.c === undefined ? [] : num(values.c)
     if (part === '{thing}') return [values.thing.clipKey]
     return [part]
   })
@@ -135,7 +174,7 @@ export function fillFrame(frame: StoryFrame, values: StoryValues): FilledStem {
  */
 export function framesFor(
   frames: readonly StoryFrame[],
-  op: StoryFrame['op'],
+  op: StoryOp,
   story: boolean,
 ): StoryFrame[] {
   const matched = frames.filter((f) => f.op === op && f.story === story)

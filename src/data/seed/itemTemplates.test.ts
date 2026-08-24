@@ -15,7 +15,8 @@ import { describe, expect, it } from 'vitest'
 import { KNOWLEDGE_POINTS_BY_GRADE } from '@/data/seed/knowledgePoints'
 import { ITEM_TEMPLATES, ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
 import { PENDING_G2_KP_IDS } from '@/data/seed/mathG2Templates'
-import { isGeneratorRegistered } from '@/domain/generators/index'
+import { generateFromTemplate, isGeneratorRegistered } from '@/domain/generators/index'
+import { createRng } from '@/domain/generators/rng'
 import { isOpened } from '@/data/seed/pets'
 import { gradeLevelOf } from '@/domain/types'
 
@@ -79,16 +80,44 @@ describe('⭐ 二年级起：每个知识点 ≥2 条模板且题型不同', () 
     expect(single, '这些知识点的模板题型全都一样').toEqual([])
   })
 
-  it('模板声明的题型与生成器的默认产出一致（choice_image 那几条靠生成器自己保证）', () => {
-    // 只校验 `as` 参数用得对：声明 choice_text 的，参数里必须真的传了 as
-    const mismatched = ITEM_TEMPLATES.filter((t) => {
-      if (!t.kpId.startsWith('M2-')) return false
-      if (t.type !== 'choice_text') return false
-      // remainderDiv 的默认产出就是 choice_text，不需要 as
-      if (t.generator === 'remainderDiv' || t.generator === 'numberComposition') return false
-      return t.params[2]?.['as'] !== 'choice_text'
-    }).map((t) => t.id)
-    expect(mismatched, '声明了 choice_text 却没让生成器切过去').toEqual([])
+  it('⭐ 每条模板都真的出得了题，且产出的题型与声明一致', () => {
+    // 直接把生成器跑一遍，比维护一张「哪些生成器默认产什么」的白名单可靠得多：
+    // 白名单会过时，而这条断言对声明与实际不符的任何原因都成立。
+    // 顺带还验证了每条模板的参数都配得对——出题时抛错在这里就会暴露。
+    const problems: string[] = []
+    for (const t of ITEM_TEMPLATES) {
+      if (!t.kpId.startsWith('M2-')) continue
+      for (const difficulty of [1, 2, 3] as const) {
+        try {
+          const item = generateFromTemplate(t, difficulty, createRng(difficulty * 17))
+          if (item.type !== t.type) {
+            problems.push(`${t.id} 难度${difficulty}: 声明 ${t.type}，实际产出 ${item.type}`)
+          }
+        } catch (err) {
+          problems.push(`${t.id} 难度${difficulty}: 出题抛错 ${(err as Error).message}`)
+        }
+      }
+    }
+    expect(problems).toEqual([])
+  })
+
+  it('⭐ 二年级每道题都有 4 个选项，错误项全带误区标签', () => {
+    const problems: string[] = []
+    for (const t of ITEM_TEMPLATES) {
+      if (!t.kpId.startsWith('M2-')) continue
+      for (let seed = 1; seed <= 5; seed++) {
+        const item = generateFromTemplate(t, 2, createRng(seed))
+        if (item.options.filter((o) => o.isCorrect).length !== 1) {
+          problems.push(`${t.id} seed${seed}: 正确选项不唯一`)
+        }
+        for (const opt of item.options) {
+          if (!opt.isCorrect && opt.misconceptionTag === undefined) {
+            problems.push(`${t.id} seed${seed}: 选项「${opt.text}」没有误区标签`)
+          }
+        }
+      }
+    }
+    expect(problems.slice(0, 10)).toEqual([])
   })
 })
 
