@@ -137,6 +137,136 @@ export const MISCONCEPTION_LABELS: Record<MisconceptionTag, MisconceptionLabel> 
     advice: '题目读完先问她「东西是变多了还是变少了」，再决定加还是减',
   },
 
+  // —— 数学·二年级：笔算与混合运算
+  column_misaligned: {
+    label: '竖式没对齐',
+    example: '35 + 7 把 7 写在了十位下面，算成了 35 + 70',
+    advice: '用方格纸列竖式，一格一个数字。先只盯住一件事：末位对末位',
+  },
+  carry_chain: {
+    label: '连续进位漏了一次',
+    example: '68 + 75 个位进了 1，十位又满十却没再进',
+    advice: '她会进位，只是第二次忘了。让她把每个进位的小 1 都写在竖式上，别在心里记',
+  },
+  borrow_chain: {
+    label: '连续退位漏了一次',
+    example: '200 - 47 从百位退到十位之后，十位再退给个位时漏了',
+    advice: '同样是写出来——每退一位就在上面划掉改写，不靠脑子记着',
+  },
+  op_order: {
+    label: '没有先乘除后加减',
+    example: '2 + 3 × 4 从左往右算成了 20',
+    advice: '让她先用笔圈出乘除那一步，圈好再动手算。圈这个动作比背口诀管用',
+  },
+  paren_ignored: {
+    label: '无视括号',
+    example: '(3 + 2) × 4 仍然从左往右算',
+    advice: '告诉她括号是「先算我」的记号，看到括号先把里面算出来写在旁边',
+  },
+
+  // —— 数学·二年级：乘除法
+  mul_as_add: {
+    label: '⭐ 乘法当成了加法',
+    example: '3 × 4 答成 7',
+    advice: '这是概念没建立，练口诀没用。拿糖果摆 4 堆、每堆 3 颗，让她数一共几颗',
+  },
+  table_confusion: {
+    label: '口诀背串了',
+    example: '7 × 8 答成 54，串到了「六九五十四」',
+    advice: '别整张表一起背。挑错的那一句单独念，配上手指比出「七八五十六」',
+  },
+  mul_extra_group: {
+    label: '多数或少数了一组',
+    example: '3 × 4 答成 15，多算了一组',
+    advice: '她概念是对的，只是组数数错了。让她用笔把每一组圈起来再数圈的个数',
+  },
+  div_as_sub: {
+    label: '除法做成了减法',
+    example: '12 ÷ 3 答成 9',
+    advice: '回到分东西：12 颗糖分给 3 个人，一人几颗？让她真的分一次',
+  },
+  div_as_mul: {
+    label: '除法做成了乘法',
+    example: '12 ÷ 3 答成 36',
+    advice: '问她「分完之后每人拿到的，会比原来多还是少」，先把方向定下来',
+  },
+  remainder_ignored: {
+    label: '余数丢了',
+    example: '13 ÷ 4 只答 3，剩下的 1 没说',
+    advice: '分完之后追问一句「还剩下几个」，让「还剩」成为她的固定动作',
+  },
+  remainder_too_big: {
+    label: '余数比除数还大',
+    example: '13 ÷ 4 答成「2 余 5」',
+    advice: '剩下 5 个还能再分一轮。告诉她余数必须比除数小，不然就是没分完',
+  },
+  quotient_remainder_swap: {
+    label: '商和余数写反了',
+    example: '13 ÷ 4 答成「1 余 3」',
+    advice: '她算对了，只是位置放错。念一遍「每人分到几个」是商，「剩下几个」是余数',
+  },
+
+  // —— 数学·二年级：数与单位
+  zero_placeholder_lost: {
+    label: '中间的 0 漏写了',
+    example: '三千零五写成了 305',
+    advice: '画出千百十个四个格子，把数一格一格填进去，让她看见空着的那两位要写 0',
+  },
+  unit_conversion: {
+    label: '单位换算记错',
+    example: '认为 1 米 = 10 厘米',
+    advice: '拿卷尺把 1 米拉出来，让她数上面有多少厘米。数一次比背十次管用',
+  },
+  unit_sense_weak: {
+    label: '对单位大小没概念',
+    example: '给铅笔选了「米」，给一个苹果选了「千克」',
+    advice: '找几样身边的东西当尺子：一根手指宽约 1 厘米、一袋盐 500 克，让她拿在手上比',
+  },
+  ruler_start_wrong: {
+    label: '量长度没从 0 开始',
+    example: '把物体左端对在刻度 1 上，直接读了右端的数',
+    advice: '每次量之前先念一句「左边对准 0」。她读的数没错，错在起点',
+  },
+
+  // —— 数学·二年级：时间与图形
+  minute_misread: {
+    label: '⭐ 把格数当成了分钟',
+    example: '分针指向 3，读成「3 分」而不是「15 分」',
+    advice: '带她绕钟面数一遍：一大格是 5 分，5、10、15 地数过去',
+  },
+  hour_overread: {
+    label: '时针读快了一格',
+    example: '3:55 读成了 4:55',
+    advice: '强调「时针走过谁就是谁」，还没走到 4 就仍然是 3 时',
+  },
+  angle_side_length: {
+    label: '⭐ 以为边长的角就大',
+    example: '两个角开口一样大，边画得长的那个被判成更大',
+    advice: '用两根小棒做一个活动角，把边推长推短给她看：边变了，开口没变',
+  },
+  view_direction_confusion: {
+    label: '看的方向弄混了',
+    example: '把「从上面看」当成了「从正面看」',
+    advice: '拿真的积木摆一个，让她自己蹲下去、站起来各看一次，再对照图',
+  },
+  symmetry_axis_wrong: {
+    label: '对称轴认错',
+    example: '把不对称的图形判成对称，或把对称轴画歪了',
+    advice: '把图形画在纸上剪下来，对折——能完全重合才是对称，折痕就是对称轴',
+  },
+
+  // —— 数学·二年级：数学广角
+  combination_missed: {
+    label: '漏掉了一种搭配',
+    example: '3 件上衣配 2 条裤子，只数出 5 种',
+    advice: '教她固定一件上衣、把裤子全配一遍，再换下一件。有顺序才不会漏',
+  },
+  logic_first_only: {
+    label: '只看了一个条件',
+    example: '听到「小明不是第一」就答小明是第二，没再看后面的条件',
+    advice: '把条件一条条写下来，读完全部再下结论。可以画表格打勾划叉',
+  },
+
   // —— 拼音：拼读规则
   u_umlaut_kept: {
     label: 'ü 的两点没去掉',

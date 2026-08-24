@@ -4,16 +4,26 @@
  * @see design/01-知识点图谱.md
  *
  * 本文件不是 barrel file：除了聚合三个科目，它还提供索引结构和图完整性校验。
- * 校验由 `knowledgePoints.test.ts` 在每次测试时执行——手写 113 条依赖关系必然出错，
+ * 校验由 `knowledgePoints.test.ts` 在每次测试时执行——手写近两百条依赖关系必然出错，
  * 悬空引用和环形依赖会让调度器死循环或永久锁死知识点，必须在编译期之外强制拦截。
  */
 
 import { englishKnowledgePoints } from '@/data/seed/englishKnowledgePoints'
-import { mathKnowledgePoints } from '@/data/seed/mathKnowledgePoints'
+import { mathG1KnowledgePoints } from '@/data/seed/mathG1KnowledgePoints'
+import { mathG2KnowledgePoints } from '@/data/seed/mathG2KnowledgePoints'
 import { pinyinKnowledgePoints } from '@/data/seed/pinyinKnowledgePoints'
 import { gradeLevelOf, type GradeLevel, type KnowledgePoint, type Subject } from '@/domain/types'
 
-/** 全部知识点，共 113 个（数学 48 / 拼音 35 / 英语 30）。 */
+/**
+ * 数学全部年级，一年级在前、二年级在后。
+ *
+ * ⚠️ 顺序即 `KNOWLEDGE_POINTS` 里的排列顺序，但**调度器不依赖它**——
+ * 教学先后一律看 `order`（由 `gradeOrder.ts` 的分区表保证跨年级递增）。
+ * 这里按年级排只是为了让人读着顺。
+ */
+const mathKnowledgePoints: KnowledgePoint[] = [...mathG1KnowledgePoints, ...mathG2KnowledgePoints]
+
+/** 全部知识点，共 177 个（数学 112 = G1 48 + G2 64 / 拼音 35 / 英语 30）。 */
 export const KNOWLEDGE_POINTS: KnowledgePoint[] = [
   ...mathKnowledgePoints,
   ...pinyinKnowledgePoints,

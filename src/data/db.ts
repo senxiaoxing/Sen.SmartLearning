@@ -47,8 +47,9 @@ export const SCHEMA_VERSION = 4
  * 新内容根本写不进库——表现是「改了没反应」，很难查。
  *
  * - v2：知识点 order 改为按 `(科目 × 年级)` 分区（`data/seed/gradeOrder.ts`）
+ * - v3：新增二年级数学 64 个知识点（`data/seed/mathG2KnowledgePoints.ts`）
  */
-export const CONTENT_VERSION = 2
+export const CONTENT_VERSION = 3
 
 /**
  * 构建期注入的 App 版本号，取自 `package.json` 的 `version`。

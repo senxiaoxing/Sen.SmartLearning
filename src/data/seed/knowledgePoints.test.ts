@@ -31,10 +31,16 @@ describe('知识点图谱完整性', () => {
   })
 
   it('各科目数量符合设计文档', () => {
-    expect(KNOWLEDGE_POINTS_BY_SUBJECT.math).toHaveLength(48)
+    expect(KNOWLEDGE_POINTS_BY_SUBJECT.math).toHaveLength(112)
     expect(KNOWLEDGE_POINTS_BY_SUBJECT.pinyin).toHaveLength(35)
     expect(KNOWLEDGE_POINTS_BY_SUBJECT.english).toHaveLength(30)
-    expect(KNOWLEDGE_POINTS).toHaveLength(113)
+    expect(KNOWLEDGE_POINTS).toHaveLength(177)
+  })
+
+  it('数学分年级的数量：一年级 48 · 二年级 64', () => {
+    const math = KNOWLEDGE_POINTS_BY_SUBJECT.math
+    expect(math.filter((kp) => gradeLevelOf(kp.grade) === 'G1')).toHaveLength(48)
+    expect(math.filter((kp) => gradeLevelOf(kp.grade) === 'G2')).toHaveLength(64)
   })
 
   it('ID 索引覆盖全部知识点', () => {
@@ -167,10 +173,20 @@ describe('年级索引', () => {
     expect(total).toBe(KNOWLEDGE_POINTS.length)
   })
 
-  it('当前内容全部属于一年级，其余年级为空', () => {
-    expect(KNOWLEDGE_POINTS_BY_GRADE.G1).toHaveLength(KNOWLEDGE_POINTS.length)
-    for (const g of GRADE_LEVELS.filter((g) => g !== 'G1')) {
+  it('已做的年级是 G1（三科）与 G2（只有数学），G3 及以上为空', () => {
+    expect(KNOWLEDGE_POINTS_BY_GRADE.G1.length).toBeGreaterThan(0)
+    expect(KNOWLEDGE_POINTS_BY_GRADE.G2.length).toBeGreaterThan(0)
+    for (const g of GRADE_LEVELS.filter((g) => g !== 'G1' && g !== 'G2')) {
       expect(KNOWLEDGE_POINTS_BY_GRADE[g], `${g} 还没有内容`).toHaveLength(0)
+    }
+  })
+
+  it('⭐ 二年级只开了数学 —— 语文英语在 G2 应当没有内容', () => {
+    // 这是 design/08 §8.0 拍板的范围。语文英语的 G2 一旦意外冒出知识点，
+    // 报告里会出现一片永远 0% 的科目——那看起来像孩子什么都没学会
+    for (const subject of ['pinyin', 'english'] as const) {
+      const leaked = KNOWLEDGE_POINTS_BY_GRADE.G2.filter((kp) => kp.subject === subject)
+      expect(leaked.map((kp) => kp.id), `${subject} 不该有二年级内容`).toEqual([])
     }
   })
 
@@ -226,6 +242,19 @@ describe('数据一致性', () => {
         roots.some((kp) => kp.subject === subject),
         `${subject} 没有无前置的入口知识点`,
       ).toBe(true)
+    }
+  })
+
+  it('⭐ 每个有内容的年级都有自己的无前置入口 —— 否则整个年级解不开锁', () => {
+    // 二年级若每个知识点都挂着一年级的前置，直接从二年级开始用的孩子
+    // 会卡在「全部 locked」上：`refreshUnlocks()` 要求前置 mastered，
+    // 而她根本没做过一年级的题。摸底的「假定已掌握」是另一条腿（阶段 6），
+    // 但年级自己得先站得住
+    for (const g of GRADE_LEVELS) {
+      const points = KNOWLEDGE_POINTS_BY_GRADE[g]
+      if (points.length === 0) continue
+      const roots = points.filter((kp) => kp.prerequisites.length === 0)
+      expect(roots.map((kp) => kp.id).length, `${g} 没有无前置的入口知识点`).toBeGreaterThan(0)
     }
   })
 })

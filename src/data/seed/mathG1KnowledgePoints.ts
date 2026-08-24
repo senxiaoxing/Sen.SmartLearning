@@ -1,7 +1,12 @@
 /**
- * @file 数学知识点 seed 数据 —— 人教版一年级上册全量 + 一年级下册前段，共 48 个
+ * @file 一年级数学知识点 seed 数据 —— 人教版一年级上册全量 + 一年级下册前段，共 48 个
  * @layer data  静态内容，随 App 版本内置，备份时不导出
  * @see design/01-知识点图谱.md §3 数学（Math）
+ * @see design/08-年级分区与内容扩展.md §2.3  seed 为什么按「年级 × 科目」拆
+ *
+ * ⚠️ 本文件的知识点 ID 是**不带年级前缀**的 `M1`~`M9`，二年级起才是 `M2-1`~`M2-15`
+ * （见 `mathG2KnowledgePoints.ts` 文件头）。看着不对称，但 ID 是 `mastery` 表的主键，
+ * 改一年级的 ID 等于让孩子已有的掌握度记录全部失联——不对称远比那个便宜。
  *
  * ⭐ 关键节点 M3.3「10 的分与合」是全局唯一的双关键节点：
  * 凑十法（M5.1）与破十法（M6.1）都建立在它之上。调度器规则见 design/03-技术方案.md §4.1。
@@ -143,8 +148,8 @@ const SPECS: KpSpec[] = [
     diff: 3, mis: ['wrong_operation'] },
 ]
 
-/** 数学知识点，共 48 个。`order` 占用 1~48。 */
-export const mathKnowledgePoints: KnowledgePoint[] = buildKnowledgePoints(
+/** 一年级数学知识点，共 48 个。`order` 占用 math/G1 分区的 1000~1047。 */
+export const mathG1KnowledgePoints: KnowledgePoint[] = buildKnowledgePoints(
   'math',
   'G1',
   UNIT_NAMES,
