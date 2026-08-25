@@ -329,6 +329,20 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   ...divPair('M2-9.3', [2, 3, 4, 5, 6]),
   ...divPair('M2-9.4', [7, 8, 9]),
 
+  // ⭐ 乘除法的关系：一幅「几个几」图对应四个算式，
+  // 「想乘法算除法」这句口诀的底子就在这里。
+  // 备选那条用同一幅图问「每份几个 / 能分几组」——从认得算式到真算出来
+  tpl('M2-9.5', 'mulDivFacts', {
+    1: { groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }, 'choice_image'),
+  altTpl('M2-9.5', 'compute', 'equalGroups', {
+    1: { mode: 'share', groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { mode: 'groupCount', groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { mode: 'share', groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }, 'input_number'),
+
   // ⭐ 平均分与包含除是**两种除法**：一个问「每份几个」，一个问「能分几份」。
   // 算式一样、想的东西不一样，所以三档在两者之间来回换
   ...wordPair('M2-9.6', ['share', 'group', 'share']),
@@ -487,14 +501,40 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
     2: { quantity: 'mass', direction: 'both' },
     3: { quantity: 'mass', direction: 'up' },
   }, 'input_number'),
+
+  // ── M2-15 数学广角·推理 ──────────────────────────────────────────
+  // 同一道推理正着问和反着问：「谁排第一」点动物，「小猫排第几」点名次。
+  // 反问那条更难——她得先找出那只动物，再说出它的位置
+  tpl('M2-15.1', 'logicReasoning', {
+    1: { animals: 3 },
+    2: { animals: 3 },
+    3: { animals: 4 },
+  }, 'choice_image'),
+  altTpl('M2-15.1', 'rank', 'logicReasoning', {
+    1: { mode: 'rank', animals: 3 },
+    2: { mode: 'rank', animals: 3 },
+    3: { mode: 'rank', animals: 4 },
+  }, 'choice_text'),
+
+  tpl('M2-15.2', 'logicReasoning', {
+    1: { mode: 'rank', animals: 3 },
+    2: { mode: 'rank', animals: 4 },
+    3: { mode: 'rank', animals: 4 },
+  }, 'choice_text'),
+  altTpl('M2-15.2', 'who', 'logicReasoning', {
+    1: { animals: 4 },
+    2: { animals: 4 },
+    3: { animals: 4 },
+  }, 'choice_image'),
 ]
 
 /**
  * ⭐ 还没有模板的二年级知识点 —— **这份清单只能减，不能增**。
  *
- * 它们全都卡在同一件事上：需要新的 SVG 图形组件，或者需要把情境题的骨架
- * 铺到二年级。图谱里已经有这些知识点、误区标签也备齐了，
- * 缺的只是「怎么把题画出来」。
+ * 现在剩下的**全部**卡在同一件事上：需要新的 SVG 图形组件。
+ * 图谱里已经有这些知识点、误区标签也备齐了、生成器的逻辑也不难写，
+ * 缺的只是「怎么把题画出来」——尺子上的刻度、角的两条边、三视图、
+ * 轴对称的折痕、条形图的柱子，每一样都要画。
  *
  * ⚠️ 在清单清空之前，`isOpened('math', 'G2')` 必须保持 `false`——
  * 图谱有了但题出不全时不该让孩子进去，见 design/08 §8.8 的提醒。
@@ -511,10 +551,6 @@ export const PENDING_G2_KP_IDS: readonly string[] = [
   'M2-5.1', 'M2-5.2',
   // 需要统计表 / 条形图 SVG
   'M2-8.1', 'M2-8.2',
-  // 需要乘除法版的一图四式（fourFacts 目前只做加减）
-  'M2-9.5',
   // 需要轴对称 / 平移 / 旋转 SVG
   'M2-10.1', 'M2-10.2', 'M2-10.3', 'M2-10.4',
-  // 推理只产 choice_image，还缺一种题型才够两条
-  'M2-15.1', 'M2-15.2',
 ]

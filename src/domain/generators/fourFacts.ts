@@ -21,31 +21,13 @@
  * 诊断落在 `op_confusion`（运算用反）与 `off_by_one`（数错）上。
  */
 
+import { equationParts, equationSpoken } from '@/domain/equation'
 import { COUNTABLES } from '@/domain/generators/countables'
 import { readRange } from '@/domain/generators/params'
 import { randomInt, randomPick, shuffle } from '@/domain/generators/rng'
-import { num } from '@/domain/speech'
 import type { Generator, ItemOption, MisconceptionTag } from '@/domain/types'
 
 const OPTION_IDS = ['a', 'b', 'c', 'd'] as const
-
-/**
- * 把「3 + 2 = 5」解析成语音片段序列（选项点读与错题本用）。
- *
- * 从展示文本反解而不是让每个候选各带一份 parts：候选在 facts / pool
- * 两处构造，带两份迟早漂移，而算式文本本身就是唯一事实源。
- */
-function equationParts(text: string): string[] | undefined {
-  const m = /^(\d+) ([+-]) (\d+) = (\d+)$/.exec(text)
-  if (m === null) return undefined
-  return [
-    ...num(Number(m[1])),
-    m[2] === '+' ? 'op.plus' : 'op.minus',
-    ...num(Number(m[3])),
-    'op.equals',
-    ...num(Number(m[4])),
-  ]
-}
 
 /**
  * 生成一道一图四式题。
@@ -112,7 +94,7 @@ export const fourFacts: Generator = ({ kpId, difficulty, params, rng }) => {
         id: OPTION_IDS[i] ?? `x${i}`,
         text: o.text,
         // 算式选项要能点读——孩子不识字，但算式里的数字和符号她认得
-        ttsText: o.text.replace('+', '加').replace('-', '减').replace('=', '等于'),
+        ttsText: equationSpoken(o.text),
         ...(parts !== undefined && { ttsParts: parts }),
         isCorrect: o.isCorrect,
         ...(o.tag !== undefined && { misconceptionTag: o.tag }),

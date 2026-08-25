@@ -101,7 +101,10 @@ describe('⭐ 二年级起：每个知识点 ≥2 条模板且题型不同', () 
     expect(problems).toEqual([])
   })
 
-  it('⭐ 二年级每道题都有 4 个选项，错误项全带误区标签', () => {
+  it('⭐ 二年级每道题恰好一个正确项，错误项全带误区标签，且至少有两个干扰项', () => {
+    // ⚠️ 不断言「恰好 4 个选项」：推理题摆的是队里的每一只动物，
+    // 3 只就是 3 个选项。选项数由题目内容决定，一刀切反而会误伤。
+    // 真正的下限是「得有得选」——只有一个干扰项等于二选一，蒙对率太高
     const problems: string[] = []
     for (const t of ITEM_TEMPLATES) {
       if (!t.kpId.startsWith('M2-')) continue
@@ -109,6 +112,9 @@ describe('⭐ 二年级起：每个知识点 ≥2 条模板且题型不同', () 
         const item = generateFromTemplate(t, 2, createRng(seed))
         if (item.options.filter((o) => o.isCorrect).length !== 1) {
           problems.push(`${t.id} seed${seed}: 正确选项不唯一`)
+        }
+        if (item.options.length < 3) {
+          problems.push(`${t.id} seed${seed}: 只有 ${item.options.length} 个选项`)
         }
         for (const opt of item.options) {
           if (!opt.isCorrect && opt.misconceptionTag === undefined) {

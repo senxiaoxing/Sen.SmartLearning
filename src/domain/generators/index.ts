@@ -27,6 +27,7 @@ import { logicReasoning } from '@/domain/generators/logicReasoning'
 import { matchPairs } from '@/domain/generators/matchPairs'
 import { memoryPair } from '@/domain/generators/memoryPair'
 import { mixedOps } from '@/domain/generators/mixedOps'
+import { mulDivFacts } from '@/domain/generators/mulDivFacts'
 import { mulTable } from '@/domain/generators/mulTable'
 import { orderSequence } from '@/domain/generators/orderSequence'
 import { numberComposition } from '@/domain/generators/numberComposition'
@@ -85,6 +86,7 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   matchPairs,
   memoryPair,
   mixedOps,
+  mulDivFacts,
   mulTable,
   numberComposition,
   orderSequence,

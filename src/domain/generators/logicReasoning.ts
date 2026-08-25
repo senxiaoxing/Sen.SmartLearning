@@ -17,11 +17,14 @@
  * 动物名复用 `COUNTABLES` 的现成片段，本文件只新增序数与句式。
  */
 
+import { buildTextOptions } from '@/domain/generators/distractors'
 import { COUNTABLES, type Countable } from '@/domain/generators/countables'
-import { readNumber } from '@/domain/generators/params'
+import { readEnum, readNumber } from '@/domain/generators/params'
 import { randomInt, shuffle } from '@/domain/generators/rng'
 import type { ClipKey } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext, ItemOption } from '@/domain/types'
+
+const MODES = ['who', 'rank'] as const
 
 const OPTION_IDS = ['a', 'b', 'c', 'd'] as const
 
@@ -52,6 +55,7 @@ const ORDINALS = [
  */
 export const logicReasoning: Generator = (ctx: GeneratorContext): GeneratedItem => {
   const animalCount = readNumber(ctx.params, 'animals', 3)
+  const mode = readEnum(ctx.params, 'mode', MODES, 'who')
 
   const creatures = COUNTABLES.filter((c) => c.kind === 'creature')
   const lineup = shuffle(ctx.rng, [...creatures]).slice(0, animalCount)
@@ -64,25 +68,66 @@ export const logicReasoning: Generator = (ctx: GeneratorContext): GeneratedItem 
 
   const clueText = clues.map((who) => `${who.name}不排${ordinal.name}`).join('，')
   const clueParts: ClipKey[] = clues.flatMap((who) => [who.clipKey, 'phrase.isNotAt', ordinal.clip])
+  const lineText = lineup.map((a) => a.emoji).join(' ')
+  const signature = `${ctx.kpId}#${mode}:${lineup.map((a) => a.name).join('')}@${askRank}`
+
+  if (mode === 'rank') {
+    return {
+      signature,
+      kpId: ctx.kpId,
+      type: 'choice_text',
+      difficulty: ctx.difficulty,
+      stem: {
+        text: `${lineText} 排成一排。${clueText}。${answer.name}排第几？`,
+        ttsText: `小动物们排成一排。${clueText}。${answer.name}排第几`,
+        // 「排第几」复用一年级序数题那条片段，零新增
+        ttsParts: ['phrase.animalsLineUp', ...clueParts, answer.clipKey, 'phrase.rankWhich'],
+      },
+      options: buildRankOptions(ctx, animalCount, askRank),
+      answer: ordinal.name,
+    }
+  }
 
   return {
-    signature: `${ctx.kpId}#${lineup.map((a) => a.name).join('')}@${askRank}`,
+    signature,
     kpId: ctx.kpId,
     type: 'choice_image',
     difficulty: ctx.difficulty,
     stem: {
-      text: `${lineup.map((a) => a.emoji).join(' ')} 排成一排。${clueText}。谁排${ordinal.name}？`,
+      text: `${lineText} 排成一排。${clueText}。谁排${ordinal.name}？`,
       ttsText: `小动物们排成一排。${clueText}。谁排${ordinal.name}`,
-      ttsParts: [
-        'phrase.animalsLineUp',
-        ...clueParts,
-        'phrase.whoRanksAt',
-        ordinal.clip,
-      ],
+      ttsParts: ['phrase.animalsLineUp', ...clueParts, 'phrase.whoRanksAt', ordinal.clip],
     },
     options: buildOptions(ctx, lineup, answer, clues[0]!),
     answer: answer.emoji,
   }
+}
+
+/**
+ * `rank` 模式的选项：队里有几个位置就摆几个名次。
+ *
+ * ⭐ 只问**唯一确定的那一只**（线索没提到的那只）。问线索里提到的动物
+ * 排第几，答案是不唯一的——「小狗不排第一」只排除了一个位置，
+ * 剩下两个它都可能站，那道题孩子怎么答都不对。
+ *
+ * 干扰项就是别的名次，一律标 `logic_first_only`：她没把线索读完，
+ * 于是在剩下的位置里挑了一个。
+ */
+function buildRankOptions(
+  ctx: GeneratorContext,
+  animalCount: number,
+  askRank: number,
+): ItemOption[] {
+  const correct = ORDINALS[askRank]!.name
+  const others = ORDINALS.slice(0, animalCount)
+    .filter((_, i) => i !== askRank)
+    .map((o) => ({ text: o.name, tag: 'logic_first_only' as const }))
+
+  return buildTextOptions(correct, others, ctx.rng).map((opt) => ({
+    ...opt,
+    // 名次是文字，点读要念得出来
+    ttsParts: [ORDINALS.find((o) => o.name === opt.text)?.clip ?? ''],
+  }))
 }
 
 /**
