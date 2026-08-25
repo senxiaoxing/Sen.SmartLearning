@@ -10,6 +10,7 @@
 import { addWithCarry } from '@/domain/generators/addWithCarry'
 import { angles } from '@/domain/generators/angles'
 import { arithmetic } from '@/domain/generators/arithmetic'
+import { barChartRead } from '@/domain/generators/barChartRead'
 import { braceProblem } from '@/domain/generators/braceProblem'
 import { classifyShape } from '@/domain/generators/classifyShape'
 import { clock } from '@/domain/generators/clock'
@@ -57,6 +58,7 @@ import { storyProblem } from '@/domain/generators/storyProblem'
 import { subWithBorrow } from '@/domain/generators/subWithBorrow'
 import { teenArithmetic } from '@/domain/generators/teenArithmetic'
 import { unitConvert } from '@/domain/generators/unitConvert'
+import { viewFromSide } from '@/domain/generators/viewFromSide'
 import { wordProblem } from '@/domain/generators/wordProblem'
 import type { Difficulty, GeneratedItem, Generator, ItemTemplate } from '@/domain/types'
 
@@ -74,6 +76,7 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   addWithCarry,
   angles,
   arithmetic,
+  barChartRead,
   braceProblem,
   classifyShape,
   clock,
@@ -121,6 +124,7 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   subWithBorrow,
   teenArithmetic,
   unitConvert,
+  viewFromSide,
   wordProblem,
 }
 

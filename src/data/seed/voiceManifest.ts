@@ -237,6 +237,14 @@ const PHRASES: VoiceManifest = {
   // —— 二年级：量长度（M2-1.x）。「厘米」复用单位换算那条 unit.cm
   'phrase.howLongIsIt': '它有多长',
   // —— 二年级：图形的运动（M2-10.x）
+  // —— 二年级：读条形图（M2-8.x）。物品名与「有几个」「一共有几个」全是现成的
+  // —— 二年级：观察物体（M2-5.x）
+  'phrase.viewFromTop': '从上面看是哪个',
+  'phrase.topViewHowMany': '从上面看，有几个小正方形',
+  'phrase.viewFromFront': '从正面看是哪个',
+  'phrase.viewFromSide': '从侧面看是哪个',
+  'phrase.whichMost': '哪个最多',
+  'phrase.differBy': '相差几个',
   'phrase.whichIsSymmetric': '哪个图形是轴对称的',
   'phrase.whichAxis': '这个图形沿哪条线对称',
   'phrase.movedRight': '向右移了几格',

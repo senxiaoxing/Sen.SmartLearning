@@ -325,6 +325,33 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   ...mulPair('M2-4.9', [9]),
   ...mulPair('M2-4.10', [2, 3, 4, 5, 6, 7, 8, 9]),
 
+  // ── M2-5 观察物体 ────────────────────────────────────────────────
+  // ⭐ 干扰项就是另外两个视图 —— 那正是「看的方向弄混了」的原型。
+  // 三个视图都是格子图，与 M2-10 共用 GridPattern；立体堆用现成的 ShapeScene
+  tpl('M2-5.1', 'viewFromSide', {
+    1: { ask: 'top', blockRange: [3, 4] },
+    2: { ask: 'any', blockRange: [3, 5] },
+    3: { ask: 'any', blockRange: [4, 6] },
+  }, 'choice_image'),
+  // ⭐ 备选换成数量问法：「从上面看有几个小正方形」的干扰项是**总块数**——
+  // 堆了两层的位置在俯视图里还是一格，答出总块数就说明还没有「投影」的概念
+  altTpl('M2-5.1', 'count', 'viewFromSide', {
+    1: { mode: 'countView', blockRange: [3, 4] },
+    2: { mode: 'countView', blockRange: [3, 5] },
+    3: { mode: 'countView', blockRange: [4, 6] },
+  }, 'input_number'),
+
+  tpl('M2-5.2', 'viewFromSide', {
+    1: { ask: 'front', blockRange: [3, 4] },
+    2: { ask: 'side', blockRange: [3, 5] },
+    3: { ask: 'any', blockRange: [4, 6] },
+  }, 'choice_image'),
+  altTpl('M2-5.2', 'count', 'viewFromSide', {
+    1: { mode: 'countView', blockRange: [3, 5] },
+    2: { mode: 'countView', blockRange: [4, 6] },
+    3: { mode: 'countView', blockRange: [4, 6] },
+  }, 'input_number'),
+
   // ── M2-6 认识时间 ────────────────────────────────────────────────
   // 读钟面与「分针指着几」互为表里，正好凑成两种题型
   tpl('M2-6.1', 'clockMinutes', {
@@ -394,6 +421,33 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
     2: { mode: 'digits', as: 'choice_text' },
     3: { mode: 'digits', as: 'choice_text' },
   }, 'choice_text'),
+
+  // ── M2-8 数据收集整理 ────────────────────────────────────────────
+  // ⭐ 条形图画出横向网格线，柱子有多高变成「数几格」——
+  // 不识字的孩子读不了图例，但她数得清格子。类别一律用 emoji 标
+  // ⚠️ 三档必须产出同一种题型：模板的 `type` 是固定的，
+  // 而 `most` 产 choice_image、`count` 产 input_number。混着配会让声明与实际对不上
+  tpl('M2-8.1', 'barChartRead', {
+    1: { mode: 'count', barCount: [3, 3], valueRange: [1, 4] },
+    2: { mode: 'count', barCount: [3, 4], valueRange: [1, 6] },
+    3: { mode: 'total', barCount: [4, 4], valueRange: [2, 7] },
+  }),
+  altTpl('M2-8.1', 'most', 'barChartRead', {
+    1: { mode: 'most', barCount: [3, 3], valueRange: [1, 5] },
+    2: { mode: 'most', barCount: [3, 4], valueRange: [1, 6] },
+    3: { mode: 'most', barCount: [4, 4], valueRange: [2, 7] },
+  }, 'choice_image'),
+
+  tpl('M2-8.2', 'barChartRead', {
+    1: { mode: 'total', barCount: [3, 3], valueRange: [1, 4] },
+    2: { mode: 'diff', barCount: [3, 4], valueRange: [1, 6] },
+    3: { mode: 'total', barCount: [4, 4], valueRange: [2, 7] },
+  }),
+  altTpl('M2-8.2', 'most', 'barChartRead', {
+    1: { mode: 'most', barCount: [3, 4], valueRange: [1, 5] },
+    2: { mode: 'most', barCount: [4, 4], valueRange: [1, 6] },
+    3: { mode: 'most', barCount: [4, 4], valueRange: [2, 7] },
+  }, 'choice_image'),
 
   // ── M2-9 表内除法 ────────────────────────────────────────────────
   // ⭐ 平均分的意义用的是和乘法**同一幅图**：看着 3 组每组 4 个，
@@ -661,22 +715,18 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
 ]
 
 /**
- * ⭐ 还没有模板的二年级知识点 —— **这份清单只能减，不能增**。
+ * ⭐ 还没有模板的二年级知识点 —— **已经空了**。
  *
- * 现在剩下的**全部**卡在同一件事上：需要新的 SVG 图形组件。
- * 图谱里已经有这些知识点、误区标签也备齐了、生成器的逻辑也不难写，
- * 缺的只是「怎么把题画出来」——尺子上的刻度、角的两条边、三视图、
- * 轴对称的折痕、条形图的柱子，每一样都要画。
+ * 64 个知识点全部出得了题：尺子的刻度、角的两条边、三视图、
+ * 轴对称的折痕、条形图的柱子，最后那批图都画完了。
  *
- * ⚠️ 在清单清空之前，`isOpened('math', 'G2')` 必须保持 `false`——
- * 图谱有了但题出不全时不该让孩子进去，见 design/08 §8.8 的提醒。
+ * ⚠️ **清单空了不等于可以开放二年级。** `isOpened('math', 'G2')` 读的是
+ * `pets.ts` 的 `OPENED` 集合，还要等 G2 的三只宠物做出来（design/08 §8.5）。
+ * 在那之前孩子进不去——而这也正好留出时间做第一次真机检查：
+ * 五个新画的 SVG 组件到现在**一个都没在设备上看过**。
  *
- * `itemTemplates.test.ts` 拿这份清单与实际情况**双向比对**：
+ * 清单保留着（而不是删掉这个导出）：三年级扩内容时同一套机制还要再用一次。
+ * `itemTemplates.test.ts` 拿它与实际情况**双向比对**：
  * 挂了模板却忘了从清单里划掉会红，清单里漏写一个也会红。
  */
-export const PENDING_G2_KP_IDS: readonly string[] = [
-  // 需要三视图 SVG
-  'M2-5.1', 'M2-5.2',
-  // 需要统计表 / 条形图 SVG
-  'M2-8.1', 'M2-8.2',
-]
+export const PENDING_G2_KP_IDS: readonly string[] = []

@@ -4621,5 +4621,29 @@
  "phrase.whichAfterTurn": {
   "text": "把它转一下，会变成哪个",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.viewFromTop": {
+  "text": "从上面看是哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.topViewHowMany": {
+  "text": "从上面看，有几个小正方形",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.viewFromFront": {
+  "text": "从正面看是哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.viewFromSide": {
+  "text": "从侧面看是哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichMost": {
+  "text": "哪个最多",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.differBy": {
+  "text": "相差几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

@@ -152,17 +152,16 @@ describe('⭐ 待办清单必须与实际情况一致', () => {
     // 交接文档和提交说明里的数字一律以这条为准
     const covered = G2_KP_IDS.filter((id) => !PENDING_G2_KP_IDS.includes(id))
     expect(G2_KP_IDS, '二年级知识点总数').toHaveLength(64)
-    expect(covered, '已能出题').toHaveLength(60)
-    expect(PENDING_G2_KP_IDS, '还差图才能出题').toHaveLength(4)
+    expect(covered, '已能出题').toHaveLength(64)
+    expect(PENDING_G2_KP_IDS, '还差图才能出题').toHaveLength(0)
   })
 
-  it('⭐ 清单没清空之前，二年级数学不能对孩子开放', () => {
-    // 图谱有了但题出不全时不该让她进去，见 design/08 §8.8
-    if (PENDING_G2_KP_IDS.length > 0) {
-      expect(
-        isOpened('math', 'G2'),
-        '还有知识点出不了题，此时开放二年级会让她撞上空白的知识点',
-      ).toBe(false)
+  it('⭐ 开放二年级的前提是清单已空 —— 反过来写才一直有效', () => {
+    // 原来写的是「清单没空就不能开放」，清单一空这条断言就变成空跑了。
+    // 反着写在将来仍然守着：谁要是开放了 G2 但清单里还有东西，
+    // 孩子会撞上一个出不了题的知识点，而那在 UI 上表现为「点进去什么都没有」
+    if (isOpened('math', 'G2')) {
+      expect(PENDING_G2_KP_IDS, '开放了二年级，但还有知识点出不了题').toEqual([])
     }
   })
 })
