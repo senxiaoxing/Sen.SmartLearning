@@ -11,6 +11,7 @@
 import { AngleShape } from '@/components/shape/AngleShape'
 import { ClockFace } from '@/components/shape/ClockFace'
 import { PlaneShape } from '@/components/shape/PlaneShape'
+import { RulerShape, SegmentShape } from '@/components/shape/RulerShape'
 import { SolidShape } from '@/components/shape/SolidShape'
 import type { PlaneShapeKind, SolidShapeKind } from '@/domain/types'
 
@@ -31,6 +32,9 @@ const DEFAULT_SIZE: Record<string, number> = {
   // 角比几何图形略大：边长本身是题目内容（见 AngleShape 文件头），
   // 缩小会把「长边」和「短边」的差别压没
   angle: 100,
+  // 尺子要能看清刻度数字，给足宽度
+  ruler: 300,
+  segment: 150,
 }
 
 interface MathShapeProps {
@@ -95,6 +99,22 @@ export function MathShape({ imageKey, size }: MathShapeProps) {
     }
   }
 
+  // `ruler:<总刻度>:<起点>:<终点>` —— ⭐ 起点不一定是 0，那正是考点
+  if (family === 'ruler') {
+    const maxTick = Number(a)
+    const start = Number(b)
+    const end = Number(c)
+    if ([maxTick, start, end].every(Number.isFinite)) {
+      return <RulerShape maxTick={maxTick} start={start} end={end} size={px} />
+    }
+  }
+
+  // `segment:<厘米>` —— 一条不配尺子的线段，用于「哪条长 5 厘米」
+  if (family === 'segment') {
+    const cm = Number(a)
+    if (Number.isFinite(cm) && cm > 0) return <SegmentShape lengthCm={cm} size={px} />
+  }
+
   return null
 }
 
@@ -105,8 +125,9 @@ export function isRenderableShapeKey(imageKey: string): boolean {
   if (family === 'solid') return a !== undefined && SOLIDS.has(a)
   if (family === 'plane') return a !== undefined && PLANES.has(a)
   if (family === 'clock') return Number.isFinite(Number(a)) && Number.isFinite(Number(b))
-  if (family === 'angle') {
+  if (family === 'angle' || family === 'ruler') {
     return [a, b, c].every((v) => v !== undefined && Number.isFinite(Number(v)))
   }
+  if (family === 'segment') return a !== undefined && Number(a) > 0
   return false
 }

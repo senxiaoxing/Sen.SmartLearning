@@ -160,6 +160,43 @@ function mixedPair(kpId: string, mode: string, maxFactor = 9): ItemTemplate[] {
 
 export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   // ── M2-1 长度单位 ────────────────────────────────────────────────
+  // ⭐ 难度三档不是「换更长的物体」，是**起点从 0 挪开**：
+  // 先学会读刻度 → 起点随机 → 起点必不为 0。
+  // 物体从 0 开始量的题产生不了 ruler_start_wrong，那时右端就是答案
+  tpl('M2-1.1', 'measureLength', {
+    1: { start: 'zero', lengthRange: [2, 6] },
+    2: { start: 'zero', lengthRange: [3, 8] },
+    3: { start: 'any', lengthRange: [3, 9] },
+  }),
+  altTpl('M2-1.1', 'sense', 'unitConvert', {
+    1: { quantity: 'length', mode: 'chooseUnit' },
+    2: { quantity: 'length', mode: 'chooseUnit' },
+    3: { quantity: 'length', mode: 'chooseUnit' },
+  }, 'choice_image'),
+
+  tpl('M2-1.2', 'measureLength', {
+    1: { start: 'any', lengthRange: [3, 7] },
+    2: { start: 'shifted', lengthRange: [3, 8] },
+    3: { start: 'shifted', lengthRange: [2, 9] },
+  }),
+  altTpl('M2-1.2', 'pick', 'measureLength', {
+    1: { mode: 'pick', lengthRange: [2, 6] },
+    2: { mode: 'pick', lengthRange: [3, 8] },
+    3: { mode: 'pick', lengthRange: [3, 9] },
+  }, 'choice_image'),
+
+  // 线段：先认出「哪条长 N 厘米」，再拿尺子量出来
+  tpl('M2-1.5', 'measureLength', {
+    1: { mode: 'pick', lengthRange: [2, 6] },
+    2: { mode: 'pick', lengthRange: [3, 8] },
+    3: { mode: 'pick', lengthRange: [2, 9] },
+  }, 'choice_image'),
+  altTpl('M2-1.5', 'measure', 'measureLength', {
+    1: { start: 'zero', lengthRange: [3, 7] },
+    2: { start: 'any', lengthRange: [3, 8] },
+    3: { start: 'shifted', lengthRange: [2, 9] },
+  }, 'input_number'),
+
   // 换算与量感互为表里：会算进率不等于知道一米有多长，反过来也一样
   tpl('M2-1.3', 'unitConvert', {
     1: { quantity: 'length', direction: 'down' },
@@ -591,8 +628,6 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
  * 挂了模板却忘了从清单里划掉会红，清单里漏写一个也会红。
  */
 export const PENDING_G2_KP_IDS: readonly string[] = [
-  // 需要尺子 / 线段 SVG
-  'M2-1.1', 'M2-1.2', 'M2-1.5',
   // 需要三视图 SVG
   'M2-5.1', 'M2-5.2',
   // 需要统计表 / 条形图 SVG

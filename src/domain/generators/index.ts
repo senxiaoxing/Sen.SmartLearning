@@ -27,6 +27,7 @@ import { equalGroups } from '@/domain/generators/equalGroups'
 import { fourFacts } from '@/domain/generators/fourFacts'
 import { logicReasoning } from '@/domain/generators/logicReasoning'
 import { matchPairs } from '@/domain/generators/matchPairs'
+import { measureLength } from '@/domain/generators/measureLength'
 import { memoryPair } from '@/domain/generators/memoryPair'
 import { mixedOps } from '@/domain/generators/mixedOps'
 import { mulDivFacts } from '@/domain/generators/mulDivFacts'
@@ -88,6 +89,7 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   fourFacts,
   logicReasoning,
   matchPairs,
+  measureLength,
   memoryPair,
   mixedOps,
   mulDivFacts,

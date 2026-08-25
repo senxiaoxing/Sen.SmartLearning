@@ -234,6 +234,9 @@ const PHRASES: VoiceManifest = {
   'phrase.howManyInPicture': '图里有几个',
   // —— 二年级：角（M2-3.x）。图形名复用 word.* 那一批，这里只加问句
   'phrase.howManyCorners': '有几个角',
+  // —— 二年级：量长度（M2-1.x）。「厘米」复用单位换算那条 unit.cm
+  'phrase.howLongIsIt': '它有多长',
+  'phrase.whichSegmentIs': '哪条线段长',
   'phrase.totalCornersHowMany': '一共有几个角',
   'phrase.whichRightAngle': '哪个是直角',
   'phrase.whichAcuteAngle': '哪个是锐角',

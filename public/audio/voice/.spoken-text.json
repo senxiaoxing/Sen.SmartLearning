@@ -4593,5 +4593,13 @@
  "phrase.whichObtuseAngle": {
   "text": "哪个是钝角",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howLongIsIt": {
+  "text": "它有多长",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichSegmentIs": {
+  "text": "哪条线段长",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }
