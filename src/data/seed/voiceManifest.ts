@@ -203,6 +203,10 @@ const PHRASES: VoiceManifest = {
   //    尽量复用一年级已有的收尾句：「又来了」「吃掉了」「还剩几个」
   //    「一共有几个」四条一条没新加，只补了各自开头那半句
   'phrase.shareEqually': '平均分给',
+  // 「几个几」的平均分（M2-9.1）。分的是「份」不是「小朋友」，
+  // 因此不能复用上面那条——图上是几个圈，说「分给几个小朋友」对不上图
+  'phrase.equallyIntoParts': '平均分成',
+  'phrase.partsEachHowMany': '份，每份几个',
   'phrase.kidsEachGets': '个小朋友，每人分几个',
   'phrase.kidsShareEqually': '个小朋友平均分，每人分几个',
   'phrase.perBoxCanPack': '个装一盒，能装几盒',

@@ -10,13 +10,14 @@
  * ordinalRow   一排物体指出第几个    M1.4 序数
  * spatialPair  两个物体的位置关系    M2 上下前后左右
  * storyGroups  几堆物体的合并/去掉   M4.1 · M4.3 · M9.1~9.3
+ * equalGroups  等分的几组（几个几）  M2-4.1 · M2-4.2 · M2-9.1
  * braceGroups  大括号 + 问号        M9.4
  * ```
  */
 
 import { MathShape } from '@/components/shape/MathShape'
 import { ShapeScene } from '@/components/shape/ShapeScene'
-import { BraceGroups, StoryGroups } from '@/items/StoryFigures'
+import { BraceGroups, EqualGroups, StoryGroups } from '@/items/StoryFigures'
 import type { ItemVisual } from '@/domain/types'
 
 export function StemFigure({ visual }: { visual: ItemVisual }) {
@@ -35,6 +36,9 @@ export function StemFigure({ visual }: { visual: ItemVisual }) {
 
     case 'storyGroups':
       return <StoryGroups visual={visual} />
+
+    case 'equalGroups':
+      return <EqualGroups visual={visual} />
 
     case 'braceGroups':
       return <BraceGroups visual={visual} />

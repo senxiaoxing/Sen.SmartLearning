@@ -4565,5 +4565,13 @@
  "phrase.atLeastBoxes": {
   "text": "个，至少要几个盒子",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.equallyIntoParts": {
+  "text": "平均分成",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.partsEachHowMany": {
+  "text": "份，每份几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

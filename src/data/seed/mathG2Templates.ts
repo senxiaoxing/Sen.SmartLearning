@@ -206,6 +206,31 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   ...wordPair('M2-2.6', ['moreThan', 'lessThan', 'moreThan']),
 
   // ── M2-4 表内乘法 ────────────────────────────────────────────────
+  // ⭐ 乘法的意义与乘加互换共用同一幅「几个几」图，只是问的东西不同：
+  // 一个问「一共几个」（要算），一个问「哪个算式说的是这幅图」（要读懂图）。
+  // 两条模板互为对方的备选，题型正好一个填空一个选择
+  tpl('M2-4.1', 'equalGroups', {
+    1: { mode: 'times', groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { mode: 'times', groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { mode: 'times', groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }),
+  altTpl('M2-4.1', 'eq', 'equalGroups', {
+    1: { mode: 'equation', groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { mode: 'equation', groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { mode: 'equation', groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }, 'choice_text'),
+
+  tpl('M2-4.2', 'equalGroups', {
+    1: { mode: 'equation', groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { mode: 'equation', groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { mode: 'equation', groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }, 'choice_text'),
+  altTpl('M2-4.2', 'times', 'equalGroups', {
+    1: { mode: 'times', groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { mode: 'times', groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { mode: 'times', groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }, 'input_number'),
+
   ...mulPair('M2-4.3', [5]),
   ...mulPair('M2-4.4', [2, 3, 4]),
   ...mulPair('M2-4.5', [6]),
@@ -286,6 +311,20 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   }, 'choice_text'),
 
   // ── M2-9 表内除法 ────────────────────────────────────────────────
+  // ⭐ 平均分的意义用的是和乘法**同一幅图**：看着 3 组每组 4 个，
+  // 问「一共几个」是乘法、问「每份几个」是除法。图一样正好帮她建立这个联系，
+  // 而不是让除法在两个月后作为一件全新的事情出现
+  tpl('M2-9.1', 'equalGroups', {
+    1: { mode: 'share', groupsRange: [2, 3], perGroupRange: [2, 4] },
+    2: { mode: 'share', groupsRange: [2, 4], perGroupRange: [2, 5] },
+    3: { mode: 'groupCount', groupsRange: [3, 5], perGroupRange: [3, 5] },
+  }),
+  altTpl('M2-9.1', 'pick', 'equalGroups', {
+    1: { mode: 'groupCount', groupsRange: [2, 3], perGroupRange: [2, 4], as: 'choice_text' },
+    2: { mode: 'share', groupsRange: [2, 4], perGroupRange: [2, 5], as: 'choice_text' },
+    3: { mode: 'groupCount', groupsRange: [3, 5], perGroupRange: [3, 5], as: 'choice_text' },
+  }, 'choice_text'),
+
   ...divPair('M2-9.2', [2, 3, 4, 5]),
   ...divPair('M2-9.3', [2, 3, 4, 5, 6]),
   ...divPair('M2-9.4', [7, 8, 9]),
@@ -468,8 +507,6 @@ export const PENDING_G2_KP_IDS: readonly string[] = [
   'M2-1.1', 'M2-1.2', 'M2-1.5',
   // 需要角的 SVG
   'M2-3.1', 'M2-3.2', 'M2-3.3', 'M2-3.4',
-  // 需要「几个几」的分组图
-  'M2-4.1', 'M2-4.2', 'M2-9.1',
   // 需要三视图 SVG
   'M2-5.1', 'M2-5.2',
   // 需要统计表 / 条形图 SVG

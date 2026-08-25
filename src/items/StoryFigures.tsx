@@ -55,6 +55,38 @@ export function StoryGroups({ visual }: { visual: Of<'storyGroups'> }) {
 }
 
 /**
+ * ⭐ 等分的几组（M2-4 乘法的意义 · M2-9.1 平均分）。
+ *
+ * **每组画一个虚线框**，而不是像 `StoryGroups` 那样只靠间距分开。
+ * 「几个几」的全部意思就在「组」这个概念上——框是让它看得见的最省事的办法，
+ * 摆成一堆散的这道题就退化成数数题了。
+ *
+ * 组横着排、组内的物体也横着排：一行就是一组，
+ * 孩子数「有几组」时是从上往下数行，数「每组几个」时是从左往右数——
+ * 两个方向不打架。
+ */
+export function EqualGroups({ visual }: { visual: Of<'equalGroups'> }) {
+  const { emoji, groups, perGroup } = visual
+
+  return (
+    <div className="flex flex-col items-center gap-2">
+      {Array.from({ length: groups }, (_, g) => (
+        <div
+          key={g}
+          className="flex items-center gap-1.5 rounded-2xl border-2 border-dashed border-ink/20 px-3 py-1.5"
+        >
+          {Array.from({ length: perGroup }, (_, i) => (
+            <span key={i} className="text-3xl leading-none">
+              {emoji}
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/**
  * 大括号 + 问号（M9.4）。
  *
  * 括号横跨全部物体，下方标注：问号在总数位置就是求和，

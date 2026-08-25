@@ -21,6 +21,7 @@ import { counting } from '@/domain/generators/counting'
 import { decomposition } from '@/domain/generators/decomposition'
 import { divTable } from '@/domain/generators/divTable'
 import { englishListen } from '@/domain/generators/englishListen'
+import { equalGroups } from '@/domain/generators/equalGroups'
 import { fourFacts } from '@/domain/generators/fourFacts'
 import { logicReasoning } from '@/domain/generators/logicReasoning'
 import { matchPairs } from '@/domain/generators/matchPairs'
@@ -78,6 +79,7 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   decomposition,
   divTable,
   englishListen,
+  equalGroups,
   fourFacts,
   logicReasoning,
   matchPairs,
