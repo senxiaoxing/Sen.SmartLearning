@@ -152,8 +152,8 @@ describe('⭐ 待办清单必须与实际情况一致', () => {
     // 交接文档和提交说明里的数字一律以这条为准
     const covered = G2_KP_IDS.filter((id) => !PENDING_G2_KP_IDS.includes(id))
     expect(G2_KP_IDS, '二年级知识点总数').toHaveLength(64)
-    expect(covered, '已能出题').toHaveLength(49)
-    expect(PENDING_G2_KP_IDS, '还差图才能出题').toHaveLength(15)
+    expect(covered, '已能出题').toHaveLength(53)
+    expect(PENDING_G2_KP_IDS, '还差图才能出题').toHaveLength(11)
   })
 
   it('⭐ 清单没清空之前，二年级数学不能对孩子开放', () => {

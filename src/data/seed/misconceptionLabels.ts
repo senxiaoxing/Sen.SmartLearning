@@ -239,6 +239,11 @@ export const MISCONCEPTION_LABELS: Record<MisconceptionTag, MisconceptionLabel> 
     example: '两个角开口一样大，边画得长的那个被判成更大',
     advice: '用两根小棒做一个活动角，把边推长推短给她看：边变了，开口没变',
   },
+  angle_kind_confusion: {
+    label: '直角锐角钝角分不清',
+    example: '问哪个是直角，她挑了个更尖的角',
+    advice: '拿三角板那个直角去比一比：正好合上是直角，比它小是锐角，比它大是钝角',
+  },
   view_direction_confusion: {
     label: '看的方向弄混了',
     example: '把「从上面看」当成了「从正面看」',

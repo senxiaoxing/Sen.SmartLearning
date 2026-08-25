@@ -232,6 +232,12 @@ const PHRASES: VoiceManifest = {
   'phrase.sameKindPlane': '哪个和它一样，也是平面图形',
   'phrase.howManyBlocks': '一共有几块积木',
   'phrase.howManyInPicture': '图里有几个',
+  // —— 二年级：角（M2-3.x）。图形名复用 word.* 那一批，这里只加问句
+  'phrase.howManyCorners': '有几个角',
+  'phrase.totalCornersHowMany': '一共有几个角',
+  'phrase.whichRightAngle': '哪个是直角',
+  'phrase.whichAcuteAngle': '哪个是锐角',
+  'phrase.whichObtuseAngle': '哪个是钝角',
 
   // —— 题干：钟表（M8.x）。认指针题的分钟恒为 0，只需「点整」；
   //    「点半」给答错反馈念半时答案用（M8.3）

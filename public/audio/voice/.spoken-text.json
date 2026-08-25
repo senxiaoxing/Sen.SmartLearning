@@ -4573,5 +4573,25 @@
  "phrase.partsEachHowMany": {
   "text": "份，每份几个",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howManyCorners": {
+  "text": "有几个角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.totalCornersHowMany": {
+  "text": "一共有几个角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichRightAngle": {
+  "text": "哪个是直角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichAcuteAngle": {
+  "text": "哪个是锐角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichObtuseAngle": {
+  "text": "哪个是钝角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  }
 }

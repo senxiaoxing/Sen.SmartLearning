@@ -205,6 +205,54 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   // 她得每道题都听清是哪一个——这本身就是这个知识点要练的
   ...wordPair('M2-2.6', ['moreThan', 'lessThan', 'moreThan']),
 
+  // ── M2-3 角的初步认识 ────────────────────────────────────────────
+  // ⭐ 认角与数角用一年级就有的平面图形，只有比较角的大小（3.2 / 3.3）
+  // 才把角单独拎出来画——教材里「认识角」也是从图形中找角开始的
+  tpl('M2-3.1', 'cornerCount', {
+    1: { mode: 'single' },
+    2: { mode: 'single' },
+    3: { mode: 'total', countRange: [2, 2] },
+  }),
+  // 认角先得认得出图形：借一年级 M7.3 的认图形题作轮换，零新增
+  altTpl('M2-3.1', 'shape', 'shapes', {
+    1: { family: 'plane' },
+    2: { family: 'plane' },
+    3: { family: 'plane' },
+  }, 'choice_image'),
+
+  tpl('M2-3.2', 'angles', {
+    1: { mode: 'right' },
+    2: { mode: 'right' },
+    3: { mode: 'right' },
+  }, 'choice_image'),
+  altTpl('M2-3.2', 'corners', 'cornerCount', {
+    1: { mode: 'single' },
+    2: { mode: 'total', countRange: [2, 2] },
+    3: { mode: 'total', countRange: [2, 3] },
+  }, 'input_number'),
+
+  tpl('M2-3.3', 'angles', {
+    1: { mode: 'kind' },
+    2: { mode: 'kind' },
+    3: { mode: 'kind' },
+  }, 'choice_image'),
+  altTpl('M2-3.3', 'corners', 'cornerCount', {
+    1: { mode: 'single' },
+    2: { mode: 'total', countRange: [2, 3] },
+    3: { mode: 'total', countRange: [3, 3] },
+  }, 'input_number'),
+
+  tpl('M2-3.4', 'cornerCount', {
+    1: { mode: 'total', countRange: [2, 2] },
+    2: { mode: 'total', countRange: [2, 3] },
+    3: { mode: 'total', countRange: [3, 3] },
+  }),
+  altTpl('M2-3.4', 'angle', 'angles', {
+    1: { mode: 'right' },
+    2: { mode: 'kind' },
+    3: { mode: 'kind' },
+  }, 'choice_image'),
+
   // ── M2-4 表内乘法 ────────────────────────────────────────────────
   // ⭐ 乘法的意义与乘加互换共用同一幅「几个几」图，只是问的东西不同：
   // 一个问「一共几个」（要算），一个问「哪个算式说的是这幅图」（要读懂图）。
@@ -545,8 +593,6 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
 export const PENDING_G2_KP_IDS: readonly string[] = [
   // 需要尺子 / 线段 SVG
   'M2-1.1', 'M2-1.2', 'M2-1.5',
-  // 需要角的 SVG
-  'M2-3.1', 'M2-3.2', 'M2-3.3', 'M2-3.4',
   // 需要三视图 SVG
   'M2-5.1', 'M2-5.2',
   // 需要统计表 / 条形图 SVG

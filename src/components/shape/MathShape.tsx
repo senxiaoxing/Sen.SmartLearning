@@ -8,6 +8,7 @@
  * 与 `PetAvatar` 对宠物形象的关系完全一样。
  */
 
+import { AngleShape } from '@/components/shape/AngleShape'
 import { ClockFace } from '@/components/shape/ClockFace'
 import { PlaneShape } from '@/components/shape/PlaneShape'
 import { SolidShape } from '@/components/shape/SolidShape'
@@ -27,10 +28,13 @@ const DEFAULT_SIZE: Record<string, number> = {
   solid: 82,
   plane: 82,
   clock: 118,
+  // 角比几何图形略大：边长本身是题目内容（见 AngleShape 文件头），
+  // 缩小会把「长边」和「短边」的差别压没
+  angle: 100,
 }
 
 interface MathShapeProps {
-  /** 形如 `'solid:cube'` / `'plane:triangle'` / `'clock:3:30'` */
+  /** 形如 `'solid:cube'` / `'plane:triangle'` / `'clock:3:30'` / `'angle:90:38:0'` */
   imageKey: string
   /** 省略时按族取 {@link DEFAULT_SIZE} */
   size?: number
@@ -53,7 +57,7 @@ export function shapeSize(imageKey: string, override?: number): number {
  * <MathShape imageKey="clock:9:30" size={120} />
  */
 export function MathShape({ imageKey, size }: MathShapeProps) {
-  const [family, a, b] = imageKey.split(':')
+  const [family, a, b, c] = imageKey.split(':')
   const px = shapeSize(imageKey, size)
 
   // 拼音的看图选音节直接用 emoji 而非 SVG（🐱 比任何自绘图标都好认）
@@ -81,15 +85,28 @@ export function MathShape({ imageKey, size }: MathShapeProps) {
     }
   }
 
+  // `angle:<度数>:<边长>:<朝向>` —— ⭐ 边长是题目内容的一部分，不是样式
+  if (family === 'angle') {
+    const degrees = Number(a)
+    const arm = Number(b)
+    const rotate = Number(c)
+    if (Number.isFinite(degrees) && Number.isFinite(arm) && Number.isFinite(rotate)) {
+      return <AngleShape degrees={degrees} arm={arm} rotate={rotate} size={px} />
+    }
+  }
+
   return null
 }
 
 /** 这个 key 能不能被解析。供 seed 与生成器的契约测试使用 */
 export function isRenderableShapeKey(imageKey: string): boolean {
-  const [family, a, b] = imageKey.split(':')
+  const [family, a, b, c] = imageKey.split(':')
   if (family === 'emoji') return a !== undefined && a.length > 0
   if (family === 'solid') return a !== undefined && SOLIDS.has(a)
   if (family === 'plane') return a !== undefined && PLANES.has(a)
   if (family === 'clock') return Number.isFinite(Number(a)) && Number.isFinite(Number(b))
+  if (family === 'angle') {
+    return [a, b, c].every((v) => v !== undefined && Number.isFinite(Number(v)))
+  }
   return false
 }

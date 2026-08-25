@@ -285,6 +285,15 @@ export type MisconceptionTag =
    * 补救是拿活动角把边推进推出给她看：边变短了，角没变。
    */
   | 'angle_side_length'
+  /**
+   * **角的类别认错**：问哪个是直角，她挑了个锐角。
+   *
+   * 与 `angle_side_length` 是两种病：那个是被边长骗了（她在比大小，只是比错了依据），
+   * 这个是压根还没建立「直角 / 锐角 / 钝角」这三档的概念。
+   * 补救也不同——前者用活动角把边推进推出给她看，
+   * 后者要拿三角板的直角去比每一个角。
+   */
+  | 'angle_kind_confusion'
   | 'view_direction_confusion' // 观察物体时把「从上面看」当成「从正面看」
   | 'symmetry_axis_wrong' // 对称轴认错或画错（把非对称图形判成对称）
 
