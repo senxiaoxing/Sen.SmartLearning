@@ -25,6 +25,8 @@ import { divTable } from '@/domain/generators/divTable'
 import { englishListen } from '@/domain/generators/englishListen'
 import { equalGroups } from '@/domain/generators/equalGroups'
 import { fourFacts } from '@/domain/generators/fourFacts'
+import { gridSymmetry } from '@/domain/generators/gridSymmetry'
+import { gridTransform } from '@/domain/generators/gridTransform'
 import { logicReasoning } from '@/domain/generators/logicReasoning'
 import { matchPairs } from '@/domain/generators/matchPairs'
 import { measureLength } from '@/domain/generators/measureLength'
@@ -87,6 +89,8 @@ export const GENERATORS: Readonly<Record<string, Generator>> = {
   englishListen,
   equalGroups,
   fourFacts,
+  gridSymmetry,
+  gridTransform,
   logicReasoning,
   matchPairs,
   measureLength,

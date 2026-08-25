@@ -236,6 +236,12 @@ const PHRASES: VoiceManifest = {
   'phrase.howManyCorners': '有几个角',
   // —— 二年级：量长度（M2-1.x）。「厘米」复用单位换算那条 unit.cm
   'phrase.howLongIsIt': '它有多长',
+  // —— 二年级：图形的运动（M2-10.x）
+  'phrase.whichIsSymmetric': '哪个图形是轴对称的',
+  'phrase.whichAxis': '这个图形沿哪条线对称',
+  'phrase.movedRight': '向右移了几格',
+  'phrase.movedDown': '向下移了几格',
+  'phrase.whichAfterTurn': '把它转一下，会变成哪个',
   'phrase.whichSegmentIs': '哪条线段长',
   'phrase.totalCornersHowMany': '一共有几个角',
   'phrase.whichRightAngle': '哪个是直角',

@@ -10,9 +10,11 @@
 
 import { AngleShape } from '@/components/shape/AngleShape'
 import { ClockFace } from '@/components/shape/ClockFace'
+import { GridPatternFromKey } from '@/components/shape/GridPattern'
 import { PlaneShape } from '@/components/shape/PlaneShape'
 import { RulerShape, SegmentShape } from '@/components/shape/RulerShape'
 import { SolidShape } from '@/components/shape/SolidShape'
+import { decodeCells } from '@/domain/gridShape'
 import type { PlaneShapeKind, SolidShapeKind } from '@/domain/types'
 
 const SOLIDS = new Set<string>(['cube', 'cuboid', 'cylinder', 'sphere', 'cone'])
@@ -35,6 +37,9 @@ const DEFAULT_SIZE: Record<string, number> = {
   // 尺子要能看清刻度数字，给足宽度
   ruler: 300,
   segment: 150,
+  // 网格图案：格子得够大，「移了几格」才数得清
+  grid: 150,
+  gridpair: 180,
 }
 
 interface MathShapeProps {
@@ -115,6 +120,11 @@ export function MathShape({ imageKey, size }: MathShapeProps) {
     if (Number.isFinite(cm) && cm > 0) return <SegmentShape lengthCm={cm} size={px} />
   }
 
+  // `grid:<边长>:<格子>` 一个图案 · `gridpair:<边长>:<原位置>:<新位置>` 平移前后
+  if (family === 'grid' || family === 'gridpair') {
+    return <GridPatternFromKey family={family} a={a} b={b} c={c} size={px} />
+  }
+
   return null
 }
 
@@ -129,5 +139,17 @@ export function isRenderableShapeKey(imageKey: string): boolean {
     return [a, b, c].every((v) => v !== undefined && Number.isFinite(Number(v)))
   }
   if (family === 'segment') return a !== undefined && Number(a) > 0
+  if (family === 'grid') {
+    return Number.isFinite(Number(a)) && b !== undefined && decodeCells(b) !== undefined
+  }
+  if (family === 'gridpair') {
+    return (
+      Number.isFinite(Number(a)) &&
+      b !== undefined &&
+      c !== undefined &&
+      decodeCells(b) !== undefined &&
+      decodeCells(c) !== undefined
+    )
+  }
   return false
 }

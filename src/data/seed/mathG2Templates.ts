@@ -432,6 +432,53 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
   // 算式一样、想的东西不一样，所以三档在两者之间来回换
   ...wordPair('M2-9.6', ['share', 'group', 'share']),
 
+  // ── M2-10 图形的运动 ─────────────────────────────────────────────
+  // ⭐ 四个知识点共用一批方格图案：对称、平移、旋转本来就是同一批图形的
+  // 三种动法。网格是这几道题的量尺——没有格子，「移了几格」就只能说「移了一点」
+  tpl('M2-10.1', 'gridSymmetry', {
+    1: { cellRange: [4, 4] },
+    2: { cellRange: [4, 6] },
+    3: { cellRange: [5, 6] },
+  }, 'choice_image'),
+  altTpl('M2-10.1', 'axis', 'gridSymmetry', {
+    1: { mode: 'axis', cellRange: [4, 4] },
+    2: { mode: 'axis', cellRange: [4, 6] },
+    3: { mode: 'axis', cellRange: [5, 6] },
+  }, 'choice_text'),
+
+  tpl('M2-10.2', 'gridSymmetry', {
+    1: { mode: 'axis', cellRange: [4, 4] },
+    2: { mode: 'axis', cellRange: [4, 6] },
+    3: { mode: 'axis', cellRange: [5, 6] },
+  }, 'choice_text'),
+  altTpl('M2-10.2', 'which', 'gridSymmetry', {
+    1: { cellRange: [4, 4] },
+    2: { cellRange: [4, 6] },
+    3: { cellRange: [5, 6] },
+  }, 'choice_image'),
+
+  tpl('M2-10.3', 'gridTransform', {
+    1: { cellRange: [3, 3] },
+    2: { cellRange: [3, 5] },
+    3: { cellRange: [4, 5] },
+  }),
+  altTpl('M2-10.3', 'turn', 'gridTransform', {
+    1: { mode: 'rotate', cellRange: [3, 4] },
+    2: { mode: 'rotate', cellRange: [4, 5] },
+    3: { mode: 'rotate', cellRange: [4, 6] },
+  }, 'choice_image'),
+
+  tpl('M2-10.4', 'gridTransform', {
+    1: { mode: 'rotate', cellRange: [3, 4] },
+    2: { mode: 'rotate', cellRange: [4, 5] },
+    3: { mode: 'rotate', cellRange: [4, 6] },
+  }, 'choice_image'),
+  altTpl('M2-10.4', 'move', 'gridTransform', {
+    1: { cellRange: [3, 3] },
+    2: { cellRange: [3, 5] },
+    3: { cellRange: [4, 5] },
+  }, 'input_number'),
+
   // ── M2-11 混合运算 ───────────────────────────────────────────────
   ...mixedPair('M2-11.1', 'sameLevel'),
   ...mixedPair('M2-11.2', 'mixed'),
@@ -632,6 +679,4 @@ export const PENDING_G2_KP_IDS: readonly string[] = [
   'M2-5.1', 'M2-5.2',
   // 需要统计表 / 条形图 SVG
   'M2-8.1', 'M2-8.2',
-  // 需要轴对称 / 平移 / 旋转 SVG
-  'M2-10.1', 'M2-10.2', 'M2-10.3', 'M2-10.4',
 ]
