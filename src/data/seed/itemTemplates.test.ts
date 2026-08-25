@@ -147,6 +147,15 @@ describe('⭐ 待办清单必须与实际情况一致', () => {
     expect(ghost, '清单里有图谱中不存在的 ID').toEqual([])
   })
 
+  it('⭐ 覆盖率的数字写在这里 —— 手算过两次，两次都算错了', () => {
+    // 每做完一批就要改这三个数，改的时候会被迫真的数一遍。
+    // 交接文档和提交说明里的数字一律以这条为准
+    const covered = G2_KP_IDS.filter((id) => !PENDING_G2_KP_IDS.includes(id))
+    expect(G2_KP_IDS, '二年级知识点总数').toHaveLength(64)
+    expect(covered, '已能出题').toHaveLength(49)
+    expect(PENDING_G2_KP_IDS, '还差图才能出题').toHaveLength(15)
+  })
+
   it('⭐ 清单没清空之前，二年级数学不能对孩子开放', () => {
     // 图谱有了但题出不全时不该让她进去，见 design/08 §8.8
     if (PENDING_G2_KP_IDS.length > 0) {
