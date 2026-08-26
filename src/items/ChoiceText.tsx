@@ -10,6 +10,7 @@ import { useEffect } from 'react'
 import { SpeakerButton } from '@/components/SpeakerButton'
 import { OptionButton } from '@/items/OptionButton'
 import { visualState } from '@/items/InputNumber'
+import { isStemFigure, StemFigure } from '@/items/StemFigure'
 import { say } from '@/platform/speech'
 import type { ItemViewProps } from '@/items/ItemRenderer'
 
@@ -33,6 +34,17 @@ export function ChoiceText({
         <p className="text-stem text-center tabular-nums">{item.stem.text}</p>
         <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={onReplay} />
       </div>
+
+      {/*
+        ⭐ 题干配图。「哪个算式说的是这幅图？」「这个图形沿哪条线对称？」——
+        这两句里的「这幅图」原先根本不存在，题问的是一幅没画出来的图。
+        理由同 InputNumber 那处。
+      */}
+      {isStemFigure(item.visual) && (
+        <div className="flex items-center justify-center">
+          <StemFigure visual={item.visual} />
+        </div>
+      )}
 
       <div className={`grid ${columns} gap-4 sm:gap-6`}>
         {item.options.map((option) => (

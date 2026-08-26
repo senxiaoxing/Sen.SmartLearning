@@ -22,6 +22,43 @@ import { BarChart } from '@/items/BarChart'
 import { BraceGroups, EqualGroups, StoryGroups } from '@/items/StoryFigures'
 import type { ItemVisual } from '@/domain/types'
 
+/**
+ * 本组件画得出来的配图种类。
+ *
+ * ⭐ 存在的理由：`StemFigure` 对不认识的 kind 返回 `null`，而「什么都没画」
+ * 和「不该画」在渲染结果上一模一样——调用方无从分辨。
+ * 题型组件用它判断「这幅图该不该由我来画」，
+ * 剩下的（`tenFrame` / `countable` / `ordering` …）由各题型自己的脚手架负责。
+ *
+ * ⚠️ 加 `case` 时必须同步这里，否则新配图会静默地画不出来。
+ * 由 `data/seed/stemFigureReach.test.ts` 兜底。
+ */
+const STEM_FIGURE_KINDS: ReadonlySet<ItemVisual['kind']> = new Set([
+  'figure',
+  'shapeScene',
+  'ordinalRow',
+  'spatialPair',
+  'storyGroups',
+  'equalGroups',
+  'barChart',
+  'braceGroups',
+])
+
+/**
+ * 这幅配图该不该由 {@link StemFigure} 来画。
+ *
+ * @param visual - 题目的配图数据，可缺省
+ * @returns 是题干配图则为 true；各题型自己的脚手架（十格阵等）返回 false
+ *
+ * @example
+ * isStemFigure({ kind: 'barChart', … })   // true  —— 交给 StemFigure
+ * isStemFigure({ kind: 'tenFrame', … })   // false —— InputNumber 自己画
+ * isStemFigure(undefined)                 // false
+ */
+export function isStemFigure(visual: ItemVisual | undefined): visual is ItemVisual {
+  return visual !== undefined && STEM_FIGURE_KINDS.has(visual.kind)
+}
+
 export function StemFigure({ visual }: { visual: ItemVisual }) {
   switch (visual.kind) {
     case 'figure':

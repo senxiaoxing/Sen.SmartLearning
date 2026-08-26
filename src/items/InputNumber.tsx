@@ -12,6 +12,7 @@ import { useEffect } from 'react'
 import { SpeakerButton } from '@/components/SpeakerButton'
 import { LooseDots, TenFrame } from '@/components/TenFrame'
 import { OptionButton, type OptionVisualState } from '@/items/OptionButton'
+import { isStemFigure, StemFigure } from '@/items/StemFigure'
 import { say } from '@/platform/speech'
 import type { ItemViewProps } from '@/items/ItemRenderer'
 
@@ -45,6 +46,18 @@ export function InputNumber({
         <div className="flex items-center justify-center gap-4">
           <TenFrame filled={scaffold.frame} emphasis={scaffold.frame < 10 ? 'gap' : 'none'} size="sm" />
           {scaffold.loose > 0 && <LooseDots count={scaffold.loose} size="sm" />}
+        </div>
+      )}
+
+      {/*
+        ⭐ 题干配图。**不是装饰，是题目的一半**——二年级有整批题的条件只在图里：
+        「它有多长？」要尺子、「一共有几个角？」要图形、「饼干有几个？」要条形图。
+        原先只有 ChoiceImage 画它，于是这些题在 App 里是一句话加四个数字，**无解**。
+        二年级开放前进不去，所以一直没人看见。
+      */}
+      {isStemFigure(item.visual) && (
+        <div className="flex items-center justify-center">
+          <StemFigure visual={item.visual} />
         </div>
       )}
 
