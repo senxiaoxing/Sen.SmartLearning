@@ -4645,5 +4645,73 @@
  "phrase.differBy": {
   "text": "相差几个",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pet.miaomiao": {
+  "text": "喵喵",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pet.xiaobai": {
+  "text": "小白",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pet.miemie": {
+  "text": "咩咩",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "petline.dragonG2Catchphrase": {
+  "text": "我又学会一个字啦！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Greet0": {
+  "text": "今日我也要读书！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Correct1": {
+  "text": "我都要记下来了！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Correct3": {
+  "text": "你比我还厉害！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Wrong2": {
+  "text": "我当年也念错过～",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2LevelUp0": {
+  "text": "我长大了！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2LevelUp1": {
+  "text": "毛又白了一点～",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2LevelUp2": {
+  "text": "快看快看，我又变啦！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Comeback0": {
+  "text": "好久不见，我甚是想念",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.pandaG2Greet1": {
+  "text": "我想学新单词！",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2Wrong2": {
+  "text": "我也常常记错～",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2LevelUp0": {
+  "text": "我长大了！",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2Comeback1": {
+  "text": "你回来啦！我好开心",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2Comeback2": {
+  "text": "我一直在等你哦",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
  }
 }

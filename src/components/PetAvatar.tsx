@@ -1,21 +1,23 @@
 /**
- * @file 宠物形象入口 —— 按科目选角色、按尺寸定细节层级
+ * @file 宠物形象入口 —— 按形体选角色、按尺寸定细节层级
  * @layer components  纯渲染
  * @see design/06-宠物系统.md §6 形象方向
  * @see src/data/seed/pets.ts 形态与配饰定义
  *
- * 三只的形体各自在 `components/pet/*Art.tsx` 里，这里只做调度。
- * 换美术（换成位图、换成别的画法）只需改这一层与三个 Art 组件，
+ * 每只的形体各自在 `components/pet/*Art.tsx` 里，这里只做调度。
+ * 换美术（换成位图、换成别的画法）只需改这一层与对应的 Art 组件，
  * 成长逻辑 `domain/pet/growth.ts` 完全不受影响。
  */
 
 import { motion } from 'framer-motion'
 import { DragonArt } from '@/components/pet/DragonArt'
+import { MunchkinArt } from '@/components/pet/MunchkinArt'
 import { PandaArt } from '@/components/pet/PandaArt'
 import { PenguinArt } from '@/components/pet/PenguinArt'
+import { SamoyedArt } from '@/components/pet/SamoyedArt'
+import { SheepArt } from '@/components/pet/SheepArt'
 import type { ArtLod } from '@/components/pet/petArtProps'
-import type { PetDefinition } from '@/data/seed/pets'
-import type { Subject } from '@/domain/types'
+import type { PetArtKey, PetDefinition } from '@/data/seed/pets'
 import '@/components/pet/petArt.css'
 
 interface PetAvatarProps {
@@ -49,11 +51,21 @@ const BASE_SIZE = { sm: 48, md: 88, lg: 140 }
  */
 const LOD_BY_SIZE: Record<'sm' | 'md' | 'lg', ArtLod> = { sm: 1, md: 2, lg: 3 }
 
-const ART_BY_SUBJECT = {
-  math: PenguinArt,
-  pinyin: DragonArt,
-  english: PandaArt,
-} as const satisfies Record<Subject, unknown>
+/**
+ * 形体到组件的登记表。
+ *
+ * ⚠️ 二年级之前这里是按**科目**索引的（`math: PenguinArt`），二年级换了物种就不成立了：
+ * 数学的伙伴从企鹅变成矮脚猫，而科目仍然是 `math`。
+ * 新增年级要在这里补一行，并在 `pets.ts` 的 `PetArtKey` 里加上对应的值。
+ */
+const ART_BY_KEY = {
+  penguin: PenguinArt,
+  dragon: DragonArt,
+  panda: PandaArt,
+  munchkin: MunchkinArt,
+  samoyed: SamoyedArt,
+  sheep: SheepArt,
+} as const satisfies Record<PetArtKey, unknown>
 
 /**
  * 渲染一只宠物。
@@ -78,7 +90,7 @@ export function PetAvatar({
   const stage = def.stages[stageIndex]
   if (stage === undefined) return null
 
-  const Art = ART_BY_SUBJECT[def.subject]
+  const Art = ART_BY_KEY[def.art]
   const accessories = new Set(stage.accessories.map((a) => a.kind))
   // 形态越高整体越大，成长在尺寸上也看得见
   const box = base * 1.4 * stage.scale

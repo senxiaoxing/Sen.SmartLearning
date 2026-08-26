@@ -482,6 +482,9 @@ const PET_NAMES: VoiceManifest = {
   'pet.tuantuan': '团团',
   'pet.momo': '墨墨',
   'pet.bobo': '波波',
+  'pet.miaomiao': '喵喵',
+  'pet.xiaobai': '小白',
+  'pet.miemie': '咩咩',
 }
 
 /**

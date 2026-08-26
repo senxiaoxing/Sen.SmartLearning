@@ -13,7 +13,10 @@
 .petart-anim [class*='petart-'],
 .petart-anim [class^='peng-'],
 .petart-anim [class^='drag-'],
-.petart-anim [class^='pand-'] {
+.petart-anim [class^='pand-'],
+.petart-anim [class^='cat-'],
+.petart-anim [class^='samo-'],
+.petart-anim [class^='sheep-'] {
   transform-box: view-box;
 }
 
@@ -441,5 +444,201 @@
   }
   50% {
     transform: rotate(2.8deg);
+  }
+}
+
+/* ---------- 喵喵 · 矮脚猫 ---------- */
+
+/* 锚点压在肚子底。趴得低的东西呼吸时只有上半边起伏 */
+.cat-breathe {
+  transform-origin: 100px 222px;
+  animation: cat-breathe 3.4s ease-in-out infinite;
+}
+
+@keyframes cat-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+/* 竖着的尾巴慢慢左右扫。摆幅比狗小得多——猫立尾是「心情好」，
+   摇得太快就成了狗 */
+.cat-tail {
+  transform-origin: 148px 190px;
+  animation: cat-tail 2.9s ease-in-out infinite;
+}
+
+@keyframes cat-tail {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+/* 铃铛比身体慢半拍，才像挂着的而不是画上去的 */
+.cat-bell {
+  transform-origin: 100px 150px;
+  animation: cat-bell 2.9s ease-in-out 0.18s infinite;
+}
+
+@keyframes cat-bell {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+/* ---------- 小白 · 萨摩耶 ---------- */
+
+.samo-breathe {
+  transform-origin: 100px 224px;
+  animation: samo-breathe 3.2s ease-in-out infinite;
+}
+
+@keyframes samo-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.032);
+  }
+}
+
+/* ⭐ 1.3 秒一个来回，是全 App 最快的待机动画。
+   狗摇尾巴的频率本身就是身份线索——放慢到别人那个速度，它就成了另一种动物 */
+.samo-tail {
+  transform-origin: 148px 170px;
+  animation: samo-tail 1.3s ease-in-out infinite;
+}
+
+@keyframes samo-tail {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+/* 舌头只做极轻的伸缩。幅度一大就成了喘气，那是「热坏了」不是「高兴」 */
+.samo-tongue {
+  transform-origin: 100px 128px;
+  animation: samo-tongue 2.6s ease-in-out infinite;
+}
+
+@keyframes samo-tongue {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.1);
+  }
+}
+
+/* ⚠️ 不能复用 petart-pulse：那条是给光晕写的，带 opacity .28→.55，
+   套在实心的金徽章上会让它一半时间像要消失。这里只缩放，不动透明度 */
+.samo-badge {
+  transform-origin: 100px 31px;
+  animation: samo-badge 2.4s ease-in-out infinite;
+}
+
+@keyframes samo-badge {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* ---------- 咩咩 · 小绵羊 ---------- */
+
+/* 上下轻浮而不是缩放：一团云的直觉是飘，不是喘 */
+.sheep-bob {
+  animation: sheep-bob 3s ease-in-out infinite;
+}
+
+@keyframes sheep-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3.5px);
+  }
+}
+
+.sheep-ear-l {
+  transform-origin: 74px 146px;
+  animation: sheep-ear-l 3.4s ease-in-out infinite;
+}
+
+.sheep-ear-r {
+  transform-origin: 126px 146px;
+  animation: sheep-ear-r 3.4s ease-in-out infinite;
+}
+
+@keyframes sheep-ear-l {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(-6deg);
+  }
+}
+
+@keyframes sheep-ear-r {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+/* 反刍是**左右磨**，与波波上下咬的 pand-chew 是两个方向。
+   同屏出现时不会被看成同一个动作 */
+.sheep-chew {
+  animation: sheep-chew 1.1s ease-in-out infinite;
+}
+
+@keyframes sheep-chew {
+  0%,
+  100% {
+    transform: translateX(-1.6px);
+  }
+  50% {
+    transform: translateX(1.6px);
+  }
+}
+
+.sheep-crown {
+  transform-origin: 100px 100px;
+  animation: sheep-crown 3s ease-in-out infinite;
+}
+
+@keyframes sheep-crown {
+  0%,
+  100% {
+    transform: rotate(-1.6deg);
+  }
+  50% {
+    transform: rotate(1.6deg);
   }
 }

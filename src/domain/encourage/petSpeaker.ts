@@ -4,12 +4,18 @@
  * @see design/07-音频方案.md §2.5b  跨音色文本为什么要按音色各生成一份
  * @see src/domain/encourage/addressed.ts  唯一的消费方
  *
- * ## 背景：每只伙伴有自己的神经音色
+ * ## 背景：每个科目有自己的神经音色
  *
- * 宠物台词（petline.*）按宠物分音色生成（企鹅=男童、飞龙=青年、熊猫=温柔女声），
+ * 宠物台词（petline.*）按**声部**分音色生成（数学=男童、语文=青年、英语=温柔女声），
  * 而昵称片段（name.*）默认是旁白的少女声。若把少女声的「小恩宝」
  * 拼在男童声的「我有点想你」前面，一句话里就是两个人在说——
  * 这违反「一句话一个音色」（design/07 §2.5b），比全程机器声更出戏。
+ *
+ * ⚠️ **`penguin` / `dragon` / `panda` 是声部名，不是物种名。**
+ * 二年级换了物种但沿用同一批声音：`petline.dragonG2Greet0` 是萨摩耶小白的台词，
+ * 走的仍是语文那个青年男声。数学的伙伴永远是男童声——
+ * 这条线索不该每升一个年级就重置一次。名字保留是因为改它要重命名
+ * 全部现存片段并整包重生成，而这三个词只出现在 key 里，孩子看不见。
  *
  * 解法：**昵称片段按音色各生成一份**（`name.penguinXiaoenbao` 等，
  * 生成脚本按前缀路由音色），拼句子时根据「后半句是谁的台词」挑对应变体。
@@ -18,13 +24,13 @@
 
 import type { ClipKey } from '@/domain/speech'
 
-/** 三只伙伴的语音身份，与 petline.* 片段 key 里的物种段一致 */
+/** 三个声部（数学 / 语文 / 英语各一个），与 petline.* 片段 key 里的声部段一致 */
 export type PetSpeaker = 'penguin' | 'dragon' | 'panda'
 
 /** 全部说话者。生成昵称音色变体时遍历用（voiceManifest 与生成脚本共用此序） */
 export const PET_SPEAKERS: readonly PetSpeaker[] = ['penguin', 'dragon', 'panda']
 
-/** 台词片段 key 的物种段。⚠️ 与 pets.ts 的 clipKey 命名（petline.penguinG1…）耦合 */
+/** 台词片段 key 的声部段。⚠️ 与 pets.ts 的 clipKey 命名（petline.penguinG1…）耦合 */
 const PETLINE_SPEAKER = /^petline\.(penguin|dragon|panda)/
 
 /**

@@ -92,23 +92,29 @@ const DEFAULT_VOICE_EN = 'en-US-AnaNeural'
 const DEFAULT_VOICE_PINYIN = 'zh-CN-XiaoxiaoNeural'
 
 /**
- * ⭐ 三只伙伴的专属音色 —— 孩子一耳朵就能分出「谁在说话」。
+ * ⭐ 三个声部的专属音色 —— 孩子一耳朵就能分出「谁在说话」。
  *
- * | 伙伴 | 音色 | 听感 |
- * |---|---|---|
- * | 数学小企鹅 团团 | `YunxiaNeural` | 男童声，像同班的小男孩 |
- * | 语文小飞龙 墨墨 | `YunxiNeural` | 阳光青年男声，「妙哉妙哉」的小学者 |
- * | 英语小熊猫 波波 | `XiaoxiaoNeural` | 温暖女声，软乎乎的大姐姐 |
+ * | 声部 | 音色 | 听感 | 谁在用 |
+ * |---|---|---|---|
+ * | `penguin` 数学 | `YunxiaNeural` | 男童声，像同班的小男孩 | 团团 · 喵喵 |
+ * | `dragon` 语文 | `YunxiNeural` | 阳光青年男声，「妙哉妙哉」的小学者 | 墨墨 · 小白 |
+ * | `panda` 英语 | `XiaoxiaoNeural` | 温暖女声，软乎乎的大姐姐 | 波波 · 咩咩 |
  *
  * 与旁白（Xiaoyi 少女声）合计四个声部：男童 / 青年男 / 温暖女 / 少女，
  * 音域各不相同，不靠上下文也能分辨。
  *
- * ⚠️ 波波与拼音共用 Xiaoxiao 底色，但韵律完全不同（拼音是 -30% +0% 的播音腔，
- * 波波是 -20% +10% 的软语），且语境一个是孤立单字、一个是台词，听感差别很大。
+ * ⚠️ **这三个 key 是「声部」，不是物种。** 二年级换了物种但沿用同一批声音——
+ * `petline.dragonG2Greet0` 是萨摩耶小白的台词，走的仍是语文那个青年男声。
+ * 数学的伙伴永远是男童声，这条线索不该每升一个年级就重置一次。
+ * 名字保留是因为改它要重命名全部现存片段并整包重生成，
+ * 而这三个词只出现在 key 里，孩子看不见。
+ *
+ * ⚠️ 英语声部与拼音共用 Xiaoxiao 底色，但韵律完全不同（拼音是 -30% +0% 的播音腔，
+ * 它是 -20% +10% 的软语），且语境一个是孤立单字、一个是台词，听感差别很大。
  *
  * 路由的 key 形态有两种（见 `petSpeakerOf`）：
- * - `petline.<species>…`  —— 台词本体
- * - `name.<species>Xxx…`  —— 昵称的音色变体：宠物叫「小恩宝」时名字也得是它的声音，
+ * - `petline.<声部>…`  —— 台词本体
+ * - `name.<声部>Xxx…`  —— 昵称的音色变体：宠物叫「小恩宝」时名字也得是它的声音，
  *   key 构造规则与 `domain/encourage/petSpeaker.ts` 的 `nicknameClipFor` **逐字一致**
  */
 const PET_VOICES = {
@@ -120,7 +126,7 @@ const PET_VOICES = {
 /**
  * 伙伴台词的韵律 —— 在音色之外再拉开一点性格辨识度。
  *
- * ⚠️ 墨墨（男声）不抬音高：+5% 在女声上是「亲切」，在男声上是「捏着嗓子」。
+ * ⚠️ 语文声部（男声）不抬音高：+5% 在女声上是「亲切」，在男声上是「捏着嗓子」。
  */
 const PET_PROSODY = {
   penguin: { rate: '-8%', pitch: '+5%' }, // 活泼，比旁白稍快
@@ -129,10 +135,10 @@ const PET_PROSODY = {
 }
 
 /**
- * 这个片段是哪只伙伴说的。不是伙伴内容返回 null。
+ * 这个片段属于哪个声部。不是伙伴内容返回 null。
  *
- * ⚠️ `name.` 分支必须要求物种段后面跟大写字母（`name.penguinXiaoenbao`），
- * 否则旁白昵称若恰好以物种名开头（如 `name.pandan…`）会被误路由。
+ * ⚠️ `name.` 分支必须要求声部段后面跟大写字母（`name.penguinXiaoenbao`），
+ * 否则旁白昵称若恰好以声部名开头（如 `name.pandan…`）会被误路由。
  */
 function petSpeakerOf(key) {
   let m = /^petline\.(penguin|dragon|panda)/.exec(key)

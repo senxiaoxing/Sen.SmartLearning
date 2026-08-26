@@ -570,7 +570,7 @@ npm run voices           # 生成语音 mp3 → public/audio/voice/，并重新�
                          #   只补缺失的，以及「念的文本变了」的那些（有台账）
 npm run voices -- --force              # 全部重生成（换音色后必须）
 npm run voices -- --voice-en=en-GB-MaisieNeural   # 换英语音色
-npm run voices:bundle    # 只重新打包（1230 条 mp3 → 12 个 .bin 语音包 + 索引）
+npm run voices:bundle    # 只重新打包（1329 条 mp3 → 13 个 .bin 语音包 + 索引）
                          #   ⭐ 首装靠它从「几百个请求」降到个位数，见 design/07 §2.5d
                          #   npm run build 会自动跑，正常不用手动执行
 npm run sfx              # 合成 6 个音效 → public/audio/sfx/

@@ -4,6 +4,7 @@
  * @see design/06-宠物系统.md
  *
  * 一年级：语文小飞龙「墨墨」· 数学小企鹅「团团」· 英语小熊猫「波波」。
+ * 二年级：语文萨摩耶「小白」· 数学矮脚猫「喵喵」· 英语小绵羊「咩咩」。
  *
  * **按年级换宠物**：每升一个年级换一批新伙伴，
  * 让每学年都有明确的终点（把它养到最终形态）和新的期待（认识新伙伴）。
@@ -12,6 +13,11 @@
  * ⚠️ 三只宠物之间**绝不比较**：不排名、不显示谁更高级。
  * 孩子必然会偏向喜欢的科目，若把差距摆到台面上，
  * 只会让她对落后的那只产生愧疚——那是在惩罚她的兴趣。
+ *
+ * ⛔ **全部 `petline.*` 台词必须写在本文件里**，不能拆到 `petsG2.ts` 之类的第二个文件。
+ * `scripts/generate-voices.mjs` 的 `loadPetLines()` 只读这一个文件，
+ * 搬走的后果是那些台词**没有音频**，运行时静默降级成机器音——
+ * 而它出现在每一次答对的反馈里。
  */
 
 import { GRADE_LEVELS, type GradeLevel, type Subject } from '@/domain/types'
@@ -76,6 +82,16 @@ export interface PetStageAppearance {
  * 是为了让 `scripts/generate-voices.mjs` 能用**和昵称完全相同的正则**扫出来。
  * 代价是啰嗦一点，换来的是台词文本仍然留在 pets.ts 里——
  * 打开这一个文件就能看到这只宠物是什么性格，不用跳到第二个文件去拼。
+ *
+ * ⭐ **key 里的 `penguin` / `dragon` / `panda` 是「声部」，不是物种。**
+ *
+ * 二年级换了物种（企鹅→矮脚猫、飞龙→萨摩耶、熊猫→绵羊）但**沿用同一批声音**：
+ * 数学伙伴永远是男童声，语文永远是青年男声，英语永远是温柔女声。
+ * 孩子闭着眼睛也知道现在是哪一科在说话，这条线索不该每升一个年级就重置一次。
+ *
+ * 音色路由写在三处正则里（`domain/encourage/petSpeaker.ts` 与生成脚本的两处），
+ * 认的就是这三个词。**新伙伴的 clipKey 必须沿用同科目的那个词**，
+ * 换成 `petline.catG2…` 会静默掉回旁白少女声。
  */
 export interface PetLine {
   /** 语音片段 key，形如 `petline.penguinG1Greet0` */
@@ -110,6 +126,18 @@ export type PetStages = [
   PetStageAppearance,
 ]
 
+/**
+ * 画哪一套形体。`components/PetAvatar.tsx` 据此选 Art 组件。
+ *
+ * ⭐ **不能按科目派发**（二年级之前是那样写的）：二年级换了物种，
+ * 数学从企鹅变成矮脚猫，而科目还是 `math`。形象是「这一年养的是谁」，
+ * 与「学的是哪一科」是两件事，必须各有各的字段。
+ *
+ * ⚠️ 与**音色**也无关。喵喵沿用团团的声音（见 {@link PetPersonality}），
+ * 音色由台词的 clipKey 前缀决定，不看这里。
+ */
+export type PetArtKey = 'penguin' | 'dragon' | 'panda' | 'munchkin' | 'samoyed' | 'sheep'
+
 export interface PetDefinition {
   id: string
   subject: Subject
@@ -117,6 +145,8 @@ export interface PetDefinition {
   /** 默认名字，孩子可以改 */
   defaultName: string
   species: string
+  /** 画哪一套形体，见 {@link PetArtKey} */
+  art: PetArtKey
   stages: PetStages
   personality: PetPersonality
   /** 主题色，用于卡片与进度条 */
@@ -143,6 +173,7 @@ const PENGUIN_G1: PetDefinition = {
   gradeLevel: 'G1',
   defaultName: '团团',
   species: '小企鹅',
+  art: 'penguin',
   themeColor: '#63B3F2',
   stages: [
     EGG,
@@ -215,6 +246,7 @@ const DRAGON_G1: PetDefinition = {
   gradeLevel: 'G1',
   defaultName: '墨墨',
   species: '小飞龙',
+  art: 'dragon',
   themeColor: '#A78BFA',
   stages: [
     EGG,
@@ -285,6 +317,7 @@ const PANDA_G1: PetDefinition = {
   gradeLevel: 'G1',
   defaultName: '波波',
   species: '小熊猫',
+  art: 'panda',
   themeColor: '#5FD3A6',
   stages: [
     EGG,
@@ -342,11 +375,214 @@ const PANDA_G1: PetDefinition = {
 }
 
 /**
+ * 喵喵的配饰。
+ *
+ * 三件各占一个新槽位（脖子 → 背 → 头），**升一次多一件、位置还都不一样**——
+ * 孩子不用比对细节就知道「它又变了」。同槽位换件（墨墨的小翅膀换大翅膀）
+ * 对二年级这批一律不用：那要求她记得上一件长什么样。
+ */
+const CAT_COLLAR: StageAccessory = { slot: 'neck', kind: 'bell-collar', emoji: '🔔' }
+const CAT_SATCHEL: StageAccessory = { slot: 'back', kind: 'satchel', emoji: '🎒' }
+
+/**
+ * 二年级 · 数学 · 曼基康矮脚猫「喵喵」
+ * 性格：认真、爱数数、有点小得意——与团团同一套台词，见下。
+ *
+ * ⭐ **台词对象直接复用团团的**（同一个引用，不是复制一份文本）。
+ * 团团那 19 句里没有一句提到「企鹅」或「团团」，全部是通用的数学口吻，
+ * 换成猫照样成立；而复用同一个 `clipKey` 意味着**零新增音频**，
+ * 音色也自动还是那个男童声。
+ *
+ * ⚠️ 复制文本再起一套新 key 是错的：那会白白多出 19 条 mp3，
+ * 念的还是一模一样的话。
+ */
+const MUNCHKIN_G2: PetDefinition = {
+  id: 'munchkin-g2',
+  subject: 'math',
+  gradeLevel: 'G2',
+  defaultName: '喵喵',
+  species: '矮脚猫',
+  art: 'munchkin',
+  // 与团团同色：进度条与徽章上的蓝是「数学」的颜色，不是「企鹅」的颜色。
+  // 换一批伙伴就换一套配色，会让她每年重新学一遍「哪个颜色是哪一科」
+  themeColor: '#63B3F2',
+  stages: [
+    EGG,
+    { emoji: '🐱', accessories: [EGGSHELL], scale: 0.9, label: '破壳' },
+    { emoji: '🐈', accessories: [], scale: 0.95, label: '小矮脚猫' },
+    { emoji: '🐈', accessories: [CAT_COLLAR], scale: 1.05, label: '数数喵' },
+    { emoji: '🐈', accessories: [CAT_COLLAR, CAT_SATCHEL], scale: 1.12, label: '算术小能手' },
+    {
+      emoji: '🐈',
+      accessories: [CAT_COLLAR, CAT_SATCHEL, { slot: 'head', kind: 'star-hat', emoji: '🎩' }],
+      scale: 1.2,
+      glow: true,
+      label: '星星喵王',
+    },
+  ],
+  personality: PENGUIN_G1.personality,
+}
+
+/**
+ * 小白的配饰。红领巾 → 背上背一支毛笔 → 状元帽。
+ *
+ * 毛笔像背剑一样斜背在身后，是这一条线里辨识度最高的一件——
+ * 领巾和帽子谁都有，「背着一支笔」只有它。
+ */
+const DOG_KERCHIEF: StageAccessory = { slot: 'neck', kind: 'kerchief', emoji: '🧣' }
+const DOG_BRUSH: StageAccessory = { slot: 'back', kind: 'brush', emoji: '🖌️' }
+
+/**
+ * 二年级 · 语文 · 萨摩耶「小白」
+ * 性格：话痨、爱讲故事、文绉绉——沿用墨墨的口吻。
+ *
+ * ⚠️ **有 9 句必须改写，不能像喵喵那样整套复用**：墨墨自称「本龙」，
+ * 还会说「又长了一片鳞」「快看，本龙的角」。
+ * 一只狗说这些话，孩子得到的是一条明确错误的信息，
+ * 而不是「换了个伙伴」。改动只把自称与身体部位换掉，
+ * 文绉绉的语气（今日、无妨、甚是、妙哉）原样保留——那才是这只伙伴的性格。
+ *
+ * 其余 10 句直接复用墨墨的片段，一条新音频都不多花。
+ */
+const SAMOYED_G2: PetDefinition = {
+  id: 'samoyed-g2',
+  subject: 'pinyin',
+  gradeLevel: 'G2',
+  defaultName: '小白',
+  species: '萨摩耶',
+  art: 'samoyed',
+  themeColor: '#A78BFA',
+  stages: [
+    EGG,
+    { emoji: '🐶', accessories: [EGGSHELL], scale: 0.9, label: '破壳' },
+    { emoji: '🐕', accessories: [], scale: 0.95, label: '小萨摩耶' },
+    { emoji: '🐕', accessories: [DOG_KERCHIEF], scale: 1.05, label: '识字小白' },
+    { emoji: '🐕', accessories: [DOG_KERCHIEF, DOG_BRUSH], scale: 1.12, label: '小书童' },
+    {
+      emoji: '🐕',
+      accessories: [DOG_KERCHIEF, DOG_BRUSH, { slot: 'head', kind: 'scholar-hat', emoji: '👑' }],
+      scale: 1.2,
+      glow: true,
+      label: '状元汪',
+    },
+  ],
+  personality: {
+    catchphrase: { clipKey: 'petline.dragonG2Catchphrase', text: '我又学会一个字啦！' },
+    greet: [
+      { clipKey: 'petline.dragonG2Greet0', text: '今日我也要读书！' },
+      DRAGON_G1.personality.greet[1]!, // 来听我念诗吗？
+      DRAGON_G1.personality.greet[2]!, // 你来啦，我正读到精彩处～
+      DRAGON_G1.personality.greet[3]!, // 今天学什么字呀？
+    ],
+    correct: [
+      DRAGON_G1.personality.correct[0]!, // 妙哉妙哉！
+      { clipKey: 'petline.dragonG2Correct1', text: '我都要记下来了！' },
+      DRAGON_G1.personality.correct[2]!, // 读得真好听～
+      { clipKey: 'petline.dragonG2Correct3', text: '你比我还厉害！' },
+    ],
+    wrong: [
+      DRAGON_G1.personality.wrong[0]!, // 无妨无妨，再想想
+      DRAGON_G1.personality.wrong[1]!, // 这个字确实难写
+      { clipKey: 'petline.dragonG2Wrong2', text: '我当年也念错过～' },
+      DRAGON_G1.personality.wrong[3]!, // 慢慢来，不着急
+    ],
+    levelUp: [
+      { clipKey: 'petline.dragonG2LevelUp0', text: '我长大了！' },
+      // 「毛又白了一点」是萨摩耶版的「又长了一片鳞」——
+      // 都是拿身体上真实存在的东西说事，孩子低头就能在图上找到
+      { clipKey: 'petline.dragonG2LevelUp1', text: '毛又白了一点～' },
+      { clipKey: 'petline.dragonG2LevelUp2', text: '快看快看，我又变啦！' },
+    ],
+    comeback: [
+      { clipKey: 'petline.dragonG2Comeback0', text: '好久不见，我甚是想念' },
+      DRAGON_G1.personality.comeback[1]!, // 你终于回来啦！
+      DRAGON_G1.personality.comeback[2]!, // 这几日无人听我念书～
+    ],
+  },
+}
+
+/**
+ * 咩咩的配饰。圆眼镜 → 云朵披风 → 花环。
+ *
+ * 披风用羊毛的形状再做一遍，是「它自己身上长出来的东西」；
+ * 花环给最终形态，配上光效正好是一圈彩虹。
+ */
+const SHEEP_SPECS: StageAccessory = { slot: 'face', kind: 'specs', emoji: '👓' }
+const SHEEP_CAPE: StageAccessory = { slot: 'back', kind: 'cloud-cape', emoji: '🧥' }
+
+/**
+ * 二年级 · 英语 · 小绵羊「咩咩」
+ * 性格：好奇、爱模仿、中英夹杂——沿用波波的口吻。
+ *
+ * ⚠️ 有 5 句要改：波波的台词里会自称「波波」，那是名字不是物种，
+ * 换成「我」即可。中英夹杂的部分全部原样保留——
+ * 那些 `Hello` `Yes` `Wow` 是语气词、是这只伙伴的性格，
+ * 不是教学内容（真正要教发音的词在 `en.*` 片段里）。
+ */
+const SHEEP_G2: PetDefinition = {
+  id: 'sheep-g2',
+  subject: 'english',
+  gradeLevel: 'G2',
+  defaultName: '咩咩',
+  species: '小绵羊',
+  art: 'sheep',
+  themeColor: '#5FD3A6',
+  stages: [
+    EGG,
+    { emoji: '🐑', accessories: [EGGSHELL], scale: 0.9, label: '破壳' },
+    { emoji: '🐑', accessories: [], scale: 0.95, label: '小绵羊' },
+    { emoji: '🐑', accessories: [SHEEP_SPECS], scale: 1.05, label: '单词小羊' },
+    { emoji: '🐑', accessories: [SHEEP_SPECS, SHEEP_CAPE], scale: 1.12, label: '云朵羊' },
+    {
+      emoji: '🐑',
+      accessories: [SHEEP_SPECS, SHEEP_CAPE, { slot: 'head', kind: 'flower-crown', emoji: '🌸' }],
+      scale: 1.2,
+      glow: true,
+      label: '彩虹羊',
+    },
+  ],
+  personality: {
+    catchphrase: PANDA_G1.personality.catchphrase, // This is 好吃的！
+    greet: [
+      PANDA_G1.personality.greet[0]!, // Hello！今天学什么？
+      { clipKey: 'petline.pandaG2Greet1', text: '我想学新单词！' },
+      PANDA_G1.personality.greet[2]!, // Hi～你来啦！
+      PANDA_G1.personality.greet[3]!, // Let's go！我们开始吧
+    ],
+    correct: PANDA_G1.personality.correct, // 四句都不带名字，整池复用
+    wrong: [
+      PANDA_G1.personality.wrong[0]!, // Oh no～再试试
+      PANDA_G1.personality.wrong[1]!, // 没关系 no problem
+      { clipKey: 'petline.pandaG2Wrong2', text: '我也常常记错～' },
+      PANDA_G1.personality.wrong[3]!, // Try again！
+    ],
+    levelUp: [
+      { clipKey: 'petline.pandaG2LevelUp0', text: '我长大了！' },
+      PANDA_G1.personality.levelUp[1]!, // I am 变大了！
+      PANDA_G1.personality.levelUp[2]!, // 快看看我～
+    ],
+    comeback: [
+      PANDA_G1.personality.comeback[0]!, // 好久不见，I miss you～
+      { clipKey: 'petline.pandaG2Comeback1', text: '你回来啦！我好开心' },
+      { clipKey: 'petline.pandaG2Comeback2', text: '我一直在等你哦' },
+    ],
+  },
+}
+
+/**
  * 全部宠物定义。
  *
- * 新增年级时在这里追加三只即可——成长逻辑、UI、仓储都不需要改动。
+ * 新增年级时在这里追加三只即可——成长逻辑、仓储都不需要改动，
+ * UI 只需给新物种加一套 Art 组件并登记进 `PetAvatar` 的 `ART_BY_KEY`。
  */
-export const PET_DEFINITIONS: readonly PetDefinition[] = [PENGUIN_G1, DRAGON_G1, PANDA_G1]
+export const PET_DEFINITIONS: readonly PetDefinition[] = [
+  PENGUIN_G1,
+  DRAGON_G1,
+  PANDA_G1,
+  MUNCHKIN_G2,
+  SAMOYED_G2,
+  SHEEP_G2,
+]
 
 /** 按 `科目|年级` 索引 */
 const KEY = (subject: Subject, gradeLevel: GradeLevel): string => `${subject}|${gradeLevel}`
@@ -383,15 +619,25 @@ export function petsOfGrade(gradeLevel: GradeLevel): PetDefinition[] {
  *
  * 一年级三科现已全部开放：数学（M1/M3~M6）、拼音（P1~P7，阶段 ⑧）、
  * 英语（E1~E10 的 27 个知识点，阶段 ⑨）。
+ *
+ * 二年级**只开数学**（64 个知识点，上下册一次做全）。小白和咩咩要睡上一阵子，
+ * 这正是本机制存在的理由——二年级语文的「教 vs 练」、英语的新句型
+ * 都还是没想清楚的产品决策，硬开出来只会让她点进去发现一片空白。
+ * 见 design/08 §10 阶段 8.0。
  */
-const OPENED: ReadonlySet<string> = new Set([KEY('math', 'G1'), KEY('pinyin', 'G1'), KEY('english', 'G1')])
+const OPENED: ReadonlySet<string> = new Set([
+  KEY('math', 'G1'),
+  KEY('pinyin', 'G1'),
+  KEY('english', 'G1'),
+  KEY('math', 'G2'),
+])
 
 /**
  * 这个科目在这个年级有内容了吗。
  *
  * @example
- * isOpened('math', 'G1')   // true
- * isOpened('math', 'G2')   // false —— 二年级内容还没做
+ * isOpened('math', 'G2')     // true
+ * isOpened('pinyin', 'G2')   // false —— 二年级语文还没做，小白在睡觉
  */
 export function isOpened(subject: Subject, gradeLevel: GradeLevel): boolean {
   return OPENED.has(KEY(subject, gradeLevel))
@@ -402,7 +648,7 @@ export function isOpened(subject: Subject, gradeLevel: GradeLevel): boolean {
  *
  * @example
  * openedSubjectsOf('G1')   // ['math', 'pinyin', 'english']
- * openedSubjectsOf('G2')   // []
+ * openedSubjectsOf('G2')   // ['math'] —— 小白与咩咩还在睡觉
  */
 export function openedSubjectsOf(gradeLevel: GradeLevel): Subject[] {
   return petsOfGrade(gradeLevel)
