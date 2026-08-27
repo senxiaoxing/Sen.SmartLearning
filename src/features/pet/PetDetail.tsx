@@ -83,7 +83,7 @@ export function PetDetail({
    */
   useEffect(() => {
     if (def === undefined || !opened) return
-    const moment = greetingMoment(pet.lastSeenAt, nowIso())
+    const moment = greetingMoment(pet.lastSeenAt, nowIso(), archived)
     const spoken = pickLine(def.personality, moment, Math.random())
     const greeting = addressed(
       pickNickname(nicknames, Math.random()),
@@ -92,7 +92,7 @@ export function PetDetail({
     )
     setLine(greeting.text)
     say(greeting.utterance)
-  }, [pet.id, pet.lastSeenAt, def, opened, nicknames])
+  }, [pet.id, pet.lastSeenAt, def, opened, archived, nicknames])
 
   if (def === undefined) return null
   const stage = def.stages[progress.stage]
@@ -105,8 +105,10 @@ export function PetDetail({
         transition={{ type: 'spring', stiffness: 260, damping: 20 }}
         onClick={() => {
           if (!opened) return
-          // 反复点着玩的台词不带昵称，理由见上面 useEffect 的说明
-          const spoken = pickLine(def.personality, 'greet', Math.random())
+          // 反复点着玩的台词不带昵称，理由见上面 useEffect 的说明。
+          // 往届也要留在自己那一池——否则点一下就冒出「今天也来数数吗？」，
+          // 一句现役的邀约，把「回忆」两个字整个推翻
+          const spoken = pickLine(def.personality, archived ? 'archived' : 'greet', Math.random())
           setLine(spoken.text)
           say(utter([spoken.clipKey], spoken.text))
         }}

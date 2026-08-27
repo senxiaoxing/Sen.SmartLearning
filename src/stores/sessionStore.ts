@@ -12,6 +12,7 @@
 
 import { create } from 'zustand'
 import { bootstrap } from '@/data/bootstrap'
+import { ensureMasteryUpTo } from '@/data/repositories/masterySetup'
 import { buildSessionItems, type SessionItem } from '@/data/buildSessionItems'
 import { db } from '@/data/db'
 import { getBalance } from '@/data/repositories/ledgerRepo'
@@ -206,6 +207,18 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     set({ status: 'loading' })
 
     const profileId = get().profileId ?? (await bootstrap())
+    const gradeLevel = get().contentGradeLevel ?? profileGradeLevel()
+
+    /**
+     * ⚠️ 掌握度只铺到档案年级为止（见 data/bootstrap.ts 的 `ensureMastery`）。
+     * 她从首页切到**更高**年级的答题区时，那一级还没有任何记录，
+     * 而 `selectNextItems` 完全由 `masteryMap` 驱动——不补建的话
+     * 那些知识点进不了任何池子，表现是「点了开始学习，一道题都没有」。
+     *
+     * 幂等，已经齐了不碰数据库；必须排在 `loadMasteryMap` **之前**。
+     */
+    await ensureMasteryUpTo(profileId, gradeLevel)
+
     const now = nowIso()
     const masteryMap = await loadMasteryMap(profileId, now)
 
@@ -214,7 +227,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       mode,
       subject,
       // 新内容只从这个年级开；复习与回退仍然跨年级通行（见 ScheduleInput.gradeLevel）
-      gradeLevel: get().contentGradeLevel ?? profileGradeLevel(),
+      gradeLevel,
       count: DEFAULT_ITEM_COUNT,
       masteryMap,
       knowledgePoints: KNOWLEDGE_POINTS,

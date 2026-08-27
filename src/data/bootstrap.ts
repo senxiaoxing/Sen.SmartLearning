@@ -11,17 +11,11 @@
 import { CONTENT_VERSION, SCHEMA_VERSION, db, ensureOpen } from '@/data/db'
 import { ITEM_TEMPLATES } from '@/data/seed/itemTemplates'
 import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
-import {
-  ASSUMED_MASTERED_KP_IDS,
-  ASSUMED_MASTERY_SCORE,
-  ASSUMED_REVIEW_SPREAD_DAYS,
-} from '@/data/seed/placementPresets'
+import { ensureMastery, refreshUnlocks } from '@/data/repositories/masterySetup'
 import { ensurePets } from '@/data/repositories/petRepo'
 import { newId } from '@/platform/newId'
-import { createMastery } from '@/domain/mastery/updateMastery'
-import { findNewlyUnlocked } from '@/domain/scheduler/unlockGraph'
-import { addDays, nowIso } from '@/domain/time'
-import { gradeLevelOf, type Mastery, type Profile, type Settings, type Uuid } from '@/domain/types'
+import { nowIso } from '@/domain/time'
+import { gradeLevelOf, type Profile, type Settings, type Uuid } from '@/domain/types'
 
 /**
  * 默认昵称 —— 全 App 用它称呼孩子（「小恩宝，今天想学点什么？」）。
@@ -77,11 +71,14 @@ async function runBootstrap(): Promise<Uuid> {
 
   await syncStaticContent()
   const profileId = await ensureProfile()
-  await ensureMastery(profileId)
 
-  // 宠物按年级划分，升年级时会自动创建新一批
   const profile = await db.profiles.get(profileId)
-  await ensurePets(profileId, gradeLevelOf(profile?.grade ?? '1A'))
+  const gradeLevel = gradeLevelOf(profile?.grade ?? '1A')
+
+  // 掌握度只铺到她在读的年级为止，见 repositories/masterySetup.ts 的 ensureMastery
+  await ensureMastery(profileId, gradeLevel)
+  // 宠物按年级划分，升年级时会自动创建新一批
+  await ensurePets(profileId, gradeLevel)
 
   await refreshUnlocks(profileId)
   return profileId
@@ -172,52 +169,3 @@ async function ensureProfile(): Promise<Uuid> {
   return profile.id
 }
 
-/**
- * 为尚无掌握度记录的知识点补建记录。
- *
- * App 更新引入新知识点时会自动补上，已有记录一律不动——
- * 覆盖已有掌握度等于抹掉孩子的学习进度。
- *
- * 首次创建时会应用 {@link ASSUMED_MASTERED_KP_IDS} 起点预设，
- * 让上过幼小衔接的孩子不必从「数一数」开始。
- */
-async function ensureMastery(profileId: Uuid): Promise<void> {
-  const existing = await db.mastery.where('profileId').equals(profileId).toArray()
-  const known = new Set(existing.map((m) => m.kpId))
-  const missing = KNOWLEDGE_POINTS.filter((kp) => !known.has(kp.id))
-  if (missing.length === 0) return
-
-  const now = nowIso()
-  const assumed = new Set(ASSUMED_MASTERED_KP_IDS)
-  const records: Mastery[] = missing.map((kp, index) => {
-    const base = createMastery(newId(), profileId, kp, now)
-    if (!assumed.has(kp.id)) return base
-
-    return {
-      ...base,
-      state: 'mastered' as const,
-      masteryScore: ASSUMED_MASTERY_SCORE,
-      // 复习时间分散开，避免某天一打开全是复习题
-      dueAt: addDays(now, 1 + (index % ASSUMED_REVIEW_SPREAD_DAYS)),
-    }
-  })
-  await db.mastery.bulkPut(records)
-}
-
-/**
- * 把前置已满足的 `locked` 知识点转为 `available`。
- *
- * 每次启动都跑一次：孩子上次会话掌握了某个前置，本次启动就该看到新内容开放。
- */
-export async function refreshUnlocks(profileId: Uuid): Promise<string[]> {
-  const all = await db.mastery.where('profileId').equals(profileId).toArray()
-  const map = new Map(all.map((m) => [m.kpId, m]))
-  const unlocked = findNewlyUnlocked(map, KNOWLEDGE_POINTS)
-  if (unlocked.length === 0) return []
-
-  const now = nowIso()
-  await db.mastery.bulkPut(
-    unlocked.map((kpId) => ({ ...map.get(kpId)!, state: 'available' as const, updatedAt: now })),
-  )
-  return unlocked
-}

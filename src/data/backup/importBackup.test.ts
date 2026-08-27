@@ -19,7 +19,7 @@ import { SCHEMA_VERSION, USER_DATA_TABLES, db } from '@/data/db'
 import { addExp } from '@/data/repositories/petRepo'
 import { loadMasteryMap, recordAttempt } from '@/data/repositories/masteryRepo'
 import { ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
-import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
+import { KNOWLEDGE_POINTS, KNOWLEDGE_POINTS_BY_GRADE } from '@/data/seed/knowledgePoints'
 import { checksumOf } from '@/domain/backup/checksum'
 import { validateBackup } from '@/domain/backup/validateBackup'
 import { createRng } from '@/domain/generators/rng'
@@ -28,6 +28,14 @@ import { nowIso, todayLocal } from '@/domain/time'
 import type { Attempt, BackupFile, LedgerEntry, Purchase, Uuid } from '@/domain/types'
 
 const ANSWERABLE = new Set(ITEM_TEMPLATE_BY_KP.keys())
+
+/**
+ * 一年级档案该有多少条掌握度记录。
+ *
+ * ⚠️ 不是全部知识点：`ensureMastery` 只铺到档案年级为止，
+ * 而这里所有备份都来自 `seedUsedProfile()` 建的一年级新档案。
+ */
+const G1_MASTERY_COUNT = KNOWLEDGE_POINTS_BY_GRADE.G1.length
 
 beforeEach(async () => {
   await db.open()
@@ -383,8 +391,9 @@ describe('⭐ 换设备/重装后的恢复（事故回归）', () => {
       (await db.meta.get('activeProfileId'))?.value,
       '活跃档案要切回备份里那个，否则界面还是空的',
     ).toBe(oldProfileId)
-    // 新版本多出来的知识点由 bootstrap 补齐，一个都不能少
-    expect(await db.mastery.count()).toBe(KNOWLEDGE_POINTS.length)
+    // 新版本多出来的知识点由 bootstrap 补齐，一个都不能少。
+    // ⚠️ 补到**档案年级**为止，不是全部知识点 —— 见 bootstrap 的 ensureMastery
+    expect(await db.mastery.count()).toBe(G1_MASTERY_COUNT)
     expect(await db.petState.where('profileId').equals(oldProfileId).count()).toBe(3)
   })
 })
@@ -422,11 +431,11 @@ describe('导出内容边界', () => {
       data: { ...backup.data, mastery: backup.data.mastery.slice(0, -2) },
     }
     await importBackup(trimmed)
-    expect(await db.mastery.count()).toBe(KNOWLEDGE_POINTS.length - 2)
+    expect(await db.mastery.count()).toBe(G1_MASTERY_COUNT - 2)
 
     await bootstrap()
 
-    expect(await db.mastery.count()).toBe(KNOWLEDGE_POINTS.length)
+    expect(await db.mastery.count()).toBe(G1_MASTERY_COUNT)
   })
 
   it('备份含 schemaVersion 与校验和', async () => {

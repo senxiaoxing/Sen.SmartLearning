@@ -587,6 +587,23 @@ const SHOP_ITEMS: VoiceManifest = Object.fromEntries([
 ])
 
 /**
+ * 升年级过场（ceremony.*）。
+ *
+ * ⭐ 一年一次，却是全 App 情感分量最重的一句：它要把「一切都变了」
+ * 讲成「你长大了」，还要说清上一批伙伴去了哪里。见 design/08 §6.3。
+ *
+ * ⚠️ **只做到二年级**。三年级起不再生成中文片段（CLAUDE.md 产品红线），
+ * 而二升三那句「题目可以自己读了」属于阶段 5——那时它会是**最后一句**
+ * 中文播报，正好由那一步连同播放层的年级门控一起做。
+ * 缺片段的年级由 `gradeUpLine()` 整句降级为 TTS，不会念半句就断。
+ */
+const CEREMONY: VoiceManifest = {
+  'ceremony.gradeUpG2': '你已经是二年级的大孩子啦',
+  // 不写书名号：念出来只是「我的伙伴」，引号是给识字的人看的
+  'ceremony.oldPetsStay': '以前的伙伴没有走，去我的伙伴那里就能看到它们',
+}
+
+/**
  * 全部语音片段。
  *
  * 当前约 {@link VOICE_CLIP_COUNT} 条，三科齐全。
@@ -606,6 +623,7 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...PET_LINES,
   ...EXPLAINER_LINES,
   ...SHOP_ITEMS,
+  ...CEREMONY,
 }
 
 export const VOICE_CLIP_COUNT = Object.keys(VOICE_MANIFEST).length

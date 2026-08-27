@@ -41,8 +41,14 @@ interface VolumePickerProps {
   /**
    * 一辑有多少东西，如 `'100 个字'`、`'20 首诗'`。
    * 只进读屏文本——屏幕上没有位置放它，而家长开读屏时需要知道这一辑有多大。
+   *
+   * ⚠️ **可选**：只有「一辑装了 N 个同类东西」时才填得出有信息量的值。
+   * 年级切换器上「这一辑有多大」这个概念根本不成立（一年级和二年级题量不同，
+   * 也没有一个家长关心的数字），硬填出来的是
+   * 「二年级，一个年级的题，换这个年级的题做做看」——同一件事说三遍。
+   * 填不出来就不填，`name` 和 `hint` 本来就够了。
    */
-  countLabel: string
+  countLabel?: string
   onSelect: (id: string) => void
 }
 
@@ -57,7 +63,7 @@ export function VolumePicker({ volumes, activeId, countLabel, onSelect }: Volume
             key={volume.id}
             tone={active ? 'primary' : 'neutral'}
             // 家长听不到、孩子看不懂，两边的信息都塞进读屏文本里
-            ariaLabel={`${volume.name}，${countLabel}，${volume.hint}`}
+            ariaLabel={[volume.name, countLabel, volume.hint].filter(Boolean).join('，')}
             className={[
               'flex-col gap-0 px-6 py-3',
               // 未选中的压暗一点：三个按钮同样亮时，她看不出现在在哪一辑

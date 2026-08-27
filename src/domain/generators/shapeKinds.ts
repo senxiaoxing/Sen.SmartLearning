@@ -12,6 +12,20 @@ import type { ItemOption, PlaneShapeKind, SolidShapeKind } from '@/domain/types'
 export const SOLIDS: readonly SolidShapeKind[] = ['cube', 'cuboid', 'cylinder', 'sphere']
 export const PLANES: readonly PlaneShapeKind[] = ['square', 'rect', 'triangle', 'circle']
 
+/**
+ * 有角的平面图形 —— **圆是唯一没有角的那个**。
+ *
+ * ⭐ 给 M2-3.1「认识角」用：那个知识点借这套认图形题作题型轮换
+ * （见 `mathG2Templates.ts`），但正确答案若抽到圆，题目就成了「哪个是圆」——
+ * 答对它对「认识角」零信息量，掌握度却照涨。
+ *
+ * ⚠️ 只限定**正确答案**，圆仍然留在干扰项里：问「哪个是三角形」时选了圆，
+ * 恰恰说明她还分不清有角和没角，那是这个知识点最该抓的错。
+ *
+ * 用 filter 而不是手写清单：往 `PLANES` 里加新图形时不会漏掉这里。
+ */
+export const CORNERED_PLANES: readonly PlaneShapeKind[] = PLANES.filter((p) => p !== 'circle')
+
 export const SOLID_NAMES: Record<string, string> = {
   cube: '正方体',
   cuboid: '长方体',

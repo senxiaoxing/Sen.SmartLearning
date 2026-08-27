@@ -12,7 +12,7 @@ import { daysBetween } from '@/domain/time'
 import type { PetLine, PetPersonality } from '@/data/seed/pets'
 import type { IsoDateTime } from '@/domain/types'
 
-export type PetMoment = 'greet' | 'correct' | 'wrong' | 'levelUp' | 'comeback'
+export type PetMoment = 'greet' | 'correct' | 'wrong' | 'levelUp' | 'comeback' | 'archived'
 
 /**
  * 多久没见就触发「想你了」的问候。
@@ -51,19 +51,29 @@ export function pickLine(
 }
 
 /**
- * 判断打招呼时该用普通问候还是「想你了」。
+ * 判断打招呼时该用普通问候、「想你了」，还是往届伙伴的回忆语。
+ *
+ * ⭐ **`archived` 必须排在最前面，不能落到 `lastSeenAt` 的判断上**。
+ * 往届伙伴不再结算经验，`lastSeenAt` 就此冻住，天数只会越拖越大——
+ * 于是它必然、且永久命中 `comeback`。「好几天没见到你了，我有点想你」
+ * 在回忆页里的意思是「你抛弃我之后我一直在等」，
+ * 而 §5.2 造出「回忆」这个地方就是为了避免这种负罪感。
  *
  * @param lastSeenAt - 上次见面时间
  * @param now - 当前时间
+ * @param archived - 是不是往届伙伴（已经陪她读完那一年，不再成长）
  *
  * @example
- * greetingMoment(fourDaysAgo, now)   // 'comeback'
- * greetingMoment(yesterday, now)     // 'greet'
+ * greetingMoment(fourDaysAgo, now)          // 'comeback'
+ * greetingMoment(yesterday, now)            // 'greet'
+ * greetingMoment(longAgo, now, true)        // 'archived' —— 冻住的时间不再有意义
  */
 export function greetingMoment(
   lastSeenAt: IsoDateTime | undefined,
   now: IsoDateTime,
-): 'greet' | 'comeback' {
+  archived = false,
+): 'greet' | 'comeback' | 'archived' {
+  if (archived) return 'archived'
   if (lastSeenAt === undefined) return 'greet'
   return daysBetween(lastSeenAt, now) >= COMEBACK_AFTER_DAYS ? 'comeback' : 'greet'
 }

@@ -180,7 +180,7 @@ describe('宠物定义', () => {
 })
 
 describe('台词', () => {
-  it('五个场景的台词池都不为空', () => {
+  it('每个场景的台词池都不为空', () => {
     for (const def of PET_DEFINITIONS) {
       const p = def.personality
       expect(p.catchphrase.text.length, `${def.id} 缺口头禅`).toBeGreaterThan(0)
@@ -190,15 +190,43 @@ describe('台词', () => {
     }
   })
 
-  it('⭐ 答错与久别重逢的台词不含责备用词', () => {
+  it('⭐ 答错、久别重逢与往届的台词不含责备用词', () => {
     // 产品红线：绝不能让孩子对宠物产生负罪感
     const forbidden = ['错了', '错误', '不理', '饿', '死', '生气', '讨厌', '笨']
     for (const def of PET_DEFINITIONS) {
-      for (const line of [...def.personality.wrong, ...def.personality.comeback]) {
+      const risky = [
+        ...def.personality.wrong,
+        ...def.personality.comeback,
+        ...def.personality.archived,
+      ]
+      for (const line of risky) {
         for (const word of forbidden) {
           expect(line.text.includes(word), `${def.id} 台词「${line.text}」含禁用词「${word}」`).toBe(
             false,
           )
+        }
+      }
+    }
+  })
+
+  /**
+   * ⭐ 往届台词最容易写坏的不是责备，是**把她拽回一个还没完成的约定**。
+   *
+   * 「我一直在等你」「常来看看我」听起来温柔，但往届伙伴按定义不会再有下一次——
+   * 一句指向将来的话，会让她每次翻回忆都欠着点什么。§5.2 造出这个地方
+   * 是为了让升年级不带负罪感，而不是换个地方再挂一笔。
+   *
+   * 同样拦掉成绩与等级：往届只说陪伴，不说养到了第几阶。
+   */
+  it('⭐ 往届台词不指向将来、不提成绩', () => {
+    const forbidden = ['等你', '常来', '再来', '下次', '等级', '满级', '升级', '第几']
+    for (const def of PET_DEFINITIONS) {
+      for (const line of def.personality.archived) {
+        for (const word of forbidden) {
+          expect(
+            line.text.includes(word),
+            `${def.id} 往届台词「${line.text}」含「${word}」——那是个还没完成的约定`,
+          ).toBe(false)
         }
       }
     }

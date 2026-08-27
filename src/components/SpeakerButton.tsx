@@ -22,6 +22,15 @@ interface SpeakerButtonProps {
   lang?: 'zh-CN' | 'en-US'
   /** 重听回调，用于统计 `ttsReplayCount` */
   onReplay?: () => void
+  /**
+   * 朗读**之前**同步跑一下，留给「这一屏还没解锁过 iOS 音频」的场合
+   * （首页问候、升年级过场——它们都可能是 App 打开后的第一次点击）。
+   *
+   * ⚠️ 必须是同步函数：iOS 只认用户手势那一瞬间的调用栈，
+   * 在这里 `await` 任何东西都会让解锁失效。不能改用 `onReplay`——
+   * 那个跑在 `say()` 之后，那时已经晚了。
+   */
+  onBeforeSpeak?: () => void
   size?: 'md' | 'lg'
 }
 
@@ -31,7 +40,14 @@ interface SpeakerButtonProps {
  * @example
  * <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={countReplay} />
  */
-export function SpeakerButton({ text, parts, lang, onReplay, size = 'lg' }: SpeakerButtonProps) {
+export function SpeakerButton({
+  text,
+  parts,
+  lang,
+  onReplay,
+  onBeforeSpeak,
+  size = 'lg',
+}: SpeakerButtonProps) {
   const dimension = size === 'lg' ? 'h-[88px] w-[88px]' : 'h-[64px] w-[64px]'
 
   return (
@@ -39,6 +55,7 @@ export function SpeakerButton({ text, parts, lang, onReplay, size = 'lg' }: Spea
       type="button"
       aria-label="再听一遍"
       onClick={() => {
+        onBeforeSpeak?.()
         say({ parts: parts ?? [], fallbackText: text, lang })
         onReplay?.()
       }}

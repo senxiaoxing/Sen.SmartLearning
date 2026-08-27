@@ -18,7 +18,6 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { BigButton } from '@/components/BigButton'
 import { Icon } from '@/components/Icon'
-import { PLACEMENT_PROBES } from '@/domain/assessment/placement'
 import { addressed } from '@/domain/encourage/addressed'
 import { primaryNickname } from '@/domain/encourage/pickNickname'
 import { utter } from '@/domain/speech'
@@ -63,27 +62,33 @@ export function Assessment() {
 
   return (
     <AppShell width="narrow" layout="stack">
-      {/* 走过的站插旗，没走到的是小圆点。⚠️ 没有「失败」的标记——
-          探险只有走到哪里，没有对错 */}
-      <header className="flex items-center justify-center gap-3 py-2">
-        {PLACEMENT_PROBES.map((_, i) => (
+      {/**
+       * ⭐ 只画**走过的**旗子，不预告总共几站。
+       *
+       * 跨年级下探之后总站数是动态的（本级 7 + 保底 1 + 下探 3）。
+       * 预告「一共 7 站」再中途变成「一共 11 站」，对孩子是一句
+       * 「你还有那么多没走完」——而她恰恰是刚在前面卡住才走到这条岔路上的。
+       *
+       * 不预告也更贴这一页自己的设定：探险只有走到哪里，没有对错。
+       * 「还剩几题」本来就是考试的框架。
+       */}
+      <header className="flex flex-wrap items-center justify-center gap-3 py-2">
+        {results.map((r, i) => (
           <motion.span
-            key={i}
-            animate={{ scale: i < results.length ? 1 : 0.7, opacity: i < results.length ? 1 : 0.35 }}
+            key={`${r.kpId}-${i}`}
+            initial={{ scale: 0.7, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             className="flex h-7 w-7 items-center justify-center"
           >
-            {i < results.length ? (
-              <Icon name="flag" className="h-6 w-6 text-primary" />
-            ) : (
-              <span className="h-2 w-2 rounded-full bg-ink/40" />
-            )}
+            {/* ⚠️ 走不动的那站也插旗：探险记录的是「到过这里」，
+                而不是「这里对了没有」。没有任何一种标记代表失败 */}
+            <Icon name="flag" className="h-6 w-6 text-primary" />
           </motion.span>
         ))}
       </header>
 
-      <p className="text-center text-base text-ink/50">
-        探险第 {step} 站 · 一共 {PLACEMENT_PROBES.length} 站
-      </p>
+      <p className="text-center text-base text-ink/50">探险第 {step} 站</p>
 
       <main className="flex w-full flex-1 flex-col justify-center">
         <ItemRenderer

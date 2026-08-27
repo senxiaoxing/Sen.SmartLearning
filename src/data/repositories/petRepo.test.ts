@@ -15,6 +15,7 @@ import {
   ensurePets,
   loadOwnedGrades,
   loadPets,
+  loadPreviousGradePets,
   movePetInRoom,
   renamePet,
 } from '@/data/repositories/petRepo'
@@ -161,5 +162,57 @@ describe('⭐ 升年级', () => {
 
     // 六个年级里目前只有一年级有宠物定义，因此也只养过这一个
     expect(await loadOwnedGrades(profileId)).toEqual(['G1'])
+  })
+})
+
+/**
+ * 升年级过场里露脸的那三只。
+ *
+ * ⭐ 展示的是**旧伙伴**而不是新的：新那批此刻 `exp` 全是 0，
+ * 画出来是三个几乎一样的蛋，孩子看不出是猫是狗还是羊。
+ * 而过场那句话的主语本来就是它们——「以前的伙伴没有走」。
+ */
+describe('⭐ 上一批伙伴', () => {
+  it('升到二年级时，露脸的是一年级那三只', async () => {
+    const profileId = await bootstrap()
+    await ensurePets(profileId, 'G2')
+
+    const previous = await loadPreviousGradePets(profileId, 'G2')
+
+    expect(previous).toHaveLength(3)
+    expect(previous.every((p) => p.gradeLevel === 'G1')).toBe(true)
+  })
+
+  it('带着她起的名字和攒下的经验 —— 那才是「她的」团团', async () => {
+    const profileId = await bootstrap()
+    await addExp(profileId, 'math', 'G1', 250)
+    await renamePet(profileId, 'math', 'G1', '毛毛')
+    await ensurePets(profileId, 'G2')
+
+    const math = (await loadPreviousGradePets(profileId, 'G2')).find((p) => p.subject === 'math')
+
+    expect(math?.name).toBe('毛毛')
+    expect(math?.exp).toBeGreaterThan(0)
+  })
+
+  it('一年级的孩子没有上一批 —— 返回空数组而不是报错', async () => {
+    const profileId = await bootstrap()
+
+    expect(await loadPreviousGradePets(profileId, 'G1')).toEqual([])
+  })
+
+  /**
+   * ⚠️ 不能简单地「年级减一」：家长可能从一年级直接跳到四年级，
+   * 中间那两年一只伙伴都没有。取的必须是她**养过的**、
+   * 排在当前年级之前的最后一个年级。
+   */
+  it('⭐ 跨级跳时取她真正养过的那一批，不是紧邻的上一个年级', async () => {
+    const profileId = await bootstrap()
+
+    // 只养过 G1，直接跳到 G4
+    const previous = await loadPreviousGradePets(profileId, 'G4')
+
+    expect(previous).toHaveLength(3)
+    expect(previous.every((p) => p.gradeLevel === 'G1')).toBe(true)
   })
 })

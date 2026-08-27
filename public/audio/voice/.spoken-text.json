@@ -4713,5 +4713,49 @@
  "petline.pandaG2Comeback2": {
   "text": "我一直在等你哦",
   "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "ceremony.gradeUpG2": {
+  "text": "你已经是二年级的大孩子啦",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ceremony.oldPetsStay": {
+  "text": "以前的伙伴没有走，去我的伙伴那里就能看到它们",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "petline.penguinG1Archived0": {
+  "text": "那一年，我们一起数了好多好多数呀",
+  "sig": "zh-CN-YunxiaNeural|-8%|+5%"
+ },
+ "petline.penguinG1Archived1": {
+  "text": "想起那时候，我就很开心",
+  "sig": "zh-CN-YunxiaNeural|-8%|+5%"
+ },
+ "petline.dragonG1Archived0": {
+  "text": "那一年读过的书，本龙都记着呢",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG1Archived1": {
+  "text": "本龙在回忆里也很好，有诗作伴",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.pandaG1Archived0": {
+  "text": "那一年好开心呀，thank you！",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG1Archived1": {
+  "text": "波波把那时候的单词都记住啦",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.dragonG2Archived0": {
+  "text": "那一年读过的书，我都记着呢",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Archived1": {
+  "text": "我在回忆里也很好，有诗作伴",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.pandaG2Archived1": {
+  "text": "我把那时候的单词都记住啦",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
  }
 }

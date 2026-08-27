@@ -41,7 +41,20 @@ export function PetHome() {
   const pets = usePetStore((s) => s.pets)
   const load = usePetStore((s) => s.load)
   const rename = usePetStore((s) => s.rename)
-  const [viewGrade, setViewGrade] = useState<GradeLevel>(gradeLevel)
+  /**
+   * 她翻到了哪个年级。`null` = 跟着档案年级走。
+   *
+   * ⚠️ **不能写成 `useState(gradeLevel)`**（原来就是那样，二年级开放后才暴露）：
+   * `profileStore.grade` 是异步读出来的，初值恒为 `'1A'`。用它当 `useState` 初值，
+   * 首帧就把 `viewGrade` 钉死在 `'G1'`，之后档案年级变成 `'G2'` 它也不会再跟——
+   * 于是二年级的孩子每次刷新进这一页，看到的都是**往届存档**：
+   * 正在养的三只一只不见，迎面是「小企鹅陪你上完了一年级，现在住在回忆里」。
+   *
+   * 做成可空之后 `archived` 在加载期间恒为 `false`，绝不会误进存档态。
+   * 与首页 `contentGradeLevel ?? 档案年级` 是同一个写法。
+   */
+  const [viewGradeOverride, setViewGradeOverride] = useState<GradeLevel | null>(null)
+  const viewGrade = viewGradeOverride ?? gradeLevel
   const [ownedGrades, setOwnedGrades] = useState<GradeLevel[]>([])
   const [archivePets, setArchivePets] = useState<PetState[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
@@ -68,8 +81,10 @@ export function PetHome() {
   const shown = archived ? archivePets : pets
   const pet = shown[activeIndex]
 
+  // 点回当前年级时存 null 而不是存那个值：这样家长在别处改了档案年级，
+  // 这一页会自动跟上，不需要两处互相同步（同 sessionStore.setContentGrade）
   const switchTo = (grade: GradeLevel) => {
-    setViewGrade(grade)
+    setViewGradeOverride(grade === gradeLevel ? null : grade)
     setActiveIndex(0)
     setRenaming(false)
   }

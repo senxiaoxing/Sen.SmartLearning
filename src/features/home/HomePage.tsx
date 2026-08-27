@@ -12,7 +12,6 @@ import { motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
-import { BigButton } from '@/components/BigButton'
 import { hasCompletedAssessment } from '@/data/repositories/assessmentRepo'
 import { countTodayAttempts } from '@/data/repositories/masteryRepo'
 import { loadPendingRetry } from '@/data/repositories/reportRepo'
@@ -25,18 +24,19 @@ import { pickNickname } from '@/domain/encourage/pickNickname'
 import { timeOfDay } from '@/domain/encourage/timeOfDay'
 import { plain } from '@/domain/speech'
 import { todayLocal } from '@/domain/time'
+import { GradeUpCeremony } from '@/features/home/GradeUpCeremony'
 import { HomeCompanion } from '@/features/home/HomeCompanion'
 import { HomeGreeting } from '@/features/home/HomeGreeting'
 import { HomePets } from '@/features/home/HomePets'
+import { HomeStartAction } from '@/features/home/HomeStartAction'
 import { ParentMessageCard } from '@/features/home/ParentMessageCard'
 import { PlayEntries } from '@/features/home/PlayEntries'
 import { RetryEntry } from '@/features/home/RetryEntry'
-import { SubjectPicker } from '@/features/home/SubjectPicker'
 import { unlockAllAudio } from '@/features/home/unlockAllAudio'
+import { useCompanionPets } from '@/features/home/useCompanionPets'
 import { InstallPrompt } from '@/features/onboarding/InstallPrompt'
 import { ParentEntry } from '@/features/parent/ParentEntry'
 import { say } from '@/platform/speech'
-import { usePetStore } from '@/stores/petStore'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { gradeLevelOf, type GradeLevel, type Subject } from '@/domain/types'
@@ -51,12 +51,17 @@ export function HomePage() {
   const setContentGrade = useSessionStore((s) => s.setContentGrade)
   const start = useSessionStore((s) => s.start)
   const startWrongBookRetry = useSessionStore((s) => s.startWrongBookRetry)
-  const pets = usePetStore((s) => s.pets)
-  const loadPets = usePetStore((s) => s.load)
+  /** 这次实际要做哪个年级的题 */
+  const activeGrade = contentGrade ?? gradeLevel
+  // ⭐ 形象跟内容年级走，结算不跟（见 useCompanionPets 的文件头）
+  const companions = useCompanionPets(profileId, gradeLevel, activeGrade)
   const nicknames = useProfileStore((s) => s.nicknames)
   const birthDate = useProfileStore((s) => s.birthDate)
   const parentMessage = useProfileStore((s) => s.parentMessage)
   const markMessageHeard = useProfileStore((s) => s.markMessageHeard)
+  /** 家长刚升了年级，还欠孩子一场过场。见 design/08 §6.3 */
+  const pendingGradeUp = useProfileStore((s) => s.pendingGradeUp)
+  const dismissGradeUp = useProfileStore((s) => s.dismissGradeUp)
   const [today, setToday] = useState({ total: 0, correct: 0 })
   const [needsAssessment, setNeedsAssessment] = useState(false)
   /** 还没解决的错题总数，决定要不要显示「再练一练」 */
@@ -66,14 +71,11 @@ export function HomePage() {
     if (profileId === null) return
     void countTodayAttempts(profileId, todayLocal()).then(setToday)
     void hasCompletedAssessment(profileId).then((done) => setNeedsAssessment(!done))
-    void loadPets(profileId, gradeLevel)
     void loadPendingRetry(profileId).then((groups) =>
       setPendingRetry(groups.reduce((n, g) => n + g.total, 0)),
     )
-  }, [profileId, gradeLevel, loadPets])
+  }, [profileId])
 
-  /** 这次实际要做哪个年级的题 */
-  const activeGrade = contentGrade ?? gradeLevel
   /** 已经做好内容的年级。只有多于一个时才值得让她选 */
   const grades = openedGradeLevels()
   // 开放的科目按「要做哪个年级」算——二年级英语做出来之前，那只熊猫还睡着
@@ -112,6 +114,27 @@ export function HomePage() {
   /** 订正的科目由 store 挑（待订正最多的那一科），这里不做决定 */
   const beginRetry = () => enterSession(() => void startWrongBookRetry())
 
+  /**
+   * ⭐ 升年级过场挡在整个首页前面。
+   *
+   * 家长在家长区改的年级，孩子看不到那一下；不拦一次，
+   * 她下次打开 App 只会发现企鹅变成了猫。见 design/08 §6.3
+   * 「绝不能让 App 无声无息地换掉一切」。
+   *
+   * 过场自己去读上一批伙伴（它露脸的是旧的那三只，不是新的——
+   * 见 `loadPreviousGradePets`），所以这里只把 `profileId` 递进去。
+   */
+  if (pendingGradeUp !== undefined && profileId !== null) {
+    return (
+      <GradeUpCeremony
+        gradeLevel={pendingGradeUp}
+        profileId={profileId}
+        nickname={nickname}
+        onDismiss={() => void dismissGradeUp()}
+      />
+    )
+  }
+
   return (
     <AppShell width="wide" aside={<HomeCompanion today={today} pendingRetry={pendingRetry} />}>
       <div className="flex flex-col items-center gap-9 sm:gap-11">
@@ -121,7 +144,7 @@ export function HomePage() {
           transition={{ type: 'spring', stiffness: 200, damping: 22 }}
           className="flex flex-col items-center gap-4"
         >
-          <HomePets pets={pets} festive={birthday} onOpen={() => navigate('/pets')} />
+          <HomePets pets={companions} festive={birthday} onOpen={() => navigate('/pets')} />
           {/* 点击是用户手势，顺手把音频解锁了 —— 见 HomeGreeting 的文件头 */}
           <HomeGreeting
             line={greeting}
@@ -141,40 +164,13 @@ export function HomePage() {
           </p>
         )}
 
-        {needsAssessment ? (
-          // 首次使用先做摸底，避免让上过幼小衔接的孩子从「数一数」开始
-          <div className="flex flex-col items-center gap-3">
-            <BigButton
-              tone="primary"
-              className="px-12 py-6 text-3xl"
-              onClick={() => navigate('/assessment')}
-            >
-              一起去探险
-            </BigButton>
-            <button
-              type="button"
-              onClick={() => beginSession('math')}
-              className="px-4 py-2 text-base text-ink/40"
-            >
-              跳过，直接开始
-            </button>
-          </div>
-        ) : openSubjects.length > 1 ? (
-          // 开放了多个科目就让她自己挑 —— 宠物即标签，她认形象不认字
-          <SubjectPicker
-            pets={pets}
-            openSubjects={openSubjects}
-            onPick={(subject) => beginSession(subject)}
-          />
-        ) : (
-          <BigButton
-            tone="primary"
-            className="px-12 py-6 text-3xl"
-            onClick={() => beginSession(openSubjects[0] ?? 'math')}
-          >
-            开始学习
-          </BigButton>
-        )}
+        <HomeStartAction
+          needsAssessment={needsAssessment}
+          openSubjects={openSubjects}
+          pets={companions}
+          onAssess={() => navigate('/assessment')}
+          onStart={beginSession}
+        />
 
         {/* ⭐ 年级切换。只在做好了一个以上年级时出现——只有一个年级时，
             多这一层对她是纯粹的干扰（同 SubjectPicker 的出现条件）。
@@ -188,7 +184,6 @@ export function HomePage() {
               hint: g === gradeLevel ? '你现在读的年级' : '换这个年级的题做做看',
             }))}
             activeId={activeGrade}
-            countLabel="一个年级的题"
             onSelect={(id) => setContentGrade(id === gradeLevel ? null : (id as GradeLevel))}
           />
         )}

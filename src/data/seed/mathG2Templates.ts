@@ -250,11 +250,15 @@ export const MATH_G2_TEMPLATES: ItemTemplate[] = [
     2: { mode: 'single' },
     3: { mode: 'total', countRange: [2, 2] },
   }),
-  // 认角先得认得出图形：借一年级 M7.3 的认图形题作轮换，零新增
+  // 认角先得认得出图形：借一年级 M7.3 的认图形题作轮换，零新增。
+  // ⭐ `corneredOnly` 把**圆排除出正确答案**——圆是唯一没有角的图形，
+  //    「哪个是圆」对「认识角」零信息量，掌握度却照涨（2026-08-27 真机上抓到的）。
+  //    ⚠️ 圆仍留在干扰项里：问「哪个是三角形」时选了圆，
+  //    恰恰说明她还分不清有角和没角
   altTpl('M2-3.1', 'shape', 'shapes', {
-    1: { family: 'plane' },
-    2: { family: 'plane' },
-    3: { family: 'plane' },
+    1: { family: 'plane', corneredOnly: true },
+    2: { family: 'plane', corneredOnly: true },
+    3: { family: 'plane', corneredOnly: true },
   }, 'choice_image'),
 
   tpl('M2-3.2', 'angles', {

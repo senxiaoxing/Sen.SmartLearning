@@ -20,6 +20,7 @@
 
 import { shuffle } from '@/domain/generators/rng'
 import {
+  CORNERED_PLANES,
   OPTION_COUNT,
   PLANES,
   PLANE_NAMES,
@@ -35,6 +36,9 @@ import type { Generator, PlaneShapeKind, SolidShapeKind } from '@/domain/types'
  * 生成一道图形识别题。
  *
  * @param ctx.params.family - `'solid'` 立体（M7.1）| `'plane'` 平面（M7.3）
+ * @param ctx.params.corneredOnly - 正确答案只从**有角的**平面图形里抽（排除圆）。
+ *                                  给 M2-3.1「认识角」用，见 {@link CORNERED_PLANES}。
+ *                                  ⚠️ 只影响正确答案，圆仍然会作为干扰项出现
  *
  * @returns `type: 'choice_image'`，选项是图形，界面上不显示文字标签
  *
@@ -44,10 +48,15 @@ import type { Generator, PlaneShapeKind, SolidShapeKind } from '@/domain/types'
  * //   solid:cube     → 正确
  * //   plane:square   → solid_plane_confusion  把正方体认成正方形
  * //   solid:cylinder → 同族混淆
+ *
+ * @example
+ * // 认识角：绝不会问出「哪个是圆」——圆没有角，答对它说明不了任何事
+ * shapes({ kpId: 'M2-3.1', difficulty: 2, params: { family: 'plane', corneredOnly: true }, rng })
  */
 export const shapes: Generator = ({ kpId, difficulty, params, rng }) => {
   const isPlane = params['family'] === 'plane'
-  const answer = pick(rng, isPlane ? PLANES : SOLIDS)
+  const planePool = params['corneredOnly'] === true ? CORNERED_PLANES : PLANES
+  const answer = pick(rng, isPlane ? planePool : SOLIDS)
   const name = (isPlane ? PLANE_NAMES : SOLID_NAMES)[answer] ?? ''
 
   const raw: RawShapeOption[] = isPlane

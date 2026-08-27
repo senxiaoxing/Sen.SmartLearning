@@ -12,12 +12,15 @@
 
 import { create } from 'zustand'
 import { bootstrap } from '@/data/bootstrap'
+import { applyGradeAssumptions, ensureMasteryUpTo } from '@/data/repositories/masterySetup'
 import { ensurePets } from '@/data/repositories/petRepo'
 import {
+  clearPendingGradeUp,
   loadBirthDate,
   loadGrade,
   loadNicknames,
   loadParentMessage,
+  loadPendingGradeUp,
   markMessageRead,
   saveBirthDate,
   saveGrade,
@@ -26,7 +29,7 @@ import {
 } from '@/data/repositories/profileRepo'
 import { gradeLevelOf } from '@/domain/types'
 import type { Nickname } from '@/domain/encourage/addressed'
-import type { Grade, ParentMessage } from '@/domain/types'
+import type { Grade, GradeLevel, ParentMessage } from '@/domain/types'
 
 interface ProfileState {
   /**
@@ -51,6 +54,13 @@ interface ProfileState {
   birthDate?: string
   /** 家长留言，没有则 `undefined`。孩子在首页点开听 */
   parentMessage?: ParentMessage
+  /**
+   * ⭐ 欠着一场升年级过场：刚升到了这个年级，还没跟孩子说过。
+   *
+   * 家长在家长区改年级，孩子看不到那一下。首页看到这个值就演过场，
+   * 演完调 {@link ProfileState.dismissGradeUp} 清掉。见 design/08 §6.3。
+   */
+  pendingGradeUp?: GradeLevel
   /** 从数据库读入。幂等，重复调用无副作用 */
   load: () => Promise<void>
   /** 改称呼列表并立即生效。第一个是主昵称 */
@@ -63,6 +73,8 @@ interface ProfileState {
    * 比任何别的改动都伤人。
    */
   setGrade: (grade: Grade) => Promise<void>
+  /** 过场演完了（她点了「知道啦」）。清掉标记，不再重复演 */
+  dismissGradeUp: () => Promise<void>
   /** 设置生日，传空串表示取消 */
   setBirthDate: (birthDate: string) => Promise<void>
   /** 写一条新留言，替换上一条。传空串表示删除 */
@@ -91,13 +103,14 @@ export const useProfileStore = create<ProfileState>((set) => ({
   // bootstrap 本身幂等且防并发（见 data/bootstrap.ts 的 pending 说明）
   load: async () => {
     const profileId = await bootstrap()
-    const [nicknames, grade, birthDate, parentMessage] = await Promise.all([
+    const [nicknames, grade, birthDate, parentMessage, pendingGradeUp] = await Promise.all([
       loadNicknames(profileId),
       loadGrade(profileId),
       loadBirthDate(profileId),
       loadParentMessage(profileId),
+      loadPendingGradeUp(profileId),
     ])
-    set({ nicknames, grade, birthDate, parentMessage })
+    set({ nicknames, grade, birthDate, parentMessage, pendingGradeUp })
   },
 
   rename: async (texts) => {
@@ -106,10 +119,23 @@ export const useProfileStore = create<ProfileState>((set) => ({
 
   setGrade: async (grade) => {
     const profileId = await bootstrap()
-    const saved = await saveGrade(profileId, grade)
+    const { grade: saved, pendingGradeUp } = await saveGrade(profileId, grade)
+    // ⚠️ 掌握度只铺到档案年级为止，升年级必须补建新那一级 ——
+    // 漏掉的话新年级一道题都排不出来（见 data/bootstrap.ts 的 ensureMastery）
+    await ensureMasteryUpTo(profileId, gradeLevelOf(saved))
+    // ⭐ 低年级的内容按「学校已经教过」处理，否则三年级的孩子跳过摸底后
+    // 第一道题还是「数一数」。⛔ 只有档案年级能触发它，见那个函数的说明
+    await applyGradeAssumptions(profileId, gradeLevelOf(saved))
     // 补齐新年级的三只伙伴。幂等：已存在的一律不动，上一批原样留着
     await ensurePets(profileId, gradeLevelOf(saved))
-    set({ grade: saved })
+    // pendingGradeUp 一律覆盖（升级时是新年级，改回去时是 undefined）——
+    // 「点错了又改回来」不该给孩子留下一场关于她根本没升的年级的仪式
+    set({ grade: saved, pendingGradeUp })
+  },
+
+  dismissGradeUp: async () => {
+    await clearPendingGradeUp(await bootstrap())
+    set({ pendingGradeUp: undefined })
   },
 
   setBirthDate: async (birthDate) => {

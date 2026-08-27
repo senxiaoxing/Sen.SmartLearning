@@ -21,7 +21,8 @@ import { db } from '@/data/db'
 import { toNickname } from '@/data/seed/nicknamePresets'
 import { nowIso } from '@/domain/time'
 import { NO_NICKNAME, type Nickname } from '@/domain/encourage/addressed'
-import type { Grade, ParentMessage, Uuid } from '@/domain/types'
+import { GRADE_LEVELS, gradeLevelOf } from '@/domain/types'
+import type { Grade, GradeLevel, ParentMessage, Uuid } from '@/domain/types'
 
 /**
  * 昵称长度上限。
@@ -73,20 +74,66 @@ export async function loadGrade(profileId: Uuid): Promise<Grade> {
  * 因此只放在家长区，且 ⛔ **绝不按日期自动升级**——
  * 自动跳意味着某天她打开 App 发现一切都变了，而没有任何人跟她说过。
  *
+ * ⭐ **往上升时留一个 `pendingGradeUp` 标记**，让首页欠孩子一场过场。
+ * 家长区是家长的地方，孩子看不到那一下；不留标记的话，
+ * 她下次打开 App 只会发现企鹅变成了猫。见 design/08 §6.3。
+ *
  * 只负责落库；**创建新一批宠物由调用方编排**（`profileStore.setGrade`），
  * 仓储之间互相调用会让「改个年级」这件事的副作用藏进两层调用栈里。
  *
- * @returns 存下的年级
+ * @param profileId - 档案 ID
+ * @param grade - 新学期。年级由 `gradeLevelOf()` 从中推导
+ * @returns 存下的年级，以及**这次是否欠了一场过场**（欠了就带上升到的年级）
  *
  * @example
- * await saveGrade(profileId, '2A')   // 升二年级
+ * await saveGrade(profileId, '2A')
+ * // → { grade: '2A', pendingGradeUp: 'G2' }   欠一场过场
+ *
+ * @example
+ * // 家长改回去（纠正误操作）：不演过场，且把之前欠的那场一并撤掉
+ * await saveGrade(profileId, '1A')
+ * // → { grade: '1A', pendingGradeUp: undefined }
  */
-export async function saveGrade(profileId: Uuid, grade: Grade): Promise<Grade> {
+export async function saveGrade(
+  profileId: Uuid,
+  grade: Grade,
+): Promise<{ grade: Grade; pendingGradeUp?: GradeLevel }> {
   const profile = await db.profiles.get(profileId)
-  if (profile === undefined) return '1A'
+  if (profile === undefined) return { grade: '1A' }
 
-  await db.profiles.put({ ...profile, grade, updatedAt: nowIso() })
-  return grade
+  const from = GRADE_LEVELS.indexOf(gradeLevelOf(profile.grade))
+  const to = GRADE_LEVELS.indexOf(gradeLevelOf(grade))
+
+  /**
+   * 只有真的往上走才欠过场。
+   *
+   * 往下改是家长在纠正误操作，那时还要**把之前欠的那场撤掉**——
+   * 否则「点错了又改回来」会给孩子留下一场关于她根本没升的年级的仪式。
+   */
+  const pendingGradeUp = to > from ? gradeLevelOf(grade) : undefined
+
+  await db.profiles.put({ ...profile, grade, pendingGradeUp, updatedAt: nowIso() })
+  return { grade, pendingGradeUp }
+}
+
+/** 读出欠着的那场过场。没欠则 `undefined` */
+export async function loadPendingGradeUp(profileId: Uuid): Promise<GradeLevel | undefined> {
+  return (await db.profiles.get(profileId))?.pendingGradeUp
+}
+
+/**
+ * 过场演完了，清掉标记。
+ *
+ * ⚠️ 不动 `updatedAt`：孩子看完一场过场不算「家长改过档案」，
+ * 而 `updatedAt` 是默认名迁移的判据（见 data/bootstrap.ts）。同 `markMessageRead`。
+ *
+ * @example
+ * await clearPendingGradeUp(profileId)   // 她点了「知道啦」
+ */
+export async function clearPendingGradeUp(profileId: Uuid): Promise<void> {
+  const profile = await db.profiles.get(profileId)
+  if (profile?.pendingGradeUp === undefined) return
+  await db.profiles.put({ ...profile, pendingGradeUp: undefined })
 }
 
 /**

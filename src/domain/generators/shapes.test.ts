@@ -96,4 +96,51 @@ describe('shapes', () => {
       expect(item.options.length, item.signature).toBe(4)
     }
   })
+
+  /**
+   * ⭐ M2-3.1「认识角」借这套认图形题作题型轮换，但**圆没有角**。
+   *
+   * 「哪个是圆」答对了说明不了任何与角有关的事，掌握度却照涨——
+   * 这是 2026-08-27 在真机上抓到的：一道挂在「认识角」名下的题问的是圆。
+   */
+  describe('⭐ corneredOnly：认识角不能问出「哪个是圆」', () => {
+    const cornered = (seed: number): GeneratedItem =>
+      shapes({
+        kpId: 'M2-3.1',
+        difficulty: 2,
+        params: { family: 'plane', corneredOnly: true },
+        rng: createRng(seed),
+      })
+    const many = Array.from({ length: 60 }, (_, i) => cornered(i + 1))
+
+    it('正确答案永远不是圆', () => {
+      for (const item of many) {
+        expect(item.answer, `${item.signature} 把圆当成了考点`).not.toBe('圆')
+        expect(item.options.find((o) => o.isCorrect)?.imageKey).not.toBe('plane:circle')
+      }
+    })
+
+    it('三种有角的图形都轮得到 —— 只出一种等于没有题库', () => {
+      const answers = new Set(many.map((i) => i.answer))
+      expect(answers).toEqual(new Set(['正方形', '长方形', '三角形']))
+    })
+
+    /**
+     * ⚠️ 圆必须**留在干扰项里**：问「哪个是三角形」时选了圆，
+     * 恰恰说明她还分不清有角和没角，那是这个知识点最该抓的错。
+     */
+    it('⭐ 圆仍然会作为干扰项出现', () => {
+      const withCircle = many.filter((i) =>
+        i.options.some((o) => o.imageKey === 'plane:circle' && !o.isCorrect),
+      )
+      expect(withCircle.length, '圆被整个排除了，最有诊断价值的那个错就没机会发生').toBeGreaterThan(
+        0,
+      )
+    })
+
+    it('不传这个参数时行为不变 —— 一年级的 M7.3 照旧会问圆', () => {
+      const answers = new Set(allSeeds('plane', 'M7.3').map((i) => i.answer))
+      expect(answers).toContain('圆')
+    })
+  })
 })

@@ -568,6 +568,23 @@ export interface Profile {
   /** `'YYYY-MM-DD'`，可选，仅用于年龄适配 */
   birthDate?: string
   grade: Grade
+  /**
+   * ⭐ 刚升到了这个年级，**还没跟孩子说过**。过场演完就清掉。
+   *
+   * 家长在家长区改年级，会一次性换掉三只伙伴、整体前移内容范围。
+   * 而家长区是家长的地方——孩子看不到那一下。没有这个标记的话，
+   * 她下次打开 App 会发现企鹅变成了猫，而没有任何人跟她说过。
+   * design/08 §6.3：**绝不能让 App 无声无息地换掉一切**。
+   *
+   * 存年级而不是布尔值，是因为过场要说出「你已经是二年级的大孩子啦」。
+   *
+   * ⚠️ 只在**往上升**时写：家长把年级改回去是在纠正误操作，
+   * 给她演一场「你已经是一年级的小孩子啦」只会让人莫名其妙。
+   *
+   * ⚠️ 可选字段，理由同 {@link Profile.aliases}：不涉及索引变化，
+   * Dexie 的 `stores()` 不用动，也不需要递增 SCHEMA_VERSION。
+   */
+  pendingGradeUp?: GradeLevel
   createdAt: IsoDateTime
   updatedAt: IsoDateTime
 }

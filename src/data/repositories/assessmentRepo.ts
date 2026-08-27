@@ -5,16 +5,13 @@
  */
 
 import { db } from '@/data/db'
-import { refreshUnlocks } from '@/data/bootstrap'
+import { refreshUnlocks } from '@/data/repositories/masterySetup'
 import { KNOWLEDGE_POINTS } from '@/data/seed/knowledgePoints'
-import {
-  PLACEMENT_MASTERY_SCORE,
-  type PlacementOutcome,
-  type ProbeResult,
-} from '@/domain/assessment/placement'
+import { PLACEMENT_MASTERY_SCORE, type PlacementOutcome } from '@/domain/assessment/placement'
+import type { ProbeResult } from '@/domain/assessment/nextProbe'
 import { addDays, nowIso } from '@/domain/time'
 import { newId } from '@/platform/newId'
-import type { Assessment, Mastery, Uuid } from '@/domain/types'
+import type { Assessment, Mastery, Subject, Uuid } from '@/domain/types'
 
 /**
  * 摸底判定掌握后，首次复习安排在 3~14 天之后。
@@ -76,6 +73,20 @@ export async function saveAndApplyPlacement(
   const mastered = new Set(outcome.masteredKpIds)
   const all = await db.mastery.where('profileId').equals(profileId).toArray()
 
+  /**
+   * ⭐ 摸底只考数学，所以它**只能改数学的判定**。
+   *
+   * 少了这道闸门，考完数学会把拼音与英语的起点假定一并撤销——
+   * 它们一题都没考过，凭什么判定她不会。这在只有一年级内容时看不出来
+   * （那两科本来就该从头学），二年级的孩子跳过一次摸底就会被打回
+   * 「从 ɑ o e 重学」。
+   */
+  const examined = new Set(
+    probes
+      .map((p) => KNOWLEDGE_POINTS.find((k) => k.id === p.kpId)?.subject)
+      .filter((s): s is Subject => s !== undefined),
+  )
+
   const updates: Mastery[] = []
   all.forEach((m, index) => {
     // 有真实作答记录的知识点，其数据比测评更可信，一律不动
@@ -83,6 +94,8 @@ export async function saveAndApplyPlacement(
 
     const kp = KNOWLEDGE_POINTS.find((k) => k.id === m.kpId)
     if (kp === undefined) return
+    // 没考过的科目一律不碰
+    if (!examined.has(kp.subject)) return
 
     if (mastered.has(m.kpId)) {
       updates.push({

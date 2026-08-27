@@ -88,6 +88,34 @@ export async function loadOwnedGrades(profileId: Uuid): Promise<GradeLevel[]> {
   return GRADE_LEVELS.filter((g) => owned.has(g))
 }
 
+/**
+ * 上一批伙伴 —— 升年级过场里露脸的那三只。
+ *
+ * ⭐ **过场展示的是旧伙伴，不是新的**。新的那批此刻 `exp` 全是 0，
+ * 画出来是三个几乎一样的蛋，孩子看不出是猫是狗还是羊——
+ * 展示一个蛋等于什么都没展示。而过场那句话的主语本来就是它们：
+ * 「以前的伙伴没有走，去我的伙伴那里就能看到它们」。
+ * 新伙伴的登场留给首页，她点完「知道啦」立刻就会遇到。
+ *
+ * 取「她**养过**的、排在当前年级之前的最后一个年级」，
+ * 而不是简单地减一：家长可能从一年级直接跳到四年级，中间那两年没有伙伴。
+ *
+ * @returns 上一批伙伴；她还没养过更早的年级时为空数组
+ *
+ * @example
+ * await loadPreviousGradePets(profileId, 'G2')   // → 团团、墨墨、波波
+ */
+export async function loadPreviousGradePets(
+  profileId: Uuid,
+  gradeLevel: GradeLevel,
+): Promise<PetState[]> {
+  const owned = await loadOwnedGrades(profileId)
+  const current = GRADE_LEVELS.indexOf(gradeLevel)
+  const previous = owned.filter((g) => GRADE_LEVELS.indexOf(g) < current).pop()
+
+  return previous === undefined ? [] : loadPets(profileId, previous)
+}
+
 export async function loadPet(
   profileId: Uuid,
   subject: Subject,

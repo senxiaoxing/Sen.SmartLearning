@@ -111,10 +111,33 @@ export interface PetPersonality {
   levelUp: readonly PetLine[]
   /** 久别重逢。⚠️ 只能是「想你了」，绝不能是「你都不理我」 */
   comeback: readonly PetLine[]
+  /**
+   * ⭐ 往届伙伴在「我的伙伴」回忆页里说的话。
+   *
+   * **为什么必须单独一池，不能复用 `comeback`**：`lastSeenAt` 只在结算经验时更新，
+   * 而往届伙伴不再成长——于是它必然、且**永久**命中「好几天没见到你了，我有点想你」。
+   * 那句话在现役伙伴身上是想念，在回忆页里读出来却是「你抛弃我之后我一直在等」。
+   * §5.2 造出「回忆」这个地方，正是为了让升年级不带负罪感，
+   * 结果从这个门又放了进来。
+   *
+   * ⛔ 三条禁忌：**不催她回来**（「常来看看我」「我一直在等你」）、
+   * **不提成绩与等级**（§5.2：往届只说陪伴，不说成绩，
+   * 任何暗示「养到第几阶」的说法都会让没养满的那只变成遗憾）、
+   * **不说再见**（它没有离开，只是换了个地方住）。
+   * ✅ 要传达的只有一件事：**那段时光很好，它现在也很好**。
+   */
+  archived: readonly PetLine[]
 }
 
 /** `personality` 里全部台词池的字段名。遍历时用它，加了新场景这里也要加 */
-export const PET_LINE_MOMENTS = ['greet', 'correct', 'wrong', 'levelUp', 'comeback'] as const
+export const PET_LINE_MOMENTS = [
+  'greet',
+  'correct',
+  'wrong',
+  'levelUp',
+  'comeback',
+  'archived',
+] as const
 
 /** 六个形态，分别对应 Lv1-2 / 3-4 / 5-6 / 7-8 / 9-10 / 11-12 */
 export type PetStages = [
@@ -219,6 +242,12 @@ const PENGUIN_G1: PetDefinition = {
       { clipKey: 'petline.penguinG1Comeback1', text: '你回来啦！我一直在等你' },
       { clipKey: 'petline.penguinG1Comeback2', text: '想你想得都不会数数了～' },
     ],
+    // 往届的两句：说的都是「那时候」，没有一句指向「以后」——
+    // 一旦出现将来时（等你、再来），它就从回忆变成了一个还没完成的约定
+    archived: [
+      { clipKey: 'petline.penguinG1Archived0', text: '那一年，我们一起数了好多好多数呀' },
+      { clipKey: 'petline.penguinG1Archived1', text: '想起那时候，我就很开心' },
+    ],
   },
 }
 
@@ -291,6 +320,10 @@ const DRAGON_G1: PetDefinition = {
       { clipKey: 'petline.dragonG1Comeback0', text: '好久不见，本龙甚是想念' },
       { clipKey: 'petline.dragonG1Comeback1', text: '你终于回来啦！' },
       { clipKey: 'petline.dragonG1Comeback2', text: '这几日无人听我念书～' },
+    ],
+    archived: [
+      { clipKey: 'petline.dragonG1Archived0', text: '那一年读过的书，本龙都记着呢' },
+      { clipKey: 'petline.dragonG1Archived1', text: '本龙在回忆里也很好，有诗作伴' },
     ],
   },
 }
@@ -370,6 +403,10 @@ const PANDA_G1: PetDefinition = {
       { clipKey: 'petline.pandaG1Comeback0', text: '好久不见，I miss you～' },
       { clipKey: 'petline.pandaG1Comeback1', text: '你回来啦！波波好开心' },
       { clipKey: 'petline.pandaG1Comeback2', text: '波波一直在等你哦' },
+    ],
+    archived: [
+      { clipKey: 'petline.pandaG1Archived0', text: '那一年好开心呀，thank you！' },
+      { clipKey: 'petline.pandaG1Archived1', text: '波波把那时候的单词都记住啦' },
     ],
   },
 }
@@ -498,6 +535,11 @@ const SAMOYED_G2: PetDefinition = {
       DRAGON_G1.personality.comeback[1]!, // 你终于回来啦！
       DRAGON_G1.personality.comeback[2]!, // 这几日无人听我念书～
     ],
+    // 两句都带「本龙」，只换自称，文绉绉的语气原样留着
+    archived: [
+      { clipKey: 'petline.dragonG2Archived0', text: '那一年读过的书，我都记着呢' },
+      { clipKey: 'petline.dragonG2Archived1', text: '我在回忆里也很好，有诗作伴' },
+    ],
   },
 }
 
@@ -565,6 +607,10 @@ const SHEEP_G2: PetDefinition = {
       PANDA_G1.personality.comeback[0]!, // 好久不见，I miss you～
       { clipKey: 'petline.pandaG2Comeback1', text: '你回来啦！我好开心' },
       { clipKey: 'petline.pandaG2Comeback2', text: '我一直在等你哦' },
+    ],
+    archived: [
+      PANDA_G1.personality.archived[0]!, // 那一年好开心呀，thank you！——不带名字，直接复用
+      { clipKey: 'petline.pandaG2Archived1', text: '我把那时候的单词都记住啦' },
     ],
   },
 }

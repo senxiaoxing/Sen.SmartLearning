@@ -12,7 +12,7 @@
 import { describe, expect, it } from 'vitest'
 import { ITEM_TEMPLATES, primaryTemplateOf } from '@/data/seed/itemTemplates'
 import { KNOWLEDGE_POINT_BY_ID } from '@/data/seed/knowledgePoints'
-import { PLACEMENT_PROBES } from '@/domain/assessment/placement'
+import { PLACEMENT_PROBES } from '@/domain/assessment/placementProbes'
 import { generateFromTemplate, isGeneratorRegistered } from '@/domain/generators'
 import { createRng } from '@/domain/generators/rng'
 import type { Difficulty, GeneratedItem } from '@/domain/types'
@@ -71,7 +71,14 @@ describe('模板配置完整性', () => {
     //
     // ⚠️ 只约束探测点，不约束全部知识点：P3.1「两拼音节」的题型本来就**只有**
     // 拖拽一种（设计文档如此指定），要求它有非拖拽主模板等于逼着造一个凑数的题型。
-    for (const kpId of PLACEMENT_PROBES) {
+    //
+    // 遍历**全部**「科目 × 年级」序列：加了新年级的探测点会自动纳入检查。
+    const allProbes = Object.values(PLACEMENT_PROBES).flatMap((byGrade) =>
+      Object.values(byGrade).flat(),
+    )
+    expect(allProbes.length, '一条探测序列都没有？').toBeGreaterThan(0)
+
+    for (const kpId of allProbes) {
       const first = primaryTemplateOf(kpId)
       expect(first, `探测点 ${kpId} 取不到主模板`).toBeDefined()
       expect(

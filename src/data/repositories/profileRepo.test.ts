@@ -11,9 +11,11 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { bootstrap } from '@/data/bootstrap'
 import { db } from '@/data/db'
 import {
+  clearPendingGradeUp,
   loadGrade,
   loadNicknames,
   loadParentMessage,
+  loadPendingGradeUp,
   markMessageRead,
   MESSAGE_MAX_LENGTH,
   NICKNAME_MAX_COUNT,
@@ -45,6 +47,71 @@ describe('年级读写', () => {
 
     expect(await loadGrade(profileId)).toBe('3A')
     expect(await loadNicknames(profileId)).toEqual([{ text: '小恩宝', clipKey: 'name.xiaoenbao' }])
+  })
+})
+
+/**
+ * 升年级过场的标记。
+ *
+ * 家长在**家长区**改年级，孩子看不到那一下——不留标记的话，
+ * 她下次打开 App 只会发现企鹅变成了猫。见 design/08 §6.3。
+ */
+describe('⭐ 欠着的那场过场', () => {
+  it('新档案不欠过场', async () => {
+    expect(await loadPendingGradeUp(await bootstrap())).toBeUndefined()
+  })
+
+  it('往上升 → 欠一场，记的是升到的那个年级', async () => {
+    const profileId = await bootstrap()
+
+    const result = await saveGrade(profileId, '2A')
+
+    expect(result.pendingGradeUp).toBe('G2')
+    expect(await loadPendingGradeUp(profileId)).toBe('G2')
+  })
+
+  it('同一个年级内换学期不算升年级', async () => {
+    // 一上 → 一下，伙伴没换、内容范围没动，没什么可宣布的
+    const profileId = await bootstrap()
+
+    expect((await saveGrade(profileId, '1B')).pendingGradeUp).toBeUndefined()
+    expect(await loadPendingGradeUp(profileId)).toBeUndefined()
+  })
+
+  /**
+   * ⭐ 家长点错了又改回来，不能给孩子留下一场
+   * 关于她**根本没升的年级**的仪式。
+   */
+  it('⭐ 改回低年级 → 不欠过场，还要把之前欠的那场撤掉', async () => {
+    const profileId = await bootstrap()
+    await saveGrade(profileId, '2A')
+    expect(await loadPendingGradeUp(profileId)).toBe('G2')
+
+    const result = await saveGrade(profileId, '1A')
+
+    expect(result.pendingGradeUp).toBeUndefined()
+    expect(await loadPendingGradeUp(profileId)).toBeUndefined()
+  })
+
+  it('演完就清掉，不会第二次弹出来', async () => {
+    const profileId = await bootstrap()
+    await saveGrade(profileId, '2A')
+
+    await clearPendingGradeUp(profileId)
+
+    expect(await loadPendingGradeUp(profileId)).toBeUndefined()
+    // 年级本身不受影响 —— 清的只是「说过了没有」
+    expect(await loadGrade(profileId)).toBe('2A')
+  })
+
+  it('清标记不动 updatedAt —— 那是默认名迁移的判据', async () => {
+    const profileId = await bootstrap()
+    await saveGrade(profileId, '2A')
+    const before = (await db.profiles.get(profileId))!.updatedAt
+
+    await clearPendingGradeUp(profileId)
+
+    expect((await db.profiles.get(profileId))!.updatedAt).toBe(before)
   })
 })
 
