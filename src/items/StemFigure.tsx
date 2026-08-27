@@ -16,7 +16,7 @@
  * ```
  */
 
-import { MathShape } from '@/components/shape/MathShape'
+import { MathShape, shapeSize } from '@/components/shape/MathShape'
 import { ShapeScene } from '@/components/shape/ShapeScene'
 import { BarChart } from '@/items/BarChart'
 import { BraceGroups, EqualGroups, StoryGroups } from '@/items/StoryFigures'
@@ -59,10 +59,37 @@ export function isStemFigure(visual: ItemVisual | undefined): visual is ItemVisu
   return visual !== undefined && STEM_FIGURE_KINDS.has(visual.kind)
 }
 
+/**
+ * 题干里的图至少要有多大。
+ *
+ * `MathShape` 的族默认尺寸是按**选项卡片**定的（正方体 82、角 100），
+ * 摆到题干上太小，所以这里兜一个下限。
+ */
+const MIN_STEM_SIZE = 170
+
+/**
+ * 题干配图该画多大。
+ *
+ * ⭐ **取族默认值与 {@link MIN_STEM_SIZE} 里大的那个**，不能一律写死 170。
+ * 原先写死的后果是尺子被压到 170——而尺子的画布宽 340，
+ * 缩一半之后刻度数字只有 7px，真机上根本看不清。
+ * 「尺子太小」这条真机反馈的根因就在这一行，不在尺子本身的画法上。
+ *
+ * @param imageKey - 图形 key，形如 `ruler:12:1:6`
+ * @returns 渲染像素宽度
+ *
+ * @example
+ * stemSizeOf('ruler:12:1:6')      // 420 —— 族默认更大，用它
+ * stemSizeOf('plane:triangle')    // 170 —— 族默认只有 82，抬到下限
+ */
+function stemSizeOf(imageKey: string): number {
+  return Math.max(shapeSize(imageKey), MIN_STEM_SIZE)
+}
+
 export function StemFigure({ visual }: { visual: ItemVisual }) {
   switch (visual.kind) {
     case 'figure':
-      return <MathShape imageKey={visual.imageKey} size={170} />
+      return <MathShape imageKey={visual.imageKey} size={stemSizeOf(visual.imageKey)} />
 
     case 'shapeScene':
       return <ShapeScene pieces={visual.pieces} width={visual.width} height={visual.height} />

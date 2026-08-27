@@ -28,38 +28,59 @@ export function SamoyedGear({ layer, accessories, animated }: PetGearProps) {
   if (layer === 'under') {
     return (
       <>
+        {/* ⭐ 毛笔。三段各有各的必需特征，少一段就不是毛笔：
+              竹杆   浅褐 ＋ 两道竹节 ＋ 杆尾的挂绳环
+              笔箍   一圈金铜，是「杆」与「毛」的分界
+              笔头   **肚子鼓、尖出锋**的一撮毛，占全长约三分之一
+
+            第一版是细长的黑色尖三角——那是一把匕首。
+            第二版把锥形改饱满了，但整支太小、笔头只占一小截，真机上仍看不出来。
+            现在整支放大约 1.3 倍，笔头单独加长，并且**杆比笔头细**——
+            毛笔与铅笔的差别就在这个粗细反差上。 */}
         {has('brush') && (
           <g>
-            <path
-              d="M62,208 L22,110"
-              stroke="#C89B6A"
-              strokeWidth="10"
-              strokeLinecap="round"
-            />
+            <path d="M70,214 L30,120" stroke="#D2A972" strokeWidth="11" strokeLinecap="round" />
+            {/* 竹节：两道深色环。没有它，杆就是一根塑料棍 */}
             <path
               className="d-mid"
-              d="M52,184 L44,187 M42,160 L34,163"
+              d="M58,188 L47,192 M47,162 L36,166"
               stroke="#9C7442"
-              strokeWidth="2.4"
+              strokeWidth="2.6"
               strokeLinecap="round"
             />
-            {/* 笔箍：竹杆与笔头之间那圈铜，少了它两截会读成一根棍子 */}
-            <path d="M29,124 L14,130" stroke="#E0B357" strokeWidth="8" strokeLinecap="round" />
-            {/* 笔头：⚠️ 得是**饱满的锥**，不能是细长的尖三角——
-                后者加上黑色就是一把匕首，第一版正是那个样子。
-                肚子鼓、尖头钝、颜色偏褐，才读得出是一撮毛 */}
+            {/* 挂绳环：毛笔特有的那个小圈，挂在杆尾 */}
+            <circle
+              className="d-fine"
+              cx="73"
+              cy="219"
+              r="4.5"
+              fill="none"
+              stroke="#D2A972"
+              strokeWidth="2.4"
+            />
+            {/* 笔箍。比杆粗，「毛从这里长出来」才立得住 */}
+            <path d="M32,124 L24,105" stroke="#E0B357" strokeWidth="15" strokeLinecap="butt" />
             <path
-              d="M25,127 C12,120 3,102 8,86 C11,77 18,76 20,84 C23,97 30,114 34,121 Z"
-              fill="#4A4038"
+              className="d-fine"
+              d="M28,116 L21,99"
+              stroke="#F4D89A"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity=".85"
+            />
+            {/* 笔头：出笔箍口先鼓一下，再收成一个尖锋 */}
+            <path
+              d="M17,108 C4,92 1,72 7,54 C19,66 29,86 32,101 Z"
+              fill="#3F3730"
             />
             <path
               className="d-mid"
-              d="M14,110 C12,100 12,92 15,86 M21,116 C19,105 19,96 21,90"
-              stroke="#6E6157"
+              d="M13,95 C9,82 10,70 13,60 M22,99 C19,87 19,77 21,68"
+              stroke="#6B5F54"
               strokeWidth="1.8"
               fill="none"
               strokeLinecap="round"
-              opacity=".8"
+              opacity=".85"
             />
           </g>
         )}

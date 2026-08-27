@@ -101,13 +101,33 @@ describe('用尺子量（read）', () => {
   })
 })
 
+/** 从 `segment:<厘米>:<刻度数>` 里取厘米数 */
+const segmentCm = (key: string): number => Number(key.split(':')[1])
+
+/** 从 `segment:<厘米>:<刻度数>` 里取尺子的刻度数 */
+const segmentTicks = (key: string): number => Number(key.split(':')[2])
+
 describe('哪条线段长 N 厘米（pick）', () => {
   it('正确选项的长度与题干说的一致', () => {
     for (let seed = 1; seed <= 60; seed++) {
       const item = measureLength(ctx({ mode: 'pick' }, seed))
       const asked = Number(/长 (\d+) 厘米/.exec(item.stem.text)![1])
-      expect(item.answer).toBe(`segment:${asked}`)
-      expect(item.options.find((o) => o.isCorrect)?.imageKey).toBe(`segment:${asked}`)
+      const correct = item.options.find((o) => o.isCorrect)?.imageKey ?? ''
+      expect(segmentCm(correct)).toBe(asked)
+      expect(item.answer).toBe(correct)
+    }
+  })
+
+  it('⭐ 四个选项共用同一把尺子 —— 各配各的尺子会让四条线看起来一样长', () => {
+    // 每条线段配一把刚好够长的尺子，画布宽度就各不相同，
+    // 而选项卡片是等宽的：四条线会被各自缩放到几乎同长，这道题就没法做了
+    for (let seed = 1; seed <= 60; seed++) {
+      const item = measureLength(ctx({ mode: 'pick' }, seed))
+      const ticks = item.options.map((o) => segmentTicks(o.imageKey ?? ''))
+      expect(new Set(ticks).size, `尺子不一样长: ${ticks.join(' / ')}`).toBe(1)
+      // 尺子必须比最长的那条线段长，否则右端点压在最后一条刻度线上
+      const longest = Math.max(...item.options.map((o) => segmentCm(o.imageKey ?? '')))
+      expect(ticks[0]).toBeGreaterThan(longest)
     }
   })
 
@@ -134,7 +154,7 @@ describe('哪条线段长 N 厘米（pick）', () => {
     for (let seed = 1; seed <= 60; seed++) {
       for (const opt of measureLength(ctx({ mode: 'pick' }, seed)).options) {
         expect(isRenderableShapeKey(opt.imageKey ?? ''), `${opt.imageKey} 渲染不了`).toBe(true)
-        expect(Number((opt.imageKey ?? '').replace('segment:', ''))).toBeGreaterThan(0)
+        expect(segmentCm(opt.imageKey ?? '')).toBeGreaterThan(0)
       }
     }
   })

@@ -40,7 +40,10 @@ describe('题干的积木堆', () => {
       const v = stack(viewFromSide(ctx({ blockRange: [3, 6] }, seed)))
       expect(v.pieces.length).toBeGreaterThanOrEqual(3)
       expect(v.pieces.length).toBeLessThanOrEqual(6)
-      for (const p of v.pieces) expect(p.shape).toBe('cube')
+      // ⭐ 是 isoCube 不是 cube：后者（SolidShape）画的是一个孤零零的图形，
+      // 画布里居中留白、自带投影、投影方式也和这里的等轴测晶格对不上，
+      // 摆成一堆块与块之间会有明显的缝。见 components/shape/IsoCube.tsx
+      for (const p of v.pieces) expect(p.shape).toBe('isoCube')
     }
   })
 

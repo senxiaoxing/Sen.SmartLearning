@@ -17,6 +17,11 @@ import {
   type BlockStack,
 } from '@/domain/blockStack'
 import { sameShape, type Cell } from '@/domain/gridShape'
+import { ISO_BOX_H, ISO_BOX_W } from '@/domain/blockStack'
+import type { ScenePiece } from '@/domain/types'
+
+/** 一块积木在画布上占的高度。等轴测正方体比它的宽度高，见 ISO_BOX_H */
+const boxHeightOf = (p: ScenePiece): number => ((p.size ?? 0) * ISO_BOX_H) / ISO_BOX_W
 
 /**
  * 一个 2×2 的堆：
@@ -161,7 +166,9 @@ describe('⭐ 立体图的层叠顺序', () => {
       expect(p.x).toBeGreaterThanOrEqual(0)
       expect(p.y).toBeGreaterThanOrEqual(0)
       expect(p.x + (p.size ?? 0)).toBeLessThanOrEqual(canvas.w)
-      expect(p.y + (p.size ?? 0)).toBeLessThanOrEqual(canvas.h)
+      // ⚠️ 高度不等于宽度：等轴测的正方体在纸上是「菱形顶面 + 竖边」，
+      // 比它占的那一格要高。按 size 当高度算会漏掉底下超出去的那一截
+      expect(p.y + boxHeightOf(p)).toBeLessThanOrEqual(canvas.h)
     }
   })
 
@@ -180,7 +187,9 @@ describe('⭐ 立体图的层叠顺序', () => {
       expect(p.x).toBeGreaterThanOrEqual(0)
       expect(p.y).toBeGreaterThanOrEqual(0)
       expect(p.x + (p.size ?? 0)).toBeLessThanOrEqual(canvas.w)
-      expect(p.y + (p.size ?? 0)).toBeLessThanOrEqual(canvas.h)
+      // ⚠️ 高度不等于宽度：等轴测的正方体在纸上是「菱形顶面 + 竖边」，
+      // 比它占的那一格要高。按 size 当高度算会漏掉底下超出去的那一截
+      expect(p.y + boxHeightOf(p)).toBeLessThanOrEqual(canvas.h)
     }
   })
 })

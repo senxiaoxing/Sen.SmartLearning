@@ -12,8 +12,8 @@ import {
   MAX_TICKS,
   RULER_CANVAS_HEIGHT,
   RULER_LEFT,
+  optionRulerTicks,
   rulerGeometry,
-  segmentWidth,
   tickX,
 } from '@/domain/rulerGeometry'
 
@@ -99,12 +99,27 @@ describe('⭐ 坏参数立刻抛错', () => {
   })
 })
 
-describe('单独的线段', () => {
-  it('宽度与厘米数成正比，且与尺子上的一格一致', () => {
-    expect(segmentWidth(1)).toBe(CM_UNIT)
-    expect(segmentWidth(5)).toBe(5 * CM_UNIT)
-    // ⭐ 与尺子同一个比例尺：孩子在两种图之间能对得上
-    const g = rulerGeometry(10, 0, 5)
-    expect(g.item.x2 - g.item.x1).toBe(segmentWidth(5))
+describe('⭐ 线段选项共用的那把尺子', () => {
+  // 四条线段各自配一把刚好够长的尺子，画布宽度就各不相同，
+  // 而选项卡片是等宽的——四条线会被各自缩放到看起来几乎一样长。
+  // 那时这道题连「比长短」都做不了，更别说量。
+  it('取最长的那条再留一格，四个选项因此等宽', () => {
+    expect(optionRulerTicks([5, 3, 8, 2])).toBe(9)
+    expect(optionRulerTicks([2, 1, 3, 4])).toBe(5)
+  })
+
+  it('尺子必须比最长的线段长 —— 否则右端点压在最后一条刻度线上', () => {
+    for (const lengths of [[1], [5, 3], [11, 2, 4]]) {
+      expect(optionRulerTicks(lengths)).toBeGreaterThan(Math.max(...lengths))
+    }
+  })
+
+  it('不超过尺子的刻度上限', () => {
+    expect(optionRulerTicks([MAX_TICKS, 3])).toBe(MAX_TICKS)
+  })
+
+  it('线段在尺子上占的宽度与厘米数成正比', () => {
+    const g = rulerGeometry(optionRulerTicks([5]), 0, 5)
+    expect(g.item.x2 - g.item.x1).toBe(5 * CM_UNIT)
   })
 })

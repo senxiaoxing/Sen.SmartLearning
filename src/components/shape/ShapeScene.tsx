@@ -7,6 +7,7 @@
  * `ItemVisual`，因为摆放位置本身就是题目内容，必须能被固定种子复现。
  */
 
+import { IsoCube } from '@/components/shape/IsoCube'
 import { PlaneShape } from '@/components/shape/PlaneShape'
 import { SolidShape } from '@/components/shape/SolidShape'
 import type { PlaneShapeKind, ScenePiece, SolidShapeKind } from '@/domain/types'
@@ -48,7 +49,11 @@ export function ShapeScene({ pieces, width, height, displayWidth = 300 }: ShapeS
             className="absolute"
             style={{ left: p.x * scale, top: p.y * scale }}
           >
-            {SOLIDS.has(p.shape) ? (
+            {/* 积木堆专用的等轴测正方体：一块紧挨一块，不留缝、不带各自的投影。
+                ⚠️ 与 SolidShape 的 'cube' 是两种东西，不能互相替代 */}
+            {p.shape === 'isoCube' ? (
+              <IsoCube size={size * scale} />
+            ) : SOLIDS.has(p.shape) ? (
               <SolidShape kind={p.shape as SolidShapeKind} size={size * scale} />
             ) : (
               <PlaneShape kind={p.shape as PlaneShapeKind} size={size * scale} />

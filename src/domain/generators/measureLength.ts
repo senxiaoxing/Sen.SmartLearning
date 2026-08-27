@@ -22,7 +22,7 @@ import { buildNumericOptions, type NumericDistractor } from '@/domain/generators
 import { readEnum, readItemType, readRange } from '@/domain/generators/params'
 import { randomInt, shuffle } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
-import { MAX_TICKS } from '@/domain/rulerGeometry'
+import { MAX_TICKS, optionRulerTicks } from '@/domain/rulerGeometry'
 import type {
   GeneratedItem,
   Generator,
@@ -102,7 +102,19 @@ function buildRead(ctx: GeneratorContext, lengthCm: number): GeneratedItem {
 }
 
 /**
- * `哪条线段长 5 厘米？` —— 选项是几条长短不同的线段。
+ * `哪条线段长 5 厘米？` —— 选项是几条长短不同的线段，**每条都躺在尺子上**。
+ *
+ * ⭐ **必须配尺子，否则这道题无解。**
+ *
+ * 第一版画的是四条光秃秃的线段。孩子没有任何办法知道哪条是 5 厘米——
+ * 屏幕上的长度既不是真实厘米数，还会随设备变；更糟的是每个选项按自己的
+ * 长度定画布、再被缩放到同样宽的卡片里，四条线**看起来几乎一样长**。
+ *
+ * 配上尺子，「哪条长 5 厘米」就变回它本来的样子：数格子。
+ * 这也正是 M2-1.5「认识线段·**量**画线段」要她做的事。
+ *
+ * 四条共用同一把尺子（{@link optionRulerTicks}），四个选项的画布因此等宽，
+ * 缩放比例一致，线段的长短差别才落在眼睛里。
  *
  * ⚠️ 干扰线段的长度必须**互不相同且都不等于答案**，
  * 否则会出现两条一样长的线段，孩子选了另一条会被判错。
@@ -113,9 +125,10 @@ function buildPick(
   lo: number,
   hi: number,
 ): GeneratedItem {
-  // 在允许范围里挑三个不同的错误长度，不够就往外扩
-  const pool = Array.from({ length: MAX_TICKS }, (_, i) => i + 1).filter(
-    (n) => n !== lengthCm && n >= Math.max(1, lo - 2) && n <= Math.min(MAX_TICKS, hi + 2),
+  // 在允许范围里挑三个不同的错误长度，不够就往外扩。
+  // ⚠️ 上限留一格给尺子：线段占满整把尺子时右端点压在最后一条刻度线上，看不清
+  const pool = Array.from({ length: MAX_TICKS - 1 }, (_, i) => i + 1).filter(
+    (n) => n !== lengthCm && n >= Math.max(1, lo - 2) && n <= Math.min(MAX_TICKS - 1, hi + 2),
   )
   const wrong = shuffle(ctx.rng, pool).slice(0, 3)
 
@@ -129,10 +142,12 @@ function buildPick(
     })),
   ])
 
+  const ticks = optionRulerTicks(picked.map((o) => o.cm))
+
   const options: ItemOption[] = picked.map((o, i) => ({
     id: OPTION_IDS[i] ?? `x${i}`,
-    text: `segment:${o.cm}`,
-    imageKey: `segment:${o.cm}`,
+    text: `segment:${o.cm}:${ticks}`,
+    imageKey: `segment:${o.cm}:${ticks}`,
     isCorrect: o.isCorrect,
     ...(o.tag === undefined ? {} : { misconceptionTag: o.tag }),
   }))
@@ -148,6 +163,6 @@ function buildPick(
       ttsParts: ['phrase.whichSegmentIs', ...num(lengthCm), 'unit.cm'],
     },
     options,
-    answer: `segment:${lengthCm}`,
+    answer: `segment:${lengthCm}:${ticks}`,
   }
 }

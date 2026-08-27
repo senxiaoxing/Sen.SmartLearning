@@ -13,23 +13,30 @@
  * 与 `angleGeometry` 同一条规矩：坐标由 domain 算好，组件只负责画。
  */
 
-/** 每厘米占多少画布单位。20 是权衡：再小刻度数字会挤在一起 */
-export const CM_UNIT = 20
+/**
+ * 每厘米占多少画布单位。
+ *
+ * ⚠️ 这个数**同时决定刻度数字能有多大**：数字必须塞进一格，
+ * 而字号是按格宽定的（见 `RulerShape` 的 `TICK_FONT`）。
+ * 原来是 20，真机上刻度数字看不清——尺子整体不是不够大，
+ * 是一格太窄，字被压到了 10 单位以下。
+ */
+export const CM_UNIT = 26
 
 /** 尺子左端留白 */
-export const RULER_LEFT = 14
+export const RULER_LEFT = 16
 
 /** 尺子上边缘的 y */
-export const RULER_TOP = 34
+export const RULER_TOP = 38
 
-/** 尺子本体的高度 */
-export const RULER_HEIGHT = 26
+/** 尺子本体的高度。要放得下刻度线和它下面的数字 */
+export const RULER_HEIGHT = 34
 
 /** 被量物体画在尺子上方多少 */
-const ITEM_OFFSET = 13
+const ITEM_OFFSET = 15
 
 /** 画布高度，固定 */
-export const RULER_CANVAS_HEIGHT = 74
+export const RULER_CANVAS_HEIGHT = 88
 
 /**
  * 尺子最多几厘米。
@@ -92,7 +99,21 @@ export function rulerGeometry(maxTick: number, start: number, end: number): Rule
   }
 }
 
-/** 一条单独的线段（不配尺子）在画布上的长度 */
-export function segmentWidth(lengthCm: number): number {
-  return lengthCm * CM_UNIT
+/**
+ * 「哪条线段长 N 厘米」的选项要配多长的尺子。
+ *
+ * ⭐ **四个选项必须共用同一把尺子**，所以取全部长度里最长的那条再留一格。
+ * 各自按自己的长度配尺子的话，每个选项的画布宽度都不同，
+ * 而选项卡片宽度是固定的——四条线段会被各自缩放到几乎一样长，
+ * 那时这道题连「比长短」都做不了，更别说量。
+ *
+ * @param lengths - 四个选项的长度（厘米）
+ * @returns 尺子的总刻度数，至少 3，至多 {@link MAX_TICKS}
+ *
+ * @example
+ * optionRulerTicks([5, 3, 8, 2])   // 9 —— 最长的 8 再留一格
+ */
+export function optionRulerTicks(lengths: readonly number[]): number {
+  const longest = Math.max(0, ...lengths)
+  return Math.min(MAX_TICKS, Math.max(3, longest + 1))
 }

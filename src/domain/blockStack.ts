@@ -88,11 +88,26 @@ function columnsToCells(columnHeights: number[], gridHeight: number): Cell[] {
   return cells
 }
 
-/** 等轴测投影的半宽、半高与层高 */
-const HALF_W = 17
-const HALF_H = 9
-const LAYER_H = 19
-const CUBE = 34
+/**
+ * 等轴测晶格。⚠️ 这四个数与 `components/shape/IsoCube.tsx` 画的那块积木
+ * 是同一件事的两种写法：顶面菱形的对角线是 `ISO_HALF_W`/`ISO_HALF_H` 的两倍，
+ * 竖边是 `ISO_LAYER_H`。改一处不改另一处，块与块之间就会出现缝。
+ */
+export const ISO_HALF_W = 17
+export const ISO_HALF_H = 9
+export const ISO_LAYER_H = 19
+
+/** 一块积木占的画布宽 */
+export const ISO_BOX_W = ISO_HALF_W * 2
+
+/**
+ * 一块积木占的画布高。
+ *
+ * ⚠️ **比宽度大**——等轴测的正方体在纸上不是正方形，
+ * 它是顶面菱形（高 `2 × ISO_HALF_H`）压在竖边（`ISO_LAYER_H`）上面。
+ * 当成正方形算会让整堆往下超出画布。
+ */
+export const ISO_BOX_H = ISO_HALF_H * 2 + ISO_LAYER_H
 
 /**
  * 把积木堆摊成 `ShapeScene` 能画的一组正方体。
@@ -101,15 +116,21 @@ const CUBE = 34
  * 同一格先画下层再画上层。顺序错了近处的积木会被远处的盖住，
  * 那堆积木看起来就是散的。
  *
+ * ⭐ **形状是 `isoCube` 而不是 `cube`。** `cube`（`SolidShape`）画的是一个
+ * 孤零零的图形：画布里居中留白、底下带投影、用的还是另一种投影方式。
+ * 按这里的等轴测晶格摆一堆，块与块之间会留出明显的缝，
+ * 每块底下还各有一团影子——真机上一眼就看出不对。理由详见 `IsoCube` 的文件头。
+ *
  * @param s - 积木堆
  * @param canvas - 画布逻辑尺寸，用来把整堆摆到中间
  * @returns 由远及近排好的正方体
  */
 export function isoPieces(s: BlockStack, canvas: { w: number; h: number }): ScenePiece[] {
-  const originX = canvas.w / 2 - CUBE / 2 + ((s.rows - s.cols) * HALF_W) / 2
+  const originX = canvas.w / 2 - ISO_BOX_W / 2 + ((s.rows - s.cols) * ISO_HALF_W) / 2
   // ⚠️ 深度跨度要整个减掉，不能只减一半：最远那格的 y 会往下推
-  // `(cols + rows - 2) * HALF_H`，少算一半的话 3×3 的堆会戳出画布底部
-  const originY = canvas.h - CUBE - (s.cols + s.rows - 2) * HALF_H
+  // `(cols + rows - 2) * ISO_HALF_H`，少算一半的话 3×3 的堆会戳出画布底部。
+  // 减的是 ISO_BOX_H（比宽度大）而不是宽度——等轴测正方体在纸上不是正方形
+  const originY = canvas.h - ISO_BOX_H - (s.cols + s.rows - 2) * ISO_HALF_H
 
   const placed: Array<{ piece: ScenePiece; depth: number; layer: number }> = []
   for (let c = 0; c < s.cols; c++) {
@@ -120,10 +141,10 @@ export function isoPieces(s: BlockStack, canvas: { w: number; h: number }): Scen
           depth: c + r,
           layer: k,
           piece: {
-            shape: 'cube',
-            x: originX + (c - r) * HALF_W,
-            y: originY + (c + r) * HALF_H - k * LAYER_H,
-            size: CUBE,
+            shape: 'isoCube',
+            x: originX + (c - r) * ISO_HALF_W,
+            y: originY + (c + r) * ISO_HALF_H - k * ISO_LAYER_H,
+            size: ISO_BOX_W,
           },
         })
       }

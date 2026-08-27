@@ -12,7 +12,7 @@ import { AngleShape } from '@/components/shape/AngleShape'
 import { ClockFace } from '@/components/shape/ClockFace'
 import { GridPatternFromKey } from '@/components/shape/GridPattern'
 import { PlaneShape } from '@/components/shape/PlaneShape'
-import { RulerShape, SegmentShape } from '@/components/shape/RulerShape'
+import { RulerShape } from '@/components/shape/RulerShape'
 import { SolidShape } from '@/components/shape/SolidShape'
 import { decodeCells } from '@/domain/gridShape'
 import type { PlaneShapeKind, SolidShapeKind } from '@/domain/types'
@@ -34,9 +34,11 @@ const DEFAULT_SIZE: Record<string, number> = {
   // 角比几何图形略大：边长本身是题目内容（见 AngleShape 文件头），
   // 缩小会把「长边」和「短边」的差别压没
   angle: 100,
-  // 尺子要能看清刻度数字，给足宽度
-  ruler: 300,
-  segment: 150,
+  // ⭐ 尺子是全 App 最宽的一张图。刻度数字要看得清，宽度就得给够——
+  // 真机上第一版偏小，数字糊在一起。组件内部按 100% 自适应，这里只是上限
+  ruler: 420,
+  // 线段选项也是一把尺子，但四个挤在两列网格里，只能给一半
+  segment: 230,
   // 网格图案：格子得够大，「移了几格」才数得清
   grid: 150,
   gridpair: 180,
@@ -114,10 +116,14 @@ export function MathShape({ imageKey, size }: MathShapeProps) {
     }
   }
 
-  // `segment:<厘米>` —— 一条不配尺子的线段，用于「哪条长 5 厘米」
+  // `segment:<厘米>:<尺子刻度数>` —— 躺在尺子上的一条线段，用于「哪条长 5 厘米」。
+  // ⭐ 必须配尺子：光秃秃的线段孩子没有任何办法量，见 measureLength.buildPick
   if (family === 'segment') {
     const cm = Number(a)
-    if (Number.isFinite(cm) && cm > 0) return <SegmentShape lengthCm={cm} size={px} />
+    const ticks = Number(b)
+    if (Number.isFinite(cm) && cm > 0 && Number.isFinite(ticks) && ticks > cm) {
+      return <RulerShape maxTick={ticks} start={0} end={cm} size={px} />
+    }
   }
 
   // `grid:<边长>:<格子>` 一个图案 · `gridpair:<边长>:<原位置>:<新位置>` 平移前后
@@ -138,7 +144,8 @@ export function isRenderableShapeKey(imageKey: string): boolean {
   if (family === 'angle' || family === 'ruler') {
     return [a, b, c].every((v) => v !== undefined && Number.isFinite(Number(v)))
   }
-  if (family === 'segment') return a !== undefined && Number(a) > 0
+  // 尺子刻度数必须大于线段长度，否则线段的右端点会压在尺子最后一条刻度线上
+  if (family === 'segment') return Number(a) > 0 && Number(b) > Number(a)
   if (family === 'grid') {
     return Number.isFinite(Number(a)) && b !== undefined && decodeCells(b) !== undefined
   }
