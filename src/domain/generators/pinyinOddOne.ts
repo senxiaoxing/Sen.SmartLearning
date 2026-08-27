@@ -21,6 +21,16 @@
  *
  * ⚠️ 因此选项必须**可点读**，且走预生成片段（`ItemOption.ttsParts`）：
  * 孩子得能反复听每一个才比得出来，而实时 TTS 念裸拼音会读错声调。
+ *
+ * ## ⭐ 题型是 `choice_compare`，不是 `choice_audio`
+ *
+ * 两者长得像但交互相反：`choice_audio` 要听的是**题干**（喇叭就是题目本身），
+ * 点选项等于提交；这里要听的是**选项**，点选项只是试听 ＋ 选中，
+ * 得再点「好了」才提交。
+ *
+ * 原先错用了 `choice_audio`，于是题干写着「点一点听一听」，
+ * 孩子照做点了第一个想听——**直接被判做错了**（2026-08-27 真机反馈）。
+ * 题干没写错，是渲染层没兑现它。见 `domain/types.ts` 的 `ItemType` 说明。
  */
 
 import { readEnum } from '@/domain/generators/params'
@@ -48,7 +58,7 @@ function featureOf(s: Syllable, axis: Axis): string {
  * @param ctx.params.axis - 按 `'initial'` 声母 / `'final'` 韵母 / `'tone'` 声调找不同
  * @param ctx.params.tag - 答错时记的认知误区
  *
- * @returns `type: 'choice_audio'`，选项是拼音且可点读
+ * @returns `type: 'choice_compare'`，选项是拼音，点一下试听、再点「好了」才提交
  *
  * @example
  * pinyinOddOne({ kpId: 'P2.3', difficulty: 2, params: { syllables, axis: 'initial' }, rng })
@@ -81,7 +91,7 @@ export const pinyinOddOne: Generator = ({ kpId, difficulty, params, rng }) => {
       .sort()
       .join('.')}`,
     kpId,
-    type: 'choice_audio',
+    type: 'choice_compare',
     difficulty,
     stem: {
       text: `点一点听一听，哪个的${axisWord}和其他三个不一样？`,

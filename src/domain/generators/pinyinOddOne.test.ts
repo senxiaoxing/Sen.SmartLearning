@@ -98,6 +98,34 @@ describe('pinyinOddOne', () => {
       }
     })
 
+    /**
+     * ⭐ 题型必须是 `choice_compare`，不能是 `choice_audio`。
+     *
+     * 两者只差一个词，交互却相反：`choice_audio` 点选项**等于提交答案**，
+     * 而这道题的题干写着「点一点听一听」——孩子照做点了第一个想听，
+     * 直接被判做错（2026-08-27 真机反馈）。
+     *
+     * 上面那条「选项必须可点读」保证了**数据**有音频，
+     * 这条保证**渲染层真的让她听得到**。少了它，音频白配。
+     */
+    it('⭐ 题型是 choice_compare —— 点选项只试听，不提交', () => {
+      for (const item of items) {
+        expect(item.type, `${item.signature} 用了会「点一下就判错」的题型`).toBe('choice_compare')
+      }
+    })
+
+    it('⭐ 题干承诺的动作必须真的做得到', () => {
+      // 题干写「点一点听一听」，那就必须是个点了会响、且不会立刻判定的题型
+      for (const item of items) {
+        if (!item.stem.text.includes('点一点听一听')) continue
+        expect(item.type).toBe('choice_compare')
+        expect(
+          item.options.every((o) => (o.ttsParts?.length ?? 0) > 0),
+          `${item.signature} 说了能听，却有选项没配音`,
+        ).toBe(true)
+      }
+    })
+
     it('每个错误选项都带 misconceptionTag', () => {
       for (const item of items) {
         for (const o of item.options.filter((x) => !x.isCorrect)) {

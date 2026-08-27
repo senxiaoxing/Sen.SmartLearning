@@ -428,7 +428,9 @@ function pinyinTemplates(): ItemTemplate[] {
       1: { syllables, axis, tag },
       2: { syllables, axis, tag },
       3: { syllables, axis, tag },
-    }, 'choice_audio')
+      // ⭐ choice_compare 而非 choice_audio：这道题要听的是**选项**不是题干，
+      //    点选项只试听、不提交。见 domain/types.ts 的 ItemType 说明
+    }, 'choice_compare')
 
   /**
    * 「听音辨声母」模板。候选音节取**全表**里声母落在本组的那些，

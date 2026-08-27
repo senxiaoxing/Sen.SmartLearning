@@ -92,6 +92,7 @@ export type ItemType =
   | 'choice_image' // 看图选择
   | 'choice_text' // 文字/算式选择
   | 'choice_audio' // 听音选择（零阅读门槛）
+  | 'choice_compare' // ⭐ 挨个试听、对比后确认（见下）
   | 'input_number' // 数字小键盘输入
   | 'drag_match' // 拖拽配对
   | 'drag_combine' // 拖拽组合（拼读 b + ā → bā）
@@ -100,6 +101,25 @@ export type ItemType =
   | 'record_compare' // 跟读录音回放
   | 'tap_count' // 点数计数
   | 'trace' // 描红笔顺（阶段 2）
+
+/**
+ * ⭐ `choice_audio` 与 `choice_compare` 的区别 —— 别再搞混了
+ *
+ * 两者长得像，交互却是相反的：
+ *
+ * | | 要听的是什么 | 点选项等于 |
+ * |---|---|---|
+ * | `choice_audio` | **题干**（喇叭就是题目本身，如「听 gē 选 gē」） | 提交答案 |
+ * | `choice_compare` | **选项**（四个音节挨个听，比出不一样的那个） | 试听 ＋ 选中，⛔ 不提交 |
+ *
+ * `pinyinOddOne` 原先错用了 `choice_audio`，于是题干写着「点一点听一听」，
+ * 孩子照做点了第一个想听——直接被判做错了（2026-08-27 真机反馈）。
+ *
+ * ⚠️ `choice_compare` 的「点选项会发声」**不违反**「点击选项不朗读」那条红线：
+ * 红线的理由是「那一下是提交答案，紧接着响反馈语，两个声音会叠在一起」，
+ * 而这里点选项不提交，反馈语要等她点「好了」才响，两者隔着一次点击。
+ * 见 `items/OptionButton.tsx` 与 `items/ChoiceCompare.tsx` 的文件头。
+ */
 
 /**
  * 掌握度状态机。跃迁条件见 design/02-数据库Schema.md §3.8。

@@ -7,6 +7,7 @@
  */
 
 import { ChoiceAudio } from '@/items/ChoiceAudio'
+import { ChoiceCompare } from '@/items/ChoiceCompare'
 import { ChoiceImage } from '@/items/ChoiceImage'
 import { ChoiceText } from '@/items/ChoiceText'
 import { DragCombine } from '@/items/DragCombine'
@@ -41,6 +42,9 @@ export function ItemRenderer(props: ItemViewProps) {
       return <ChoiceText {...props} />
     case 'choice_audio':
       return <ChoiceAudio {...props} />
+    // ⚠️ 与 choice_audio 只差一个词，交互却相反 —— 见 domain/types.ts 的说明
+    case 'choice_compare':
+      return <ChoiceCompare {...props} />
     case 'choice_image':
       return <ChoiceImage {...props} />
     case 'tap_count':

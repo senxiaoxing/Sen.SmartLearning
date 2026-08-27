@@ -14,13 +14,27 @@
  *
  * 何况孩子既然点得下去，就说明她已经看懂了这个选项——
  * 真正需要听的是**题干**，那一句仍然自动朗读、并且可以反复重听。
+ *
+ * ## ⚠️ 唯一的例外：`choice_compare`
+ *
+ * 「四个音节里哪个声母不一样」这类题，要听的**就是选项本身**——
+ * 孩子不听完根本没法比。那里点选项只是试听 ＋ 选中（`previewing` 态），
+ * 得再点「好了」才提交，因此不存在「选项读音和反馈语叠在一起」的问题。
+ *
+ * 判据是**这一下点击会不会立刻提交答案**，不是「选项能不能发声」。
+ * 见 `items/ChoiceCompare.tsx`。
  */
 
 import { motion } from 'framer-motion'
 import { MathShape } from '@/components/shape/MathShape'
 import type { ItemOption } from '@/domain/types'
 
-export type OptionVisualState = 'idle' | 'selected-correct' | 'selected-wrong' | 'reveal-correct'
+export type OptionVisualState =
+  | 'idle'
+  | 'previewing'
+  | 'selected-correct'
+  | 'selected-wrong'
+  | 'reveal-correct'
 
 interface OptionButtonProps {
   option: ItemOption
@@ -44,6 +58,9 @@ function faceSize(text: string): string {
 
 const STATE_CLASS: Record<OptionVisualState, string> = {
   idle: 'bg-surface text-ink shadow-drop-surface',
+  // 试听选中但还没提交（choice_compare）。⚠️ 用 info 蓝而不是 correct 绿：
+  // 绿色在这个 App 里一直表示「答对了」，拿它标「选中」会让她以为已经对了
+  previewing: 'bg-surface text-ink ring-4 ring-info shadow-drop-surface',
   'selected-correct': 'bg-correct text-on-correct shadow-drop-correct',
   'selected-wrong': 'bg-surface text-alert ring-4 ring-alert/50 shadow-drop-surface',
   'reveal-correct': 'bg-correct/20 text-correct ring-4 ring-correct shadow-drop-surface',
