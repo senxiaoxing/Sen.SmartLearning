@@ -1547,7 +1547,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jiangnanTitle": {
-  "text": "江南。汉，汉乐府。",
+  "text": "江南。汉，汉月府。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.jiangnanL0": {
@@ -1643,7 +1643,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.gulangyuexingTitle": {
-  "text": "古朗月行。唐，李白。",
+  "text": "古朗月形。唐，李白。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.gulangyuexingL0": {
@@ -1667,7 +1667,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.fengTitle": {
-  "text": "风。唐，李峤。",
+  "text": "风。唐，李桥。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.fengL0": {
@@ -1683,7 +1683,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.fengL3": {
-  "text": "入竹万竿斜。",
+  "text": "入竹万竿协。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.fengMeaning": {
@@ -1751,7 +1751,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.xiaochiL2": {
-  "text": "小荷才露尖尖角，",
+  "text": "小荷才路尖尖角，",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.xiaochiL3": {
@@ -1767,7 +1767,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chunxiaoL0": {
-  "text": "春眠不觉晓，",
+  "text": "春眠不绝晓，",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chunxiaoL1": {
@@ -1839,7 +1839,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huajiL0": {
-  "text": "头上红冠不用裁，",
+  "text": "头上红官不用裁，",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huajiL1": {
@@ -1963,7 +1963,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chilegeL1": {
-  "text": "天似穹庐，笼盖四野。",
+  "text": "天似穹庐，拢盖四野。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.chilegeL2": {
@@ -2011,7 +2011,7 @@
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huixiangoushuL1": {
-  "text": "乡音无改鬓毛衰。",
+  "text": "乡音无改鬓毛摔。",
   "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
  },
  "poem.huixiangoushuL2": {
@@ -3349,5 +3349,1413 @@
  "phrase.toldParents": {
   "text": "已经告诉爸爸妈妈啦",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "poem.meihuaTitle": {
+  "text": "梅花。宋，王安石。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.meihuaL0": {
+  "text": "墙角树枝梅，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.meihuaL1": {
+  "text": "凌寒独自开。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.meihuaL2": {
+  "text": "遥知不是雪，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.meihuaL3": {
+  "text": "未有暗香来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.meihuaMeaning": {
+  "text": "墙角有几枝梅花，天那么冷，它自己就开了。远远看过去，就知道那白白的不是雪——因为有一股淡淡的香味飘过来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaoerchuidiaoTitle": {
+  "text": "小儿垂钓。唐，胡令能。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaoerchuidiaoL0": {
+  "text": "蓬头稚子学垂纶，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaoerchuidiaoL1": {
+  "text": "侧坐莓苔草映身。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaoerchuidiaoL2": {
+  "text": "路人借问遥招手，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaoerchuidiaoL3": {
+  "text": "怕德鱼惊不映人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaoerchuidiaoMeaning": {
+  "text": "一个头发乱蓬蓬的小孩在学钓鱼，侧着身子坐在青苔上，长长的草把他挡住了一半。有人路过想问路，他老远就摆摆手——怕说话把鱼吓跑了，连答话都不敢。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yesushansiTitle": {
+  "text": "夜宿山寺。唐，李白。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yesushansiL0": {
+  "text": "危楼高百尺，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yesushansiL1": {
+  "text": "手可摘星辰。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yesushansiL2": {
+  "text": "不敢高声语，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yesushansiL3": {
+  "text": "恐惊天上人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yesushansiMeaning": {
+  "text": "山上这座楼好高好高，站在上面一伸手，好像就能摘到星星。我不敢大声说话，怕吵醒了天上住的人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunjuTitle": {
+  "text": "村居。清，高鼎。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunjuL0": {
+  "text": "草涨莺飞二月天，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunjuL1": {
+  "text": "拂堤杨柳醉春烟。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunjuL2": {
+  "text": "儿童散学归来早，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunjuL3": {
+  "text": "忙趁东风放纸鸢。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunjuMeaning": {
+  "text": "二月里草长高了，黄莺飞来飞去，柳条垂下来拂着河堤，像喝醉了一样在春天的雾里摇。小朋友放学回来得早，赶紧趁着东风去放风筝。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.caoTitle": {
+  "text": "草。唐，白居易。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.caoL0": {
+  "text": "离离原上草，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.caoL1": {
+  "text": "一岁一枯荣。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.caoL2": {
+  "text": "野火烧不尽，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.caoL3": {
+  "text": "春风吹又生。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.caoMeaning": {
+  "text": "原野上的草长得又密又高，每年黄一次，又绿一次。野火怎么烧也烧不完，春风一吹，它又长出来了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochujingcisiTitle": {
+  "text": "晓出净慈寺送林子方。宋，杨万里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochujingcisiL0": {
+  "text": "毕竟西湖六月中，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochujingcisiL1": {
+  "text": "风光不与四时同。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochujingcisiL2": {
+  "text": "接天莲叶无穷碧，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochujingcisiL3": {
+  "text": "映日荷花别样红。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiaochujingcisiMeaning": {
+  "text": "六月的西湖啊，跟别的时候就是不一样。荷叶一片连着一片，绿得一直铺到天边；荷花被太阳一照，红得特别好看。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shancunyonghuaiTitle": {
+  "text": "山村咏怀。宋，邵雍。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shancunyonghuaiL0": {
+  "text": "一去二三里，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shancunyonghuaiL1": {
+  "text": "烟村四五家。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shancunyonghuaiL2": {
+  "text": "亭台六七座，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shancunyonghuaiL3": {
+  "text": "八九十枝花。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shancunyonghuaiMeaning": {
+  "text": "往前走了两三里路，看见炊烟里有四五户人家。路边有六七座小亭子，还开着八九十枝花。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mutongTitle": {
+  "text": "牧童。唐，吕岩。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mutongL0": {
+  "text": "草铺横野六七里，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mutongL1": {
+  "text": "笛弄晚风三四声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mutongL2": {
+  "text": "归来饱饭黄昏后，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mutongL3": {
+  "text": "不脱蓑衣卧月明。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mutongMeaning": {
+  "text": "青草像铺开的毯子，铺满了六七里的原野。晚风里送来几声笛子响。放牛的小孩回来吃饱了饭，天已经黑了，他连蓑衣都不脱，就躺在月光里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yuanriTitle": {
+  "text": "元日。宋，王安石。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yuanriL0": {
+  "text": "爆竹声中一岁除，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yuanriL1": {
+  "text": "春风送暖入屠苏。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yuanriL2": {
+  "text": "千门万户曈曈日，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yuanriL3": {
+  "text": "总把新桃换旧符。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yuanriMeaning": {
+  "text": "噼里啪啦的爆竹声里，旧的一年过去了。春风把暖气送进屋子，大家一起喝过年的酒。太阳出来照着家家户户，人们把去年的桃符取下来，换上新的。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qingmingTitle": {
+  "text": "清明。唐，杜牧。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qingmingL0": {
+  "text": "清明时节雨纷纷，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qingmingL1": {
+  "text": "路上行人欲断魂。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qingmingL2": {
+  "text": "借问酒家何处有？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qingmingL3": {
+  "text": "牧童遥指杏花村。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qingmingMeaning": {
+  "text": "清明这天雨下个不停，赶路的人心里闷闷的。他问：哪儿有能歇脚的酒家呀？放牛的小孩伸手一指——远处就是杏花村。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiangsiTitle": {
+  "text": "相思。唐，王维。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiangsiL0": {
+  "text": "红豆生南国，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiangsiL1": {
+  "text": "春来发几枝。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiangsiL2": {
+  "text": "愿君多采撷，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiangsiL3": {
+  "text": "此物最相思。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xiangsiMeaning": {
+  "text": "红豆长在南方，春天一到就抽出好几枝。希望你多采一些回去——看见它，就会想起想念的人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zaofabaidichengTitle": {
+  "text": "早发白帝城。唐，李白。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zaofabaidichengL0": {
+  "text": "招辞白帝彩云间，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zaofabaidichengL1": {
+  "text": "千里江陵一日环。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zaofabaidichengL2": {
+  "text": "两岸猿声啼不住，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zaofabaidichengL3": {
+  "text": "轻舟已过万崇山。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zaofabaidichengMeaning": {
+  "text": "早上告别彩云围着的白帝城，一千多里路的江陵，一天就到了。两岸的猿猴叫声还没停，轻快的小船已经穿过了一重又一重的大山。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yonghuashanTitle": {
+  "text": "咏化山。宋，寇准。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yonghuashanL0": {
+  "text": "只有天在上，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yonghuashanL1": {
+  "text": "更无山与齐。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yonghuashanL2": {
+  "text": "举头红日近，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yonghuashanL3": {
+  "text": "回首白云低。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yonghuashanMeaning": {
+  "text": "华山高得只有天在它上头，再没有别的山能跟它一样高。抬起头，红红的太阳好像就在旁边；回过头一看，白云都在脚底下了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dalinsitaohuaTitle": {
+  "text": "大林寺桃花。唐，白居易。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dalinsitaohuaL0": {
+  "text": "人间四月芳菲尽，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dalinsitaohuaL1": {
+  "text": "山寺桃花始盛开。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dalinsitaohuaL2": {
+  "text": "长恨春归无觅处，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dalinsitaohuaL3": {
+  "text": "不知转入此中来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.dalinsitaohuaMeaning": {
+  "text": "四月里，山下的花都谢了，山上寺庙里的桃花才刚刚开。我总是可惜春天走了没处找，没想到它是转到这里来了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yijiangnanTitle": {
+  "text": "忆江南。唐，白居易。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yijiangnanL0": {
+  "text": "江南好，风景旧曾谙。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yijiangnanL1": {
+  "text": "日出江花红胜火，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yijiangnanL2": {
+  "text": "春来江水绿如蓝。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yijiangnanL3": {
+  "text": "能不忆江南？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yijiangnanMeaning": {
+  "text": "江南真好啊，那里的景色我早就熟悉了。太阳出来的时候，江边的花红得像火；春天一到，江水绿得像蓝色的染料。你说，我怎么能不想念江南呢？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mifengTitle": {
+  "text": "蜂。唐，罗隐。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mifengL0": {
+  "text": "不论平地与山尖，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mifengL1": {
+  "text": "无限风光尽被站。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mifengL2": {
+  "text": "采得百花成蜜后，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mifengL3": {
+  "text": "喂谁辛苦喂谁甜？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.mifengMeaning": {
+  "text": "不管是平平的地上还是高高的山尖，只要有花的地方，蜜蜂都去过。它采了百花酿成蜜，可这些甜甜的蜜，是为谁辛苦、又是给谁甜的呢？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suxinshiTitle": {
+  "text": "宿新市徐公店。宋，杨万里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suxinshiL0": {
+  "text": "篱落疏疏一径深，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suxinshiL1": {
+  "text": "树头新绿未成阴。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suxinshiL2": {
+  "text": "儿童急走追黄蝶，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suxinshiL3": {
+  "text": "飞入菜花无处寻。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.suxinshiMeaning": {
+  "text": "稀稀疏疏的篱笆边有一条小路，一直伸到远处。树上刚长出新叶子，还遮不出树荫。小孩子飞快地跑着去追一只黄蝴蝶，蝴蝶飞进金黄的菜花里，就再也找不着了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunhuyinjunTitle": {
+  "text": "寻胡隐君。明，高启。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunhuyinjunL0": {
+  "text": "渡水复渡水，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunhuyinjunL1": {
+  "text": "看花还看花。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunhuyinjunL2": {
+  "text": "春风江上路，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunhuyinjunL3": {
+  "text": "不觉到君家。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.xunhuyinjunMeaning": {
+  "text": "过了一条河又过一条河，看了一片花又看一片花。春风吹着江边的小路，不知不觉就走到你家门口了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.juejuTitle": {
+  "text": "绝句。唐，杜甫。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.juejuL0": {
+  "text": "两个黄鹂鸣翠柳，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.juejuL1": {
+  "text": "一航白鹭上青天。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.juejuL2": {
+  "text": "窗含西岭千秋雪，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.juejuL3": {
+  "text": "门舶东吴万里船。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.juejuMeaning": {
+  "text": "两只黄鹂在绿柳枝上叫，一行白鹭排着队飞上蓝天。从窗口望出去，能看见西岭上一年到头不化的雪；门外的江上，停着要开往东吴的大船。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanchunTitle": {
+  "text": "江南春。唐，杜牧。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanchunL0": {
+  "text": "千里莺啼绿映红，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanchunL1": {
+  "text": "水村山郭酒旗风。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanchunL2": {
+  "text": "南朝四百八十寺，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanchunL3": {
+  "text": "多少楼台烟雨中。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangnanchunMeaning": {
+  "text": "千里江南到处是黄莺在叫，绿树映着红花。靠水的村子、靠山的城墙边，酒店的旗子在风里飘。从前留下来的好多好多寺庙，一座座楼台都笼在蒙蒙的烟雨里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shanxingTitle": {
+  "text": "山行。唐，杜牧。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shanxingL0": {
+  "text": "远上寒山石径协，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shanxingL1": {
+  "text": "白云生处有人家。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shanxingL2": {
+  "text": "停车坐爱枫林晚，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shanxingL3": {
+  "text": "霜叶红于二月花。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.shanxingMeaning": {
+  "text": "一条石头小路弯弯曲曲地伸向远处的山上，白云飘着的地方还住着人家。我把车停下来，是因为喜欢这傍晚的枫树林——被霜打过的叶子，比二月的花还要红。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengliujingwenTitle": {
+  "text": "赠刘景文。宋，苏轼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengliujingwenL0": {
+  "text": "荷尽已无擎雨盖，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengliujingwenL1": {
+  "text": "菊残犹有傲霜枝。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengliujingwenL2": {
+  "text": "一年好景君须记，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengliujingwenL3": {
+  "text": "最是橙黄橘绿时。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zengliujingwenMeaning": {
+  "text": "荷花谢了，连那把像雨伞一样的荷叶也没有了；菊花残了，枝条还挺立着，一点都不怕霜。一年里最好的景致你要记住呀——就是橙子黄了、橘子还绿着的这个时候。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yeshusuojianTitle": {
+  "text": "夜书所见。宋，叶绍翁。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yeshusuojianL0": {
+  "text": "萧萧梧叶送寒声，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yeshusuojianL1": {
+  "text": "江上秋风动客情。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yeshusuojianL2": {
+  "text": "知有儿童窕促织，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yeshusuojianL3": {
+  "text": "夜深篱落一灯明。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yeshusuojianMeaning": {
+  "text": "梧桐叶被风吹得沙沙响，送来一阵阵凉意，江上的秋风让离家的人想起了家。忽然看见远处篱笆下有一盏灯还亮着——准是有小孩在那儿逗蟋蟀玩呢。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangtianmenshanTitle": {
+  "text": "望天门山。唐，李白。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangtianmenshanL0": {
+  "text": "天门中断楚江开，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangtianmenshanL1": {
+  "text": "碧水东流至此回。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangtianmenshanL2": {
+  "text": "两岸青山相对出，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangtianmenshanL3": {
+  "text": "孤帆一片日边来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangtianmenshanMeaning": {
+  "text": "天门山从中间断开，长江水从那里冲了过去。碧绿的江水往东流，到这里打了个转。两岸的青山一座对着一座迎上来，一只孤单的小船，正从太阳那边慢慢驶过来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yinhushangTitle": {
+  "text": "饮湖上初晴后雨。宋，苏轼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yinhushangL0": {
+  "text": "水光潋滟晴方好，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yinhushangL1": {
+  "text": "山色空蒙雨亦奇。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yinhushangL2": {
+  "text": "欲把西湖比西子，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yinhushangL3": {
+  "text": "淡妆浓抹总相宜。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yinhushangMeaning": {
+  "text": "晴天的时候，西湖的水波亮闪闪的，好看极了；下起雨来，山被雾蒙住，又是另一种好看。要是把西湖比作美人西施，那她化淡妆也好、化浓妆也好，怎么样都好看。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangdongtingTitle": {
+  "text": "望洞庭。唐，刘禹锡。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangdongtingL0": {
+  "text": "湖光秋月两相河，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangdongtingL1": {
+  "text": "潭面无风镜未磨。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangdongtingL2": {
+  "text": "遥望洞庭山水翠，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangdongtingL3": {
+  "text": "白银盘里一青螺。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.wangdongtingMeaning": {
+  "text": "湖水的光和秋天的月亮合在一起，安安静静。没有风的湖面，像一面还没磨亮的镜子。远远望过去，洞庭湖的山和水都是青翠的，那座山就像白银盘子里放着的一只小青螺。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiuyuejiuriTitle": {
+  "text": "九月九日忆山东兄弟。唐，王维。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiuyuejiuriL0": {
+  "text": "独在异乡为异客，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiuyuejiuriL1": {
+  "text": "每逢佳节倍思亲。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiuyuejiuriL2": {
+  "text": "遥知兄弟登高处，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiuyuejiuriL3": {
+  "text": "遍插茱萸少一人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiuyuejiuriMeaning": {
+  "text": "一个人在别的地方做客，每到过节的时候就特别想家里人。我知道今天哥哥弟弟们一定去爬山了，他们头上都插着茱萸，可是数一数，少了我一个。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunriTitle": {
+  "text": "春日。宋，朱熹。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunriL0": {
+  "text": "胜日寻芳泗水滨，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunriL1": {
+  "text": "无边光景一时新。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunriL2": {
+  "text": "等闲识得东风面，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunriL3": {
+  "text": "万紫千红总是春。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chunriMeaning": {
+  "text": "天气好的日子到泗水边上去找春天，一眼望不到边的景色全都变新了。随便走走就认出了春风的样子——满眼的红红紫紫，那都是春天呀。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huichongchunjiangTitle": {
+  "text": "惠崇春江晚景。宋，苏轼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huichongchunjiangL0": {
+  "text": "竹外桃花三两枝，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huichongchunjiangL1": {
+  "text": "春江水暖鸭先知。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huichongchunjiangL2": {
+  "text": "蒌蒿满地芦芽短，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huichongchunjiangL3": {
+  "text": "正是河豚欲上时。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.huichongchunjiangMeaning": {
+  "text": "竹林外面开了三两枝桃花。春天江水暖了没有？水里的鸭子最先知道。岸上长满了蒌蒿，芦苇刚冒出短短的芽——这正是河豚要顺着江水游上来的时候。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.duzuojingtingshanTitle": {
+  "text": "独坐敬亭山。唐，李白。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.duzuojingtingshanL0": {
+  "text": "众鸟高飞尽，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.duzuojingtingshanL1": {
+  "text": "孤云独去闲。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.duzuojingtingshanL2": {
+  "text": "相看两不厌，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.duzuojingtingshanL3": {
+  "text": "只有敬亭山。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.duzuojingtingshanMeaning": {
+  "text": "鸟儿都飞得高高的，飞走了；天上最后一片云也慢悠悠地飘远了。这时候还愿意和我互相看着、怎么看都不烦的，就只剩下敬亭山了。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qiqiaoTitle": {
+  "text": "乞巧。唐，林杰。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qiqiaoL0": {
+  "text": "七夕今宵看碧霄，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qiqiaoL1": {
+  "text": "牵牛织女渡河桥。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qiqiaoL2": {
+  "text": "家家乞巧望秋月，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qiqiaoL3": {
+  "text": "穿尽红丝几万条。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.qiqiaoMeaning": {
+  "text": "七月初七这天晚上，大家都抬头看碧蓝的天空——牛郎和织女要过桥相会了。家家户户望着秋天的月亮穿针引线，红丝线穿了好几万条。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chuzhouxijianTitle": {
+  "text": "滁州西涧。唐，韦映物。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chuzhouxijianL0": {
+  "text": "独怜幽草涧边生，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chuzhouxijianL1": {
+  "text": "上有黄鹂深树鸣。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chuzhouxijianL2": {
+  "text": "春潮带雨晚来急，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chuzhouxijianL3": {
+  "text": "野渡无人舟自横。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.chuzhouxijianMeaning": {
+  "text": "我最喜欢涧边那些静静长着的小草，头顶的深树里还有黄鹂在叫。傍晚下起雨来，春天的潮水涨得很急；没有人的渡口上，一只小船自己横在水面上。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinTitle": {
+  "text": "游子吟。唐，孟郊。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinL0": {
+  "text": "慈母手中线，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinL1": {
+  "text": "游子身上衣。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinL2": {
+  "text": "临行密密逢，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinL3": {
+  "text": "意恐迟迟归。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinL4": {
+  "text": "谁言寸草心，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinL5": {
+  "text": "报得三春晖。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.youziyinMeaning": {
+  "text": "慈祥的妈妈手里拿着针线，给要出远门的孩子缝衣裳。走之前一针一针缝得密密的，怕他很久很久才回来。小草那么小的一点心意，怎么报答得了春天太阳的温暖呢？",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangpanxunhuaTitle": {
+  "text": "江畔独步寻花。唐，杜甫。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangpanxunhuaL0": {
+  "text": "黄四娘家花满蹊，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangpanxunhuaL1": {
+  "text": "千朵万朵压枝低。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangpanxunhuaL2": {
+  "text": "留连戏蝶时时舞，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangpanxunhuaL3": {
+  "text": "自在娇莺恰恰啼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.jiangpanxunhuaMeaning": {
+  "text": "黄四娘家的小路上开满了花，千朵万朵把枝条都压弯了。蝴蝶舍不得走，一直在花间飞来飞去；自由自在的黄莺，恰好在这时候唱起歌来。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.niaomingjianTitle": {
+  "text": "鸟鸣涧。唐，王维。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.niaomingjianL0": {
+  "text": "人闲桂花落，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.niaomingjianL1": {
+  "text": "夜静春山空。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.niaomingjianL2": {
+  "text": "月出惊山鸟，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.niaomingjianL3": {
+  "text": "时鸣春涧中。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.niaomingjianMeaning": {
+  "text": "人安安静静的，桂花轻轻地落下来。夜里很静，春天的山空荡荡的。月亮出来了，把山里的鸟儿惊醒，它们在春天的山涧里时不时叫上一声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yugeziTitle": {
+  "text": "渔歌子。唐，张志和。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yugeziL0": {
+  "text": "西赛山前白鹭飞，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yugeziL1": {
+  "text": "桃花流水鳜鱼肥。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yugeziL2": {
+  "text": "青箬笠，绿蓑衣，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yugeziL3": {
+  "text": "协风细雨不须归。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.yugeziMeaning": {
+  "text": "西塞山前面白鹭在飞，桃花开了，江水涨起来，鳜鱼长得正肥。戴着青色的斗笠、穿着绿色的蓑衣，在斜斜的风、细细的雨里钓鱼，一点也不想回家。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zhizinongbingTitle": {
+  "text": "稚子弄冰。宋，杨万里。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zhizinongbingL0": {
+  "text": "稚子金盆脱晓冰，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zhizinongbingL1": {
+  "text": "彩丝穿取荡银铮。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zhizinongbingL2": {
+  "text": "敲成玉磬穿林响，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zhizinongbingL3": {
+  "text": "忽作玻璃碎地声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.zhizinongbingMeaning": {
+  "text": "一大早，小孩把铜盆里冻的冰整块脱出来，用彩色的丝线穿上，当作小锣来敲。敲起来像玉磬一样，声音穿过树林；忽然啪的一声，冰掉在地上碎了，像玻璃碎掉的响声。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunwanTitle": {
+  "text": "村晚。宋，雷震。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunwanL0": {
+  "text": "草满池塘水满杯，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunwanL1": {
+  "text": "山衔落日浸寒漪。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunwanL2": {
+  "text": "牧童归去横牛背，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunwanL3": {
+  "text": "短笛无腔信口吹。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.cunwanMeaning": {
+  "text": "池塘里长满了草，水涨得满满的。太阳落到山边，像被山衔住了，倒映在带着凉意的水波里。放牛的小孩回家了，横坐在牛背上，拿着短笛随口乱吹，也没有个调子。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.tixilinbiTitle": {
+  "text": "题西林壁。宋，苏轼。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.tixilinbiL0": {
+  "text": "横看成岭侧成峰，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.tixilinbiL1": {
+  "text": "远近高低各不同。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.tixilinbiL2": {
+  "text": "不识庐山真面目，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.tixilinbiL3": {
+  "text": "只缘身在此山中。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.tixilinbiMeaning": {
+  "text": "横着看，庐山是一道长长的山岭；侧着看，又变成了一座高高的山峰。远处近处、高处低处，看到的样子都不一样。看不清庐山到底长什么样，只因为我自己就站在这座山里面呀。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.sujiandejiangTitle": {
+  "text": "宿建德江。唐，孟浩然。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.sujiandejiangL0": {
+  "text": "移舟舶烟渚，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.sujiandejiangL1": {
+  "text": "日暮客愁新。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.sujiandejiangL2": {
+  "text": "野旷天低树，",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.sujiandejiangL3": {
+  "text": "江清月近人。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "poem.sujiandejiangMeaning": {
+  "text": "把小船停到烟雾蒙蒙的小沙洲边，天黑下来，离家的人心里又添了一点愁。旷野上，天空显得比树还低；江水清清的，水里的月亮好像离人特别近。",
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+ },
+ "phrase.thenCame": {
+  "text": "又来了",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.ateUp": {
+  "text": "吃掉了",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "num.hundred": {
+  "text": "百",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "num.thousand": {
+  "text": "千",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.times": {
+  "text": "乘",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.dividedBy": {
+  "text": "除以",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.remainder": {
+  "text": "余",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.parenL": {
+  "text": "左括号",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "op.parenR": {
+  "text": "右括号",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.m": {
+  "text": "米",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.cm": {
+  "text": "厘米",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.kg": {
+  "text": "千克",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.g": {
+  "text": "克",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.hour": {
+  "text": "时",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "unit.min": {
+  "text": "分",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.timesWhatEquals": {
+  "text": "乘几等于",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.dividedByWhatEquals": {
+  "text": "除以几等于",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.equalsWhatRemainder": {
+  "text": "等于几余几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.remainderWhat": {
+  "text": "余几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichIsAboutLong": {
+  "text": "哪个大约长",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichIsAboutHeavy": {
+  "text": "哪个大约重",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.hundredsDigitWhat": {
+  "text": "的百位上是几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.thousandsDigitWhat": {
+  "text": "的千位上是几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.writtenAsWhat": {
+  "text": "写作几",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howToReadThis": {
+  "text": "这个数读作什么",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countOnes": {
+  "text": "个一",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countTens": {
+  "text": "个十",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countHundreds": {
+  "text": "个百",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.countThousands": {
+  "text": "个千",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.topsAnd": {
+  "text": "件上衣和",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.bottomsHowMany": {
+  "text": "条裤子，一共有几种穿法",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.usingTheseDigits": {
+  "text": "用这几个数字",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howManyTwoDigits": {
+  "text": "能组成几个不同的两位数",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.animalsLineUp": {
+  "text": "小动物们排成一排",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.isNotAt": {
+  "text": "不排",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whoRanksAt": {
+  "text": "谁排",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.first": {
+  "text": "第一",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.second": {
+  "text": "第二",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.third": {
+  "text": "第三",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ord.fourth": {
+  "text": "第四",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.oclock": {
+  "text": "点",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.minuteHandAt": {
+  "text": "分针指着",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howManyMinutes": {
+  "text": "是多少分",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.afterMinutes": {
+  "text": "再过",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whatTimeThen": {
+  "text": "分是几点几分",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.aboutHowManyHundreds": {
+  "text": "大约是几百",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.aboutHowManyThousands": {
+  "text": "大约是几千",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.shareEqually": {
+  "text": "平均分给",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.kidsEachGets": {
+  "text": "个小朋友，每人分几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.kidsShareEqually": {
+  "text": "个小朋友平均分，每人分几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.perBoxCanPack": {
+  "text": "个装一盒，能装几盒",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.perGroupCanMake": {
+  "text": "个分一组，能分几组",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaomingHas": {
+  "text": "小明有",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaohongMore": {
+  "text": "小红比他多",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaohongLess": {
+  "text": "小红比他少",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.xiaohongHasHowMany": {
+  "text": "小红有几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.boxesOf": {
+  "text": "盒",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.eachBoxHas": {
+  "text": "每盒有",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.kidsTakeBoat": {
+  "text": "个小朋友坐船，每条船坐",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.atLeastBoats": {
+  "text": "个，至少要几条船",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.eachBoxHolds": {
+  "text": "每个盒子装",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.atLeastBoxes": {
+  "text": "个，至少要几个盒子",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.equallyIntoParts": {
+  "text": "平均分成",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.partsEachHowMany": {
+  "text": "份，每份几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howManyCorners": {
+  "text": "有几个角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.totalCornersHowMany": {
+  "text": "一共有几个角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichRightAngle": {
+  "text": "哪个是直角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichAcuteAngle": {
+  "text": "哪个是锐角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichObtuseAngle": {
+  "text": "哪个是钝角",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.howLongIsIt": {
+  "text": "它有多长",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichSegmentIs": {
+  "text": "哪条线段长",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichIsSymmetric": {
+  "text": "哪个图形是轴对称的",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichAxis": {
+  "text": "这个图形沿哪条线对称",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.movedRight": {
+  "text": "向右移了几格",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.movedDown": {
+  "text": "向下移了几格",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichAfterTurn": {
+  "text": "把它转一下，会变成哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.viewFromTop": {
+  "text": "从上面看是哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.topViewHowMany": {
+  "text": "从上面看，有几个小正方形",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.viewFromFront": {
+  "text": "从正面看是哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.viewFromSide": {
+  "text": "从侧面看是哪个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.whichMost": {
+  "text": "哪个最多",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "phrase.differBy": {
+  "text": "相差几个",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pet.miaomiao": {
+  "text": "喵喵",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pet.xiaobai": {
+  "text": "小白",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "pet.miemie": {
+  "text": "咩咩",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "petline.dragonG2Catchphrase": {
+  "text": "我又学会一个字啦！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Greet0": {
+  "text": "今日我也要读书！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Correct1": {
+  "text": "我都要记下来了！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Correct3": {
+  "text": "你比我还厉害！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Wrong2": {
+  "text": "我当年也念错过～",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2LevelUp0": {
+  "text": "我长大了！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2LevelUp1": {
+  "text": "毛又白了一点～",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2LevelUp2": {
+  "text": "快看快看，我又变啦！",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Comeback0": {
+  "text": "好久不见，我甚是想念",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.pandaG2Greet1": {
+  "text": "我想学新单词！",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2Wrong2": {
+  "text": "我也常常记错～",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2LevelUp0": {
+  "text": "我长大了！",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2Comeback1": {
+  "text": "你回来啦！我好开心",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG2Comeback2": {
+  "text": "我一直在等你哦",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "ceremony.gradeUpG2": {
+  "text": "你已经是二年级的大孩子啦",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "ceremony.oldPetsStay": {
+  "text": "以前的伙伴没有走，去我的伙伴那里就能看到它们",
+  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
+ },
+ "petline.penguinG1Archived0": {
+  "text": "那一年，我们一起数了好多好多数呀",
+  "sig": "zh-CN-YunxiaNeural|-8%|+5%"
+ },
+ "petline.penguinG1Archived1": {
+  "text": "想起那时候，我就很开心",
+  "sig": "zh-CN-YunxiaNeural|-8%|+5%"
+ },
+ "petline.dragonG1Archived0": {
+  "text": "那一年读过的书，本龙都记着呢",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG1Archived1": {
+  "text": "本龙在回忆里也很好，有诗作伴",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.pandaG1Archived0": {
+  "text": "那一年好开心呀，thank you！",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.pandaG1Archived1": {
+  "text": "波波把那时候的单词都记住啦",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "petline.dragonG2Archived0": {
+  "text": "那一年读过的书，我都记着呢",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.dragonG2Archived1": {
+  "text": "我在回忆里也很好，有诗作伴",
+  "sig": "zh-CN-YunxiNeural|-15%|+0%"
+ },
+ "petline.pandaG2Archived1": {
+  "text": "我把那时候的单词都记住啦",
+  "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
  }
 }
