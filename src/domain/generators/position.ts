@@ -59,6 +59,31 @@ const AXES: Record<
 }
 
 /**
+ * 每根轴的补充干扰项**固定**取哪根轴。
+ *
+ * ⭐ **绝不能随机抽**（原来就是随机的，真机上抓到了）：前后关系在屏幕上
+ * 只能靠遮挡表达，而遮挡必然让两个物体一左一右——于是「小狗在小汽车前面」
+ * 那道题里，小狗**同时**真的在小汽车右边。一旦「右边」被抽进选项，
+ * 这道题就有了两个说得通的答案，孩子答「右边」被判错却完全不知道错在哪。
+ *
+ * design/08 §10「画图形这批的三条经验」第 ③ 条：
+ * **画图类的题尤其要问一句，会不会有第二个说得通的答案。**
+ *
+ * 所以配对规则是「取视觉上正交、绝不可能同时成立的那根轴」：
+ *
+ * | 本轴 | 干扰轴 | 为什么安全 |
+ * |---|---|---|
+ * | 上下 | 左右 | 垂直排列的两个物体谈不上左右 |
+ * | 左右 | 上下 | 水平排列的两个物体谈不上上下 |
+ * | 前后 | **上下** | ⛔ 绝不能用左右，理由见上 |
+ */
+const DISTRACTOR_AXIS: Record<Axis, Axis> = {
+  updown: 'leftright',
+  leftright: 'updown',
+  frontback: 'updown',
+}
+
+/**
  * 生成一道位置题。
  *
  * @param ctx.params.axis - `'updown'`（M2.1）| `'frontback'`（M2.2）| `'leftright'`（M2.3）
@@ -94,8 +119,7 @@ export const position: Generator = ({ kpId, difficulty, params, rng }) => {
   const oppositeClip = spec.clips[1 - which] ?? 'word.below'
 
   // 另一根轴的两个词作为补充干扰项：答错它们说明连问的是哪个方向都没听清
-  const otherAxis = (Object.keys(AXES) as Axis[]).filter((a) => a !== axis)
-  const extra = randomPick(rng, otherAxis)
+  const extra = DISTRACTOR_AXIS[axis]
 
   const candidates: { text: string; clip: string; isCorrect: boolean; tag?: MisconceptionTag }[] = [
     { text: correctLabel, clip: correctClip, isCorrect: true },
@@ -121,6 +145,18 @@ export const position: Generator = ({ kpId, difficulty, params, rng }) => {
       ...(c.tag !== undefined && { misconceptionTag: c.tag }),
     }))
 
+  /**
+   * ⭐ 前后题靠前的那个画在哪一侧，必须随机。
+   *
+   * 固定在同一侧的话「前面」就退化成「在右边」，孩子看位置就能作答——
+   * 既考不到空间关系，还会把前后和左右在她脑子里焊死。
+   * 见 `ItemVisual.frontOnRight`。
+   *
+   * ⚠️ 在 `return` 之前算好而不是写进对象字面量：rng 的调用顺序决定了
+   * 同种子能否复现，摆在明处才不会被后来的改动挤乱。
+   */
+  const frontOnRight = rng() < 0.5
+
   return {
     signature: `${kpId}-position#${axis}:${relation}:${pair.targetName}`,
     kpId,
@@ -138,6 +174,7 @@ export const position: Generator = ({ kpId, difficulty, params, rng }) => {
       anchor: pair.anchor,
       target: pair.target,
       relation,
+      frontOnRight,
     },
   }
 }

@@ -183,16 +183,90 @@ function SpatialPair({ visual }: { visual: Of<'spatialPair'> }) {
     )
   }
 
-  // 前后：近大远小 + 轻微重叠
+  // 前后：⭐ 只靠遮挡，见 FrontBackPair
   const isFront = relation === 'front'
   return (
-    <div className="flex items-end justify-center gap-0">
-      <span className={`${isFront ? 'text-3xl opacity-70' : 'text-5xl'} leading-none`}>
-        {isFront ? anchor : target}
-      </span>
-      <span className={`${isFront ? 'text-5xl' : 'text-3xl opacity-70'} -ml-3 leading-none`}>
-        {isFront ? target : anchor}
-      </span>
+    <FrontBackPair
+      front={isFront ? target : anchor}
+      back={isFront ? anchor : target}
+      frontOnRight={visual.frontOnRight !== false}
+    />
+  )
+}
+
+/**
+ * 前后关系 —— ⭐ **只靠遮挡表达，不动大小**。
+ *
+ * ## 为什么放弃「近大远小」
+ *
+ * 那是原来的做法，真机上被打回两次：
+ *
+ * 1. **它和物体的固有大小打架。**「小鸟在大树前面」会把小鸟画得比树还大，
+ *    孩子看到的是一只巨鸟，而不是一只离得近的鸟
+ * 2. **12px 的重叠在 emoji 上产生不了遮挡感。** emoji 背景透明，
+ *    两个不同字号的字符挨在一起，看起来就是并排——图上根本读不出前后
+ *
+ * 遮挡（occlusion）是最强也最早发育的深度线索，幼儿就懂，
+ * 而且**不受物体固有大小影响**：谁挡住谁，谁就在前面。
+ *
+ * ## 怎么让 emoji 真的挡住 emoji
+ *
+ * emoji 是字符，`z-index` 叠上去也只是"后画的盖住先画的"，
+ * 而透明背景意味着重叠处只是两个图案糊在一起。
+ * 所以给前面那个描一圈**画布底色**的边（`textShadow` 同色多层），
+ * 相当于在后面那个身上擦掉一圈——这才形成真实的轮廓遮挡。
+ *
+ * ⚠️ 底色必须取 `--canvas`（页面底色），不能写死白色：
+ * 换主题（星际）时页面是深蓝底，白色描边会变成一圈刺眼的白光。
+ *
+ * ⚠️ 重叠量要足够大（约一半），小重叠会被读成「并排」——
+ * 那正是被打回的那一版。
+ *
+ * ## ⭐ 靠前的那个不能总在同一边
+ *
+ * 遮挡必然把两个物体摆成一左一右。若靠前的永远在右，「前面」就退化成
+ * 「在右边」，孩子看位置就能作答——既考不到空间关系，
+ * 还会把前后和左右在她脑子里焊死。左右由生成器随机（`frontOnRight`）。
+ *
+ * ⛔ **不做垂直错位**（「近的画低一点」那种透视）：前后题的干扰项正是
+ * 上面 / 下面，一旦把靠前的画低，「下面」也讲得通，又成了两个答案。
+ */
+function FrontBackPair({
+  front,
+  back,
+  frontOnRight,
+}: {
+  front: string
+  back: string
+  frontOnRight: boolean
+}) {
+  /** 描一圈画布底色，把后面那个的轮廓擦出缺口 —— 这就是「挡住」。
+   *  ⚠️ token 存的是 RGB 分量（`--c-canvas: 255 243 226`），必须套 rgb()。
+   *  投影让靠前的那个真的「浮」在另一个上方，是遮挡之外的第二条深度线索 */
+  const cut = 'rgb(var(--c-canvas))'
+  const frontStyle = {
+    textShadow: `0 0 5px ${cut}, 0 0 5px ${cut}, 0 0 5px ${cut}, 0 0 9px ${cut}`,
+    filter: 'drop-shadow(0 3px 2px rgb(0 0 0 / 0.28))',
+  }
+
+  const frontEl = (
+    <span
+      key="front"
+      className={`${frontOnRight ? '-ml-7' : '-mr-7'} relative z-10 text-5xl leading-none`}
+      style={frontStyle}
+    >
+      {front}
+    </span>
+  )
+  const backEl = (
+    <span key="back" className="text-5xl leading-none">
+      {back}
+    </span>
+  )
+
+  return (
+    <div className="flex items-center justify-center">
+      {frontOnRight ? [backEl, frontEl] : [frontEl, backEl]}
     </div>
   )
 }

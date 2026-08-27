@@ -1238,6 +1238,18 @@ export type ItemVisual =
       /** 被问的物体 */
       target: string
       relation: 'above' | 'below' | 'left' | 'right' | 'front' | 'behind'
+      /**
+       * ⭐ 仅 `front` / `behind` 用：靠前的那个画在**右**边还是左边。
+       *
+       * 前后只能靠遮挡表达，而遮挡必然把两个物体摆成一左一右。
+       * 若靠前的那个永远在同一侧，「前面」就等价于「在右边」——
+       * 孩子完全可以不看遮挡、只看位置作答，这道题既考不到东西，
+       * 还会把「前后」和「左右」在她脑子里焊死。
+       *
+       * 因此左右顺序必须由生成器用 `ctx.rng()` 随机，**不能在渲染层写死**。
+       * 由 `position.test.ts`「靠前的那个不能总在同一边」强制。
+       */
+      frontOnRight?: boolean
     }
   | {
       /**
