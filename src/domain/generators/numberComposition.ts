@@ -160,6 +160,9 @@ function buildRead(ctx: GeneratorContext, value: number): GeneratedItem {
     },
     options: buildTextOptions(chineseNumber(value), candidates, ctx.rng),
     answer: chineseNumber(value),
+    // 屏幕上的答案是汉字「三千零五」，念出来就是 num() 拼的那串——
+    // 这道题考的正是这个读法，答错时听一遍比看一遍管用
+    answerSpeech: { parts: num(value), text: chineseNumber(value) },
   }
 }
 

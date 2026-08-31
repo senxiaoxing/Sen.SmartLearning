@@ -151,6 +151,13 @@ function buildChooseUnit(ctx: GeneratorContext, quantity: 'length' | 'mass'): Ge
       caption: findByEmoji(pool, opt.text)?.name,
     })),
     answer: target.emoji,
+    /**
+     * ⭐ 答案**不朗读**：选项是 emoji，而量感物品表刻意没有语音片段
+     * （见 `measurables.ts` 文件头：二年级是语音的最后一站，能不加的就不加）。
+     * 「答案是 🚪」交给 TTS 只会念出一句听不懂的话，正确的那个已经在屏幕上高亮。
+     * 要让它念出「房门」，就得给 MEASURABLES 补 17 条 word.* 片段。
+     */
+    answerSpeech: { parts: [], text: target.name },
   }
 }
 

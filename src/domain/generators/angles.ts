@@ -106,6 +106,12 @@ export const angles: Generator = (ctx: GeneratorContext): GeneratedItem => {
     },
     options: buildOptions(ctx, correct, target, askSmall),
     answer: keyOf(correct),
+    /**
+     * ⭐ 答案**不朗读**：四个选项都是「角」，区别只在张口大小，
+     * 说「答案是直角」等于把题干重复一遍（题干问的就是「哪个是直角」）。
+     * `angle:90:24:0` 更不能念——那是画图用的 key。答对的那个角会画在反馈里。
+     */
+    answerSpeech: { parts: [], text: '' },
   }
 }
 

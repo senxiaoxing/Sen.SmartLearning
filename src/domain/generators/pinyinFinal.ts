@@ -18,6 +18,7 @@
  */
 
 import { rhymeOf, syllableKey, type Syllable } from '@/domain/pinyin'
+import { pinyinCallName } from '@/domain/pinyinCallName'
 import { shuffle } from '@/domain/generators/rng'
 import type { Generator, ItemOption, MisconceptionTag } from '@/domain/types'
 
@@ -46,6 +47,7 @@ export const pinyinFinal: Generator = ({ kpId, difficulty, params, rng }) => {
 
   const target = pool[Math.floor(rng() * pool.length)] as Syllable
   const answer = rhymeOf(target)
+  const callClip = pinyinCallName(answer)
 
   // 干扰项优先用本组教的其他韵母——那才是这个知识点要区分的对象。
   // ⚠️ 没有可用音节的韵母（如 ei 缺载体）照样能当选项：选项是文字，不播音
@@ -70,6 +72,12 @@ export const pinyinFinal: Generator = ({ kpId, difficulty, params, rng }) => {
     },
     options,
     answer,
+    /**
+     * 「答案是 ai」念的是**呼读音**「哀」，与老师带读一致。
+     * ⚠️ `ong` 没有汉字载体（见 `pinyinCallName`），那一档宁可不念——
+     * 念一个靠 TTS 猜出来的声调，比不念糟。
+     */
+    answerSpeech: { parts: callClip === undefined ? [] : [callClip], text: answer },
   }
 }
 

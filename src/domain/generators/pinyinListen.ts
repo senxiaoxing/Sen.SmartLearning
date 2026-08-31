@@ -70,6 +70,10 @@ export const pinyinListen: Generator = ({ kpId, difficulty, params, rng }) => {
     },
     options,
     answer: displayForm(target),
+    // 答错时念的就是题干那个音节——同一条片段，声调有保证。
+    // ⚠️ 不能靠选项自带 ttsParts 顶上：那个字段的语义是「点这个选项听什么」，
+    //    而这道题的选项**不可点读**（点一遍就等于报答案）
+    answerSpeech: { parts: [syllableKey(target.base, target.tone)], text: target.pinyin },
   }
 }
 

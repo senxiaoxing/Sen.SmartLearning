@@ -16,6 +16,7 @@
 import { motion } from 'framer-motion'
 import { useEffect, useMemo } from 'react'
 import { BigButton } from '@/components/BigButton'
+import { MathShape } from '@/components/shape/MathShape'
 import { petDefinitionOf } from '@/data/seed/pets'
 import { PRAISE_POOL } from '@/data/seed/voiceManifest'
 import { pickNickname } from '@/domain/encourage/pickNickname'
@@ -43,9 +44,20 @@ interface FeedbackProps {
  * 伙伴台词（petline.*）与「答案是」（phrase.answerIs / phrase.lookAgain）
  * 都是现成片段。答案拿不到片段就整句 TTS——
  * 绝不「半句真声半句机器声」（design/07 §2.5 的混播禁令）。
+ *
+ * ⭐ **答案念不出来时（`correctParts` 为空数组）只说安慰语**，不接「答案是」。
+ * 方格图案没有名字、`ju` 和 `jü` 念出来一模一样——硬念不是无用而是有害：
+ * TTS 会把 `grid:5:00.11` 一个字符一个字符念出来。
+ * 正确答案本来就在屏幕上高亮（图案还会画出来），这半句不是唯一的告知途径。
  */
 function wrongUtterance(feedback: AnswerFeedback, consolation: PetLine | null): Utterance {
-  const fallback = `${consolation?.text ?? '再看看'}，答案是 ${feedback.correctText}`
+  if (feedback.correctParts?.length === 0) {
+    // ⚠️ 这里不能用 phrase.lookAgain —— 那条片段念的是「再看看，**答案是**」，
+    //    后面不接答案就成了半句话
+    return consolation === null ? plain('再看看') : utter([consolation.clipKey], consolation.text)
+  }
+
+  const fallback = `${consolation?.text ?? '再看看'}，答案是 ${feedback.correctSpokenText}`
   if (feedback.correctParts === undefined) return plain(fallback)
   return consolation === null
     ? // phrase.lookAgain 念的就是「再看看，答案是」，与 fallback 文本一致
@@ -128,9 +140,22 @@ export function Feedback({ feedback, onNext, isLast }: FeedbackProps) {
           <p className="text-center text-3xl font-bold text-primary">
             {consolation?.text ?? '再看看～'}
           </p>
-          <p className="text-xl text-ink/70">
-            答案是 <span className="text-3xl font-bold text-correct">{feedback.correctText}</span>
-          </p>
+          {/* ⭐ 答案是图就**画出来**：方格图案、角、线段的 `correctText` 存的是
+              `grid:5:00.11.21.30` 这串画图用的 key，直接显示等于给孩子看天书。
+              图形有名字时（正方体、8 点整）图和名字一起给，那是这道题要记住的词 */}
+          {feedback.correctImageKey === undefined ? (
+            <p className="text-xl text-ink/70">
+              答案是 <span className="text-3xl font-bold text-correct">{feedback.correctText}</span>
+            </p>
+          ) : (
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-xl text-ink/70">答案是</p>
+              <MathShape imageKey={feedback.correctImageKey} />
+              {feedback.correctText !== feedback.correctImageKey && (
+                <span className="text-2xl font-bold text-correct">{feedback.correctText}</span>
+              )}
+            </div>
+          )}
         </div>
       )}
 

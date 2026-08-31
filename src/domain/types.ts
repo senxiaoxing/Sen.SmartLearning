@@ -1435,6 +1435,37 @@ export type ItemVisual =
       slotLabels: string[]
     }
 
+/**
+ * 答错反馈里「答案是 X」那半句怎么念。
+ *
+ * ⭐ 它存在的理由是：**「点这个选项听什么」和「答案怎么念」不是一回事**，
+ * 挤在 `ItemOption.ttsParts` 一个字段里必然互相牺牲。
+ *
+ * - 英语听音题：点选项念**中文**（念英文等于报答案，见 `generators/faceOptions.ts`），
+ *   而答完之后那句「答案是 apple」恰恰必须念**英语**——发音本身就是教学内容。
+ * - 拼音听辨题：选项一律**不可点读**（念出来就是报答案），但答案要念出正确的音。
+ *
+ * @see src/domain/resolveAnswerSpeech.ts  取值优先级与降级规则
+ */
+export interface AnswerSpeech {
+  /**
+   * 片段序列。
+   *
+   * ⭐ **空数组 = 这道题的答案念不出来**，反馈只说伙伴的安慰语，不接「答案是 X」。
+   * 方格图案（`grid:5:00.11`）没有名字，拼音写法题（ju / jü）四个选项读音一模一样——
+   * 硬念比不念糟得多：前者会被 TTS 一个字符一个字符念出来，后者是在念一句废话。
+   * 正确答案本来就会在屏幕上高亮（`OptionButton` 的 `reveal-correct`），不靠这半句。
+   */
+  parts: string[]
+  /**
+   * 缺片段时整句 TTS 用的答案文本。
+   *
+   * ⚠️ 与屏幕上显示的**可能不同**：选项是 emoji（🍎）时屏幕显示图，
+   * 这里必须放一个念得出来的词（「苹果」），否则兜底那条路通向一句念不出的话。
+   */
+  text: string
+}
+
 export interface GeneratedItem {
   /** 参数签名，如 `'M5.2-gen#9+5'`。用于去重，并写入 `Attempt.itemId` */
   signature: string
@@ -1466,6 +1497,13 @@ export interface GeneratedItem {
   }
   options: ItemOption[]
   answer: string
+  /**
+   * 答错时那句「答案是 X」怎么念。
+   *
+   * 缺省时按 {@link AnswerSpeech} 的降级顺序推导（正确选项的 `ttsParts` →
+   * 数字答案自动解析），推不出就整句走 TTS。数值答案不必填这个字段。
+   */
+  answerSpeech?: AnswerSpeech
   /** 可视化数据，仅部分题型需要 */
   visual?: ItemVisual
 }

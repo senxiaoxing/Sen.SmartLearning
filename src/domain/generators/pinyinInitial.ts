@@ -20,6 +20,7 @@
  */
 
 import { initialOf, syllableKey, type Syllable } from '@/domain/pinyin'
+import { pinyinCallName } from '@/domain/pinyinCallName'
 import { shuffle } from '@/domain/generators/rng'
 import type { Generator, ItemOption, MisconceptionTag } from '@/domain/types'
 
@@ -48,6 +49,7 @@ export const pinyinInitial: Generator = ({ kpId, difficulty, params, rng }) => {
 
   const target = pool[Math.floor(rng() * pool.length)] as Syllable
   const answer = initialOf(target.base)
+  const callClip = pinyinCallName(answer)
 
   // 干扰项优先用本组教的其他声母——那才是这个知识点要区分的对象
   const sameGroup = taught.filter((i) => i !== answer)
@@ -73,6 +75,12 @@ export const pinyinInitial: Generator = ({ kpId, difficulty, params, rng }) => {
     },
     options,
     answer,
+    /**
+     * 「答案是 g」念的是**呼读音**「哥」，和老师带读的一样——
+     * 直接把字母 g 喂给 TTS 会读成英文字母名，那是另一个音。
+     * 没有干净载体的（见 `pinyinCallName`）宁可不念，也不教一个可能是错的读音。
+     */
+    answerSpeech: { parts: callClip === undefined ? [] : [callClip], text: answer },
   }
 }
 

@@ -71,6 +71,9 @@ function buildSymmetry(ctx: GeneratorContext, half: number): GeneratedItem {
     },
     options: toPatternOptions(ctx.rng, correct, wrong, 'symmetry_axis_wrong'),
     answer: patternKey(correct),
+    // ⭐ 答案**不朗读**：随机方格图案没有名字，`grid:5:00.11.21.30` 是画图用的 key，
+    //    交给 TTS 会被一个字符一个字符念出来。答错时那张图会画在反馈里（见 Feedback.tsx）
+    answerSpeech: { parts: [], text: '' },
   }
 }
 
@@ -124,6 +127,12 @@ function axisItem(ctx: GeneratorContext, cells: Cell[], vertical: boolean): Gene
       ctx.rng,
     ),
     answer: correct,
+    /**
+     * ⭐ 答案**不朗读**：「竖着的线」是句人话，但没有对应片段，
+     * 而为四个选项各配一条 mp3 换来的只是这一句反馈——二年级是语音的最后一站，
+     * 能不加的就不加（同 `measurables.ts` 的取舍）。正确选项在屏幕上高亮着。
+     */
+    answerSpeech: { parts: [], text: correct },
     visual: { kind: 'figure', imageKey: patternKey(cells) },
   }
 }

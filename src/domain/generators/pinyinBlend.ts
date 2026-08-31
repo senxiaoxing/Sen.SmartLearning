@@ -72,6 +72,9 @@ export const pinyinBlend: Generator = ({ kpId, difficulty, params, rng }) => {
     },
     options,
     answer: `${target.initial} + ${target.final} → ${target.pinyin}`,
+    // 屏幕上的答案是「p + i → pí」这样的算式，念出来只要那个音节本身——
+    // 把「加号箭头」念进去，她听到的就不是一个能记住的音了
+    answerSpeech: { parts: [syllableKey(target.base, target.tone)], text: target.pinyin },
     visual: {
       kind: 'blending',
       initials,

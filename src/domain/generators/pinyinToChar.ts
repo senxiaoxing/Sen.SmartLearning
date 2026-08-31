@@ -83,6 +83,12 @@ export const pinyinToChar: Generator = ({ kpId, difficulty, params, rng }) => {
     },
     options,
     answer: target.char ?? target.pinyin,
+    // 「答案是『妈』」念的是那个字的音，也就是题干播过的同一条片段。
+    // ⚠️ 兜底文本用汉字而不是拼音串：TTS 拿到「妈」必然读对，拿到「mā」全凭猜
+    answerSpeech: {
+      parts: [syllableKey(target.base, target.tone)],
+      text: target.char ?? target.pinyin,
+    },
   }
 }
 

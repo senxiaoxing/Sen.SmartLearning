@@ -8,7 +8,9 @@
  */
 
 import { motion } from 'framer-motion'
-import { answerParts, plain, utter } from '@/domain/speech'
+import { MathShape } from '@/components/shape/MathShape'
+import { resolveAnswerSpeech } from '@/domain/resolveAnswerSpeech'
+import { plain, utter } from '@/domain/speech'
 import { say } from '@/platform/speech'
 import type { SessionItem } from '@/data/buildSessionItems'
 
@@ -22,18 +24,31 @@ export function WrongItemCard({ entry, index }: WrongItemCardProps) {
   const correctOption = item.options.find((o) => o.isCorrect)
   const correct = correctOption?.text ?? item.answer
 
+  const speech = resolveAnswerSpeech(item)
+
   /**
    * 点读走预生成片段：题干 parts + 「答案是」 + 答案 parts。
    * 任何一环拿不到就整句 TTS（绝不混播）——与答错反馈同一套规则。
    * 本轮题目的片段在会话开始时就已预取，这里点了就响。
+   *
+   * ⭐ 答案念不出来的题（图案、拼音写法…，`parts` 为空）**只读题干**：
+   * 卡片上的图和高亮已经把答案交代清楚了，硬念只会念出一串 `grid:5:00.11`。
    */
   const readAloud = () => {
-    const sentence = `${item.stem.ttsText}，答案是 ${correct}`
-    const answer = correctOption?.ttsParts ?? answerParts(correct)
+    if (speech.parts?.length === 0) {
+      say(
+        item.stem.ttsParts === undefined
+          ? plain(item.stem.ttsText)
+          : utter([...item.stem.ttsParts], item.stem.ttsText),
+      )
+      return
+    }
+
+    const sentence = `${item.stem.ttsText}，答案是 ${speech.text}`
     say(
-      item.stem.ttsParts === undefined || answer === undefined
+      item.stem.ttsParts === undefined || speech.parts === undefined
         ? plain(sentence)
-        : utter([...item.stem.ttsParts, 'phrase.answerIs', ...answer], sentence),
+        : utter([...item.stem.ttsParts, 'phrase.answerIs', ...speech.parts], sentence),
     )
   }
 
@@ -52,7 +67,17 @@ export function WrongItemCard({ entry, index }: WrongItemCardProps) {
       <span className="min-w-0 flex-1 break-words text-xl font-bold tabular-nums leading-snug text-ink/80">
         {item.stem.text}
       </span>
-      <span className="shrink-0 text-3xl font-bold tabular-nums text-correct">{correct}</span>
+      {/* 答案是图就画出来。图案类选项的 text 存的是 `grid:5:00.11` 这串画图用的 key，
+          原样显示等于在卡片右侧摆一串乱码。
+          ⚠️ 尺寸压到 72：这里是一行卡片的右半边，按图形本来的尺寸（尺子 420）会把题干挤没。
+          细节看不清没关系——这张卡片的主要用法是**点一下听**，图只负责让她认出是哪道题 */}
+      {correctOption?.imageKey === undefined ? (
+        <span className="shrink-0 text-3xl font-bold tabular-nums text-correct">{correct}</span>
+      ) : (
+        <span className="shrink-0">
+          <MathShape imageKey={correctOption.imageKey} size={72} />
+        </span>
+      )}
     </motion.button>
   )
 }

@@ -80,6 +80,8 @@ export const pinyinTriple: Generator = ({ kpId, difficulty, params, rng }) => {
       { tag: 'three_syllable_missing_medial', text: '三个部件没拼对' },
     ),
     answer: target.pinyin,
+    // 答错时念整个音节（与题干同一条片段）：三个部件分开念反而听不出拼成了什么
+    answerSpeech: { parts: [syllableKey(target.base, target.tone)], text: target.pinyin },
     visual: {
       kind: 'blending',
       initials,

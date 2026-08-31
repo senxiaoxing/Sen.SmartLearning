@@ -67,6 +67,16 @@ export const englishListen: Generator = ({ kpId, difficulty, params, rng }) => {
     },
     options: buildFaceOptions(target, pickDistractors(target, words, pool, rng), rng),
     answer: target.face,
+    /**
+     * ⭐ 答错时那句「答案是 apple」念**英语**，而点选项念的是中文
+     * （见 `faceOptions.ts`：题还没答完，念英文等于报答案）。
+     * 答完之后正相反——她刚才没听出来的就是这个音，这时候把它再念一遍
+     * 才是这道题的补救；屏幕上同时高亮着 🍎，音和物就对上了。
+     *
+     * ⚠️ 兜底文本用中文释义：片段万一缺失，整句会走**中文** TTS，
+     * 那时念 `apple` 得到的是一个学不对的音——发音教错比没有声音严重得多。
+     */
+    answerSpeech: { parts: [wordKey(target)], text: target.zh },
   }
 }
 

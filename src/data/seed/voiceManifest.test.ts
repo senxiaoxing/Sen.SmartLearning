@@ -19,6 +19,7 @@ import { hasClip, VOICE_CLIP_COUNT, VOICE_MANIFEST } from '@/data/seed/voiceMani
 import { nicknameClipFor, PET_SPEAKERS } from '@/domain/encourage/petSpeaker'
 import { generateFromTemplate } from '@/domain/generators'
 import { createRng } from '@/domain/generators/rng'
+import { resolveAnswerSpeech } from '@/domain/resolveAnswerSpeech'
 import { num } from '@/domain/speech'
 import type { Difficulty } from '@/domain/types'
 
@@ -84,6 +85,22 @@ describe('⭐ 生成器用到的片段都必须在清单里', () => {
     }
   })
 
+  it('答案语音用的片段也必须在清单里', () => {
+    for (const template of ITEM_TEMPLATES) {
+      for (const difficulty of DIFFICULTIES) {
+        for (let seed = 1; seed <= SAMPLES; seed += 1) {
+          const item = generateFromTemplate(template, difficulty, createRng(seed))
+          for (const key of resolveAnswerSpeech(item).parts ?? []) {
+            expect(
+              hasClip(key),
+              `${template.id} 难度${difficulty}「${item.stem.text}」的答案用了清单里没有的片段 ${key}`,
+            ).toBe(true)
+          }
+        }
+      }
+    }
+  })
+
   it('有 ttsParts 的题目也必须保留 ttsText 兜底 —— 绝不能静音', () => {
     for (const template of ITEM_TEMPLATES) {
       for (const difficulty of DIFFICULTIES) {
@@ -92,6 +109,51 @@ describe('⭐ 生成器用到的片段都必须在清单里', () => {
           item.stem.ttsText.length,
           `${template.id} 缺少 ttsText 兜底`,
         ).toBeGreaterThan(0)
+      }
+    }
+  })
+})
+
+describe('⭐ 答错反馈不留机器音', () => {
+  /**
+   * 守的是**答错那一句的音色**。
+   *
+   * 「（伙伴安慰），答案是 X」里，安慰语和「答案是」都是预生成片段，
+   * 唯独答案那半截要看题目给不给得出。给不出就整句降级为实时 TTS——
+   * 而降级是静默发生的：屏幕上一切正常，只有耳朵听得出音色忽然变了，
+   * 全库曾有 1926/4878 道题（86 个知识点）走在这条路上。
+   *
+   * 因此答案只有两条合法出路：**能念**（parts 非空）或**明说不念**
+   * （`answerSpeech: { parts: [] }`，反馈只说安慰语）。
+   * `undefined` 意味着谁也没想过这道题的答案怎么念——那才是要拦下的。
+   */
+  it.each(ITEM_TEMPLATES.map((t) => [t.id, t] as const))('%s', (_id, template) => {
+    for (const difficulty of DIFFICULTIES) {
+      for (let seed = 1; seed <= SAMPLES; seed += 1) {
+        const item = generateFromTemplate(template, difficulty, createRng(seed))
+        const speech = resolveAnswerSpeech(item)
+        expect(
+          speech.parts,
+          `${template.id} 难度${difficulty}「${item.stem.text}」的答案「${speech.text}」` +
+            `既没有片段也没声明不念，那句反馈会整句降级成机器音`,
+        ).toBeDefined()
+      }
+    }
+  })
+
+  it('声明「不念」的题，答案要么是图、要么在屏幕上写得清清楚楚', () => {
+    // 空 parts 意味着孩子只能从屏幕上得到答案，那就必须真的看得见：
+    // 正确选项要么带 imageKey（画出来），要么有文字。两样都没有就是把答案藏了
+    for (const template of ITEM_TEMPLATES) {
+      for (const difficulty of DIFFICULTIES) {
+        const item = generateFromTemplate(template, difficulty, createRng(7))
+        if (resolveAnswerSpeech(item).parts?.length !== 0) continue
+
+        const correct = item.options.find((o) => o.isCorrect)
+        expect(
+          correct?.imageKey !== undefined || (correct?.text ?? '').length > 0,
+          `${template.id} 的答案既不念也看不见`,
+        ).toBe(true)
       }
     }
   })
@@ -118,5 +180,24 @@ describe('迁移进度', () => {
         (pending.length > 0 ? `\n  待迁移：${pending.join(', ')}` : ''),
     )
     expect(migrated.length + pending.length).toBe(ITEM_TEMPLATES.length)
+  })
+
+  /**
+   * 同样是进度指示器：答案「明说不念」的那批**不是错误**，
+   * 但每一条背后都是「补几个片段就能念出来」的机会（量感物品名、角的名称、对称轴…）。
+   * 数字停在那里没关系，别忘了它是什么就行。
+   */
+  it('报告有多少知识点的答案是不朗读的', () => {
+    const silent = new Set<string>()
+
+    for (const template of ITEM_TEMPLATES) {
+      for (const difficulty of DIFFICULTIES) {
+        const item = generateFromTemplate(template, difficulty, createRng(1))
+        if (resolveAnswerSpeech(item).parts?.length === 0) silent.add(template.kpId)
+      }
+    }
+
+    console.info(`\n  答案不朗读（只说安慰语）的知识点：${[...silent].sort().join(', ')}`)
+    expect(silent.size).toBeLessThan(ITEM_TEMPLATES.length)
   })
 })

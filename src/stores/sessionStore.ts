@@ -23,7 +23,7 @@ import { ITEM_TEMPLATE_BY_KP } from '@/data/seed/itemTemplates'
 import { createRng } from '@/domain/generators/rng'
 import { selectNextItems } from '@/domain/scheduler/selectNextItems'
 import { selectRetryItems } from '@/domain/scheduler/selectRetryItems'
-import { answerParts } from '@/domain/speech'
+import { resolveAnswerSpeech } from '@/domain/resolveAnswerSpeech'
 import { nowIso, todayLocal } from '@/domain/time'
 import { newId } from '@/platform/newId'
 import { usePetStore } from '@/stores/petStore'
@@ -77,11 +77,24 @@ export interface AnswerFeedback {
   /** 正确答案文本，答错时展示 */
   correctText: string
   /**
+   * 正确答案是一张图时的 key（方格图案、钟面、角…）。
+   *
+   * ⚠️ 有它就**画出来**，别把 `correctText` 显示出去：图案类选项的 text
+   * 存的就是 `grid:5:00.11.21.30` 这串画图用的 key，摆在孩子面前是天书。
+   */
+  correctImageKey?: string
+  /**
    * 正确答案的语音片段——答错反馈用它把「答案是 X」整句拼成预生成音色。
-   * 取正确选项自带的 `ttsParts`，纯数字答案由 `answerParts` 推导；
-   * 都拿不到（如拼音书写规则题）则缺省，那句反馈整句走 TTS 兜底。
+   *
+   * 三种取值对应三种播法，见 `domain/resolveAnswerSpeech.ts`：
+   * 非空拼片段、`[]` 只说安慰语、`undefined` 整句降级为实时 TTS。
    */
   correctParts?: string[]
+  /**
+   * 朗读答案时用的文本（TTS 兜底）。⚠️ 与 `correctText` 可能不同：
+   * 屏幕上是 🍎，念出来得是「苹果」。
+   */
+  correctSpokenText: string
 }
 
 interface SessionState {
@@ -391,7 +404,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     }
 
     const correctText = correctOption?.text ?? current.item.answer
-    const correctParts = correctOption?.ttsParts ?? answerParts(correctText)
+    const speech = resolveAnswerSpeech(current.item)
 
     set({
       status: 'feedback',
@@ -399,7 +412,9 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         isCorrect,
         selectedOptionId: optionId,
         correctText,
-        ...(correctParts !== undefined && { correctParts }),
+        correctSpokenText: speech.text,
+        ...(correctOption?.imageKey !== undefined && { correctImageKey: correctOption.imageKey }),
+        ...(speech.parts !== undefined && { correctParts: speech.parts }),
       },
       correctCount: state.correctCount + (isCorrect ? 1 : 0),
       answeredCount: state.answeredCount + 1,

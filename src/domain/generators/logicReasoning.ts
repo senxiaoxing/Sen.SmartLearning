@@ -100,6 +100,9 @@ export const logicReasoning: Generator = (ctx: GeneratorContext): GeneratedItem 
     },
     options: buildOptions(ctx, lineup, answer, clues[0]!),
     answer: answer.emoji,
+    // 选项是 emoji，念的是它的名字（片段复用 COUNTABLES 的那批）。
+    // 「答案是 🐱」交给 TTS 是念不出来的
+    answerSpeech: { parts: [answer.clipKey], text: answer.name },
   }
 }
 

@@ -81,6 +81,10 @@ export const memoryPair: Generator = ({ kpId, difficulty, params, rng }) => {
       { tag: 'letter_pairing_weak', text: '配对时试了很多次' },
     ),
     answer: '全部配对成功',
+    // ⭐ 答案**不朗读**：翻牌题的「答错」是试错超了配额，
+    //    这时说一句「答案是全部配对成功」既不是答案也不是安慰，只是句废话。
+    //    伙伴的那句安慰才是这一刻该听到的。
+    answerSpeech: { parts: [], text: '全部配对成功' },
     visual: { kind: 'memoryPairs', cards, mistakeBudget },
   }
 }

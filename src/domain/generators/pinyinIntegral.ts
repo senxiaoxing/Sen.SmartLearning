@@ -22,7 +22,7 @@
  * 播出来只会让孩子以为要靠听，反而误导。
  */
 
-import { displayForm, type Syllable } from '@/domain/pinyin'
+import { displayForm, syllableKey, type Syllable } from '@/domain/pinyin'
 import { shuffle } from '@/domain/generators/rng'
 import type { Generator, ItemOption } from '@/domain/types'
 
@@ -80,6 +80,11 @@ export const pinyinIntegral: Generator = ({ kpId, difficulty, params, rng }) => 
     },
     options,
     answer: displayForm(target),
+    /**
+     * 这道题不播题干（考的是写法不是听辨），但答错时**要**把答案念出来：
+     * 「答案是 zi」让她把规则和这个音对上号。片段是现成的整体认读音节。
+     */
+    answerSpeech: { parts: [syllableKey(target.base, target.tone)], text: target.pinyin },
   }
 }
 

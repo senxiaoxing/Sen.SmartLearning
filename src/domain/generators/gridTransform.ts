@@ -133,6 +133,9 @@ function buildRotate(ctx: GeneratorContext, half: number): GeneratedItem {
     },
     options: toPatternOptions(ctx.rng, correct, wrong.slice(0, 3), 'symmetry_axis_wrong'),
     answer: patternKey(correct),
+    // ⭐ 答案**不朗读**，同 gridSymmetry：转过之后的图案没有名字，
+    //    `grid:5:01.10.13` 是画图用的 key。答错时把那张图画出来
+    answerSpeech: { parts: [], text: '' },
     visual: { kind: 'figure', imageKey: patternKey(shape) },
   }
 }

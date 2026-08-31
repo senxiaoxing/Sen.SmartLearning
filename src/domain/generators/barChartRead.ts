@@ -144,6 +144,8 @@ function buildMost(ctx: GeneratorContext, bars: Bar[], visual: ItemVisual): Gene
     },
     options,
     answer: top.thing.emoji,
+    // 同 logicReasoning：选项是 emoji，念它的名字，片段是 COUNTABLES 现成的
+    answerSpeech: { parts: [top.thing.clipKey], text: top.thing.name },
     visual,
   }
 }

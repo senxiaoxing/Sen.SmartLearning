@@ -141,6 +141,12 @@ function buildEquation(
     },
     options: buildTextOptions(correct, candidates, ctx.rng),
     answer: correct,
+    // 答案是算式而不是一个数，`answerParts()` 解析不了「3 × 2」里的乘号，
+    // 但拼起来只要现成的 num + op.times 两类片段
+    answerSpeech: {
+      parts: [...num(groups), 'op.times', ...num(perGroup)],
+      text: `${groups} 乘 ${perGroup}`,
+    },
     visual,
   }
 }

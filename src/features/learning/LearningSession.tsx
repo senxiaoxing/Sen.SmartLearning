@@ -21,6 +21,7 @@ import { SESSION_CLIPS } from '@/data/seed/voiceManifest'
 import { Explainer } from '@/features/learning/Explainer'
 import { Feedback } from '@/features/learning/Feedback'
 import { ItemRenderer } from '@/items/ItemRenderer'
+import { resolveAnswerSpeech } from '@/domain/resolveAnswerSpeech'
 import { prefetchClips, stopSpeech } from '@/platform/speech'
 import { useSessionStore } from '@/stores/sessionStore'
 
@@ -53,18 +54,22 @@ export function LearningSession() {
   }, [])
 
   /**
-   * ⭐ 预取本轮全部题目的语音：题干 + 选项点读。
+   * ⭐ 预取本轮全部题目的语音：题干 + 选项点读 + **答错时那句里的答案**。
    *
    * 十道题在会话开始时就已选好（design/03「会话开始前预加载本段全部题目资源」），
    * 转场那零点几秒足够 fetch + 解码完。不取的话每道新题的题干
    * 都要现解码，听感上就是「点了下一题，隔半拍才开口」——
    * 与当初「有的数字没读出来」「按了没反应」同一个根因。
+   *
+   * ⚠️ 答案片段（`resolveAnswerSpeech`）**必须一起取**：它不在题干里，
+   * 却紧跟着答错那一下立刻要播，是全会话最等不起的一句。
    */
   useEffect(() => {
     prefetchClips(
       items.flatMap(({ item }) => [
         ...(item.stem.ttsParts ?? []),
         ...item.options.flatMap((option) => option.ttsParts ?? []),
+        ...(resolveAnswerSpeech(item).parts ?? []),
       ]),
     )
   }, [items])

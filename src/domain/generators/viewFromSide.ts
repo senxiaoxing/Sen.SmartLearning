@@ -99,6 +99,9 @@ export const viewFromSide: Generator = (ctx: GeneratorContext): GeneratedItem =>
       imageKey: opt.text,
     })),
     answer: keyOf(views[target]),
+    // ⭐ 答案**不朗读**：选项是「从这个方向看到的样子」，一个方格图案，没有名字。
+    //    那张图会画在反馈里（见 Feedback.tsx），比任何一句描述都直接
+    answerSpeech: { parts: [], text: '' },
     visual: {
       kind: 'shapeScene',
       pieces: isoPieces(stack, CANVAS),

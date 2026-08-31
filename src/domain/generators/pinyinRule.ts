@@ -88,6 +88,10 @@ function umlautItem(
     },
     options: toOptions(shuffle(rng, dedupe(candidates)), 'u_umlaut_kept'),
     answer: correct,
+    // ⭐ 答案**不朗读**，理由同「选项不可点读」：ju 和 jü 念出来一模一样，
+    //    念了等于说一句废话；而把裸拼音喂给 TTS 还会读错声调。
+    //    正确写法在屏幕上高亮着，这道题要看的本来就是写法。
+    answerSpeech: { parts: [], text: correct },
   }
 }
 
@@ -132,6 +136,8 @@ function toneItem(
     },
     options: toOptions(shuffle(rng, dedupe(candidates)), 'tone_wrong_position'),
     answer: correct,
+    // 同 umlaut：四个选项只差调号标在哪个字母上，读音完全相同，念答案给不出任何信息
+    answerSpeech: { parts: [], text: correct },
   }
 }
 

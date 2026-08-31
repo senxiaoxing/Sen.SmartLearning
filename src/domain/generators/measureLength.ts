@@ -164,5 +164,9 @@ function buildPick(
     },
     options,
     answer: `segment:${lengthCm}:${ticks}`,
+    // 线段没有名字，但它的长度就是答案本身：「答案是 5 厘米」。
+    // ⚠️ 不能让 `answerParts()` 去解析 `segment:5:9`——那串是画图用的 key，
+    //    TTS 会把冒号和数字一个一个念出来
+    answerSpeech: { parts: [...num(lengthCm), 'unit.cm'], text: `${lengthCm} 厘米` },
   }
 }
