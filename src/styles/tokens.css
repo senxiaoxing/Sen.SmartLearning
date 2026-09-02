@@ -19,9 +19,25 @@
  *   --c-on-x      叠在 x 之上的文字色（果冻岛是白字，星际是深字）
  *   --sh-drop-x   按钮阴影**整条**，不只是颜色 —— 阴影形态是皮肤性格的一部分
  *   --sh-card     卡片阴影整条
+ *   --sh-ring     发丝级内描边，拼进上面两条里用
+ *   --sf-raised   卡片面的微渐变，走 Tailwind 的 `bg-raised`
  *
- * ⚠️ 每套皮肤都必须把 `--sh-*` 五条**全部**定义一遍。
+ * ⚠️ 每套皮肤都必须把 `--sh-*` 与 `--sf-raised` **全部**定义一遍。
  *    漏掉一条不会报错，那个位置会直接没有阴影，卡片糊在背景上。
+ *
+ * ## ⭐ 阴影为什么是两层
+ *
+ * 单层模糊阴影是「一块色块下面有团灰」，两层才是「一个物体放在那里」：
+ *
+ *   1. **接触阴影** `0 1px 2px` —— 紧贴卡片底边，很淡。它给出「贴着桌面」的那条边界
+ *   2. **环境阴影** `0 6px 16px -6px` —— 远而散。它给出高度
+ *   3. **发丝内描边** `inset 0 0 0 1px` —— 让边缘在同色系背景上「脆」起来
+ *
+ * 缺了第 1 条卡片会飘，缺了第 3 条白卡片压在淡色底上边缘会发糊。
+ * 这三条加起来就是「质感」，而它们全都极淡——一旦看得出是阴影就过了。
+ *
+ * ⚠️ 模糊半径压在 16px 以内并且带负 spread（`-6px`）：负 spread 会收缩绘制面积，
+ *    比同等观感的大半径阴影便宜得多。绝不给列表里成百上千的元素用。
  */
 
 /* ══════════════════════════════════════════════════════════════
@@ -53,7 +69,7 @@
 
   /** 团团（数学小企鹅）的主题色，喇叭按钮等信息类元素也用它 */
   --c-info: 99 179 242;
-  /** 墨墨（语文小飞龙）的主题色，讲解入口用它 */
+  /** 墨墨（语文小飞龙）的主题色，家长留言等「有人在等你」的元素也用它 */
   --c-accent: 167 139 250;
 
   --r-blob: 26px;
@@ -61,13 +77,29 @@
 
   /** 按钮顶部那道内高光。是「果冻感」的全部来源，去掉就变回扁平色块 */
   --sh-inner: inset 0 2px 0 rgb(255 255 255 / 0.45);
+  /** ⚠️ 果冻岛**刻意不加暗色内描边**：它已经有 45% 的白高光，
+   *  两条 inset 撞在顶边上会把糖果感压成脏边。这里的边缘靠硬下沉那 6px 交代。 */
+  --sh-ring: inset 0 0 0 0 transparent;
 
-  /* 硬下沉 6px：厚实、可按压。这是果冻岛的立身之本 */
-  --sh-drop-primary: 0 6px 0 rgb(var(--c-primary-deep)), var(--sh-inner);
-  --sh-drop-correct: 0 6px 0 rgb(var(--c-correct-deep)), var(--sh-inner);
-  --sh-drop-alert: 0 6px 0 rgb(var(--c-alert-deep)), var(--sh-inner);
-  --sh-drop-surface: 0 6px 0 rgb(var(--c-surface-deep)), var(--sh-inner);
-  --sh-card: 0 4px 0 rgb(var(--c-surface-deep));
+  /* 硬下沉 6px：厚实、可按压。这是果冻岛的立身之本。
+     ⭐ 硬边下方再补一层柔和投影：只有实心边的物体看着像贴纸，
+        真实的东西既有实体侧面**又**在桌面上投下影子。 */
+  --sh-drop-primary:
+    0 6px 0 rgb(var(--c-primary-deep)), 0 10px 16px -8px rgb(var(--c-primary-deep) / 0.55),
+    var(--sh-inner);
+  --sh-drop-correct:
+    0 6px 0 rgb(var(--c-correct-deep)), 0 10px 16px -8px rgb(var(--c-correct-deep) / 0.5),
+    var(--sh-inner);
+  --sh-drop-alert:
+    0 6px 0 rgb(var(--c-alert-deep)), 0 10px 16px -8px rgb(var(--c-alert-deep) / 0.5),
+    var(--sh-inner);
+  --sh-drop-surface:
+    0 6px 0 rgb(var(--c-surface-deep)), 0 10px 16px -8px rgb(46 42 51 / 0.2), var(--sh-inner);
+  --sh-card: 0 4px 0 rgb(var(--c-surface-deep)), 0 7px 12px -6px rgb(46 42 51 / 0.16);
+
+  /** 卡片面的微渐变：底部压一点暖影。
+   *  果冻岛是暖调，用中性灰会让白卡片显得发青。 */
+  --sf-raised: linear-gradient(176deg, rgb(255 255 255 / 0) 42%, rgb(217 111 19 / 0.05) 100%);
 
   /** 页面背景装饰。纯 CSS 渐变，不加载任何图片，滚动零开销 */
   --deco:
@@ -110,13 +142,23 @@
   --r-card: 13px;
 
   --sh-inner: inset 0 1px 0 rgb(255 255 255 / 0.09);
+  /** 深色面上的发丝边用**白色**而不是黑色：深底上再加暗边等于什么都没加，
+   *  是那一圈极淡的亮边把卡片从夜空里「拎」出来的。 */
+  --sh-ring: inset 0 0 0 1px rgb(255 255 255 / 0.07);
 
-  /* 同样是硬下沉，但内高光压到 9%：深色面上的白色高光稍强一点就显脏 */
-  --sh-drop-primary: 0 6px 0 rgb(var(--c-primary-deep)), var(--sh-inner);
-  --sh-drop-correct: 0 6px 0 rgb(var(--c-correct-deep)), var(--sh-inner);
-  --sh-drop-alert: 0 6px 0 rgb(var(--c-alert-deep)), var(--sh-inner);
-  --sh-drop-surface: 0 6px 0 rgb(var(--c-surface-deep)), var(--sh-inner);
-  --sh-card: 0 4px 0 rgb(var(--c-surface-deep));
+  /* 同样是硬下沉，但内高光压到 9%：深色面上的白色高光稍强一点就显脏。
+     投影用纯黑而非主题色：夜空底本来就暗，带色的投影会糊成一团脏紫。 */
+  --sh-drop-primary: 0 6px 0 rgb(var(--c-primary-deep)), 0 10px 18px -8px rgb(0 0 0 / 0.5), var(--sh-inner);
+  --sh-drop-correct: 0 6px 0 rgb(var(--c-correct-deep)), 0 10px 18px -8px rgb(0 0 0 / 0.5), var(--sh-inner);
+  --sh-drop-alert: 0 6px 0 rgb(var(--c-alert-deep)), 0 10px 18px -8px rgb(0 0 0 / 0.5), var(--sh-inner);
+  --sh-drop-surface:
+    0 6px 0 rgb(var(--c-surface-deep)), 0 10px 18px -8px rgb(0 0 0 / 0.55), var(--sh-inner),
+    var(--sh-ring);
+  --sh-card: 0 4px 0 rgb(var(--c-surface-deep)), 0 7px 14px -6px rgb(0 0 0 / 0.5), var(--sh-ring);
+
+  /** 深色卡片的面：顶部一道极淡的亮，像有光从上面照下来。
+   *  ⚠️ 方向与浅色皮肤**相反** —— 浅色是底部压暗，深色是顶部提亮。 */
+  --sf-raised: linear-gradient(176deg, rgb(255 255 255 / 0.055) 0%, rgb(255 255 255 / 0) 58%);
 
   /** 星点是 5 个 radial-gradient，不是图片也不是 canvas。
    *  ⚠️ 星星**不做闪烁动画**：全屏重绘会直接吃掉答题时的帧预算 */
@@ -185,18 +227,33 @@
      下面的 --sh-drop-* 都不引用它，别在这套里给 box-shadow 拼上
      `var(--sh-inner)`，`none` 混进阴影列表会让整条声明失效。 */
   --sh-inner: none;
+  /** 白卡片压在淡绿底上边缘会发糊 —— 这一像素让它「脆」起来。
+   *  ⚠️ 5.5% 已经是上限：再深就从「边缘清晰」变成「描了一道框」。 */
+  --sh-ring: inset 0 0 0 1px rgb(47 64 56 / 0.055);
 
-  /* 柔和漫射。⚠️ 模糊阴影比实心阴影贵，所以半径压在 12px 以内，
+  /* 柔和漫射，两层：接触阴影给边界，环境阴影给高度。
+     ⚠️ 模糊阴影比实心阴影贵，所以半径压在 16px 以内并带负 spread
+     （负 spread 收缩绘制面积，比同观感的大半径便宜），
      且只用在按钮和卡片上，绝不给列表里成百上千的元素用 */
-  --sh-drop-primary: 0 4px 12px rgb(43 98 74 / 0.3);
-  --sh-drop-correct: 0 4px 12px rgb(45 120 88 / 0.28);
-  --sh-drop-alert: 0 4px 12px rgb(200 105 92 / 0.28);
-  --sh-drop-surface: 0 3px 10px rgb(47 64 56 / 0.1);
-  --sh-card: 0 2px 8px rgb(47 64 56 / 0.08);
+  --sh-drop-primary: 0 1px 2px rgb(43 98 74 / 0.18), 0 6px 16px -6px rgb(43 98 74 / 0.38);
+  --sh-drop-correct: 0 1px 2px rgb(45 120 88 / 0.16), 0 6px 16px -6px rgb(45 120 88 / 0.34);
+  --sh-drop-alert: 0 1px 2px rgb(200 105 92 / 0.16), 0 6px 16px -6px rgb(200 105 92 / 0.34);
+  --sh-drop-surface:
+    0 1px 2px rgb(47 64 56 / 0.05), 0 6px 16px -6px rgb(47 64 56 / 0.16), var(--sh-ring);
+  --sh-card: 0 1px 2px rgb(47 64 56 / 0.045), 0 4px 12px -5px rgb(47 64 56 / 0.13), var(--sh-ring);
 
-  /** 顶部一条奶油黄带 + 左下淡绿光晕。参考图的空间感全来自那条暖色带：
-   *  它把「页头」和「内容」分开，而不需要任何一条分隔线 */
+  /** 卡片面的微渐变：底部压一点冷影，与这套的灰绿墨色同系。
+   *  纯白大面积在淡绿底上会显得「空」，这 3.5% 就是空和有质感的分界。 */
+  --sf-raised: linear-gradient(176deg, rgb(255 255 255 / 0) 40%, rgb(47 64 56 / 0.038) 100%);
+
+  /** 顶部一条奶油黄带 + 两枚对角光斑。参考图的空间感全来自那条暖色带：
+   *  它把「页头」和「内容」分开，而不需要任何一条分隔线。
+   *
+   *  ⭐ 左下绿 + 右下蓝构成对角呼应，背景才有「深度」而不是一张平色纸。
+   *  用 `ellipse` 而不是 `circle`：正圆光斑在宽屏上看得出是个圆，椭圆才像光。
+   *  ⚠️ 三层都极淡（≤11%）且没有动画 —— 它是舞台背景，一旦被注意到就过了。 */
   --deco:
     linear-gradient(180deg, rgb(252 242 214 / 0.85) 0%, rgb(252 242 214 / 0) 26%),
-    radial-gradient(circle at 8% 72%, rgb(62 155 114 / 0.1), transparent 46%);
+    radial-gradient(ellipse 62% 46% at 6% 74%, rgb(62 155 114 / 0.11), transparent 72%),
+    radial-gradient(ellipse 56% 42% at 94% 90%, rgb(127 168 208 / 0.1), transparent 72%);
 }

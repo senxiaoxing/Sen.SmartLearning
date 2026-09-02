@@ -2,11 +2,11 @@
  * @file 拖拽拆分题 —— 凑十法 / 破十法把一个数拆成两份
  * @layer items
  * @see src/domain/generators/splitTen.ts   题目从哪来（M5.1 / M6.1，两个 ⭐⭐ 关键节点）
- * @see src/components/TenFrame.tsx         与讲解动画共用的十格阵
+ * @see src/components/TenFrame.tsx         与填空脚手架共用的十格阵
  *
  * ⭐ 十格阵不是装饰。孩子看到「格子还空 1 个」就不需要理解抽象的进位规则了，
- * 而且讲解动画用的是**同一个组件**——她在「教」里看到的和在「练」里动手做的
- * 是同一套视觉语言（design/05-孩子反馈与响应.md 第 5 条）。
+ * 而填空题的脚手架（`InputNumber`）用的是**同一个组件**——
+ * 同一个概念在两种题型里长得一样，她才不用重新认一遍。
  */
 
 import { useEffect } from 'react'

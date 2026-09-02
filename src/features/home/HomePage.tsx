@@ -26,12 +26,11 @@ import { plain } from '@/domain/speech'
 import { todayLocal } from '@/domain/time'
 import { GradeUpCeremony } from '@/features/home/GradeUpCeremony'
 import { HomeCompanion } from '@/features/home/HomeCompanion'
+import { HomeGates } from '@/features/home/HomeGates'
 import { HomeGreeting } from '@/features/home/HomeGreeting'
+import { HomeNotices } from '@/features/home/HomeNotices'
 import { HomePets } from '@/features/home/HomePets'
 import { HomeStartAction } from '@/features/home/HomeStartAction'
-import { ParentMessageCard } from '@/features/home/ParentMessageCard'
-import { PlayEntries } from '@/features/home/PlayEntries'
-import { RetryEntry } from '@/features/home/RetryEntry'
 import { unlockAllAudio } from '@/features/home/unlockAllAudio'
 import { useCompanionPets } from '@/features/home/useCompanionPets'
 import { InstallPrompt } from '@/features/onboarding/InstallPrompt'
@@ -137,7 +136,14 @@ export function HomePage() {
 
   return (
     <AppShell width="wide" aside={<HomeCompanion today={today} pendingRetry={pendingRetry} />}>
-      <div className="flex flex-col items-center gap-9 sm:gap-11">
+      {/*
+        ⭐ 间距按「iPad 横屏（1194×834）不用滚」倒推出来。
+        主轴最多五段（伙伴问候 / 科目 / 年级 / 提醒 / 两扇门），
+        gap-11 时光间距就吃掉 220px，最后那两扇门必掉到折叠线以下——
+        而她不会去滚一个「看起来已经完整」的首页，那两扇门等于不存在。
+        ⚠️ 往这条主轴上加东西之前，先想清楚要挤掉谁。
+      */}
+      <div className="flex flex-col items-center gap-6 sm:gap-7">
         <motion.div
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -154,15 +160,21 @@ export function HomePage() {
               say(greeting.utterance)
             }}
           />
-        </motion.div>
 
-        {/* 宽屏时这行让位给侧栏的今日面板 —— 同一份信息不在一屏里出现两次 */}
-        {today.total > 0 && (
-          <p className="text-xl text-ink/60 xl:hidden">
-            今天已经做了 <span className="font-bold tabular-nums text-primary">{today.total}</span>{' '}
-            题， 答对 <span className="font-bold tabular-nums text-correct">{today.correct}</span> 题
-          </p>
-        )}
+          {/*
+            今日进度贴在问候语底下当副标题，**不占主轴一段**。
+            ⚠️ 这不是排版洁癖：iPad 横屏（1194）够不到 `xl`，这行是显示的，
+            而它一旦占掉主轴一段（约 54px），底下那两扇门就会被顶到折叠线以下。
+            宽屏（xl 起）让位给侧栏的今日面板——同一份信息不在一屏里出现两次。
+          */}
+          {today.total > 0 && (
+            <p className="text-lg text-ink/60 xl:hidden">
+              今天已经做了 <span className="font-bold tabular-nums text-primary">{today.total}</span>{' '}
+              题， 答对 <span className="font-bold tabular-nums text-correct">{today.correct}</span>{' '}
+              题
+            </p>
+          )}
+        </motion.div>
 
         <HomeStartAction
           needsAssessment={needsAssessment}
@@ -188,31 +200,26 @@ export function HomePage() {
           />
         )}
 
-        {/* 爸妈的留言。排在「开始学习」之后：它是惊喜，不是必经的关卡，
-            她想先做题就先做题，信一直在那儿 */}
-        {parentMessage !== undefined && (
-          <ParentMessageCard
-            message={parentMessage}
-            onPlay={() => {
-              // 点击是用户手势 —— iOS 只认这一瞬间的调用栈。
-              // 留言是家长手写的，没有预生成片段，只能走 TTS
-              unlockAllAudio(nickname)
-              say(plain(parentMessage.text))
-              void markMessageHeard()
-            }}
-          />
-        )}
+        {/* 留言与错题订正并成一行。都排在「开始学习」之后：它们是惊喜和邀请，
+            不是必经的关卡——她想先做题就先做题，信一直在那儿。
+            ⚠️ 摸底还没做时不给「再练一练」：那时既没有错题，也不该分散注意力 */}
+        <HomeNotices
+          message={parentMessage}
+          onPlayMessage={() => {
+            // 点击是用户手势 —— iOS 只认这一瞬间的调用栈。
+            // 留言是家长手写的，没有预生成片段，只能走 TTS
+            unlockAllAudio(nickname)
+            if (parentMessage !== undefined) say(plain(parentMessage.text))
+            void markMessageHeard()
+          }}
+          pendingRetry={needsAssessment ? 0 : pendingRetry}
+          onRetry={beginRetry}
+        />
 
-        {/* 错题订正的长期入口，为什么必须有见 RetryEntry 文件头。
-            摸底还没做时不出现——那时既没有错题，也不该分散注意力 */}
-        {!needsAssessment && pendingRetry > 0 && (
-          <RetryEntry count={pendingRetry} onClick={beginRetry} />
-        )}
-
-        {/* 六个自由入口（拼音 / 识字 / 古诗 / 字母 / 讲解 / 小屋），都不绑在答题流程里。
-            ⚠️ 进去之前必须解锁音频 —— 这几页的全部内容都是听的，
-            商店也一样（商品名要念给不识字的孩子听），所以它只从小屋进 */}
-        <PlayEntries
+        {/* 两扇门：宠物小屋 · 学习乐园。⚠️ 进去之前必须解锁音频 ——
+            门后面的内容全是听的（商品名要念给不识字的孩子听，
+            乐园里每一页都靠朗读），而 iOS 只认手势那一瞬间的调用栈 */}
+        <HomeGates
           onOpen={(path) => {
             unlockAllAudio(nickname)
             navigate(path)

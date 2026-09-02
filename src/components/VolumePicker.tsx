@@ -21,6 +21,7 @@
  * 而那点差别足以让她以为这是另一个不认识的东西。
  */
 
+import type { ReactNode } from 'react'
 import { BigButton } from '@/components/BigButton'
 
 /** 一辑在切换条上需要的东西。识字的 `HanziVolume`、古诗的 `PoemVolume` 都满足它 */
@@ -28,8 +29,22 @@ export interface VolumeTab {
   id: string
   /** 「第一辑」这类序号标签，家长看的 */
   name: string
-  /** ⭐ 孩子真正认的东西：1️⃣2️⃣3️⃣ */
-  badge: string
+  /**
+   * ⭐ 孩子真正认的东西。
+   *
+   * 识字墙、诗单、年级切换传**朴素数字字符**（`'1'`），由本组件渲染成徽章；
+   * 学习乐园的分区传 `<Icon>`——那里分的是「哪一类」不是「第几批」，
+   * 数字在那个语境下没有意义。
+   *
+   * ⚠️ 别传 emoji 数字（`'1️⃣'`）：它在 iPad（Apple Color Emoji）和
+   * Windows（Segoe UI Emoji）上是两套完全不同的画，开发机看到的和孩子
+   * 看到的对不上，而且那个蓝底白字的方块跟本 App 的任何一套皮肤都不搭。
+   * 见 components/iconPaths.ts 的「为什么不用 emoji」。
+   *
+   * ⚠️ 传图标时**不要**指望字号撑出尺寸，svg 不吃 `font-size`，
+   * 自己在 `className` 上给 `h-* w-*`。
+   */
+  badge: ReactNode
   /** 这一辑装了什么，家长看的一句话 */
   hint: string
 }
@@ -71,9 +86,7 @@ export function VolumePicker({ volumes, activeId, countLabel, onSelect }: Volume
             ].join(' ')}
             onClick={() => onSelect(volume.id)}
           >
-            <span className="text-3xl leading-tight" aria-hidden="true">
-              {volume.badge}
-            </span>
+            <Badge active={active}>{volume.badge}</Badge>
             <span className="text-sm font-normal opacity-80" aria-hidden="true">
               {volume.name}
             </span>
@@ -81,5 +94,38 @@ export function VolumePicker({ volumes, activeId, countLabel, onSelect }: Volume
         )
       })}
     </div>
+  )
+}
+
+interface BadgeProps {
+  children: ReactNode
+  /** 选中态。徽章底衬要跟着按钮的底色走，否则会在选中的实色上糊成一块 */
+  active: boolean
+}
+
+/**
+ * 徽章底座 —— 数字或图标外面那个圆角方块。
+ *
+ * ⭐ 加这个底座是为了让数字**有分量**。裸着的一个「1」在按钮上就是一个字符，
+ * 而衬在方块里它才是一枚「标记」——她认的是这枚标记，不是那个字。
+ *
+ * 底衬用当前文字色的低透明度（`currentColor`）而不是写死颜色：
+ * 选中态按钮是实色底、未选中是白底，两边的文字色本来就不同，
+ * 跟着 `currentColor` 走就永远协调，也不会在换皮肤时漏色。
+ */
+function Badge({ children, active }: BadgeProps) {
+  return (
+    <span
+      aria-hidden="true"
+      className={[
+        'flex h-11 w-11 items-center justify-center rounded-2xl',
+        // tabular-nums：数字宽度固定，1 和 2 切换时徽章不会自己抖一下
+        'text-2xl font-bold leading-none tabular-nums',
+        // 选中态底衬压深一点 —— 实色按钮上 12% 才看得出，白底上 8% 就够
+        active ? 'bg-current/[0.14]' : 'bg-current/[0.07]',
+      ].join(' ')}
+    >
+      {children}
+    </span>
   )
 }

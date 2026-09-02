@@ -19,11 +19,16 @@ export type BigButtonTone = 'primary' | 'neutral' | 'correct' | 'wrong'
  * 星际皮肤的主色是星芒黄，白字压在黄底上对比度只有 1.5:1，等于看不见。
  * `on-primary` 在果冻岛是白、在星际是深墨，由 tokens.css 决定。
  */
+/**
+ * ⚠️ `bg-raised` 是叠在底色之上的**微渐变**（半透明的明暗，见 tokens.css
+ * 的 `--sf-raised`），不是另一种底色。它让大色块从「一块颜色」变成「一个面」，
+ * 是质感的主要来源之一；去掉它按钮会立刻扁回去。
+ */
 const TONE_CLASS: Record<BigButtonTone, string> = {
-  primary: 'bg-primary text-on-primary shadow-drop-primary',
-  neutral: 'bg-surface text-ink shadow-drop-surface',
-  correct: 'bg-correct text-on-correct shadow-drop-correct',
-  wrong: 'bg-alert text-on-alert shadow-drop-alert',
+  primary: 'bg-primary bg-raised text-on-primary shadow-drop-primary',
+  neutral: 'bg-surface bg-raised text-ink shadow-drop-surface',
+  correct: 'bg-correct bg-raised text-on-correct shadow-drop-correct',
+  wrong: 'bg-alert bg-raised text-on-alert shadow-drop-alert',
 }
 
 interface BigButtonProps {

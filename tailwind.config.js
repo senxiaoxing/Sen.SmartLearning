@@ -76,6 +76,14 @@ export default {
       backgroundImage: {
         /** 页面背景装饰层，由 AppShell 铺在最底层 */
         deco: 'var(--deco)',
+        /**
+         * 卡片面的微渐变，叠在 `bg-surface` 之上（背景色 + 背景图，两者共存）。
+         *
+         * ⚠️ 渐变里只放**半透明的明暗**，不放实色 —— 它是「相对于底色变亮/变暗」，
+         * 这样同一条渐变在白卡片和深色卡片上都成立，也不会挡住 `bg-surface/70`
+         * 这类透明用法。
+         */
+        raised: 'var(--sf-raised)',
       },
 
       /**

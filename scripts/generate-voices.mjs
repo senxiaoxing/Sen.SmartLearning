@@ -52,7 +52,6 @@ const LETTERS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishLetters.ts')
 const NICKNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'nicknamePresets.ts')
 const PETNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'petNamePresets.ts')
 const PETS_FILE = join(ROOT, 'src', 'data', 'seed', 'pets.ts')
-const EXPLAINERS_FILE = join(ROOT, 'src', 'data', 'seed', 'explainers.ts')
 const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
 const POEMS_FILE = join(ROOT, 'src', 'data', 'seed', 'poems.ts')
 const SHOP_FILE = join(ROOT, 'src', 'data', 'seed', 'shopItems.ts')
@@ -357,7 +356,6 @@ function loadManifest() {
     loadNicknames(),
     loadPetNames(),
     loadPetLines(),
-    loadExplainers(),
     loadHanzi(),
     loadPoems(),
     loadShopItems(),
@@ -514,40 +512,6 @@ function loadPoems() {
       `  诗题 ${titles} 首（应为 ${EXPECTED_POEM_COUNT}）· ` +
         `译文 ${meanings} 条（应为 ${EXPECTED_POEM_COUNT}）· 诗句 ${lines} 句`,
     )
-    process.exit(1)
-  }
-
-  return out
-}
-
-/**
- * 讲解脚本。
- *
- * 与宠物台词同一个套路：key 写在文本旁边，正则一扫即得。
- * ⚠️ 念的是 `ttsText` 而不是 `text` —— 屏幕上写「9 加 5，我们先把 9 放进十格里」，
- * 念出来的是更完整的「9 加 5。我们先把 9 个放进十格里，旁边还有 5 个」。
- * 抓错字段的话，孩子听到的会是被删节过的半句话。
- */
-function loadExplainers() {
-  const text = readFileSync(EXPLAINERS_FILE, 'utf-8')
-  const out = {}
-
-  for (const [, clipKey, spoken] of text.matchAll(
-    /\bclipKey:\s*'(explain\.[A-Za-z0-9]+)',\s*ttsText:\s*'([^']*)'/g,
-  )) {
-    out[clipKey] = spoken
-  }
-  for (const [, clipKey, title] of text.matchAll(
-    /titleClipKey:\s*'(explain\.[A-Za-z0-9]+)',\s*title:\s*'([^']*)'/g,
-  )) {
-    out[clipKey] = title
-  }
-
-  // ⚠️ 硬失败而不是警告：讲解是全 App 最依赖「听懂」的内容，
-  //    掉回机械合成音等于那道讲解白做，而它不会报任何错
-  if (Object.keys(out).length === 0) {
-    console.error('✗ explainers.ts 的结构变了，本脚本的 loadExplainers() 必须同步：')
-    console.error('  一条 explain.* 都没解析出来')
     process.exit(1)
   }
 

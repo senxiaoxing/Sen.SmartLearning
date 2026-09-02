@@ -4,7 +4,7 @@
  * @see scripts/bundle-voices.mjs     ⚠️ 本文件由它生成，手改会在下次打包时被覆盖
  * @see src/platform/voiceBundles.ts  运行时怎么按索引切片
  *
- * 首次安装只需下载这 13 个包（共 1340 条片段），
+ * 首次安装只需下载这 12 个包（共 1325 条片段），
  * 而不是几百个小文件——请求数才是首装耗时的大头，字节数不是。
  */
 
@@ -30,10 +30,6 @@ export const VOICE_BUNDLES: readonly VoiceBundle[] = [
   {
     "file": "english0.bin",
     "bytes": 2143872
-  },
-  {
-    "file": "explain0.bin",
-    "bytes": 490896
   },
   {
     "file": "hanzi0.bin",
@@ -74,7 +70,7 @@ export const VOICE_BUNDLES: readonly VoiceBundle[] = [
 ]
 
 /** 全部语音包的总字节数 */
-export const VOICE_BUNDLE_TOTAL_BYTES = 28295280
+export const VOICE_BUNDLE_TOTAL_BYTES = 27804384
 
 export const VOICE_BUNDLE_INDEX: Readonly<Record<string, VoiceBundleEntry>> = {
   'ceremony.gradeUpG2': ['core0.bin', 0, 20160],
@@ -237,21 +233,6 @@ export const VOICE_BUNDLE_INDEX: Readonly<Record<string, VoiceBundleEntry>> = {
   'en.yellow': ['english0.bin', 2108592, 10800],
   'en.youreWelcome': ['english0.bin', 2119392, 13248],
   'en.zebra': ['english0.bin', 2132640, 11232],
-  'explain.breakTen0': ['explain0.bin', 0, 38304],
-  'explain.breakTen1': ['explain0.bin', 38304, 32688],
-  'explain.breakTen2': ['explain0.bin', 70992, 33840],
-  'explain.breakTen3': ['explain0.bin', 104832, 53280],
-  'explain.breakTenTitle': ['explain0.bin', 158112, 11376],
-  'explain.makeTen0': ['explain0.bin', 169488, 38592],
-  'explain.makeTen1': ['explain0.bin', 208080, 38448],
-  'explain.makeTen2': ['explain0.bin', 246528, 45504],
-  'explain.makeTen3': ['explain0.bin', 292032, 47088],
-  'explain.makeTenTitle': ['explain0.bin', 339120, 12096],
-  'explain.tenSplit0': ['explain0.bin', 351216, 20160],
-  'explain.tenSplit1': ['explain0.bin', 371376, 20160],
-  'explain.tenSplit2': ['explain0.bin', 391536, 35280],
-  'explain.tenSplit3': ['explain0.bin', 426816, 49968],
-  'explain.tenSplitTitle': ['explain0.bin', 476784, 14112],
   'hanzi.u4e00': ['hanzi0.bin', 0, 19728],
   'hanzi.u4e03': ['hanzi0.bin', 19728, 23040],
   'hanzi.u4e07': ['hanzi0.bin', 42768, 21312],

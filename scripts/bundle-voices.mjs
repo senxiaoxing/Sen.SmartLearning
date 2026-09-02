@@ -56,7 +56,6 @@ const GROUPS = [
   ['petname.', 'pet'],
   ['pet.', 'pet'],
   ['name.', 'pet'],
-  ['explain.', 'explain'],
   // 其余（num/op/phrase/word）都是题干组装件 → core
 ]
 

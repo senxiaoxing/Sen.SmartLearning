@@ -6,7 +6,7 @@
  *
  * 复用十格阵而不是另画一套小棒：孩子在 M1.9（数的组成）、M5.1（凑十法）
  * 里已经反复见过这个图形，同一个概念换一套视觉语言只会增加认知负担
- * （design/05-孩子反馈与响应.md 第 5 条：讲解与练习共用同一套视觉）。
+ * （design/05-孩子反馈与响应.md 第 5 条：同一个概念只用一套视觉语言）。
  */
 
 import { buildNumericOptions } from '@/domain/generators/distractors'

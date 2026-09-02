@@ -52,6 +52,21 @@ export function SubjectPicker({ pets, openSubjects, onPick }: SubjectPickerProps
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               // 只动 scale / y（GPU 合成属性），不碰尺寸属性
               className="flex min-h-touch min-w-touch flex-col items-center gap-2 rounded-blob bg-surface px-8 py-5 shadow-drop-surface"
+              /*
+                ⭐ 卡片顶部一层该科目主题色的光晕，让三张卡各有身份。
+                三张纯白卡片摆在一起时，唯一的区别是科目名那两个字的颜色——
+                而她不识字，等于三张一模一样的卡。光晕把「宠物即标签」那套
+                颜色识别从头像扩到整张卡：淡蓝是数学、淡紫是语文、淡绿是英语。
+
+                ⚠️ 拼在 `var(--sf-raised)` **前面**：光晕在上、卡片面的微渐变在下，
+                两者叠加。写在 style 里而不是 className，是因为主题色是宠物**内容数据**
+                （`pets.ts` 的 hex），不是皮肤语义色——它不该随皮肤变，
+                否则墨墨在星际皮肤下就不是紫的了。
+                `26` / `00` 是 8 位 hex 的 alpha（15% → 0%）。
+              */
+              style={{
+                backgroundImage: `radial-gradient(125% 80% at 50% 0%, ${def.themeColor}26, ${def.themeColor}00 66%), var(--sf-raised)`,
+              }}
             >
               <PetAvatar
                 def={def}
@@ -62,8 +77,10 @@ export function SubjectPicker({ pets, openSubjects, onPick }: SubjectPickerProps
               <span className="text-2xl font-bold" style={{ color: def.themeColor }}>
                 {SUBJECT_LABEL[pet.subject]}
               </span>
-              {/* 宠物名字是孩子自己起的，比科目名更有召唤力 */}
-              <span className="text-sm text-ink/40">{pet.name}</span>
+              {/* 宠物名字是孩子自己起的，比科目名更有召唤力。
+                  ⚠️ 别再压到 40% 以下 —— 那是「装饰性文字」的透明度，
+                  而这行是她给伙伴起的名字，不该淡到看不见 */}
+              <span className="text-sm text-ink/55">{pet.name}</span>
             </motion.button>
           )
         })}

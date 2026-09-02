@@ -485,8 +485,25 @@ localDate: string   // 'YYYY-MM-DD' 本地时区，用于按天统计，写入�
 ```
 每道题自动朗读题干，并且可以反复重听
 触控目标最小 88×88 pt（不是成人的 44pt）
-主要功能不超过 2 层；全程无键盘（宠物起名也是从预录名单里点选，见 PetNamePicker）
+全程无键盘（宠物起名也是从预录名单里点选，见 PetNamePicker）
 ```
+
+#### ⭐ 层级：主线两层，浏览三层
+
+```
+✅ 做题主线永远两层        首页 → 答题
+✅ 浏览类内容放宽到三层    首页 → 学习乐园 → 拼音 / 识字 / 古诗 / 字母
+❌ 把浏览类内容平铺回首页 —— 那正是这条放宽要解决的问题
+```
+
+主线那条**不可放宽**：通往主要功能的路上每多一道门，就流失一部分。
+
+浏览类（`features/playground/`）之所以放宽，是因为内容会一直加，
+而把每一块都摆在首页只有一个结果——**首页越滚越长，三个科目入口被挤出第一屏**。
+收进乐园后首页高度恒定：加内容加到 `playgroundSections.ts` 的某个分区里，首页一格不动。
+
+加内容的规矩与识字/古诗分辑一致：**追加到分区末尾，或新开一个分区**，
+❌ 不重排分区顺序、不插在中间 —— 她记的是「古诗在第三个」这种位置记忆。
 ⛔ **点击选项不朗读**。那一下是提交答案、不是试听，紧接着就响反馈语，
 两个声音会叠在一起（iOS 的 `speechSynthesis.cancel()` 拦不干净）。
 她既然点得下去就说明看懂了——要听的是题干。见 `items/OptionButton.tsx`。
@@ -568,11 +585,11 @@ npm run deploy           # ⭐ 上线：build + scripts/deploy-pages.mjs 推到 
 ```powershell
 npm run voices           # 生成语音 mp3 → public/audio/voice/，并重新打包语音包
                          #   改了 voiceManifest.ts / englishWords.ts / pinyinSyllables.ts
-                         #   / hanziCards.ts / poems.ts / pets.ts / explainers.ts 后必跑
+                         #   / hanziCards.ts / poems.ts / pets.ts 后必跑
                          #   只补缺失的，以及「念的文本变了」的那些（有台账）
 npm run voices -- --force              # 全部重生成（换音色后必须）
 npm run voices -- --voice-en=en-GB-MaisieNeural   # 换英语音色
-npm run voices:bundle    # 只重新打包（1340 条 mp3 → 13 个 .bin 语音包 + 索引）
+npm run voices:bundle    # 只重新打包（1325 条 mp3 → 12 个 .bin 语音包 + 索引）
                          #   ⭐ 首装靠它从「几百个请求」降到个位数，见 design/07 §2.5d
                          #   npm run build 会自动跑，正常不用手动执行
 npm run sfx              # 合成 6 个音效 → public/audio/sfx/

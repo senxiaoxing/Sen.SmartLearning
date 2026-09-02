@@ -15,7 +15,6 @@
  */
 
 import { ALL_ENGLISH_WORDS } from '@/data/seed/englishWords'
-import { EXPLAINERS } from '@/data/seed/explainers'
 import { nicknameClipFor, PET_SPEAKERS } from '@/domain/encourage/petSpeaker'
 import { ALL_HANZI_CARDS } from '@/data/seed/hanziCards'
 import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
@@ -559,20 +558,6 @@ const PET_LINES: VoiceManifest = Object.fromEntries(
 )
 
 /**
- * 讲解脚本。
- *
- * ⭐ 这里是全 App 最该用真人音色的地方：讲解的全部价值在于「听懂原理」，
- * 而机械合成音念一段三十来个字的推理，孩子听两句就走神了——
- * 那道讲解就白做了。脚本是静态内容，整句预生成没有任何障碍。
- */
-const EXPLAINER_LINES: VoiceManifest = Object.fromEntries(
-  [...EXPLAINERS.values()].flatMap((explainer) => [
-    [explainer.titleClipKey, explainer.title] as const,
-    ...explainer.steps.map((step) => [step.clipKey, step.ttsText] as const),
-  ]),
-)
-
-/**
  * 商店商品名（shop.*）。
  *
  * ⭐ 孩子不识字，**商品名必须能朗读**——这也正是现实券只能从预设里挑、
@@ -621,7 +606,6 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...PET_NAMES,
   ...PET_NAME_PRESET_CLIPS,
   ...PET_LINES,
-  ...EXPLAINER_LINES,
   ...SHOP_ITEMS,
   ...CEREMONY,
 }

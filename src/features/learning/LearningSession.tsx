@@ -11,14 +11,11 @@
  */
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
-import { Icon } from '@/components/Icon'
 import { PageHeader } from '@/components/PageHeader'
-import { EXPLAINERS } from '@/data/seed/explainers'
 import { SESSION_CLIPS } from '@/data/seed/voiceManifest'
-import { Explainer } from '@/features/learning/Explainer'
 import { Feedback } from '@/features/learning/Feedback'
 import { ItemRenderer } from '@/items/ItemRenderer'
 import { resolveAnswerSpeech } from '@/domain/resolveAnswerSpeech'
@@ -34,7 +31,6 @@ export function LearningSession() {
   const answer = useSessionStore((s) => s.answer)
   const next = useSessionStore((s) => s.next)
   const countReplay = useSessionStore((s) => s.countReplay)
-  const [showExplainer, setShowExplainer] = useState(false)
 
   // 跳转必须放在 effect 里：渲染期调用 navigate 会在更新另一个组件的同时
   // 更新当前组件，React 会告警且行为不确定
@@ -84,20 +80,6 @@ export function LearningSession() {
     return <CenteredMessage text="今天没有需要练习的内容～" />
   }
 
-  // 当前题目所属知识点若有原理讲解，给一个入口让她自己决定要不要看
-  const explainer = EXPLAINERS.get(current.item.kpId)
-
-  if (showExplainer && explainer !== undefined) {
-    // 用浮层而非路由跳转：会话状态全在内存里，离开页面会丢失整轮题目
-    return (
-      <Explainer
-        explainer={explainer}
-        doneLabel="继续答题"
-        onDone={() => setShowExplainer(false)}
-      />
-    )
-  }
-
   /** 0~1 的比例，直接喂给 scaleX */
   const progress = items.length === 0 ? 0 : index / items.length
 
@@ -130,24 +112,6 @@ export function LearningSession() {
         <span className="shrink-0 text-lg font-bold tabular-nums text-ink/50">
           {index + 1}/{items.length}
         </span>
-
-        {/* 讲解入口只在这道题有原理讲解时出现，且永远是可选的 */}
-        {explainer !== undefined && (
-          <motion.button
-            type="button"
-            aria-label={`看${explainer.title}讲解`}
-            onClick={() => {
-              stopSpeech()
-              setShowExplainer(true)
-            }}
-            whileTap={{ scale: 0.92 }}
-            className="flex h-12 shrink-0 items-center gap-1.5 rounded-full bg-accent/15 px-4 text-base font-bold text-accent"
-          >
-            <Icon name="bulb" className="h-5 w-5" />
-            {/* 窄屏只留图标：进度条比这几个字重要，挤掉进度条是本末倒置 */}
-            <span className="hidden sm:inline">看讲解</span>
-          </motion.button>
-        )}
       </PageHeader>
 
       <main className="flex w-full flex-1 flex-col justify-center">

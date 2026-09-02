@@ -2,8 +2,14 @@
  * @file 路由骨架
  * @layer features
  *
- * 层级刻意保持极浅：三个页面、无嵌套路由、无标签栏。
- * 一年级孩子的导航能力有限，任何深层结构都会让她迷路。
+ * ## 层级：主线两层，浏览三层
+ *
+ * 做题主线（首页 → 答题）**永远只有两层**——一年级孩子的导航能力有限，
+ * 在通往主要功能的路上多一道门就会流失一部分。
+ *
+ * 浏览类内容（首页 → 乐园 → 拼音）放宽到三层，换来的是**首页高度恒定**：
+ * 内容一直在加，把每一块都摆在首页只会让首页越滚越长，
+ * 而她最需要的三个科目入口会被挤出第一屏。见 CLAUDE.md UI 约束。
  */
 
 import { useEffect, useState, type ReactNode } from 'react'
@@ -19,7 +25,6 @@ import { PoemLibrary } from '@/features/chinese/PoemLibrary'
 import { PoemView } from '@/features/chinese/PoemView'
 import { LetterWall } from '@/features/english/LetterWall'
 import { HomePage } from '@/features/home/HomePage'
-import { ExplainerLibrary } from '@/features/learning/ExplainerLibrary'
 import { LearningSession } from '@/features/learning/LearningSession'
 import { SessionSummary } from '@/features/learning/SessionSummary'
 import { Assessment } from '@/features/onboarding/Assessment'
@@ -31,6 +36,7 @@ import { ParentShop } from '@/features/parent/ParentShop'
 import { Report } from '@/features/parent/Report'
 import { WrongBook } from '@/features/parent/WrongBook'
 import { PetHome } from '@/features/pet/PetHome'
+import { PlaygroundPage } from '@/features/playground/PlaygroundPage'
 import { PetRoom } from '@/features/room/PetRoom'
 import { ShopPage } from '@/features/shop/ShopPage'
 
@@ -59,7 +65,7 @@ function AppRoutes() {
   const sessionStatus = useSessionStore((s) => s.status)
   const [updateReady, setUpdateReady] = useState(false)
 
-  // 在这里初始化而不是首页：宠物页、讲解库都可能被直接打开
+  // 在这里初始化而不是首页：宠物页、乐园里的任何一页都可能被直接打开
   // （刷新、从主屏图标进入某个 hash），每个页面各自 init 容易漏
   //
   // 昵称同理：首页、答题、小结、宠物页都要用它称呼孩子。
@@ -97,12 +103,13 @@ function AppRoutes() {
         <Route path="/" element={<HomePage />} />
         <Route path="/assessment" element={<Assessment />} />
         <Route path="/learn" element={<LearningSession />} />
-        <Route path="/explain" element={<ExplainerLibrary />} />
+        {/* ⭐ 学习乐园：全部「教」不是「练」的内容都收在这里，首页只留一扇门。
+            首页 → 乐园 → 拼音，浏览类内容允许三层（CLAUDE.md UI 约束），
+            换来的是首页高度恒定：以后加内容只往乐园的分区里加，首页一格不动 */}
+        <Route path="/playground" element={<PlaygroundPage />} />
         {/* 字母乐园：英语的第一站，先玩后练，不绑在答题流程里 */}
         <Route path="/letters" element={<LetterWall />} />
-        {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定。
-            古诗是这里唯一有二级页的——诗单选一首再看那一首，
-            点击深度仍是 2（首页 → 诗单 → 诗），与家长区的报告页同级 */}
+        {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定 */}
         <Route path="/pinyin" element={<PinyinWall />} />
         <Route path="/hanzi" element={<HanziWall />} />
         <Route path="/poems" element={<PoemLibrary />} />
