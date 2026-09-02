@@ -1082,66 +1082,6 @@
   "text": "生日快乐",
   "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
  },
- "explain.makeTen0": {
-  "text": "9 加 5。我们先把 9 个放进十格里，旁边还有 5 个",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.makeTen1": {
-  "text": "看，十格里还空着 1 个位置。再放 1 个就满十啦",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.makeTen2": {
-  "text": "从旁边的 5 个里拿 1 个补进去，就凑成 10 了。5 分成了 1 和 4",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.makeTen3": {
-  "text": "现在是 10 加剩下的 4，等于 14。所以 9 加 5 等于 14",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.breakTen0": {
-  "text": "13 减 9。13 就是 1 个十，和旁边 3 个一",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.breakTen1": {
-  "text": "要减掉 9 个，可是旁边只有 3 个，不够减",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.breakTen2": {
-  "text": "那我们从十格里减。10 减 9，剩下 1 个",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.breakTen3": {
-  "text": "十格里剩的 1 个，和旁边的 3 个合起来是 4。所以 13 减 9 等于 4",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.tenSplit0": {
-  "text": "十格装满，就是 10 个",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.tenSplit1": {
-  "text": "我们拿出 3 个放到旁边",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.tenSplit2": {
-  "text": "再多拿 3 个出来，格子里剩 4 个，旁边有 6 个",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.tenSplit3": {
-  "text": "不管怎么分，两边合起来永远都是 10。记住这个，后面的题目就容易啦",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.makeTenTitle": {
-  "text": "凑十法",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.breakTenTitle": {
-  "text": "破十法",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
- "explain.tenSplitTitle": {
-  "text": "10 的分与合",
-  "sig": "zh-CN-XiaoyiNeural|-15%|+5%"
- },
  "pinyin.fei1": {
   "text": "飞",
   "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
