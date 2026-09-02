@@ -550,7 +550,9 @@ npm run typecheck        # tsc --noEmit
 npm run test             # vitest run
 npm run build            # 产出 dist/（含 Service Worker 与 manifest）
 npm run preview          # 本地预览生产构建，验证 PWA 是否生效
-npm run deploy           # ⭐ 上线：build + gh-pages 推到 gh-pages 分支
+npm run deploy           # ⭐ 上线：build + scripts/deploy-pages.mjs 推到 gh-pages 分支
+                         #   ⚠️ 不要改回 gh-pages 那个包——文件数超过一千后
+                         #   它在 Windows 上必然 ENAMETOOLONG，见 design/04 §2.1a
 ```
 
 **部署固定走 GitHub Pages**，没有特别指定时就用它，不要提议换托管：
