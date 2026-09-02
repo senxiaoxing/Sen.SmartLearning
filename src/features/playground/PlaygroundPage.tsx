@@ -117,7 +117,12 @@ function EntryCard({ entry, index, onOpen }: EntryCardProps) {
       // 只动 opacity / y / scale（GPU 合成属性），不碰布局属性
       transition={{ delay: index * 0.06, type: 'spring', stiffness: 300, damping: 26 }}
       whileTap={{ scale: 0.96, y: 4 }}
-      className="flex min-h-touch w-36 flex-col items-center justify-center gap-2 rounded-blob bg-surface bg-raised px-3 py-6 shadow-drop-surface sm:w-40"
+      className="flex min-h-touch w-36 flex-col items-center justify-center gap-2 rounded-blob bg-surface px-3 py-6 shadow-drop-surface sm:w-40"
+      /* 顶部一层本条目主题色的光晕，压在卡片面的微渐变之上 ——
+         与首页三张科目卡、两扇门同一个手法，见 playgroundSections 的 `glowVar` */
+      style={{
+        backgroundImage: `radial-gradient(120% 78% at 50% 0%, rgb(var(${entry.glowVar}) / 0.16), transparent 68%), var(--sf-raised)`,
+      }}
     >
       <Icon name={entry.icon} className={`h-12 w-12 ${entry.tint}`} />
       <span className="text-xl font-bold">{entry.label}</span>

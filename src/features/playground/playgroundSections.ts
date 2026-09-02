@@ -34,6 +34,16 @@ export interface PlaygroundEntry {
    * 而分区之间的区别由顶部那一排标签承担。
    */
   tint: string
+  /**
+   * 卡片顶部光晕用的皮肤变量名（`--c-*`），**与 `tint` 同色**。
+   *
+   * ⭐ 光晕把颜色识别从那个小图标扩到整张卡：几张同样的白卡片摆在一起时，
+   * 24px 的图标是唯一的区别，而她是扫一眼就要认出来的。
+   * 与首页三张科目卡、两扇门是同一个手法。
+   *
+   * ⚠️ 存变量名而不是色值 —— 这些是皮肤语义色，换皮肤要跟着变。
+   */
+  glowVar: string
 }
 
 /**
@@ -71,9 +81,20 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
     icon: 'bookshelf',
     hint: '拼音、识字、古诗',
     entries: [
-      { path: '/pinyin', label: '拼音乐园', icon: 'pinyin', tint: 'text-primary' },
-      { path: '/hanzi', label: '识字', icon: 'hanzi', tint: 'text-correct' },
-      { path: '/poems', label: '古诗', icon: 'poem', tint: 'text-alert' },
+      {
+        path: '/pinyin',
+        label: '拼音乐园',
+        icon: 'pinyin',
+        // ⚠️ 别改回 primary：清晨草地皮肤下 primary(#3B7F62) 与 correct(#3E9B72)
+        //    对比度只有 1.4:1（tokens.css 已登记的已知代价），拼音和识字两张卡
+        //    会变成同一个绿。答题反馈那里有星星/文案/音效补偿，
+        //    而这里四张卡并排，**颜色就是主要的区分手段**。
+        //    accent 同时是语文小飞龙墨墨的主题色，拼音用它正好。
+        tint: 'text-accent',
+        glowVar: '--c-accent',
+      },
+      { path: '/hanzi', label: '识字', icon: 'hanzi', tint: 'text-correct', glowVar: '--c-correct' },
+      { path: '/poems', label: '古诗', icon: 'poem', tint: 'text-alert', glowVar: '--c-alert' },
     ],
   },
   {
@@ -81,7 +102,15 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
     name: '英语',
     icon: 'globe',
     hint: '字母',
-    entries: [{ path: '/letters', label: '字母乐园', icon: 'letters', tint: 'text-info' }],
+    entries: [
+      {
+        path: '/letters',
+        label: '字母乐园',
+        icon: 'letters',
+        tint: 'text-info',
+        glowVar: '--c-info',
+      },
+    ],
   },
 ]
 
