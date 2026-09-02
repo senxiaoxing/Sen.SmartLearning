@@ -78,79 +78,79 @@
  "word.fish": "小鱼",
  "pinyin.bo1": {
   "text": "玻",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.po1": {
   "text": "坡",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.mo1": {
   "text": "摸",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.fo2": {
   "text": "佛",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.de1": {
   "text": "的",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.te4": {
   "text": "特",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ne4": {
   "text": "讷",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.le4": {
   "text": "乐",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ge1": {
   "text": "哥",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ke1": {
   "text": "科",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.he1": {
   "text": "喝",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ji1": {
   "text": "鸡",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.qi1": {
   "text": "七",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.xi1": {
   "text": "西",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zhi1": {
   "text": "知",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.chi1": {
   "text": "吃",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.shi1": {
   "text": "诗",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ri4": {
   "text": "日",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zi1": {
   "text": "资",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ci2": {
   "text": "词",
@@ -158,115 +158,115 @@
  },
  "pinyin.si1": {
   "text": "思",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yi1": {
   "text": "衣",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.wu1": {
   "text": "屋",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%|tail"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%|tail"
  },
  "pinyin.a1": {
   "text": "啊",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.o1": {
   "text": "噢",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.e2": {
   "text": "鹅",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%|tail"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%|tail"
  },
  "pinyin.i1": {
   "text": "衣",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.u1": {
   "text": "屋",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%|tail"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%|tail"
  },
  "pinyin.v2": {
   "text": "鱼",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ma1": {
   "text": "妈",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ma2": {
   "text": "麻",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ma3": {
   "text": "马",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ma4": {
   "text": "骂",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ai1": {
   "text": "哀",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ui1": {
   "text": "威",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ao1": {
   "text": "凹",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ou1": {
   "text": "欧",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.iu1": {
   "text": "优",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ie1": {
   "text": "椰",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ve1": {
   "text": "约",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.er2": {
   "text": "儿",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.an1": {
   "text": "安",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.en1": {
   "text": "恩",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%|tail"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%|tail"
  },
  "pinyin.in1": {
   "text": "音",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.un1": {
   "text": "温",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ang1": {
   "text": "肮",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ing1": {
   "text": "英",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ei1": {
   "text": "诶",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.vn1": {
   "text": "yūn",
@@ -274,123 +274,123 @@
  },
  "pinyin.eng1": {
   "text": "鞥",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ong1": {
   "text": "ōng",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yu2": {
   "text": "鱼",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ye4": {
   "text": "叶",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yue4": {
   "text": "月",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yuan3": {
   "text": "远",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yin1": {
   "text": "音",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yun2": {
   "text": "云",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ying1": {
   "text": "英",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ba1": {
   "text": "八",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.da4": {
   "text": "大",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.he2": {
   "text": "禾",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.mi3": {
   "text": "米",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.bi3": {
   "text": "笔",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.di4": {
   "text": "弟",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ni3": {
   "text": "你",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.li3": {
   "text": "里",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.tu3": {
   "text": "土",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.lu4": {
   "text": "路",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.pi2": {
   "text": "皮",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.gu3": {
   "text": "鼓",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.ke4": {
   "text": "课",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.hai3": {
   "text": "海",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.bai2": {
   "text": "白",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.mao1": {
   "text": "猫",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.gou3": {
   "text": "狗",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.shan1": {
   "text": "山",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.feng1": {
   "text": "风",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.mang2": {
   "text": "忙",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.xing1": {
   "text": "星",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "en.hello": "Hello!",
  "en.goodMorning": "Good morning!",
@@ -632,155 +632,155 @@
  "phrase.matchLetterWord": "把字母和它开头的东西配成一对",
  "pinyin.nv3": {
   "text": "女",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.niu2": {
   "text": "牛",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.nan2": {
   "text": "南",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.lan2": {
   "text": "蓝",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.lao3": {
   "text": "老",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zao3": {
   "text": "早",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zou3": {
   "text": "走",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zhao3": {
   "text": "找",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zhu1": {
   "text": "猪",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.cai4": {
   "text": "菜",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.cao3": {
   "text": "草",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.che1": {
   "text": "车",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.chang4": {
   "text": "唱",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.san1": {
   "text": "三",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.song1": {
   "text": "松",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.shu1": {
   "text": "书",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.shui3": {
   "text": "水",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.xin1": {
   "text": "心",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.jin1": {
   "text": "金",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.qing1": {
   "text": "青",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.bang1": {
   "text": "帮",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.huo3": {
   "text": "火",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.yu3": {
   "text": "雨",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.jia1": {
   "text": "家",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.hua1": {
   "text": "花",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.gua1": {
   "text": "瓜",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.xie3": {
   "text": "写",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.guo2": {
   "text": "国",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.duo1": {
   "text": "多",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.zhuo1": {
   "text": "桌",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.xiao3": {
   "text": "小",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.niao3": {
   "text": "鸟",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.jiao3": {
   "text": "脚",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.tian1": {
   "text": "天",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.qiu1": {
   "text": "秋",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.liang4": {
   "text": "亮",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.xiong2": {
   "text": "熊",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.huai4": {
   "text": "坏",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "phrase.whatToLearn": {
   "text": "今天想学点什么",
@@ -1144,7 +1144,7 @@
  },
  "pinyin.fei1": {
   "text": "飞",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "hanzi.u5929": {
   "text": "天。蓝天的天。",
@@ -2448,11 +2448,11 @@
  },
  "pinyin.ci1": {
   "text": "呲",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "pinyin.vn4": {
   "text": "韵",
-  "sig": "zh-CN-XiaoxiaoNeural|-30%|+0%"
+  "sig": "zh-CN-XiaoxiaoNeural|-40%|+0%"
  },
  "shop.rug": {
   "text": "地毯",
