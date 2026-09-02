@@ -71,7 +71,9 @@ export function HanziWall() {
 
   return (
     <AppShell width="wide" layout="stack">
-      <PageHeader onBack={() => navigate('/')} backLabel="返回">
+      {/* ⚠️ 回**学习乐园**不是首页（首页 → 乐园 → 这一页），理由见 PoemLibrary 同处注释：
+          返回键是逐级的 ←，而 `navigate(-1)` 在直接打开 hash 时会退出 App */}
+      <PageHeader onBack={() => navigate('/playground')} backLabel="返回">
         <span className="flex-1 text-center">
           <span className="rounded-full bg-accent/15 px-4 py-2 text-lg font-bold text-accent">
             识字乐园

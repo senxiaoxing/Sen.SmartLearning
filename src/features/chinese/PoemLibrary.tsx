@@ -66,7 +66,15 @@ export function PoemLibrary() {
 
   return (
     <AppShell width="wide" layout="stack">
-      <PageHeader onBack={() => navigate('/')} backLabel="返回">
+      {/*
+        ⚠️ 回**学习乐园**不是首页：这一页现在挂在乐园里（首页 → 乐园 → 诗单），
+        返回键是逐级的 ←，一下跳回首页会把中间那层吃掉。
+
+        ⚠️ 用固定路径而不是 `navigate(-1)`：直接打开这个 hash 时
+        （刷新、Service Worker 更新后重载）历史里没有上一页，
+        `-1` 会退出 App —— 孩子会看到浏览器界面或空白页，而她不识字。
+      */}
+      <PageHeader onBack={() => navigate('/playground')} backLabel="返回">
         <span className="flex-1 text-center">
           <span className="rounded-full bg-accent/15 px-4 py-2 text-lg font-bold text-accent">
             古诗乐园
