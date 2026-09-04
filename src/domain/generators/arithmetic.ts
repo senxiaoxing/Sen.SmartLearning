@@ -8,7 +8,7 @@
  */
 
 import { buildNumericOptions, type NumericDistractor } from '@/domain/generators/distractors'
-import { readBoolean, readEnum, readNumber } from '@/domain/generators/params'
+import { readBoolean, readEnum, readItemType, readNumber } from '@/domain/generators/params'
 import { randomInt } from '@/domain/generators/rng'
 import { num } from '@/domain/speech'
 import type { GeneratedItem, Generator, GeneratorContext } from '@/domain/types'
@@ -90,7 +90,9 @@ function buildTwoTermItem(
   return {
     signature: `${ctx.kpId}#${a}${symbol}${b}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    // ⚠️ 读 `as`，别写死：同一批数据要能以看算 / 选一个 / **听算**三种面貌出现。
+    //    见 domain/generators/params.ts 的 readItemType
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${a} ${symbol} ${b} = ?`,
@@ -143,7 +145,9 @@ function buildThreeTermItem(
   return {
     signature: `${ctx.kpId}#${a}${op1}${b}${op2}${c}`,
     kpId: ctx.kpId,
-    type: 'input_number',
+    // ⚠️ 读 `as`，别写死：同一批数据要能以看算 / 选一个 / **听算**三种面貌出现。
+    //    见 domain/generators/params.ts 的 readItemType
+    type: readItemType(ctx.params, 'input_number'),
     difficulty: ctx.difficulty,
     stem: {
       text: `${a} ${op1} ${b} ${op2} ${c} = ?`,

@@ -60,3 +60,44 @@ export function altTpl(
 ): ItemTemplate {
   return { id: `${kpId}-${suffix}`, kpId, generator, type, params }
 }
+
+/**
+ * 构造一条**听算**备选模板：同样的题，只报不显示，听完从四个里挑。
+ *
+ * 它是 {@link altTpl} 的快捷方式——`as: 'listen_number'` 会被自动补进三档参数，
+ * 免得每个调用点抄三遍还可能抄漏一档（漏了那一档会静默变回看算）。
+ *
+ * ## ⚠️ 什么题**不该**挂听算
+ *
+ * ```
+ * ⛔ 带脚手架的（addWithCarry / subWithBorrow 难度 1 的十格阵）
+ *    脚手架是画出来给她看的，题面藏起来就只剩一幅没有问题的图；
+ *    更糟的是难度 1 反而变得比看算难，难度递进就反了
+ * ⛔ 条件在图里的（尺子、图形、条形图、情境分组图）
+ *    那些题的一半信息在配图上，念不出来
+ * ⛔ 考写法的（「3005 读作什么」）
+ *    念出来就是答案，与拼音标调题同一条理由
+ * ✅ 纯口算：算式全在话里，听完就能算
+ * ```
+ *
+ * ⚠️ 还有一条硬约束：**只能挂给一、二年级的知识点**。三年级起不朗读中文题干，
+ * 那时这个题型没有语音就完全做不了。见 `domain/types.ts` 对 `listen_number` 的说明。
+ *
+ * @example
+ * listenTpl('M4.5', 'arithmetic', { 1: { op: 'add', maxSum: 8 }, … })
+ */
+export function listenTpl(
+  kpId: string,
+  generator: string,
+  params: ParamsByDifficulty,
+): ItemTemplate {
+  // 三档逐一写出来，不用 Object.fromEntries —— 后者会把难度键的字面量类型丢掉，
+  // 只能靠 as 断言接回去，而那正好绕过了「有没有漏一档」的检查
+  const withAs: ParamsByDifficulty = {
+    1: { ...params[1], as: 'listen_number' },
+    2: { ...params[2], as: 'listen_number' },
+    3: { ...params[3], as: 'listen_number' },
+  }
+
+  return altTpl(kpId, 'listen', generator, withAs, 'listen_number')
+}

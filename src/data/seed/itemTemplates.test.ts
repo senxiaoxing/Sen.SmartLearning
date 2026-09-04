@@ -127,6 +127,74 @@ describe('⭐ 二年级起：每个知识点 ≥2 条模板且题型不同', () 
   })
 })
 
+describe('⭐ 听算题：题面藏起来之后，题目还得成立', () => {
+  const listenTemplates = ITEM_TEMPLATES.filter((t) => t.type === 'listen_number')
+
+  it('三档参数都带 as: listen_number —— 漏一档会静默变回看算', () => {
+    const problems: string[] = []
+    for (const t of listenTemplates) {
+      for (const difficulty of [1, 2, 3] as const) {
+        if (t.params[difficulty]?.['as'] !== 'listen_number') {
+          problems.push(`${t.id} 难度${difficulty}`)
+        }
+      }
+    }
+    expect(problems).toEqual([])
+  })
+
+  it('⭐ 实际产出的题型真的是 listen_number —— 生成器得读 as，不能写死', () => {
+    // 这条是渲染出来才发现的：模板参数全对、上面那条断言也过，
+    // 但 arithmetic 把 type 写死成 input_number，于是算式照样显示在屏幕上，
+    // 「听算」变成了看算。⚠️ 上面「声明与实际一致」那条只查 M2- 开头的二年级模板，
+    // 一年级的听算模板整个漏在检查之外。
+    const problems: string[] = []
+    for (const t of listenTemplates) {
+      for (const difficulty of [1, 2, 3] as const) {
+        const item = generateFromTemplate(t, difficulty, createRng(difficulty * 13))
+        if (item.type !== 'listen_number') {
+          problems.push(`${t.id} 难度${difficulty} 产出 ${item.type}`)
+        }
+      }
+    }
+    expect(problems).toEqual([])
+  })
+
+  it('⛔ 不带配图 —— 条件在图里的题，念不出来就无解', () => {
+    // 尺子、图形、条形图、十格阵脚手架都属于「一半信息在画面上」。
+    // 那种题挂了听算，孩子听完只有四个数字可选，题目本身消失了。
+    const problems: string[] = []
+    for (const t of listenTemplates) {
+      for (const difficulty of [1, 2, 3] as const) {
+        const item = generateFromTemplate(t, difficulty, createRng(difficulty * 31))
+        if (item.visual !== undefined) {
+          problems.push(`${t.id} 难度${difficulty} 带了 ${item.visual.kind}`)
+        }
+      }
+    }
+    expect(problems).toEqual([])
+  })
+
+  it('⭐ 题干有可拼的语音片段 —— 没有片段就整句降级 TTS，那是全 App 音色最差的一句', () => {
+    const problems: string[] = []
+    for (const t of listenTemplates) {
+      for (const difficulty of [1, 2, 3] as const) {
+        const item = generateFromTemplate(t, difficulty, createRng(difficulty * 47))
+        if ((item.stem.ttsParts?.length ?? 0) === 0) {
+          problems.push(`${t.id} 难度${difficulty}`)
+        }
+      }
+    }
+    expect(problems).toEqual([])
+  })
+
+  it('⚠️ 只挂在一、二年级 —— 三年级起不朗读中文，这个题型就不存在了', () => {
+    // 语音包封版到二年级（CLAUDE.md 产品红线）。G3 的内容做出来那天，
+    // 这条会立刻拦住「顺手也挂个听算」。
+    const tooLate = listenTemplates.filter((t) => /^M([3-9]|1\d)-/.test(t.kpId))
+    expect(tooLate.map((t) => t.id)).toEqual([])
+  })
+})
+
 describe('⭐ 待办清单必须与实际情况一致', () => {
   it('清单里的知识点确实还没有模板', () => {
     const alreadyDone = PENDING_G2_KP_IDS.filter(

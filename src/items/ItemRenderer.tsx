@@ -14,6 +14,7 @@ import { DragCombine } from '@/items/DragCombine'
 import { DragMatch } from '@/items/DragMatch'
 import { DragOrder } from '@/items/DragOrder'
 import { InputNumber } from '@/items/InputNumber'
+import { ListenNumber } from '@/items/ListenNumber'
 import { MemoryPair } from '@/items/MemoryPair'
 import { TapCount } from '@/items/TapCount'
 import type { GeneratedItem } from '@/domain/types'
@@ -38,6 +39,9 @@ export function ItemRenderer(props: ItemViewProps) {
   switch (props.item.type) {
     case 'input_number':
       return <InputNumber {...props} />
+    // ⚠️ 同一批数据的另一种考法：只报题、不显示算式。见 domain/types.ts
+    case 'listen_number':
+      return <ListenNumber {...props} />
     case 'choice_text':
       return <ChoiceText {...props} />
     case 'choice_audio':

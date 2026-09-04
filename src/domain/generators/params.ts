@@ -125,29 +125,41 @@ export function readEnum<T extends string>(
   return raw as T
 }
 
+/** 可以靠 `as` 互换的题型。见 {@link readItemType} */
+export type SwappableItemType = 'input_number' | 'choice_text' | 'listen_number'
+
 /**
  * 读取「这道题以哪种题型呈现」。
  *
- * ⭐ 只允许 `input_number` 与 `choice_text` 互换，因为这两者的**数据结构完全相同**
- * （都是四个选项加一个答案字符串），差别只在 UI 怎么渲染——
- * 一个敲数字键盘、一个点选项。放开到 `drag_match` 之类会让 UI 拿到对不上的数据。
+ * ⭐ 只允许这三者互换，因为它们的**数据结构完全相同**（都是四个选项加一个
+ * 答案字符串），差别只在 UI 怎么渲染：看着算 / 从四个里挑 / **只听不看**。
+ * 放开到 `drag_match` 之类会让 UI 拿到对不上的数据。
  *
  * 它存在的理由是 CLAUDE.md 的「题型必须多样」：二年级起每个知识点要挂
- * ≥2 条题型不同的模板。对纯计算题来说，「自己算出来」和「从四个里挑」
- * 是孩子真能感觉到的两种题，而且后者可以用排除法——难度也确实不同。
+ * ≥2 条题型不同的模板。对纯计算题来说这三种是孩子真能感觉到的三种题——
+ * 后两者一个可以用排除法、一个连题面都没有，难度也确实不同。
+ *
+ * ⚠️ `listen_number` **只能挂给一、二年级的知识点**：三年级起不朗读中文题干，
+ * 那时它没有语音就完全做不了。见 `domain/types.ts` 对该题型的说明。
  *
  * @param params - 生成器参数对象
  * @param fallback - 该生成器的默认题型
  *
  * @example
- * readItemType({ as: 'choice_text' }, 'input_number')   // 'choice_text'
- * readItemType({}, 'input_number')                      // 'input_number'
+ * readItemType({ as: 'choice_text' }, 'input_number')     // 'choice_text'
+ * readItemType({ as: 'listen_number' }, 'input_number')   // 'listen_number'
+ * readItemType({}, 'input_number')                        // 'input_number'
  */
 export function readItemType(
   params: Record<string, unknown>,
   fallback: 'input_number' | 'choice_text',
-): 'input_number' | 'choice_text' {
-  return readEnum(params, 'as', ['input_number', 'choice_text'] as const, fallback)
+): SwappableItemType {
+  return readEnum(
+    params,
+    'as',
+    ['input_number', 'choice_text', 'listen_number'] as const,
+    fallback,
+  )
 }
 
 /**

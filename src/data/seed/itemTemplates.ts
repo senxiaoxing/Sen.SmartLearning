@@ -26,7 +26,7 @@ import {
   usable,
   USABLE_SYLLABLES,
 } from '@/data/seed/pinyinSyllables'
-import { altTpl, tpl } from '@/data/seed/templateBuilder'
+import { altTpl, listenTpl, tpl } from '@/data/seed/templateBuilder'
 import type { Syllable } from '@/domain/pinyin'
 import type { ItemTemplate } from '@/domain/types'
 
@@ -255,7 +255,17 @@ export const ITEM_TEMPLATES: ItemTemplate[] = [
     2: { op: 'add', maxSum: 10 },
     3: { op: 'add', maxSum: 10 },
   }),
+  listenTpl('M4.5', 'arithmetic', {
+    1: { op: 'add', maxSum: 8 },
+    2: { op: 'add', maxSum: 10 },
+    3: { op: 'add', maxSum: 10 },
+  }),
   tpl('M4.6', 'arithmetic', {
+    1: { op: 'sub', maxSum: 8 },
+    2: { op: 'sub', maxSum: 10 },
+    3: { op: 'sub', maxSum: 10 },
+  }),
+  listenTpl('M4.6', 'arithmetic', {
     1: { op: 'sub', maxSum: 8 },
     2: { op: 'sub', maxSum: 10 },
     3: { op: 'sub', maxSum: 10 },

@@ -32,6 +32,7 @@ import {
   gradeLevelOf,
   type Attempt,
   type GradeLevel,
+  type ItemType,
   type ScheduledItem,
   type SessionMode,
   type Subject,
@@ -58,6 +59,29 @@ const profileGradeLevel = (): GradeLevel => gradeLevelOf(useProfileStore.getStat
  * 而不是一次漫长跋涉。每日总量靠多轮累计，并不减少。
  */
 const DEFAULT_ITEM_COUNT = 10
+
+/**
+ * 听算题的「听题」时长（毫秒），从计时里扣掉。
+ *
+ * ⭐ **不扣会歪掉 SM-2 的排期。** `toRecallQuality` 拿本次耗时与该知识点的
+ * 历史均值比，而听算题她得先听完才谈得上算——同一个知识点里听算恒定慢两秒，
+ * 于是看算的题一律被判成「又快又对」（quality 5，间隔拉长），
+ * 听算的一律「还在硬算」（quality 3，间隔压短），而这跟她会不会毫无关系。
+ *
+ * 2000ms 的来处：「9 加 5 等于几」是 4 个片段，裁静音后每条约 0.45 秒、
+ * 间隔 80ms，合计约 2.0 秒（见 platform/speechClips.ts 的实测数据）。
+ * ⚠️ 二年级的长题干会超出这个数，那时她的耗时会被算多一点——
+ * 宁可偏这个方向：**低估听题时间只是让 quality 保守，高估则会虚报「又快又对」**。
+ */
+const LISTEN_LEAD_MS = 2000
+
+/**
+ * 这道题从什么时候开始计时。
+ *
+ * 听算题往后推 {@link LISTEN_LEAD_MS}，其余题型就是此刻。
+ */
+const timingStart = (type: ItemType | undefined): number =>
+  Date.now() + (type === 'listen_number' ? LISTEN_LEAD_MS : 0)
 
 /**
  * 当前确实出得了题的知识点。
@@ -330,7 +354,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       subject,
       masteredCount: 0,
       pointsEarned: 0,
-      questionStartedAt: Date.now(),
+      questionStartedAt: timingStart(items[0]?.item.type),
       ttsReplayCount: 0,
     })
   },
@@ -357,7 +381,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       isRetrySession: true,
       // 订正是独立的一轮，积分重新计——小结页要显示的是「这次订正赚了多少」
       pointsEarned: 0,
-      questionStartedAt: Date.now(),
+      questionStartedAt: timingStart(wrong[0]?.item.type),
       ttsReplayCount: 0,
     })
   },
@@ -395,7 +419,8 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       isCorrect,
       selectedOptionId: optionId,
       ...(option.misconceptionTag !== undefined && { misconceptionTag: option.misconceptionTag }),
-      responseTimeMs: Date.now() - state.questionStartedAt,
+      // ⚠️ 夹到 0：听算题的计时起点是往后推的，她抢在念完前就答会得到负数
+      responseTimeMs: Math.max(0, Date.now() - state.questionStartedAt),
       hintUsed: false,
       ttsReplayCount: state.ttsReplayCount,
       isRetry: state.isRetrySession,
@@ -446,7 +471,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       index: nextIndex,
       status: 'active',
       feedback: null,
-      questionStartedAt: Date.now(),
+      questionStartedAt: timingStart(state.items[nextIndex]?.item.type),
       ttsReplayCount: 0,
     })
   },
