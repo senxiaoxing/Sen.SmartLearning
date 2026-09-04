@@ -36,11 +36,25 @@ import {
   wholePoemUtterance,
 } from '@/domain/poem'
 import { prefetchClips, say, stopSpeech } from '@/platform/speech'
+import { useHoldToSlow } from '@/platform/useHoldToSlow'
+import type { PoemLine as PoemLineData } from '@/domain/poem'
+
+/** 长按放慢时，不让 iOS 的系统菜单把这一下抢走 */
+const HOLDABLE = 'select-none touch-manipulation [-webkit-touch-callout:none]'
 
 export function PoemView() {
   const navigate = useNavigate()
   const { id = '' } = useParams()
   const poem = poemById(id)
+
+  // ⚠️ 必须排在下面那个 early return 之前 —— hooks 不能在条件之后调。
+  //    取话的函数只在长按真的触发时才求值，那时 early return 早就走过了
+  //
+  // ⛔ 「读整首」不加长按：四句连着慢放太长，而背诵时要反复磨的本来就是**某一句**
+  const meaningHold = useHoldToSlow(() => ({
+    parts: [poemMeaningClipKey(id)],
+    fallbackText: poemById(id)?.meaning ?? '',
+  }))
 
   /**
    * 进页面把这首诗的全部片段预取好。
@@ -89,19 +103,7 @@ export function PoemView() {
 
         <div className="mt-5 flex w-full flex-col gap-3">
           {poem.lines.map((line, index) => (
-            <button
-              key={line.text}
-              type="button"
-              aria-label={line.text}
-              onClick={() =>
-                say({ parts: [poemLineClipKey(poem.id, index)], fallbackText: line.spoken ?? line.text })
-              }
-              // 单句触控区做满一整行：孩子点的是「这一句」，不是某个字
-              className="flex flex-col items-center gap-1 rounded-blob px-3 py-3 active:bg-surface/70"
-            >
-              <span className="text-base tracking-wide text-ink/45">{line.pinyin}</span>
-              <span className="text-3xl font-bold leading-snug tracking-wide">{line.text}</span>
-            </button>
+            <PoemLineButton key={line.text} line={line} clipKey={poemLineClipKey(poem.id, index)} />
           ))}
         </div>
 
@@ -114,10 +116,12 @@ export function PoemView() {
         <button
           type="button"
           aria-label={`译文：${poem.meaning}`}
-          onClick={() =>
+          {...meaningHold.holdProps}
+          onClick={() => {
+            if (meaningHold.consumeHold()) return
             say({ parts: [poemMeaningClipKey(poem.id)], fallbackText: poem.meaning })
-          }
-          className="mt-6 w-full rounded-blob bg-surface/70 p-4 text-left active:bg-surface"
+          }}
+          className={`mt-6 w-full rounded-blob bg-surface/70 p-4 text-left active:bg-surface ${HOLDABLE}`}
         >
           <span className="flex items-center gap-2 pb-2 text-lg font-bold text-info">
             <span aria-hidden="true">🌸</span>
@@ -127,5 +131,32 @@ export function PoemView() {
         </button>
       </motion.article>
     </AppShell>
+  )
+}
+
+/**
+ * 一句诗。**按住会慢一档**——背诗要反复磨的就是某一句。
+ *
+ * 单独成组件是因为 hook 不能写在 `map` 里，而每一句都要有自己的长按状态。
+ */
+function PoemLineButton({ line, clipKey }: { line: PoemLineData; clipKey: string }) {
+  const utteranceOf = () => ({ parts: [clipKey], fallbackText: line.spoken ?? line.text })
+  const { holdProps, consumeHold } = useHoldToSlow(utteranceOf)
+
+  return (
+    <button
+      type="button"
+      aria-label={line.text}
+      {...holdProps}
+      onClick={() => {
+        if (consumeHold()) return
+        say(utteranceOf())
+      }}
+      // 单句触控区做满一整行：孩子点的是「这一句」，不是某个字
+      className={`flex flex-col items-center gap-1 rounded-blob px-3 py-3 active:bg-surface/70 ${HOLDABLE}`}
+    >
+      <span className="text-base tracking-wide text-ink/45">{line.pinyin}</span>
+      <span className="text-3xl font-bold leading-snug tracking-wide">{line.text}</span>
+    </button>
   )
 }

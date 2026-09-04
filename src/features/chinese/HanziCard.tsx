@@ -18,6 +18,7 @@
 import { motion } from 'framer-motion'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
 import { say } from '@/platform/speech'
+import { useHoldToSlow } from '@/platform/useHoldToSlow'
 import type { HanziCard as HanziCardData } from '@/domain/hanzi'
 
 interface HanziCardProps {
@@ -26,16 +27,24 @@ interface HanziCardProps {
 
 export function HanziCard({ card }: HanziCardProps) {
   const spoken = hanziSpokenText(card)
+  /** 按住会慢一档 —— 「天。蓝天的天。」整句慢下来，听得清那个字的调 */
+  const utteranceOf = () => ({ parts: [hanziClipKey(card.char)], fallbackText: spoken })
+  const { holdProps, consumeHold } = useHoldToSlow(utteranceOf)
 
   return (
     <motion.button
       type="button"
       // 读出「天，蓝天」而不是「按钮」：VoiceOver 下也该听到内容本身
       aria-label={`${card.char}，${card.word}`}
-      onClick={() => say({ parts: [hanziClipKey(card.char)], fallbackText: spoken })}
+      {...holdProps}
+      onClick={() => {
+        if (consumeHold()) return
+        say(utteranceOf())
+      }}
       whileTap={{ scale: 0.94 }}
       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-      className="flex min-h-[170px] flex-col items-center justify-center gap-1 rounded-blob bg-surface px-2 py-3 text-ink shadow-drop-surface"
+      // 长按要不被 iOS 的系统菜单抢走，见 useHoldToSlow.ts 文件头第 3 条
+      className="flex min-h-[170px] select-none touch-manipulation flex-col items-center justify-center gap-1 rounded-blob bg-surface px-2 py-3 text-ink shadow-drop-surface [-webkit-touch-callout:none]"
     >
       <span className="text-base tabular-nums text-ink/45">{card.pinyin}</span>
 

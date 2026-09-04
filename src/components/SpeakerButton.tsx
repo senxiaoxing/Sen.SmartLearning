@@ -9,6 +9,8 @@
 
 import { motion } from 'framer-motion'
 import { say } from '@/platform/speech'
+import { useHoldToSlow } from '@/platform/useHoldToSlow'
+import type { Utterance } from '@/domain/speech'
 
 interface SpeakerButtonProps {
   /** 朗读文本。应传 `ttsText` 而非显示文本（算式 `9 + 5` 要读作「9 加 5 等于几」） */
@@ -37,6 +39,16 @@ interface SpeakerButtonProps {
 /**
  * 点击后朗读指定内容的圆形按钮。
  *
+ * **按住 600ms 会慢一档**（`platform/useHoldToSlow.ts`）。慢速走 `<audio>` 的
+ * `preservesPitch`，变速**不变调**——变调会把 `má` 听成另一个音，
+ * 见 `platform/slowSpeech.ts` 文件头。
+ *
+ * ⚠️ 触发方式只有长按，**没有「连点两次就放慢」**：那会把「再听一遍」
+ * 这个最常用的动作绑上第二种结果，她想重听正常速度时反而得不到。
+ *
+ * ⚠️ 慢速只属于**题干**。选项的朗读不走这个组件（见 `items/OptionButton.tsx`），
+ * 同一道题里的选项必须同一档语速，否则「更慢的那个」会变成猜答案的线索。
+ *
  * @example
  * <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={countReplay} />
  */
@@ -49,19 +61,30 @@ export function SpeakerButton({
   size = 'lg',
 }: SpeakerButtonProps) {
   const dimension = size === 'lg' ? 'h-[88px] w-[88px]' : 'h-[64px] w-[64px]'
+  const utteranceOf = (): Utterance => ({ parts: parts ?? [], fallbackText: text, lang })
+  const { holdProps, consumeHold, slowed } = useHoldToSlow(utteranceOf, {
+    onBeforeSpeak,
+    onSpoke: onReplay,
+  })
 
   return (
     <motion.button
       type="button"
-      aria-label="再听一遍"
+      aria-label="再听一遍，按住可以放慢"
+      {...holdProps}
       onClick={() => {
+        if (consumeHold()) return
+        // 幂等，重复调用无代价；留着是为了键盘/读屏激活（那条路没有 pointerdown）
         onBeforeSpeak?.()
-        say({ parts: parts ?? [], fallbackText: text, lang })
+        say(utteranceOf())
         onReplay?.()
       }}
       whileTap={{ scale: 0.9 }}
+      animate={slowed ? { scale: [1, 1.14, 1] } : { scale: 1 }}
       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-      className={`${dimension} shrink-0 rounded-full bg-info/15 text-info flex items-center justify-center`}
+      className={`${dimension} shrink-0 rounded-full flex items-center justify-center
+        select-none touch-manipulation [-webkit-touch-callout:none]
+        ${slowed ? 'bg-accent/25 text-accent' : 'bg-info/15 text-info'}`}
     >
       <SpeakerIcon />
     </motion.button>

@@ -38,6 +38,30 @@ const cache = new Map<string, AudioBuffer>()
 const inflight = new Map<string, Promise<AudioBuffer | null>>()
 
 /**
+ * 每个片段的人声区间，由 {@link loadClip} 顺带记下。
+ *
+ * 正常播放用不到它（裁剪已经烘进 AudioBuffer 了），
+ * 但慢速播放走的是 `<audio>` 元素、拿的是**未裁剪**的原始 mp3，
+ * 得靠这里的区间自己掐头去尾。见 {@link loadClipMedia}。
+ */
+const ranges = new Map<string, ClipRange>()
+
+/** 慢速播放要的原始 mp3 与人声区间 */
+export interface ClipMedia extends ClipRange {
+  /** 原始 mp3 的 Blob URL，可直接喂给 `<audio>` */
+  url: string
+}
+
+interface ClipRange {
+  /** 人声起点（秒），`<audio>` 要 seek 到这里 */
+  start: number
+  /** 人声终点（秒），播到这里就该停，别放那 1.2 秒尾巴 */
+  end: number
+}
+
+const urls = new Map<string, string>()
+
+/**
  * 找出音频里人声的起止位置（秒）。
  *
  * 用 RMS 逐帧扫描而不是看单个采样点：单点会被一个尖峰噪声骗到，
@@ -129,6 +153,7 @@ export function loadClip(ctx: AudioContext, key: string): Promise<AudioBuffer | 
       if (bytes === null) return null
       const decoded = await ctx.decodeAudioData(bytes)
       const { start, end } = findSpeechRange(decoded)
+      ranges.set(key, { start, end })
       const trimmed = trim(ctx, decoded, start, end)
       cache.set(key, trimmed)
       return trimmed
@@ -147,4 +172,41 @@ export function loadClip(ctx: AudioContext, key: string): Promise<AudioBuffer | 
 /** 这个片段是否已解码好，可以零延迟播放 */
 export function isClipReady(key: string): boolean {
   return cache.has(key)
+}
+
+/**
+ * 取慢速播放要的原始 mp3 与人声区间。
+ *
+ * ⭐ **为什么不复用 {@link loadClip} 的 AudioBuffer**：慢速走 `<audio>` 元素的
+ * `preservesPitch`（变速不变调），而 AudioBuffer 喂不进 `<audio>`。
+ * 所以这里另取一份原始字节包成 Blob，裁剪改由播放方按区间 seek/pause 完成。
+ *
+ * 仍然先调一次 `loadClip`：区间是解码时算出来的，不解码就没有区间；
+ * 而它自带缓存，正常播放过的片段在这里是直接命中的。
+ *
+ * @param ctx - 用于解码的音频上下文
+ * @param key - 片段 key
+ * @returns Blob URL 与人声区间；片段取不到或解码失败时 `null`（调用方整句降级 TTS）
+ *
+ * @example
+ * const media = await loadClipMedia(ctx, 'pinyin.ma3')
+ * // → { url: 'blob:http://…', start: 0.21, end: 0.79 }
+ */
+export async function loadClipMedia(ctx: AudioContext, key: string): Promise<ClipMedia | null> {
+  if ((await loadClip(ctx, key)) === null) return null
+  const range = ranges.get(key)
+  if (range === undefined) return null
+
+  const cachedUrl = urls.get(key)
+  if (cachedUrl !== undefined) return { url: cachedUrl, ...range }
+
+  const bytes = await fetchClipBytes(key)
+  if (bytes === null) return null
+
+  // ⚠️ 不回收这些 Blob URL：它们要一直可用（同一个片段会被反复慢放），
+  //    而片段本身只有几十 KB、一次会话至多用到上百个。
+  //    revoke 之后再播就是一次静默失败，那个代价远大于这点内存。
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }))
+  urls.set(key, url)
+  return { url, ...range }
 }

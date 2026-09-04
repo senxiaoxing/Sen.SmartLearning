@@ -23,6 +23,13 @@
  */
 
 import { hasClip } from '@/data/seed/voiceManifest'
+import {
+  isSlowReady,
+  playSlowUtterance,
+  stopSlowSpeech,
+  unlockSlowSpeech,
+  SLOW_TTS_RATE,
+} from '@/platform/slowSpeech'
 import { loadClip } from '@/platform/speechClips'
 import { speak as speakTts, stopSpeaking as stopTts } from '@/platform/tts'
 import type { ClipKey, Utterance } from '@/domain/speech'
@@ -66,6 +73,10 @@ function audioContext(): AudioContext | null {
  * @param warmup - 要预热的片段 key。传数字与常用运算词即可，其余按需加载
  */
 export function unlockSpeechPlayback(warmup: readonly ClipKey[] = []): void {
+  // ⚠️ 排在 early return 之前：慢速走的是 `<audio>` 元素，和 AudioContext 是
+  //    两条独立的通道，前者拿不到上下文也照样要解锁（见 slowSpeech.ts 文件头）
+  unlockSlowSpeech()
+
   const audio = audioContext()
   if (audio === null) return
   void audio.resume()
@@ -109,6 +120,17 @@ export function prefetchClips(keys: readonly ClipKey[]): void {
   }
 }
 
+/** {@link say} 的播放选项 */
+export interface SayOptions {
+  /**
+   * 慢速播放（长按喇叭）。走 `<audio>` 的 `preservesPitch`，变速**不变调**。
+   *
+   * ⚠️ 只用于**题干**，不要用在选项上：同一道题里的选项必须同一档语速，
+   * 否则「更慢的那个」会变成猜答案的线索（design/05 第 14 条）。
+   */
+  slow?: boolean
+}
+
 /**
  * 朗读一句话。会打断当前正在播放的内容。
  *
@@ -116,11 +138,13 @@ export function prefetchClips(keys: readonly ClipKey[]): void {
  * 而不是听完第一遍再听第二遍。
  *
  * @param utterance - 待朗读语句。片段缺失时自动整句降级为 TTS
+ * @param opts - 播放选项，见 {@link SayOptions}
  *
  * @example
  * say(utter([num(9), 'op.plus', num(5), 'phrase.equalsWhat'], '9 加 5 等于几'))
+ * say(utterance, { slow: true })   // 长按喇叭：慢一档，不变调
  */
-export function say(utterance: Utterance): void {
+export function say(utterance: Utterance, opts: SayOptions = {}): void {
   stopSpeech()
 
   // ⚠️ 只要有**任意一个**片段缺失就整句走 TTS，而不是「有的片段有的 TTS」。
@@ -131,7 +155,17 @@ export function say(utterance: Utterance): void {
 
   const audio = audioContext()
   if (!usable || audio === null) {
-    speakTts(utterance.fallbackText, utterance.lang)
+    speakTts(utterance.fallbackText, utterance.lang, opts.slow === true ? SLOW_TTS_RATE : undefined)
+    return
+  }
+
+  // ⚠️ 慢速通道不可用时**照常用正常速度播**，绝不静音。
+  //    它只在首页那次点击里解锁，而孩子可以整页刷新后直接停在拼音墙上；
+  //    真播不出来（iOS 拒了 play）时 playSlowUtterance 会报 false，这里补一遍。
+  if (opts.slow === true && isSlowReady()) {
+    void playSlowUtterance(audio, utterance).then((ok) => {
+      if (!ok) void playSequence(audio, utterance)
+    })
     return
   }
 
@@ -182,4 +216,5 @@ export function stopSpeech(): void {
   }
   playing = []
   stopTts()
+  stopSlowSpeech()
 }

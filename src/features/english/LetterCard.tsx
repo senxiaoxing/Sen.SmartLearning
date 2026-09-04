@@ -14,7 +14,9 @@
 
 import { motion } from 'framer-motion'
 import { say } from '@/platform/speech'
+import { useHoldToSlow } from '@/platform/useHoldToSlow'
 import type { LetterCard as LetterCardData } from '@/data/seed/englishLetters'
+import type { Utterance } from '@/domain/speech'
 
 interface LetterCardProps {
   card: LetterCardData
@@ -28,19 +30,31 @@ interface LetterCardProps {
 const BACKFACE_HIDDEN = { backfaceVisibility: 'hidden' as const }
 
 export function LetterCard({ card, flipped, learned, onFlip }: LetterCardProps) {
+  /** 按住会慢一档。英语发音是教学内容本身，听不清那个音就学不对 */
+  const utteranceOf = (): Utterance => ({
+    parts: [card.clipKey],
+    fallbackText: card.sentence,
+    lang: 'en-US',
+  })
+  const { holdProps, consumeHold } = useHoldToSlow(utteranceOf)
+
   return (
     <button
       type="button"
       // 读出字母而不是「按钮」：VoiceOver 下也该听到内容本身
       aria-label={`${card.upper}，${card.wordZh}`}
+      {...holdProps}
       onClick={() => {
+        // ⚠️ 长按只是想听慢一点，不该顺手把卡翻过去
+        if (consumeHold()) return
         // ⭐ 每次点击都朗读，包括翻回正面时 —— 她可能只是想再听一遍
-        say({ parts: [card.clipKey], fallbackText: card.sentence, lang: 'en-US' })
+        say(utteranceOf())
         onFlip(card.upper)
       }}
       // 一年级的触控下限是 88pt（成人 44pt），这里远超——
-      // 卡片是这一页的主角，大到能一眼看清字形本身
-      className="min-h-[170px] [perspective:600px]"
+      // 卡片是这一页的主角，大到能一眼看清字形本身。
+      // select-none 那一串是为了长按不被 iOS 的系统菜单抢走
+      className="min-h-[170px] select-none touch-manipulation [perspective:600px] [-webkit-touch-callout:none]"
     >
       <motion.div
         animate={{ rotateY: flipped ? 180 : 0 }}

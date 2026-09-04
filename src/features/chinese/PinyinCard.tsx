@@ -14,6 +14,7 @@
 
 import { motion } from 'framer-motion'
 import { say } from '@/platform/speech'
+import { useHoldToSlow } from '@/platform/useHoldToSlow'
 import type { PinyinChartCard } from '@/data/seed/pinyinChart'
 
 interface PinyinCardProps {
@@ -23,18 +24,29 @@ interface PinyinCardProps {
 }
 
 export function PinyinCard({ card, learned }: PinyinCardProps) {
+  // ⭐ 按住这张卡会慢一档。这一页正是慢速最该服务的地方——孩子的原话是
+  //    「n 和 l 听不出来」「má 和 mǎ 很容易搞混」（design/05 第 14 条）
+  const utteranceOf = () => ({ parts: [card.clipKey], fallbackText: card.spoken })
+  const { holdProps, consumeHold } = useHoldToSlow(utteranceOf)
+
   return (
     <motion.button
       type="button"
       // 读出口诀而不是「按钮」：VoiceOver 下也该听到内容本身
       aria-label={`${card.form}，${card.mnemonic}`}
-      onClick={() => say({ parts: [card.clipKey], fallbackText: card.spoken })}
+      {...holdProps}
+      onClick={() => {
+        if (consumeHold()) return
+        say(utteranceOf())
+      }}
       whileTap={{ scale: 0.94 }}
       transition={{ type: 'spring', stiffness: 500, damping: 25 }}
       className={[
         // 一年级触控下限是 88pt，这里远超——字形本身就是要看清的东西
         'flex min-h-[150px] flex-col items-center justify-center gap-1 rounded-blob px-2 py-3',
         'bg-surface text-ink shadow-drop-surface',
+        // 长按要不被 iOS 的系统菜单抢走，见 useHoldToSlow.ts 文件头第 3 条
+        'select-none touch-manipulation [-webkit-touch-callout:none]',
         learned ? 'ring-4 ring-primary' : '',
       ].join(' ')}
     >
