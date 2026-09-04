@@ -20,6 +20,7 @@ import { onPageResume } from '@/platform/onPageResume'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { HanziWall } from '@/features/chinese/HanziWall'
+import { StrokeWall } from '@/features/chinese/StrokeWall'
 import { PinyinWall } from '@/features/chinese/PinyinWall'
 import { PoemLibrary } from '@/features/chinese/PoemLibrary'
 import { PoemView } from '@/features/chinese/PoemView'
@@ -112,6 +113,7 @@ function AppRoutes() {
         {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定 */}
         <Route path="/pinyin" element={<PinyinWall />} />
         <Route path="/hanzi" element={<HanziWall />} />
+        <Route path="/strokes" element={<StrokeWall />} />
         <Route path="/poems" element={<PoemLibrary />} />
         <Route path="/poems/:id" element={<PoemView />} />
         <Route path="/pets" element={<PetHome />} />

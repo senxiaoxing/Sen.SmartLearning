@@ -8,6 +8,20 @@
  * 生成脚本、清单、UI 三方都按这里的规则推 key，不各自拼字符串。
  */
 
+/**
+ * 一个字的笔顺数据，来自 `data/seed/strokeOrder.json`（由 `npm run stroke:data` 生成）。
+ *
+ * ⚠️ **那份 JSON 里没有的字就是没核对过的字**，写字墙上不会出现它。
+ * 见 design/09 §6.4：验不了的字宁可不给笔顺，也不能教错——
+ * 手上的肌肉记忆比读音还难改。
+ */
+export interface StrokeOrder {
+  /** 笔画轮廓（SVG path 的 d），顺序即笔顺 */
+  strokes: string[]
+  /** 笔画中线，描画动画沿它走 */
+  medians: number[][][]
+}
+
 /** 一张识字卡的完整内容 */
 export interface HanziCard {
   /** 汉字本身，卡片主体。⚠️ 必须是单字 */

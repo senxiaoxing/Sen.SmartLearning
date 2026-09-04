@@ -95,6 +95,9 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
       },
       { path: '/hanzi', label: '识字', icon: 'hanzi', tint: 'text-correct', glowVar: '--c-correct' },
       { path: '/poems', label: '古诗', icon: 'poem', tint: 'text-alert', glowVar: '--c-alert' },
+      // ⚠️ 追加在末尾，不要插到识字旁边——她记的是「古诗在第三个」这种位置。
+      //    与识字分开是刻意的：认字和写字是两件事，见 StrokeWall.tsx 文件头
+      { path: '/strokes', label: '写字', icon: 'pencil', tint: 'text-info', glowVar: '--c-info' },
     ],
   },
   {

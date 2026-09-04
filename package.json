@@ -19,6 +19,8 @@
     "pinyin:check": "node scripts/generate-pinyin-check.mjs",
     "poem:check": "node scripts/generate-poem-check.mjs",
     "story:check": "node scripts/generate-story-check.mjs",
+    "stroke:check": "node scripts/generate-stroke-check.mjs",
+    "stroke:data": "node scripts/generate-stroke-data.mjs",
     "pinyin:record": "node scripts/generate-pinyin-record.mjs"
   },
   "dependencies": {
