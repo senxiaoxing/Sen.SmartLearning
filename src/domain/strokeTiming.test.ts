@@ -33,9 +33,12 @@ describe('strokeTimings', () => {
   })
 
   it('⚠️ 极短的「点」不会短到看不见（有下限）', () => {
-    // 一个点混在四条长横里，按比例算会掉到 60ms 上下
+    // 一个点混在四条长横里，纯按比例算会掉到 60ms 上下 —— 那一下看不见，
+    // 孩子会以为这一笔被跳过了。
+    // ⚠️ 不写死实现里的常量：这里守的是「短到看不见等于没写」这个意图，
+    //    150ms 是人眼能捕捉一次运动的大致下限。调书写速度时不该误伤这条。
     const timings = strokeTimings([line(5), line(800), line(800), line(800), line(800)])
-    expect(timings[0]!.duration).toBeGreaterThanOrEqual(280)
+    expect(timings[0]!.duration).toBeGreaterThanOrEqual(150)
   })
 
   it('⚠️ 中线长度为零也不产出 NaN（数据坏了时别把动画搞崩）', () => {

@@ -82,9 +82,16 @@ export function StrokeSheet({ card, order, onClose }: StrokeSheetProps) {
           transition={{ delay: i * 0.05 }}
           // ⚠️ 别再调小：44px 时 11 笔的字（黄、黑）在格子里糊成一团，
           //    而这排图的用处正是「这一笔加在哪儿」
-          className="w-[52px] rounded-lg bg-surface-2 p-0.5"
+          className="flex w-[58px] flex-col items-center gap-0.5"
         >
-          <TianGrid strokes={order.strokes} upTo={i + 1} highlightLast className="w-full" />
+          <div className="w-full rounded-lg bg-surface-2 p-0.5">
+            <TianGrid strokes={order.strokes} upTo={i + 1} highlightLast className="w-full" />
+          </div>
+          {/* ⭐ 笔画名称：书空时她要念出来的就是这个。
+              名称可能长到「横折折折钩」五个字，所以留一行的余量、允许折行 */}
+          <span className="text-center text-[10px] leading-tight text-ink/55">
+            {i + 1} {order.names[i] ?? ''}
+          </span>
         </motion.div>
       )),
     [order],
@@ -173,7 +180,7 @@ export function StrokeSheet({ card, order, onClose }: StrokeSheetProps) {
         </button>
 
         {/* 笔顺跟随。第一遍写完才浮现，此后一直留着 */}
-        <div className="flex min-h-[56px] w-full flex-wrap justify-center gap-1.5">
+        <div className="flex min-h-[76px] w-full flex-wrap justify-center gap-x-1.5 gap-y-2">
           {everFinished && followers}
         </div>
       </motion.div>

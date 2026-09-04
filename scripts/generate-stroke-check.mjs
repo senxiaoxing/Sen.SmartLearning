@@ -47,6 +47,10 @@
 import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import cnchar from 'cnchar'
+import order from 'cnchar-order'
+
+cnchar.use(order)
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
@@ -273,6 +277,10 @@ async function main() {
         c.strokes = data.strokes
         c.medians = data.medians
         c.types = data.medians.map(strokeType)
+        // 「点2」→「点」，「横撇|横钩」→「横撇」，与 generate-stroke-data.mjs 同一套清理
+        c.names = (cnchar.stroke(c.char, 'order', 'name')[0] ?? []).map((n) =>
+          String(n).split('|')[0].replace(/\d+$/, ''),
+        )
       }),
     )
     process.stdout.write(`\r拉取中 ${Math.min(i + 10, cards.length)}/${cards.length}`)
@@ -388,10 +396,9 @@ function renderHtml(ordered, counts, mustSee, partIssues) {
   svg { display: block; width: 100%; height: auto; background: #fff; border-radius: 8px; }
   /* 笔顺跟随：一排小图，第 k 格画前 k 笔。取代了原来压在笔画上的红色序号 */
   .steps { display: flex; flex-wrap: wrap; gap: 4px; }
-  .step { position: relative; width: 40px; }
+  .step { width: 46px; text-align: center; }
   .step svg { background: #FCFAF5; border: 1px solid #EFEAE0; border-radius: 5px; }
-  .step b { position: absolute; right: 2px; bottom: 1px; font-size: 9px;
-            color: #3D3A3866; font-weight: 600; }
+  .step b { display: block; font-size: 9px; line-height: 1.2; color: #3D3A3899; font-weight: 600; }
   .seq { font-size: 12px; color: #3D3A3899; letter-spacing: .5px; line-height: 1.5; }
   .links { font-size: 12px; }
   .links a { color: #6C97DE; margin-right: 10px; }
@@ -441,7 +448,9 @@ ${partIssues.map((p) => `「<b>${p.part}</b>」旁：${p.detail}`).join('<br>')}
 <script>
 const CARDS = ${JSON.stringify(ordered.map((c) => ({
   char: c.char, pinyin: c.pinyin, word: c.word, group: c.group,
-  strokes: c.strokes, medians: c.medians, types: c.types, rank: c.rank,
+  // ⚠️ names 别漏：浏览器端的 steps 要用它，漏掉会在 forEach 里抛错，
+  //    表现是**整页一张卡片都不渲染**（页头和按钮照常显示，所以很容易看漏）
+  strokes: c.strokes, medians: c.medians, types: c.types, names: c.names, rank: c.rank,
   why: c.inconsistent ?? c.divergent ?? c.simplified ?? c.ruleRisk ?? null,
   hard: Boolean(c.inconsistent),
 })))};
@@ -494,12 +503,13 @@ CARDS.forEach((c, i) => {
   // ⚠️ 不能直接摆在起点上：「日」「月」「四」这类字的头两笔起点几乎重合
   //    （竖和横折都从左上角起笔），两个圈会叠成一个，而那恰恰是最要看清的地方。
   //    沿「起笔的来时方向」往外推一段，两笔方向不同，圈就自然分开了。
-  // 笔顺跟随：一排小格，第 k 格画前 k 笔，最新那笔加深
+  // 笔顺跟随：一排小格，第 k 格画前 k 笔，最新那笔加深，底下是这一笔的名称。
+  // ⚠️ 名称来自 cnchar（第二个数据源），与笔顺图形各来一处 —— 一并摆出来核对
   const steps = c.strokes.map((_, k) =>
     '<div class="step"><svg viewBox="0 0 1024 1024"><g transform="' + FLIP + '">' +
     c.strokes.slice(0, k + 1).map((d, j) =>
       '<path d="' + d + '" fill="' + (j === k ? '#E0522E' : '#8C857D') + '"/>').join('') +
-    '</g></svg><b>' + (k + 1) + '</b></div>').join('');
+    '</g></svg><b>' + (k + 1) + ' ' + (c.names[k] ?? '?') + '</b></div>').join('');
 
   const card = document.createElement('div');
   card.id = 'c' + i;
@@ -560,12 +570,12 @@ function play(i) {
       let t = 0;
       c.medians.forEach((m, k) => {
         const el = document.getElementById('ink' + i + '-' + k);
-        const dur = Math.max(280, 680 * (lens[k] / avg));
+        const dur = Math.max(180, 420 * (lens[k] / avg));
         setTimeout(() => {
           el.style.transition = 'stroke-dashoffset ' + dur + 'ms linear';
           el.style.strokeDashoffset = 0;
         }, t);
-        t += dur + 150;
+        t += dur + 90;
       });
     });
   });
@@ -578,7 +588,7 @@ function playAll() {
     const [c, i] = todo[n++];
     document.getElementById('c' + i).scrollIntoView({ block: 'center', behavior: 'smooth' });
     play(i);
-    setTimeout(step, c.medians.length * 830 + 900);
+    setTimeout(step, c.medians.length * 520 + 700);
   };
   step();
 }

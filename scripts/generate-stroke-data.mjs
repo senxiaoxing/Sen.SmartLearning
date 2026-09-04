@@ -27,6 +27,10 @@
 import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import cnchar from 'cnchar'
+import order from 'cnchar-order'
+
+cnchar.use(order)
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
@@ -68,6 +72,22 @@ function loadVolumes() {
   return volumes
 }
 
+/**
+ * 取一个字每一笔的名称（「横」「竖折折钩」…），给孩子书空时念。
+ *
+ * ⚠️ **这是第二个数据源**（cnchar），与笔顺图形（makemeahanzi）各来一处。
+ * 两者的笔数必须逐字相等，否则名称会整体错位——那比没有名称更糟。
+ * {@link main} 里对此有硬校验，对不上就中止，不会悄悄产出半套数据。
+ *
+ * 清理两种写法：
+ * - `点2` → `点`：cnchar 用尾缀数字区分同名笔画的变体，孩子不需要
+ * - `横撇|横钩` → `横撇`：一笔两种叫法时取前一种，竖杠她读不出来
+ */
+function strokeNames(char) {
+  const raw = cnchar.stroke(char, 'order', 'name')[0] ?? []
+  return raw.map((name) => String(name).split('|')[0].replace(/\d+$/, ''))
+}
+
 /** 拉一个字的笔顺数据，带本地缓存（`.cache/` 已 gitignore） */
 async function fetchChar(char) {
   const cached = join(CACHE_DIR, `${char.codePointAt(0).toString(16)}.json`)
@@ -93,18 +113,31 @@ async function main() {
   }
 
   const out = {}
+  const nameMismatch = []
   for (let i = 0; i < chars.length; i += 10) {
     await Promise.all(
       chars.slice(i, i + 10).map(async (char) => {
         const data = await fetchChar(char)
-        // ⚠️ 只留画得出动画的两个字段。radStrokes（部首笔画索引）用不上，
+        const names = strokeNames(char)
+        if (names.length !== data.strokes.length) {
+          nameMismatch.push(`${char}（图形 ${data.strokes.length} 笔，名称 ${names.length} 个）`)
+          return
+        }
+        // ⚠️ 只留画得出动画的字段。radStrokes（部首笔画索引）用不上，
         //    而这份数据是要随包发布的，每个字段都要乘以 100
-        out[char] = { strokes: data.strokes, medians: data.medians }
+        out[char] = { strokes: data.strokes, medians: data.medians, names }
       }),
     )
     process.stdout.write(`\r处理中 ${Math.min(i + 10, chars.length)}/${chars.length}`)
   }
   console.log('')
+
+  // ⛔ 一个都不许错位：名称与笔画对不上，孩子书空时念的就是别的笔
+  if (nameMismatch.length > 0) {
+    console.error(`\n❌ ${nameMismatch.length} 个字的笔画名称与图形笔数不一致，已中止：`)
+    for (const line of nameMismatch) console.error(`   ${line}`)
+    process.exit(1)
+  }
 
   // ⚠️ 按字表顺序写，不要用对象字面量的插入顺序碰运气 —— diff 要稳定
   const ordered = {}

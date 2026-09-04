@@ -20,14 +20,18 @@ export type StrokeMedian = readonly (readonly number[])[]
 /**
  * 一笔的基准时长（毫秒）。实际时长按这一笔相对平均长度的比例缩放。
  *
- * 680 是 2026-09-04 上机后调慢的结果（原 420）——家长原话「书写的速度稍微再慢点就好了」。
+ * ⚠️ 这个值来回调过一次，别再改：420 → 680（第一次上机嫌快）→ **420**
+ * （2026-09-05 再次上机后调回）。慢下来之后一个字要写十秒，
+ * 而她是**反复看**这个循环的，不是只看一遍——耐心耗在等笔画上，
+ * 比「看不清那一笔」更劝退。
+ *
  * ⚠️ 改这个值要同步改 `scripts/generate-stroke-check.mjs` 里的同名节奏，
  * 那一页是拿来判断笔顺对不对的，快慢不同就不是在看孩子将来会看到的东西。
  */
-const STROKE_MS = 680
+const STROKE_MS = 420
 
 /** 笔与笔之间的停顿（毫秒）。看得出「这一笔写完了」，又不至于断成一格一格 */
-const STROKE_GAP_MS = 150
+const STROKE_GAP_MS = 90
 
 /**
  * 单笔时长下限（毫秒）。
@@ -35,7 +39,7 @@ const STROKE_GAP_MS = 150
  * 「点」的中线极短，纯按比例算会短到 60ms 上下——那一下看不见，
  * 孩子会以为这一笔被跳过了。
  */
-const MIN_STROKE_MS = 280
+const MIN_STROKE_MS = 180
 
 /** 一笔在动画里的排期 */
 export interface StrokeTiming {
