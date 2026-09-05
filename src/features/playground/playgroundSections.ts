@@ -79,7 +79,7 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
     id: 'chinese',
     name: '语文',
     icon: 'bookshelf',
-    hint: '拼音、识字、古诗',
+    hint: '拼音、识字、古诗、短文',
     entries: [
       {
         path: '/pinyin',
@@ -98,6 +98,15 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
       // ⚠️ 追加在末尾，不要插到识字旁边——她记的是「古诗在第三个」这种位置。
       //    与识字分开是刻意的：认字和写字是两件事，见 StrokeWall.tsx 文件头
       { path: '/strokes', label: '写字', icon: 'pencil', tint: 'text-info', glowVar: '--c-info' },
+      // ⚠️ 同样追加在末尾。短文是**识字墙的下一步**（字学完就到头了），
+      //    但不能因此插到识字旁边——位置记忆比逻辑相邻重要。
+      //
+      // ⚠️ 色板到这里用尽了：语文五个入口，而彩色 token 只有五个
+      //    （primary/accent/correct/alert/info），primary 是最后一个。
+      //    清晨草地皮肤下它与识字的 correct 对比度只有 1.4:1（见上面拼音那条），
+      //    缓解办法是**位置隔开**——识字在第二个、短文在第五个，中间隔着古诗和写字，
+      //    两列布局下不会并排。再加第六个入口就得先解决配色，不能照着往下抄。
+      { path: '/stories', label: '短文', icon: 'book', tint: 'text-primary', glowVar: '--c-primary' },
     ],
   },
   {

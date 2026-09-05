@@ -24,6 +24,8 @@ import { StrokeWall } from '@/features/chinese/StrokeWall'
 import { PinyinWall } from '@/features/chinese/PinyinWall'
 import { PoemLibrary } from '@/features/chinese/PoemLibrary'
 import { PoemView } from '@/features/chinese/PoemView'
+import { StoryLibrary } from '@/features/chinese/StoryLibrary'
+import { StoryView } from '@/features/chinese/StoryView'
 import { LetterWall } from '@/features/english/LetterWall'
 import { HomePage } from '@/features/home/HomePage'
 import { LearningSession } from '@/features/learning/LearningSession'
@@ -116,6 +118,9 @@ function AppRoutes() {
         <Route path="/strokes" element={<StrokeWall />} />
         <Route path="/poems" element={<PoemLibrary />} />
         <Route path="/poems/:id" element={<PoemView />} />
+        {/* 短文：识字墙的下一步。⛔ 整篇不朗读，见 StoryView.tsx 文件头 */}
+        <Route path="/stories" element={<StoryLibrary />} />
+        <Route path="/stories/:id" element={<StoryView />} />
         <Route path="/pets" element={<PetHome />} />
         {/* 宠物小屋：三只一起住的地方，买来的家具摆在这里。
             与 /pets 分工不同——那里是「看这一只」，这里是「看这个家」 */}
