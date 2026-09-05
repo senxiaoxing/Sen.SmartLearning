@@ -19,6 +19,7 @@ import { SESSION_CLIPS } from '@/data/seed/voiceManifest'
 import { Feedback } from '@/features/learning/Feedback'
 import { ItemRenderer } from '@/items/ItemRenderer'
 import { resolveAnswerSpeech } from '@/domain/resolveAnswerSpeech'
+import { shouldShowScaffold } from '@/domain/scheduler/shouldShowScaffold'
 import { prefetchClips, stopSpeech } from '@/platform/speech'
 import { useSessionStore } from '@/stores/sessionStore'
 
@@ -31,6 +32,7 @@ export function LearningSession() {
   const answer = useSessionStore((s) => s.answer)
   const next = useSessionStore((s) => s.next)
   const countReplay = useSessionStore((s) => s.countReplay)
+  const kpStreaks = useSessionStore((s) => s.kpStreaks)
 
   // 跳转必须放在 effect 里：渲染期调用 navigate 会在更新另一个组件的同时
   // 更新当前组件，React 会告警且行为不确定
@@ -115,12 +117,21 @@ export function LearningSession() {
       </PageHeader>
 
       <main className="flex w-full flex-1 flex-col justify-center">
+        {/*
+          ⭐ 脚手架按她的状态开合：这个知识点连错两次，下一题就多出一幅十格阵；
+          连对两次它自己撤掉。判据是纯函数，见 domain/scheduler/shouldShowScaffold.ts。
+        */}
         <ItemRenderer
           item={current.item}
           selectedOptionId={feedback?.selectedOptionId ?? null}
           revealed={status === 'feedback'}
           onSelect={(optionId) => void answer(optionId)}
           onReplay={countReplay}
+          showScaffold={shouldShowScaffold({
+            difficulty: current.item.difficulty,
+            type: current.item.type,
+            ...kpStreaks.get(current.item.kpId),
+          })}
         />
       </main>
 

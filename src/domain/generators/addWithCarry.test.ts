@@ -89,11 +89,31 @@ describe('直接计算模式', () => {
 })
 
 describe('十格阵脚手架', () => {
-  it('⭐ 只在难度 1 提供，难度 2、3 必须靠心算', () => {
+  it('⭐ 三档都产出 —— 给不给由她的状态定，生成器不做这个判断', () => {
+    // 「难度 2、3 撤除」这条规则没有消失，它搬到了
+    // domain/scheduler/shouldShowScaffold.ts（那里还多了连错自动挂上、连对自动撤掉）。
+    // 生成器是纯函数，看不见她答错过几次，所以只负责把数据算出来。
     for (let seed = 1; seed <= 20; seed++) {
-      expect(addWithCarry(ctx({ addends: [9] }, seed, 1)).visual, '难度 1 应有脚手架').toBeDefined()
-      expect(addWithCarry(ctx({ addends: [9] }, seed, 2)).visual, '难度 2 应撤除').toBeUndefined()
-      expect(addWithCarry(ctx({ addends: [9] }, seed, 3)).visual, '难度 3 应撤除').toBeUndefined()
+      for (const difficulty of [1, 2, 3] as const) {
+        expect(
+          addWithCarry(ctx({ addends: [9] }, seed, difficulty)).scaffold,
+          `难度 ${difficulty} 应产出脚手架数据`,
+        ).toBeDefined()
+      }
+    }
+  })
+
+  it('⛔ 不写进 visual —— 那会让难度 2、3 强制显示脚手架', () => {
+    // visual 是「不画就无解」的题目组成部分，渲染层无条件画它。
+    // 脚手架挂错字段的后果是心算题永远摆着十格阵，而这在测试里看不出来，
+    // 只有渲染出来才发现——这条断言就是替那一眼把关的。
+    for (let seed = 1; seed <= 20; seed++) {
+      for (const difficulty of [1, 2, 3] as const) {
+        expect(
+          addWithCarry(ctx({ addends: [9] }, seed, difficulty)).visual,
+          `难度 ${difficulty} 不该有 visual`,
+        ).toBeUndefined()
+      }
     }
   })
 
@@ -101,7 +121,7 @@ describe('十格阵脚手架', () => {
     for (let seed = 1; seed <= 20; seed++) {
       const item = addWithCarry(ctx({ addends: [9, 8, 7] }, seed, 1))
       const [a, b] = parseAddends(item.stem.text)
-      expect(item.visual).toEqual({ kind: 'tenFrame', frame: a, loose: b })
+      expect(item.scaffold).toEqual({ kind: 'tenFrame', frame: a, loose: b })
     }
   })
 })

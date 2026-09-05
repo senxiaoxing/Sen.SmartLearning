@@ -100,10 +100,9 @@ function buildDirectItem(
     },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),
-    // 难度 1 展示被减数的结构：1 个十和几个一，让「个位不够减」看得见
-    ...(ctx.difficulty === 1 && {
-      visual: { kind: 'tenFrame' as const, frame: 10, loose: ones },
-    }),
+    // 展示被减数的结构：1 个十和几个一，让「个位不够减」看得见。
+    // ⚠️ 无条件产出，给不给由她的状态决定——理由同 addWithCarry。
+    scaffold: { kind: 'tenFrame', frame: 10, loose: ones },
   }
 }
 

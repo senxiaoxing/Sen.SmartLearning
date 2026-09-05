@@ -33,11 +33,23 @@ import {
   type Attempt,
   type GradeLevel,
   type ItemType,
+  type Mastery,
   type ScheduledItem,
   type SessionMode,
   type Subject,
   type Uuid,
 } from '@/domain/types'
+
+/**
+ * 一个知识点当前的连错 / 连对次数 —— 脚手架自动开关的输入。
+ *
+ * 与 `Mastery` 上的同名字段是同一个数，单独摊出来是因为答题过程中
+ * 它每题都在变，而整张 `masteryMap` 没必要留在内存里。
+ */
+interface KpStreak {
+  consecutiveWrong: number
+  consecutiveCorrect: number
+}
 
 /**
  * 她**在读几年级**（档案事实）。唯一真相在 `profileStore`。
@@ -92,6 +104,25 @@ const timingStart = (type: ItemType | undefined): number =>
  * 调度器必须知道这个边界，否则会排出一堆无法组装的计划。
  */
 const ANSWERABLE_KP_IDS: ReadonlySet<string> = new Set(ITEM_TEMPLATE_BY_KP.keys())
+
+/**
+ * 把一次作答后的连错连对写回 {@link SessionState.kpStreaks}。
+ *
+ * `mastery` 为 undefined 时原样返回——那说明掌握度记录缺失（数据异常），
+ * 此时保持现状比把计数清零安全：清零会把已经挂上的脚手架突然撤掉。
+ */
+function updateStreak(
+  streaks: ReadonlyMap<string, KpStreak>,
+  mastery: Mastery | undefined,
+): ReadonlyMap<string, KpStreak> {
+  if (mastery === undefined) return streaks
+  const next = new Map(streaks)
+  next.set(mastery.kpId, {
+    consecutiveWrong: mastery.consecutiveWrong,
+    consecutiveCorrect: mastery.consecutiveCorrect,
+  })
+  return next
+}
 
 export type SessionStatus = 'idle' | 'loading' | 'active' | 'feedback' | 'finished'
 
@@ -176,6 +207,18 @@ interface SessionState {
   /** 本题重听次数——反复重听说明题目理解有困难，而非知识点没掌握 */
   ttsReplayCount: number
 
+  /**
+   * ⭐ 各知识点的连错 / 连对次数，驱动脚手架自动开关。
+   *
+   * 开课时由 `masteryMap` 铺底（她上一轮就卡着的知识点，这一轮一进来就有帮助），
+   * 之后每题从 `recordAttempt` 的结果就地更新——所以「连错 2 次 → **下一题**
+   * 就挂上」在同一轮里真的成立，不用等下一轮。
+   *
+   * ⚠️ 判定本身不在这里，在 `domain/scheduler/shouldShowScaffold.ts`。
+   * 这里只搬运数据，store 不做业务计算。
+   */
+  kpStreaks: ReadonlyMap<string, KpStreak>
+
   init: () => Promise<void>
   /**
    * 切到某个年级的答题区。传 `null` 回到「跟随档案年级」。
@@ -188,7 +231,12 @@ interface SessionState {
    * 由排期计划启动一段会话。`start` 与 `startWrongBookRetry` 的公共部分，
    * 一般不直接从 UI 调用。
    */
-  startWithPlan: (mode: SessionMode, subject: Subject, plan: ScheduledItem[]) => Promise<void>
+  startWithPlan: (
+    mode: SessionMode,
+    subject: Subject,
+    plan: ScheduledItem[],
+    masteryMap: ReadonlyMap<string, Mastery>,
+  ) => Promise<void>
   /**
    * ⭐ 开一轮错题订正：针对错题本里还没解决的知识点重新出题。
    *
@@ -230,6 +278,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   balance: 0,
   questionStartedAt: 0,
   ttsReplayCount: 0,
+  kpStreaks: new Map(),
 
   /** 首次进入 App 时初始化数据库 */
   init: async () => {
@@ -272,7 +321,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       // 只排真正出得了题的知识点，否则组装阶段跳过会让题量对不上
       answerableKpIds: ANSWERABLE_KP_IDS,
     })
-    await get().startWithPlan(mode, subject, plan)
+    await get().startWithPlan(mode, subject, plan, masteryMap)
   },
 
   /**
@@ -310,10 +359,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       masteryMap,
       answerableKpIds: ANSWERABLE_KP_IDS,
     })
-    await get().startWithPlan('remedial', target.subject, plan)
+    await get().startWithPlan('remedial', target.subject, plan, masteryMap)
   },
 
-  startWithPlan: async (mode, subject, plan) => {
+  startWithPlan: async (mode, subject, plan, masteryMap) => {
     const profileId = get().profileId ?? (await bootstrap())
     const items = buildSessionItems(plan, createRng(Date.now()))
 
@@ -356,6 +405,14 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       pointsEarned: 0,
       questionStartedAt: timingStart(items[0]?.item.type),
       ttsReplayCount: 0,
+      // 用她**进来之前**的连错连对铺底：上一轮就卡着的知识点，
+      // 这一轮第一题就该带着脚手架，而不是让她重新错两次换取
+      kpStreaks: new Map(
+        [...masteryMap.values()].map((m) => [
+          m.kpId,
+          { consecutiveWrong: m.consecutiveWrong, consecutiveCorrect: m.consecutiveCorrect },
+        ]),
+      ),
     })
   },
 
@@ -454,6 +511,10 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       masteredCount: s.masteredCount + (outcome.justMastered ? 1 : 0),
       pointsEarned: s.pointsEarned + outcome.pointsEarned,
       balance: outcome.balanceAfter,
+      // 连错连对跟着这一次作答就地更新，下一题的脚手架据此决定。
+      // ⚠️ 掌握度记录缺失时（数据异常）保持原样：宁可脚手架不变，
+      // 也不要凭空造一个「她连错了 0 次」把已经挂上的帮助撤掉
+      kpStreaks: updateStreak(s.kpStreaks, outcome.mastery),
     }))
   },
 
@@ -533,6 +594,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
       masteredCount: 0,
       pointsEarned: 0,
       ttsReplayCount: 0,
+      kpStreaks: new Map(),
     })
   },
 

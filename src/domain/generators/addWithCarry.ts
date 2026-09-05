@@ -98,9 +98,11 @@ function buildDirectItem(ctx: GeneratorContext, a: number, b: number): Generated
     },
     options: buildNumericOptions(answer, candidates, ctx.rng),
     answer: String(answer),
-    // 难度 1 给十格阵脚手架：孩子能看见「9 还差 1 就满十」。
-    // 难度 2、3 撤除，逼她在脑子里完成凑十。
-    ...(ctx.difficulty === 1 && { visual: { kind: 'tenFrame' as const, frame: a, loose: b } }),
+    // 十格阵脚手架：孩子能看见「9 还差 1 就满十」。
+    // ⚠️ 这里**无条件**产出，不判难度——给不给由她的状态决定，
+    // 而生成器是纯函数，看不见她答错过几次。判据在
+    // domain/scheduler/shouldShowScaffold.ts，显示在 items/InputNumber.tsx。
+    scaffold: { kind: 'tenFrame', frame: a, loose: b },
   }
 }
 

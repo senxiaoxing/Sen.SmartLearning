@@ -13,6 +13,7 @@ import { SpeakerButton } from '@/components/SpeakerButton'
 import { LooseDots, TenFrame } from '@/components/TenFrame'
 import { OptionButton, type OptionVisualState } from '@/items/OptionButton'
 import { isStemFigure, StemFigure } from '@/items/StemFigure'
+import { shouldShowScaffold } from '@/domain/scheduler/shouldShowScaffold'
 import { say } from '@/platform/speech'
 import type { ItemViewProps } from '@/items/ItemRenderer'
 
@@ -27,12 +28,17 @@ export function InputNumber({
   revealed,
   onSelect,
   onReplay,
+  showScaffold,
 }: ItemViewProps) {
   useEffect(() => {
     say({ parts: item.stem.ttsParts ?? [], fallbackText: item.stem.ttsText })
   }, [item.signature, item.stem.ttsText])
 
-  const scaffold = item.visual?.kind === 'tenFrame' ? item.visual : undefined
+  // 缺省时按难度走默认：摸底与预览没有作答历史，不能因为没人传 prop
+  // 就把难度 1 该有的脚手架弄丢。默认逻辑只此一份，在纯函数里。
+  const visible =
+    showScaffold ?? shouldShowScaffold({ difficulty: item.difficulty, type: item.type })
+  const scaffold = visible && item.scaffold?.kind === 'tenFrame' ? item.scaffold : undefined
 
   return (
     <div className="flex h-full flex-col justify-center gap-6">
@@ -41,7 +47,11 @@ export function InputNumber({
         <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={onReplay} />
       </div>
 
-      {/* 难度 1 的脚手架：把算式里的数量画出来，凑十/破十变成看得见的事 */}
+      {/*
+        脚手架：把算式里的数量画出来，凑十/破十变成看得见的事。
+        ⭐ 显不显示看**她的状态**不看难度——她在难度 3 连错两次同样会看到它，
+        在难度 1 连对两次它就撤了。见 domain/scheduler/shouldShowScaffold.ts。
+      */}
       {scaffold !== undefined && (
         <div className="flex items-center justify-center gap-4">
           <TenFrame filled={scaffold.frame} emphasis={scaffold.frame < 10 ? 'gap' : 'none'} size="sm" />

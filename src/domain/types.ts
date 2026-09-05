@@ -1384,8 +1384,9 @@ export type ItemVisual =
       /**
        * 十格阵脚手架，把抽象算式变成看得见的数量。
        *
-       * ⚠️ **只在难度 1 提供**：教学上脚手架要逐步撤除，
-       * 一直给着孩子就不会去心算了。难度 2、3 必须靠脑子。
+       * ⚠️ 它挂在 {@link GeneratedItem.scaffold} 上而**不是** `visual`：
+       * 给不给由她当下的状态决定，不由题目本身决定。判据见
+       * `domain/scheduler/shouldShowScaffold.ts`。
        */
       kind: 'tenFrame'
       /** 十格阵内的点数 */
@@ -1525,6 +1526,23 @@ export interface GeneratedItem {
   answerSpeech?: AnswerSpeech
   /** 可视化数据，仅部分题型需要 */
   visual?: ItemVisual
+  /**
+   * ⭐ 可选脚手架 —— 「这道题**能**给什么帮助」，不是「这道题要显示什么」。
+   *
+   * 与 {@link visual} 的分工是这个字段存在的全部理由：
+   *
+   * | | 含义 | 谁决定显示 |
+   * |---|---|---|
+   * | `visual` | 题目的一部分，**不画就无解**（尺子、钟面、条形图） | 没得选，必须画 |
+   * | `scaffold` | 帮助，撤掉题目照样成立 | 由**她的状态**决定 |
+   *
+   * 生成器**无条件**产出它（算得出来就给），至于这一题到底显不显示，
+   * 由 `domain/scheduler/shouldShowScaffold.ts` 按难度与连错连对判定。
+   *
+   * ⛔ 别把它塞回 `visual`：那会让「难度 2 不该有脚手架」这类规则
+   * 重新长回生成器里，而生成器是纯函数，看不见她答错过几次。
+   */
+  scaffold?: ItemVisual
 }
 
 /** 数学题目生成器统一签名。所有生成器必须是纯函数。 */

@@ -159,15 +159,23 @@ describe('⭐ 听算题：题面藏起来之后，题目还得成立', () => {
     expect(problems).toEqual([])
   })
 
-  it('⛔ 不带配图 —— 条件在图里的题，念不出来就无解', () => {
+  it('⛔ 不带配图，也不带脚手架 —— 条件在图里的题，念不出来就无解', () => {
     // 尺子、图形、条形图、十格阵脚手架都属于「一半信息在画面上」。
     // 那种题挂了听算，孩子听完只有四个数字可选，题目本身消失了。
+    //
+    // ⚠️ **两个字段都要查。** 脚手架从 visual 搬到 scaffold 之后，
+    // 只查 visual 的话这条断言会静默失效——而听算题挂上十格阵，
+    // 屏幕上就是一幅没有问题的图。运行时还有 shouldShowScaffold 挡一道，
+    // 这里挡的是「模板根本不该挂到带脚手架的知识点上」。
     const problems: string[] = []
     for (const t of listenTemplates) {
       for (const difficulty of [1, 2, 3] as const) {
         const item = generateFromTemplate(t, difficulty, createRng(difficulty * 31))
         if (item.visual !== undefined) {
           problems.push(`${t.id} 难度${difficulty} 带了 ${item.visual.kind}`)
+        }
+        if (item.scaffold !== undefined) {
+          problems.push(`${t.id} 难度${difficulty} 带了脚手架 ${item.scaffold.kind}`)
         }
       }
     }

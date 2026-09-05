@@ -27,6 +27,16 @@ export interface ItemViewProps {
   revealed: boolean
   onSelect: (optionId: string) => void
   onReplay?: () => void
+  /**
+   * 是否显示 `item.scaffold`（十格阵）。
+   *
+   * 由会话层按她在这个知识点上的连错/连对算出，见
+   * `domain/scheduler/shouldShowScaffold.ts`。
+   *
+   * **省略时按难度走默认**——摸底和预览页没有作答历史，
+   * 那里不该因为「没人传这个 prop」就把难度 1 的脚手架也弄丢。
+   */
+  showScaffold?: boolean
 }
 
 /**
