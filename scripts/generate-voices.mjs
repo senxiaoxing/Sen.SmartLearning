@@ -256,11 +256,57 @@ const RATE_RECITE = '-25%'
  *   TTS 训练数据里缺少它们作为独立句子的样本
  * - `e2`（鹅）—— 顺带一起试；⚠️ 它其实**不影响教学**：
  *   只用于单韵母 e，而那一组按设计不教声调（见 pinyinSyllables.ts 的 SINGLE_FINALS）
+ *
+ * ⚠️ 识字卡那两条读错的**不在这里**，它们要整句重写，见 {@link SPOKEN_OVERRIDE}。
  */
 const TAIL_FIX_KEYS = new Set(['pinyin.wu1', 'pinyin.u1', 'pinyin.e2', 'pinyin.en1'])
 
 /** 尾随标点。用逗号而不是句号——句号本身就是「句末」的强信号 */
 const TAIL_MARK = '，'
+
+/**
+ * ⭐⭐ 整句改写喂给 TTS 的文本。屏幕上显示的**不受影响**。
+ *
+ * 与 {@link TAIL_FIX_KEYS} 的分工：那边是规则化的小修（补个逗号），
+ * 这边是「怎么修都不行，只能重写整句」的少数条目。
+ *
+ * ## 来源：2026-09-05 上机复听，一声字被念成四声
+ *
+ * 识字卡念的是「X。词的X。」。**孤立成句的那个 X 会被 TTS 的收尾降调压一下，
+ * 而一声是高平调，压完就成了四声。** 四声字本来就降、三声本来就带拐弯，
+ * 都不受影响——这解释了为什么只有个别一声字翻车。
+ *
+ * 两个字的解法不同，是**逐条试听**定的（临时脚本调 msedge-tts
+ * 把几种候选各生成一条，人听完选一种，脚本随即删掉）：
+ *
+ * | 字 | 听下来 | 用的写法 |
+ * |---|---|---|
+ * | 多 duō | 只要不落句末就对 | 两个句号都换逗号 |
+ * | 黑 hēi | ⚠️ 换标点、换同音字（嘿）**全都是四声** | 干脆去掉开头那个孤字 |
+ *
+ * ⚠️ 「黑」是音节级的偏差，不是韵律问题：`hēi` 孤立成句时必翻。
+ * 而「**黑色的黑**」里那两个都是一声——它在词里是好的，所以只留组词句。
+ *
+ * ⛔ **代价要认**：`黑色的黑，` 少了开头报字那一下，而那个「先报字、
+ * 再用组词解释」的结构是刻意的（见 domain/hanzi.ts 的 hanziSpokenText）。
+ * 对个别字破例划得来——**念错比少报一次字严重得多**，
+ * 何况她听「黑色的黑」照样知道这个字念 hēi。
+ *
+ * ⛔ SSML 那条路走不通：`<phoneme alphabet="sapi" ph="hei 1">` 这类标注
+ * 会让 Edge 端点**直接断开连接**（msedge-tts 本身支持传 SSML，是服务端不收）。
+ * 别再试了。
+ *
+ * ⚠️ 加条目前**先听，别凭猜**——这次五种改法里只有一种对，
+ * 而「换同音字」这种看着最靠谱的一路全军覆没。
+ * 其余一声字（天三七八山花猫鸡书刀衣开飞青…）复听正常，**不要顺手全改**：
+ * 那等于把已经念对的重新赌一次。
+ */
+const SPOKEN_OVERRIDE = {
+  // 黑：孤立的「黑。」必成四声，去掉它
+  'hanzi.u9ed1': '黑色的黑，',
+  // 多：不落句末就对，两个句号都换成逗号
+  'hanzi.u591a': '多，多少的多，',
+}
 
 /** 并发数。太高会被限流，4 条实测稳定且够快 */
 const CONCURRENCY = 4
@@ -306,8 +352,15 @@ function prosodyFor(key) {
   return { rate: RATE, pitch: PITCH }
 }
 
-/** 实际喂给 TTS 的文本。个别音节要补尾随逗号，见 TAIL_FIX_KEYS */
+/**
+ * 实际喂给 TTS 的文本。
+ *
+ * 整句重写优先（{@link SPOKEN_OVERRIDE}），其次是补尾随逗号（{@link TAIL_FIX_KEYS}），
+ * 都不沾的原样送。屏幕上显示的永远是清单里那份，与这里无关。
+ */
 function spokenTextFor(key, text) {
+  const override = SPOKEN_OVERRIDE[key]
+  if (override !== undefined) return override
   return TAIL_FIX_KEYS.has(key) ? `${text}${TAIL_MARK}` : text
 }
 
@@ -317,10 +370,18 @@ function spokenTextFor(key, text) {
  * ⚠️ 没有这个指纹时，改音色/语速**不会**让音频更新——
  * 台账只比对「念的文本」，而文本没变。与当初「改了载体字音频却不更新」
  * 是同一类坑，那次是靠人肉发现的。
+ *
+ * ⭐ **改写过的条目，指纹里带上实际喂入的那句话。**
+ * 台账比对的 `text` 是清单原文，而 {@link SPOKEN_OVERRIDE} 改的是喂入文本——
+ * 不把它算进指纹的话，调整改写方式**不会触发重生成**，
+ * 表现是「明明改了喂法，播出来还是上一版」。2026-09-05 实测踩到过：
+ * 当时只能靠手工删 mp3 才跑得起来。
  */
 function signatureFor(key) {
   const { rate, pitch } = prosodyFor(key)
   const base = `${voiceFor(key)}|${rate}|${pitch}`
+  const override = SPOKEN_OVERRIDE[key]
+  if (override !== undefined) return `${base}|ov:${override}`
   /**
    * ⚠️ 没有尾随逗号时**不加尾段**，保持与旧签名逐字节相同。
    *
