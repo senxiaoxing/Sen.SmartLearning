@@ -1460,7 +1460,7 @@
  },
  "hanzi.u9ed1": {
   "text": "黑。黑色的黑。",
-  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%|ov:黑色的黑，"
  },
  "hanzi.u9752": {
   "text": "青。青草的青。",
@@ -1476,7 +1476,7 @@
  },
  "hanzi.u591a": {
   "text": "多。多少的多。",
-  "sig": "zh-CN-XiaoyiNeural|-25%|+5%"
+  "sig": "zh-CN-XiaoyiNeural|-25%|+5%|ov:多，多少的多，"
  },
  "hanzi.u5c11": {
   "text": "少。多少的少。",
