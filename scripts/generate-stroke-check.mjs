@@ -38,10 +38,16 @@
  * 没通过的字将来在 `hanziCards` 上标 `strokeOrderVerified: false`，
  * 只显示田字格与字形、不演示笔顺。见 design/09 §6.4。
  *
- * 用法：npm run stroke:check     生成后用浏览器打开提示的地址
+ * 用法：npm run stroke:check          第一辑（默认）
+ *       npm run stroke:check -- 2    第二辑
+ *       npm run stroke:check -- 3    第三辑
+ *
+ * 每一辑生成各自的页面（`stroke-check.html` / `stroke-check-vol2.html` …），
+ * ⚠️ **不要让它们互相覆盖**：核对是分次做的，把上一辑的页面冲掉
+ * 等于让已经核对过的那批无从回看。
  *
  * @see design/09-竞品借鉴.md §6  验收方案（验部件不是验字）
- * @see src/data/seed/hanziCards.ts  第一辑 100 字
+ * @see src/data/seed/hanziCards.ts  三辑字表
  */
 
 import { mkdirSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
@@ -55,7 +61,24 @@ cnchar.use(order)
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const HANZI_FILE = join(ROOT, 'src', 'data', 'seed', 'hanziCards.ts')
 const CACHE_DIR = join(ROOT, '.cache', 'strokes')
-const OUT_FILE = join(ROOT, 'public', 'stroke-check.html')
+
+/**
+ * 要核对第几辑。`npm run stroke:check -- 2`
+ *
+ * 默认第一辑：它已经核对完了，重跑一次是最常见的用法（回看某个字）。
+ */
+const VOLUME = (() => {
+  const arg = process.argv[2]
+  if (arg === undefined) return 1
+  const n = Number(arg)
+  if (!Number.isInteger(n) || n < 1 || n > 3) {
+    throw new Error(`辑号只能是 1、2、3，收到「${arg}」`)
+  }
+  return n
+})()
+
+/** ⚠️ 每辑各自一个文件，别互相覆盖——见文件头 */
+const OUT_FILE = join(ROOT, 'public', VOLUME === 1 ? 'stroke-check.html' : `stroke-check-vol${VOLUME}.html`)
 
 /** 笔顺数据源。⚠️ 版本要钉死：换版本笔顺可能变，而变了没有任何提示 */
 const CDN = 'https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0.1'
@@ -80,6 +103,17 @@ const DIVERGENT = {
   月: '先撇后横折钩，里面两横最后',
   口: '竖·横折·横 —— 所有含口的字都依赖它',
   白: '撇在最前，然后才是「日」的框',
+  // —— 第二辑
+  灯: '含「火」作左偏旁，跟着「火」一起验',
+  瓜: '5 笔：撇·撇·竖提·点·捺 —— 起笔与中间的先后两岸有出入',
+  象: '下半是「豕」，与「家」同一个难点，两个一起验',
+  面: '9 笔，中间先外后内，封口那一横在最后',
+  // —— 第三辑
+  里: '含「田」，跟着「田」一起验',
+  男: '上「田」下「力」，跟着「田」一起验',
+  是: '上「日」下「疋」，跟着「日」一起验',
+  音: '上「立」下「日」，跟着「日」一起验',
+  阳: '左「阝」右「日」，「阝」两笔的顺序易错',
 }
 
 /**
@@ -107,6 +141,37 @@ const SIMPLIFIED = {
   黄: '简化字中部结构，11 笔里最容易错的一批',
   尺: '尸 + 撇捺，4 笔',
   儿: '撇 + 竖弯钩',
+  // —— 第二辑。⚠️ 部件类只留一个代表字（讠·纟·钅·饣 各一个），
+  //    其余同旁的字由 ③ 层同部件一致性自动兜住，不必都摆进必看清单
+  汤: '简化字 6 笔，右半不是繁体的「昜」',
+  学: '简化字 8 笔，上面三点的顺序易错',
+  写: '简化字 5 笔，上面是「冖」不是「宀」',
+  画: '简化字 8 笔，先外后内再封口',
+  电: '简化字 5 笔，末笔竖弯钩',
+  读: '讠旁简化字 2 笔：点·横折提 —— 讠旁代表字',
+  给: '纟旁简化字 3 笔：撇折·撇折·提 —— 纟旁代表字',
+  镜: '钅旁简化字 5 笔 —— 钅旁代表字',
+  饭: '饣旁简化字 3 笔：撇·横钩·竖提 —— 饣旁代表字',
+  师: '简化字 6 笔',
+  楼: '右半「娄」是简化字形',
+  树: '简化字 9 笔，中间是「又」',
+  叶: '简化字 5 笔：口 + 十',
+  伞: '简化字 6 笔',
+  表: '简化字 8 笔',
+  骑: '马字旁，跟着「马」一起验',
+  // —— 第三辑
+  见: '简化字 4 笔',
+  乐: '简化字 5 笔，常被写成先写中间那一竖',
+  欢: '简化字 6 笔，左「又」右「欠」',
+  爱: '简化字 10 笔，中间「冖」下面是「友」不是「爫」',
+  万: '简化字 3 笔：横·横折钩·撇',
+  双: '简化字 4 笔，两个「又」',
+  只: '简化字 5 笔',
+  声: '简化字 7 笔',
+  响: '简化字 9 笔',
+  丽: '简化字 7 笔',
+  气: '4 笔：撇·横·横·横斜钩',
+  圆: '简化字，先外后内再封口',
 }
 
 /**
@@ -142,6 +207,42 @@ const RULE_RISK = {
   石: '横·撇·竖·横折·横',
   九: '撇 + 横折弯钩',
   七: '横 + 竖弯钩',
+  // —— 第二辑
+  快: '⭐ 忄旁：先左点·再右点·后竖 —— 所有含忄的字都依赖它',
+  沙: '氵 + 少，「少」先中间后两边，跟着「少」一起验',
+  冰: '两点水（不是三点水）+ 水，「水」先中间',
+  光: '先中间那一竖，6 笔',
+  用: '先外后内：撇·横折钩·横·横·竖',
+  园: '先外后内再封口，封口的横在最后',
+  舌: '撇·横·竖·横折·横',
+  鼻: '14 笔，上「自」中「田」下「廾」',
+  熊: '下面四点最后，与「黑」同一条规则',
+  年: '6 笔，末笔是竖',
+  生: '5 笔，先撇后横',
+  找: '扌 + 戈，斜钩与那一点的先后易错',
+  拿: '上「合」下「手」，8 笔',
+  停: '亻 + 亭，「亭」的结构是难点',
+  窗: '穴 + 囱，先外后内',
+  夏: '10 笔，中间「自」下面「夂」',
+  病: '疒字头 5 笔：点·横·撇·点·提',
+  睡: '目 + 垂，「垂」的横竖顺序易错',
+  // —— 第三辑
+  半: '先两点后横，末笔是竖',
+  尖: '上「小」下「大」，「小」先中间后两边',
+  亮: '9 笔，先外后内',
+  高: '10 笔，先外后内',
+  女: '⭐ 女旁三笔的基准字，所有含女的字都依赖它',
+  王: '4 笔：横·横·竖·横 —— 「球」「琴」都靠它',
+  美: '9 笔，上面两点先左后右',
+  真: '10 笔，中间三横，下面两点最后',
+  舞: '14 笔，中间四竖是难点',
+  戏: '又 + 戈，戈上那一点在最后',
+  热: '简化字，下面四点最后',
+  友: '4 笔：横·撇·横撇·捺',
+  名: '夕 + 口，「夕」先撇后横撇',
+  喜: '12 笔，上「士」中「口」下「豆」',
+  彩: '左「采」右「彡」，「彡」三撇从上到下',
+  紫: '上「此」下「糸」，「糸」的顺序易错',
 }
 
 /**
@@ -162,30 +263,60 @@ const RULE_RISK = {
  * 含同一个偏旁的字，那个偏旁的笔画类型序列必须一模一样。
  * 对不上说明数据本身就有错——不需要懂笔顺也能断定。
  *
- * `at` 说明偏旁在左（取前 n 笔）还是在右（取后 n 笔）。
+ * `at` 说的是**取前 n 笔还是后 n 笔**：`'left'` 取前 n（左偏旁、字头都算），
+ * `'right'` 取后 n（右偏旁、字底）。
  *
  * ⚠️ 比的是每笔**首末点的方向角**，不是推导出的笔画类型——
  * 分类有边界抖动，角度没有。实测同一个偏旁在不同字里的角度差在 5° 以内，
  * 而笔顺真的不同会差几十度，{@link ANGLE_TOLERANCE} 取 25° 留足余量。
+ *
+ * ⚠️ `chars` 把**三辑的字都列全**，脚本只比当前辑里存在的那些。
+ * 一组在某一辑里凑不满 2 个字就自动跳过——所以看到「全部通过」时，
+ * 要先确认它真的比了东西，见 main() 末尾打印的组数。
  */
 const PART_GROUPS = [
-  { part: '女', at: 'left', n: 3, chars: ['妈', '姐', '妹', '好', '奶'] },
-  { part: '口', at: 'left', n: 3, chars: ['吃', '听'] },
-  { part: '犭', at: 'left', n: 3, chars: ['猫', '狗'] },
+  { part: '女', at: 'left', n: 3, chars: ['妈', '姐', '妹', '好', '奶', '她', '姓'] },
+  { part: '口', at: 'left', n: 3, chars: ['吃', '听', '唱', '喊', '叫'] },
+  { part: '犭', at: 'left', n: 3, chars: ['猫', '狗', '猴', '狮', '猪'] },
   { part: '鸟', at: 'right', n: 5, chars: ['鸭', '鸡'] },
-  { part: '木', at: 'left', n: 4, chars: ['桃'] },
-  { part: '亻', at: 'left', n: 2, chars: ['他'] },
+  { part: '木', at: 'left', n: 4, chars: ['桃', '桥', '村', '林', '树', '校', '楼', '棋', '杯'] },
+  { part: '亻', at: 'left', n: 2, chars: ['他', '停'] },
+  // —— 以下是第二、三辑带进来的新部件。⭐「忄」正是 design/09 §6.2 举的例子：
+  //    验一次它，等于验了所有含忄的字
+  { part: '忄', at: 'left', n: 3, chars: ['快', '慢'] },
+  { part: '氵', at: 'left', n: 3, chars: ['汤', '洗', '汗', '海', '河', '沙', '游', '泡', '温'] },
+  { part: '艹', at: 'left', n: 3, chars: ['草', '菜', '蓝'] },
+  { part: '虫', at: 'left', n: 6, chars: ['蛇', '蜂', '蝶', '蚁', '虾'] },
+  { part: '饣', at: 'left', n: 3, chars: ['饭', '饿'] },
+  { part: '衤', at: 'left', n: 5, chars: ['袜', '裤'] },
+  { part: '足', at: 'left', n: 7, chars: ['跑', '跳', '路'] },
+  { part: '讠', at: 'left', n: 2, chars: ['读', '课', '谢', '请', '话', '语', '诗'] },
+  { part: '纟', at: 'left', n: 3, chars: ['给', '线', '绿'] },
+  { part: '钅', at: 'left', n: 5, chars: ['镜', '钱', '钥', '锁', '铃'] },
+  { part: '目', at: 'left', n: 5, chars: ['眼', '睛', '睡'] },
+  { part: '日', at: 'left', n: 4, chars: ['明', '晚', '阳'] },
+  { part: '穴', at: 'left', n: 5, chars: ['穿', '窗', '空'] },
+  { part: '竹', at: 'left', n: 6, chars: ['笔', '筷', '筝'] },
+  { part: '宀', at: 'left', n: 3, chars: ['家', '字', '安'] },
+  { part: '冫', at: 'left', n: 2, chars: ['冰', '冷', '凉'] },
+  { part: '雨', at: 'left', n: 8, chars: ['雪', '雷', '零'] },
 ]
 
 /** 同部件角度差超过它才算不一致。见 {@link PART_GROUPS} 的说明 */
 const ANGLE_TOLERANCE = 25
 
-/** 第一辑 100 字：扫 VOLUME_1_GROUPS 到 VOLUME_2_GROUPS 之间的 h(...) 声明 */
-function loadVolume1() {
+/**
+ * 第 `n` 辑 100 字：扫 `VOLUME_n_GROUPS` 到下一辑之间的 `h(...)` 声明。
+ *
+ * 最后一辑没有「下一个 VOLUME_」可当终点，改用 `HANZI_VOLUMES` 那行——
+ * 它紧跟在三辑声明之后，是文件里稳定的分界。
+ */
+function loadVolume(n) {
   const text = readFileSync(HANZI_FILE, 'utf-8')
-  const start = text.indexOf('const VOLUME_1_GROUPS')
-  const end = text.indexOf('const VOLUME_2_GROUPS')
-  if (start < 0 || end < 0) throw new Error('没找到 VOLUME_1_GROUPS / VOLUME_2_GROUPS')
+  const start = text.indexOf(`const VOLUME_${n}_GROUPS`)
+  const next = text.indexOf(`const VOLUME_${n + 1}_GROUPS`)
+  const end = next >= 0 ? next : text.indexOf('export const HANZI_VOLUMES')
+  if (start < 0 || end < 0) throw new Error(`没找到第 ${n} 辑的字表`)
 
   const cards = []
   let group = ''
@@ -265,8 +396,9 @@ const CACHE_MISS_HINT = '（首次运行要联网拉 100 个字的笔顺数据�
 
 async function main() {
   mkdirSync(CACHE_DIR, { recursive: true })
-  const cards = loadVolume1()
-  console.log(`第一辑 ${cards.length} 字 ${existsSync(join(CACHE_DIR, '5929.json')) ? '' : CACHE_MISS_HINT}`)
+  const cards = loadVolume(VOLUME)
+  const firstCached = existsSync(join(CACHE_DIR, `${cards[0].char.codePointAt(0).toString(16)}.json`))
+  console.log(`第${'一二三'[VOLUME - 1]}辑 ${cards.length} 字 ${firstCached ? '' : CACHE_MISS_HINT}`)
 
   // 分批拉，避免一次开 100 个连接
   for (let i = 0; i < cards.length; i += 10) {
@@ -291,11 +423,14 @@ async function main() {
 
   // ③ 同部件一致性
   const partIssues = []
+  /** ⚠️ 实际比过的组。见下面打印处：不数它的话，「全部通过」和「一组都没比」长得一样 */
+  const partsChecked = []
   for (const g of PART_GROUPS) {
     const present = g.chars
       .map((ch) => byChar.get(ch))
       .filter((c) => c !== undefined && c.medians.length >= g.n)
     if (present.length < 2) continue
+    partsChecked.push(`${g.part}×${present.length}`)
 
     const anglesOf = (c) =>
       (g.at === 'left' ? c.medians.slice(0, g.n) : c.medians.slice(-g.n)).map((m) =>
@@ -346,10 +481,19 @@ async function main() {
   if (partIssues.length > 0) {
     console.log(`\n⚠️ 自动检出 ${partIssues.length} 处同部件笔顺不一致（数据一定有错）：`)
     for (const p of partIssues) console.log(`   「${p.part}」旁：${p.detail}`)
+  } else if (partsChecked.length > 0) {
+    console.log(`   同部件一致性：${partsChecked.length} 组全部通过（${partsChecked.join(' ')}）`)
   } else {
-    console.log('   同部件一致性检查：全部通过')
+    // ⚠️ 这不是好消息，是筛子没网到东西。第二辑第一次跑就是这样：
+    // PART_GROUPS 里全是第一辑的字，一组都凑不满 2 个，而输出看着像「通过」
+    console.log('   ⚠️ 同部件一致性：一组都没比上 —— 这一辑的部件不在 PART_GROUPS 里，不是通过')
   }
-  console.log('\n   npm run dev 后打开 http://localhost:5173/Sen.SmartLearning/stroke-check.html')
+  if (mustSee === 0) {
+    console.log('   ⚠️ 必看清单是空的 —— 多半是 DIVERGENT/SIMPLIFIED/RULE_RISK 还没覆盖这一辑')
+  }
+  console.log(
+    `\n   npm run dev 后打开 http://localhost:5173/Sen.SmartLearning/${OUT_FILE.split(/[\\/]/).pop()}`,
+  )
 }
 
 function renderHtml(ordered, counts, mustSee, partIssues) {
@@ -409,7 +553,7 @@ function renderHtml(ordered, counts, mustSee, partIssues) {
 </style>
 </head>
 <body>
-<h1>笔顺校验 · 识字第一辑</h1>
+<h1>笔顺校验 · 识字第${'一二三'[VOLUME - 1]}辑</h1>
 <p class="sub">
   100 个字，已按风险排好序。田字格下面那排是<b>笔顺跟随</b>——第 k 格画到第 k 笔，
   最新一笔标红。把语文书的生字表摊在旁边，一眼就能比完一个字，不用盯动画。<br>

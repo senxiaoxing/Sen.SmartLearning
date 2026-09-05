@@ -212,10 +212,278 @@ const VOLUME_1_STORIES: readonly Story[] = [
 ]
 
 /**
- * 全部短文，按辑。
+ * 第二辑：用识字第 1~2 辑的 200 个字。
  *
- * ⚠️ 目前只有第一辑。第二、三辑要等**写出来**，不是等代码——
- * 加辑就是往这个数组后面追加一个 {@link StoryVolume}，UI 自动多一个按钮。
+ * 比第一辑宽出来的主要是**动词**（洗穿跑跳游笑唱玩想找拿做用写读画学睡停骑），
+ * 所以这一辑第一次写得出「一天里发生了什么」这种有先后的故事。
+ *
+ * ⚠️ 但「是」「有」「不」「很」「要」仍在第三辑，一个都不能用——
+ * 所以句子还是没法带判断和否定，仍然只能陈述看得见的事。
+ */
+const VOLUME_2_STORIES: readonly Story[] = [
+  {
+    id: 'zaoshang',
+    title: '早上',
+    titlePinyin: 'zǎo shàng',
+    emoji: '🌅',
+    source: '自己写的',
+    lines: [
+      { text: '早上，我下床。', pinyin: 'zǎo shàng wǒ xià chuáng' },
+      { text: '我洗脸，洗手。', pinyin: 'wǒ xǐ liǎn xǐ shǒu' },
+      { text: '爸爸做饭。', pinyin: 'bà bà zuò fàn' },
+      { text: '妈妈说：来吃饭。', pinyin: 'mā mā shuō lái chī fàn' },
+      { text: '我吃了一个蛋，一个桃。', pinyin: 'wǒ chī le yī gè dàn yī gè táo' },
+      { text: '吃了饭，我去学校。', pinyin: 'chī le fàn wǒ qù xué xiào' },
+    ],
+  },
+  {
+    id: 'xuexiao',
+    title: '学校',
+    titlePinyin: 'xué xiào',
+    emoji: '🏫',
+    source: '自己写的',
+    lines: [
+      { text: '我们的学校在山下。', pinyin: 'wǒ men de xué xiào zài shān xià' },
+      { text: '学校门口，大树和花。', pinyin: 'xué xiào mén kǒu dà shù hé huā' },
+      { text: '老师说：早上好。', pinyin: 'lǎo shī shuō zǎo shàng hǎo' },
+      { text: '我们说：老师早上好。', pinyin: 'wǒ men shuō lǎo shī zǎo shàng hǎo' },
+      { text: '上课了，我们读书，写字。', pinyin: 'shàng kè le wǒ men dú shū xiě zì' },
+      { text: '下课了，我们玩，我们笑。', pinyin: 'xià kè le wǒ men wán wǒ men xiào' },
+    ],
+  },
+  {
+    id: 'houhexiang',
+    title: '小猴和大象',
+    titlePinyin: 'xiǎo hóu hé dà xiàng',
+    emoji: '🐵',
+    source: '自己写的',
+    lines: [
+      { text: '山上一个小猴。', pinyin: 'shān shàng yī gè xiǎo hóu' },
+      { text: '小猴跳来跳去。', pinyin: 'xiǎo hóu tiào lái tiào qù' },
+      { text: '大河，一个大象。', pinyin: 'dà hé yī gè dà xiàng' },
+      { text: '大象在大河洗。', pinyin: 'dà xiàng zài dà hé xǐ' },
+      { text: '小猴看大象，笑了。', pinyin: 'xiǎo hóu kàn dà xiàng xiào le' },
+      { text: '大象也笑了。', pinyin: 'dà xiàng yě xiào le' },
+    ],
+  },
+  {
+    id: 'chunxiaqiudong',
+    title: '春夏秋冬',
+    titlePinyin: 'chūn xià qiū dōng',
+    emoji: '🍂',
+    source: '自己写的',
+    lines: [
+      { text: '春天，花开了。', pinyin: 'chūn tiān huā kāi le' },
+      { text: '夏天，我在大河游。', pinyin: 'xià tiān wǒ zài dà hé yóu' },
+      { text: '秋天，果多。', pinyin: 'qiū tiān guǒ duō' },
+      { text: '冬天，下雪了。', pinyin: 'dōng tiān xià xuě le' },
+      { text: '春夏秋冬，我都想玩。', pinyin: 'chūn xià qiū dōng wǒ dōu xiǎng wán' },
+    ],
+  },
+  {
+    id: 'wodeyitian',
+    title: '我的一天',
+    titlePinyin: 'wǒ de yī tiān',
+    emoji: '🕐',
+    source: '自己写的',
+    lines: [
+      { text: '早上，我去学校。', pinyin: 'zǎo shàng wǒ qù xué xiào' },
+      { text: '上午，我读书。', pinyin: 'shàng wǔ wǒ dú shū' },
+      { text: '我吃午饭。', pinyin: 'wǒ chī wǔ fàn' },
+      { text: '下午，我跑，我跳。', pinyin: 'xià wǔ wǒ pǎo wǒ tiào' },
+      { text: '晚上，我洗脸，睡。', pinyin: 'wǎn shàng wǒ xǐ liǎn shuì' },
+      { text: '明天，我早早去学校。', pinyin: 'míng tiān wǒ zǎo zǎo qù xué xiào' },
+    ],
+  },
+  {
+    id: 'bingle',
+    title: '我病了',
+    titlePinyin: 'wǒ bìng le',
+    emoji: '🤒',
+    source: '自己写的',
+    lines: [
+      { text: '我病了。', pinyin: 'wǒ bìng le' },
+      { text: '妈妈给我茶。', pinyin: 'mā mā gěi wǒ chá' },
+      { text: '爸爸说：早早睡。', pinyin: 'bà bà shuō zǎo zǎo shuì' },
+      { text: '我睡了一天。', pinyin: 'wǒ shuì le yī tiān' },
+      { text: '明天，我好了。', pinyin: 'míng tiān wǒ hǎo le' },
+      { text: '我去学校，老师笑了。', pinyin: 'wǒ qù xué xiào lǎo shī xiào le' },
+    ],
+  },
+  {
+    id: 'fenghedie',
+    title: '小蜂和小蝶',
+    titlePinyin: 'xiǎo fēng hé xiǎo dié',
+    emoji: '🦋',
+    source: '自己写的',
+    lines: [
+      { text: '花开了，红花，黄花。', pinyin: 'huā kāi le hóng huā huáng huā' },
+      { text: '小蜂来了。', pinyin: 'xiǎo fēng lái le' },
+      { text: '小蝶也来了。', pinyin: 'xiǎo dié yě lái le' },
+      { text: '小蜂在花上，小蝶也在花上。', pinyin: 'xiǎo fēng zài huā shàng xiǎo dié yě zài huā shàng' },
+      { text: '小蜂和小蝶，都在花上玩。', pinyin: 'xiǎo fēng hé xiǎo dié dōu zài huā shàng wán' },
+      { text: '花园好看。', pinyin: 'huā yuán hǎo kàn' },
+    ],
+  },
+  {
+    id: 'chuan',
+    title: '船',
+    titlePinyin: 'chuán',
+    emoji: '⛵',
+    source: '自己写的',
+    lines: [
+      { text: '大河上，一个船。', pinyin: 'dà hé shàng yī gè chuán' },
+      { text: '船上一个人。', pinyin: 'chuán shàng yī gè rén' },
+      { text: '他看水，看山，看天。', pinyin: 'tā kàn shuǐ kàn shān kàn tiān' },
+      { text: '船慢慢走。', pinyin: 'chuán màn màn zǒu' },
+      { text: '天黑了，船停了。', pinyin: 'tiān hēi le chuán tíng le' },
+    ],
+  },
+]
+
+/**
+ * 第三辑：全部 300 个字。
+ *
+ * ⭐ 到这一辑才有「是」「有」「不」「很」——句子第一次能**判断**和**否定**，
+ * 而不只是陈述看得见的事。方位（前后左右里外远近）、颜色、数量也都在这里，
+ * 所以这一辑开始写得出说明性的段落。
+ *
+ * ⚠️ 仍然写不了寓言原文：「乌鸦」「守株」「龟兔」「拔苗」这些关键词
+ * 一个都不在 300 字里。硬凑出来的不是寓言，所以照旧标「自己写的」——
+ * ⛔ 别为了让 `source` 好看就标成「寓言」。
+ */
+const VOLUME_3_STORIES: readonly Story[] = [
+  {
+    id: 'wodemingzi',
+    title: '我的名字',
+    // ⚠️「名字」的「字」口语读轻声，但这里标**本调** zì：与课本一致，
+    //    更要紧的是点这个字听到的是识字墙那条片段（「字。写字的字。」本调），
+    //    标轻声会让她看到的和听到的对不上
+    titlePinyin: 'wǒ de míng zì',
+    emoji: '🙋',
+    source: '自己写的',
+    lines: [
+      { text: '我姓王，我叫小美。', pinyin: 'wǒ xìng wáng wǒ jiào xiǎo měi' },
+      { text: '我是女孩。', pinyin: 'wǒ shì nǚ hái' },
+      { text: '我有一个哥哥。', pinyin: 'wǒ yǒu yī gè gē gē' },
+      { text: '哥哥是男孩。', pinyin: 'gē gē shì nán hái' },
+      { text: '我们都喜欢玩球。', pinyin: 'wǒ men dōu xǐ huān wán qiú' },
+      { text: '妈妈说：你们是好朋友。', pinyin: 'mā mā shuō nǐ men shì hǎo péng yǒu' },
+    ],
+  },
+  {
+    id: 'caise',
+    title: '彩色',
+    titlePinyin: 'cǎi sè',
+    emoji: '🎨',
+    source: '自己写的',
+    lines: [
+      { text: '天是蓝的。', pinyin: 'tiān shì lán de' },
+      { text: '草是绿的。', pinyin: 'cǎo shì lǜ de' },
+      { text: '花有红的，有黄的，有紫的。', pinyin: 'huā yǒu hóng de yǒu huáng de yǒu zǐ de' },
+      { text: '雪是白的。', pinyin: 'xuě shì bái de' },
+      { text: '天黑了，天是黑的。', pinyin: 'tiān hēi le tiān shì hēi de' },
+      { text: '我喜欢彩色的天。', pinyin: 'wǒ xǐ huān cǎi sè de tiān' },
+    ],
+  },
+  {
+    id: 'maohexian',
+    title: '小猫和线',
+    titlePinyin: 'xiǎo māo hé xiàn',
+    emoji: '🧶',
+    source: '自己写的',
+    lines: [
+      { text: '我有一个小猫。', pinyin: 'wǒ yǒu yī gè xiǎo māo' },
+      { text: '小猫很小，很白。', pinyin: 'xiǎo māo hěn xiǎo hěn bái' },
+      { text: '我给小猫一条线。', pinyin: 'wǒ gěi xiǎo māo yī tiáo xiàn' },
+      { text: '小猫玩线，跳来跳去。', pinyin: 'xiǎo māo wán xiàn tiào lái tiào qù' },
+      { text: '线在左，小猫在左。', pinyin: 'xiàn zài zuǒ xiǎo māo zài zuǒ' },
+      { text: '线在右，小猫在右。', pinyin: 'xiàn zài yòu xiǎo māo zài yòu' },
+      { text: '小猫不累，我笑了。', pinyin: 'xiǎo māo bù lèi wǒ xiào le' },
+    ],
+  },
+  {
+    id: 'taiyanghenyueliang',
+    title: '太阳和月亮',
+    titlePinyin: 'tài yáng hé yuè liàng',
+    emoji: '🌞',
+    source: '自己写的',
+    lines: [
+      { text: '早上，太阳在天上。', pinyin: 'zǎo shàng tài yáng zài tiān shàng' },
+      { text: '太阳是圆的，是红的。', pinyin: 'tài yáng shì yuán de shì hóng de' },
+      { text: '太阳很高，很暖。', pinyin: 'tài yáng hěn gāo hěn nuǎn' },
+      { text: '晚上，月亮在天上。', pinyin: 'wǎn shàng yuè liàng zài tiān shàng' },
+      { text: '月亮是白的，很静。', pinyin: 'yuè liàng shì bái de hěn jìng' },
+      { text: '我喜欢太阳，也喜欢月亮。', pinyin: 'wǒ xǐ huān tài yáng yě xǐ huān yuè liàng' },
+    ],
+  },
+  {
+    id: 'xiayutian',
+    title: '下雨天',
+    titlePinyin: 'xià yǔ tiān',
+    emoji: '🌧️',
+    source: '自己写的',
+    lines: [
+      { text: '天上有雷。', pinyin: 'tiān shàng yǒu léi' },
+      { text: '雨来了，很大。', pinyin: 'yǔ lái le hěn dà' },
+      { text: '我不去外面玩。', pinyin: 'wǒ bù qù wài miàn wán' },
+      { text: '我在家里读书。', pinyin: 'wǒ zài jiā lǐ dú shū' },
+      { text: '妈妈给我一杯热茶。', pinyin: 'mā mā gěi wǒ yī bēi rè chá' },
+      { text: '雨停了，天亮了。', pinyin: 'yǔ tíng le tiān liàng le' },
+      { text: '外面很凉，很好。', pinyin: 'wài miàn hěn liáng hěn hǎo' },
+    ],
+  },
+  {
+    id: 'changge',
+    title: '唱歌',
+    titlePinyin: 'chàng gē',
+    emoji: '🎵',
+    source: '自己写的',
+    lines: [
+      { text: '姐姐唱歌。', pinyin: 'jiě jiě chàng gē' },
+      { text: '她的声音很美。', pinyin: 'tā de shēng yīn hěn měi' },
+      { text: '爸爸有一个鼓。', pinyin: 'bà bà yǒu yī gè gǔ' },
+      { text: '鼓的声音很响。', pinyin: 'gǔ de shēng yīn hěn xiǎng' },
+      { text: '我玩琴。', pinyin: 'wǒ wán qín' },
+      { text: '家里有歌，有琴，有鼓。', pinyin: 'jiā lǐ yǒu gē yǒu qín yǒu gǔ' },
+    ],
+  },
+  {
+    id: 'yibai',
+    title: '一百',
+    titlePinyin: 'yī bǎi',
+    emoji: '💯',
+    source: '自己写的',
+    lines: [
+      { text: '一二三四五，六七八九十。', pinyin: 'yī èr sān sì wǔ liù qī bā jiǔ shí' },
+      { text: '十个十，是一百。', pinyin: 'shí gè shí shì yī bǎi' },
+      { text: '十个一百，是一千。', pinyin: 'shí gè yī bǎi shì yī qiān' },
+      { text: '十个一千，是一万。', pinyin: 'shí gè yī qiān shì yī wàn' },
+      { text: '一万很大很大。', pinyin: 'yī wàn hěn dà hěn dà' },
+      { text: '老师说：你真好。', pinyin: 'lǎo shī shuō nǐ zhēn hǎo' },
+    ],
+  },
+  {
+    id: 'qianhouzuoyou',
+    title: '前后左右',
+    titlePinyin: 'qián hòu zuǒ yòu',
+    emoji: '🧭',
+    source: '自己写的',
+    lines: [
+      { text: '我在前，哥哥在后。', pinyin: 'wǒ zài qián gē gē zài hòu' },
+      { text: '猫在左，狗在右。', pinyin: 'māo zài zuǒ gǒu zài yòu' },
+      { text: '大树在远，小花在近。', pinyin: 'dà shù zài yuǎn xiǎo huā zài jìn' },
+      { text: '妈妈说：真好。', pinyin: 'mā mā shuō zhēn hǎo' },
+      { text: '我很喜欢。', pinyin: 'wǒ hěn xǐ huān' },
+    ],
+  },
+]
+
+/**
+ * 全部短文，按辑。三辑与识字的三辑一一对应。
+ *
+ * ⚠️ 加内容 = 往这个数组后面追加一辑，或往某一辑的 `stories` 末尾追加一篇。
+ * ⛔ 不重排辑、不重排辑内顺序——她记的是「小猫那篇在第四个」这种位置。
  */
 export const STORY_VOLUMES: readonly StoryVolume[] = [
   {
@@ -224,6 +492,20 @@ export const STORY_VOLUMES: readonly StoryVolume[] = [
     badge: '1',
     hint: '只用第一辑那 100 个字',
     stories: VOLUME_1_STORIES,
+  },
+  {
+    id: 'vol2',
+    name: '第二辑',
+    badge: '2',
+    hint: '用前两辑 200 个字，开始有先后顺序的故事',
+    stories: VOLUME_2_STORIES,
+  },
+  {
+    id: 'vol3',
+    name: '第三辑',
+    badge: '3',
+    hint: '用全部 300 个字，句子能判断也能否定了',
+    stories: VOLUME_3_STORIES,
   },
 ]
 

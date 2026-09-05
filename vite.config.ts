@@ -143,6 +143,16 @@ export default defineConfig({
         // 不进预缓存的话装到主屏幕后**离线时音效全部失效**，
         // 而「每次交互必有视觉 + 音效双反馈」是硬要求（design/03 §5.2）。
         globPatterns: ['**/*.{js,css,html,png,svg,woff2,wav,bin}'],
+        // ⭐ 人工校验页**不进预缓存**：`*-check.html` 那几个（笔顺、古诗、情境题、拼音）
+        // 是给**家长核对内容**用的一次性工具，孩子的 App 一次都不会打开它们。
+        //
+        // 它们仍留在 dist 里（`npm run dev` 或线上直接输 URL 照常打得开），
+        // 只是不该塞进首装——笔顺三辑各 200~280KB，加起来 875KB，
+        // 而首装体积正是 §2.5d 花大力气从「几百个请求」压下来的那件事。
+        //
+        // ⚠️ 别写成 `**/*.html` 之类的宽模式：`index.html` 必须留在预缓存里，
+        // 否则装到主屏幕后离线打不开。
+        globIgnores: ['**/*-check.html', '**/*-check-vol*.html', '**/pinyin-record.html'],
         // ⚠️ 默认上限 2MiB 会把 3MB 的 poem0.bin **静默**排除在预缓存外。
         // 打包脚本的分卷上限是 3MB，这里留到 4MB
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
