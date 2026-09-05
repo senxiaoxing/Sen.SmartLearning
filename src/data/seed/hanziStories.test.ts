@@ -151,25 +151,29 @@ describe('结构完整性', () => {
 })
 
 describe('逐字拆分（storyLineChars）', () => {
-  it('表内字标 known，粘合虚词不标 —— 标色、可点、有音是同一件事', () => {
+  it('⭐ 粘合虚词和别的字拆出来一模一样 —— 渲染层没有任何理由把它们分开', () => {
+    // 原先这里断言「表内字标 known、虚词不标」，那个设计上机第一次就被推翻：
+    // 孩子问「为什么『了』『的』『也』没有高亮」，差异本身成了最抢眼的东西。
+    // 现在拆分结果里根本没有「这个字在不在表里」这一项。
     const line = { text: '大雪白了。', pinyin: 'dà xuě bái le' }
-    const chars = storyLineChars(line, KNOWN_HANZI)
+    const chars = storyLineChars(line)
 
     expect(chars).toHaveLength(5)
-    expect(chars.slice(0, 3).every((c) => c.known)).toBe(true)
-    expect(chars[3]).toEqual({ char: '了', pinyin: 'le', known: false, punctuation: false })
+    expect(chars[3]).toEqual({ char: '了', pinyin: 'le', punctuation: false })
+    // 「白」（表内）与「了」（表外）除了字和音之外没有任何差别
+    expect(Object.keys(chars[2] ?? {}).sort()).toEqual(Object.keys(chars[3] ?? {}).sort())
   })
 
   it('⭐ 标点单独标出来 —— 排版要靠它把句号绑在前一个字后面', () => {
     // 不标的话 UI 只能用「没有拼音」去猜，而折行时句号会被甩到下一行
     // 孤零零占一整行（实测，容器 340px）。见 components/RubyText.tsx
-    const chars = storyLineChars({ text: '好看！', pinyin: 'hǎo kàn' }, KNOWN_HANZI)
+    const chars = storyLineChars({ text: '好看！', pinyin: 'hǎo kàn' })
     expect(chars.map((c) => c.punctuation)).toEqual([false, false, true])
   })
 
   it('⚠️ 标点不占拼音位 —— 占了的话后面每个字的音都会错开一格', () => {
     const line = { text: '山白了，田也白了。', pinyin: 'shān bái le tián yě bái le' }
-    const chars = storyLineChars(line, KNOWN_HANZI)
+    const chars = storyLineChars(line)
 
     // 「，」之后的「田」必须还是 tián，而不是被标点挤掉一格变成 yě
     const tian = chars.find((c) => c.char === '田')
@@ -180,7 +184,7 @@ describe('逐字拆分（storyLineChars）', () => {
   it('每篇每句都拆得出与原文等长的结果', () => {
     for (const story of ALL_STORIES) {
       for (const line of story.lines) {
-        expect(storyLineChars(line, KNOWN_HANZI)).toHaveLength([...line.text].length)
+        expect(storyLineChars(line)).toHaveLength([...line.text].length)
       }
     }
   })

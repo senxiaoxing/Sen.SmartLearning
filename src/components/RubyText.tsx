@@ -30,8 +30,11 @@ interface RubyTextProps {
   /** 拼音显不显示。⭐ 关掉是「我能自己读了」的表达，见 StoryView */
   showPinyin: boolean
   /**
-   * 点了某个**表内**字。表外字（标点、粘合虚词）不会触发——
-   * 它们本来就不可点，见 {@link StoryChar.known}。
+   * 点了某个字。**除标点外每个字都会触发**，由上层决定响什么——
+   * 有语音片段的念出来，没有的给一声轻响。
+   *
+   * ⛔ 别在这里按「这个字有没有音」分出两种样式：上机第一次就被推翻了，
+   * 见 {@link StoryChar}。
    */
   onTapChar?: (char: string) => void
 }
@@ -119,9 +122,8 @@ function RubyChar({ item, showPinyin, onTapChar }: RubyCharProps) {
     </span>
   )
 
-  // 标点与粘合虚词：只是排版的一部分，不给点。
-  // ⛔ 点了没反应比没得点更糟（design/09 §2.1），所以它连按钮都不是
-  if (!item.known) {
+  // 标点不是字：不给点，也不该抢眼。它只是排版的一部分
+  if (item.punctuation) {
     return (
       <span className={`inline-flex flex-col items-center align-bottom ${CHAR_MIN_SIZE}`}>
         {pinyin}
@@ -135,8 +137,12 @@ function RubyChar({ item, showPinyin, onTapChar }: RubyCharProps) {
       type="button"
       aria-label={item.char}
       onClick={() => onTapChar?.(item.char)}
-      // ⭐ 表内字用主色：标色、可点、有音是同一件事——
-      // 颜色在这里的含义是「**这个字你学过**」，不是装饰
+      // ⭐ **每个字都一样**：同一个主色、同一个字重、同样可点。
+      //
+      // 原先只给识字表里的字上色，上机第一次就被推翻——孩子问
+      // 「为什么『了』『的』『也』没有高亮」，那个差异成了整屏最抢眼的东西。
+      // 她读的是句子，那些字在她眼里和别的字一样是句子的一部分。
+      // ⛔ 不要再按任何「这个字属于哪张表」的理由把它们分开。
       className={[
         'inline-flex flex-col items-center align-bottom rounded-lg',
         CHAR_MIN_SIZE,

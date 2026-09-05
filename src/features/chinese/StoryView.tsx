@@ -38,6 +38,7 @@ import { KNOWN_HANZI, storyById } from '@/data/seed/hanziStories'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
 import { ALL_HANZI_CARDS } from '@/data/seed/hanziCards'
 import { storyLineChars } from '@/domain/story'
+import { playSfx } from '@/platform/audio'
 import { prefetchClips, say, stopSpeech } from '@/platform/speech'
 
 /** 按字查它的识字卡，点读时要用卡上的组词拼出「天。蓝天的天。」 */
@@ -76,14 +77,26 @@ export function StoryView() {
   // 乱输的 hash 直接回短文单，不显示错误页——孩子看不懂错误页
   if (story === undefined) return <Navigate to="/stories" replace />
 
-  const speakChar = (char: string) => {
+  /**
+   * 点一个字。
+   *
+   * ⭐ 屏幕上所有字长得一样（见 `RubyText`），但**能不能念得对不一样**：
+   * 识字 300 里的字有现成片段；「的」「了」这些粘合虚词没有，
+   * 而它们**全是轻声字**——喂给 TTS 会念成本调（的 dì、了 liǎo），那是教错音。
+   *
+   * ⛔ 所以虚词绝不走 TTS，改给一声轻响：她知道「按到了」，
+   * 但不会把那一声误当成这个字的读音。这也正是这个模块
+   * 「不做成语音强依赖，就没有整类读音风险」的同一条理由（design/09 §2.1）。
+   */
+  const tapChar = (char: string) => {
     const card = CARD_BY_CHAR.get(char)
-    say({
-      parts: [hanziClipKey(char)],
-      // 与识字墙念的是同一句「天。蓝天的天。」——两处听起来必须一样，
-      // 否则同一个字在两个地方是两个声音
-      fallbackText: card === undefined ? char : hanziSpokenText(card),
-    })
+    if (card === undefined) {
+      playSfx('tap')
+      return
+    }
+    // 与识字墙念的是同一句「天。蓝天的天。」——两处听起来必须一样，
+    // 否则同一个字在两个地方是两个声音
+    say({ parts: [hanziClipKey(char)], fallbackText: hanziSpokenText(card) })
   }
 
   return (
@@ -112,9 +125,9 @@ export function StoryView() {
           {story.lines.map((line) => (
             <RubyText
               key={line.text}
-              chars={storyLineChars(line, KNOWN_HANZI)}
+              chars={storyLineChars(line)}
               showPinyin={showPinyin}
-              onTapChar={speakChar}
+              onTapChar={tapChar}
             />
           ))}
         </div>

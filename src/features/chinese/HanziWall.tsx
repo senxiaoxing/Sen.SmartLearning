@@ -33,7 +33,7 @@
  */
 
 import { motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
@@ -42,13 +42,20 @@ import { hanziClipKey } from '@/domain/hanzi'
 import { prefetchClips } from '@/platform/speech'
 import { VolumePicker } from '@/components/VolumePicker'
 import { HanziCard } from '@/features/chinese/HanziCard'
+import { useBrowseVolumeStore } from '@/stores/browseVolumeStore'
 
 /** 兜底用的第一辑。字表是静态内容，这个分支实际走不到 */
 const FIRST_VOLUME = HANZI_VOLUMES[0]
 
+/** 这一页在 `browseVolumeStore` 里的键，用路由路径 */
+const PAGE = '/hanzi'
+
 export function HanziWall() {
   const navigate = useNavigate()
-  const [volumeId, setVolumeId] = useState(FIRST_VOLUME?.id ?? '')
+  // ⚠️ 不能用 useState：离开这一页（去乐园、去写字墙）组件就卸载，
+  //    再进来会退回第一辑，而她记的是自己刚翻到哪一辑
+  const volumeId = useBrowseVolumeStore((s) => s.selected[PAGE])
+  const select = useBrowseVolumeStore((s) => s.select)
 
   const volume = HANZI_VOLUMES.find((v) => v.id === volumeId) ?? FIRST_VOLUME
 
@@ -87,7 +94,7 @@ export function HanziWall() {
         volumes={HANZI_VOLUMES}
         activeId={volume?.id ?? ''}
         countLabel="100 个字"
-        onSelect={setVolumeId}
+        onSelect={(id) => select(PAGE, id)}
       />
 
       <p className="py-3 text-center text-lg text-ink/60">点一下字，听听它念什么</p>

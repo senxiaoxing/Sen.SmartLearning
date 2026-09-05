@@ -73,7 +73,22 @@ export interface StoryVolume {
   stories: readonly Story[]
 }
 
-/** 一个字在屏幕上的样子 */
+/**
+ * 一个字在屏幕上的样子。
+ *
+ * ⛔ **刻意没有「这个字在不在识字表里」这一项。**
+ *
+ * 原先有个 `known`，同时决定标不标色、能不能点、点了有没有音。
+ * 上机第一次就被推翻：孩子问「为什么『了』『的』『也』没有高亮」，
+ * **那个差异本身成了整屏最吸引她注意的东西**。
+ *
+ * 我们用颜色编码了一个她根本不需要知道的信息（这个字属不属于某张表），
+ * 而她看到的只是「有些字被冷落了」——她读的是句子，
+ * 「的」「了」在她眼里和别的字一样是句子的一部分，凭什么灰着。
+ *
+ * 现在全部字一个样。「这个字有没有语音」由播放层自己查，不进渲染数据，
+ * 见 `features/chinese/StoryView.tsx`。
+ */
 export interface StoryChar {
   char: string
   /** 标点没有拼音 */
@@ -86,14 +101,6 @@ export interface StoryChar {
    * 否则折行时句号会被甩到下一行孤零零占一整行。
    */
   punctuation: boolean
-  /**
-   * 是不是识字 300 表里的字。
-   *
-   * ⭐ 它同时决定三件事，而这三件事必须**是同一件**：标不标色、能不能点、
-   * 点了有没有音。表外的字（「的」「了」这类粘合虚词）一律不标、不给点——
-   * **点了没反应比没得点更糟**（design/09 §2.1）。
-   */
-  known: boolean
 }
 
 /**
@@ -105,36 +112,36 @@ export interface StoryChar {
 const PUNCTUATION = new Set('，。！？、；：「」“”‘’…—《》')
 
 /**
- * 把一句话拆成逐字渲染需要的形状：每个字配上它的拼音，并标出是否表内字。
+ * 把一句话拆成逐字渲染需要的形状：每个字配上它头上的拼音。
  *
  * 标点不占拼音位——`pinyin` 串是按**去掉标点后的字数**给的，
  * 所以拆分时得自己数着走，不能用下标直接对应。
  *
+ * ⚠️ 它**不需要知道识字表**（原先要注入一份）。所有字一视同仁，
+ * 理由见 {@link StoryChar}。
+ *
  * @param line - 一句短文
- * @param knownChars - 识字 300 表里的全部字。由调用方注入，
- *                     因为 domain 不依赖 data 层（分层铁律）
  * @returns 逐字结果，长度等于 `line.text` 的字数（**含**标点）
  *
  * @example
- * storyLineChars({ text: '大雪白了。', pinyin: 'dà xuě bái le' }, new Set('大雪白'))
- * // [ { char: '大', pinyin: 'dà',  known: true,  punctuation: false },
- * //   { char: '雪', pinyin: 'xuě', known: true,  punctuation: false },
- * //   { char: '白', pinyin: 'bái', known: true,  punctuation: false },
- * //   { char: '了', pinyin: 'le',  known: false, punctuation: false },  ← 表外虚词，不标色不给点
- * //   { char: '。',               known: false, punctuation: true  } ]  ← 标点不占拼音位
+ * storyLineChars({ text: '大雪白了。', pinyin: 'dà xuě bái le' })
+ * // [ { char: '大', pinyin: 'dà',  punctuation: false },
+ * //   { char: '雪', pinyin: 'xuě', punctuation: false },
+ * //   { char: '白', pinyin: 'bái', punctuation: false },
+ * //   { char: '了', pinyin: 'le',  punctuation: false },
+ * //   { char: '。',               punctuation: true  } ]  ← 标点不占拼音位
  */
-export function storyLineChars(line: StoryLine, knownChars: ReadonlySet<string>): StoryChar[] {
+export function storyLineChars(line: StoryLine): StoryChar[] {
   const syllables = line.pinyin.split(' ').filter((s) => s.length > 0)
   let cursor = 0
 
   return [...line.text].map((char) => {
-    if (PUNCTUATION.has(char)) return { char, known: false, punctuation: true }
+    if (PUNCTUATION.has(char)) return { char, punctuation: true }
     const pinyin = syllables[cursor]
     cursor += 1
     return {
       char,
       ...(pinyin !== undefined && { pinyin }),
-      known: knownChars.has(char),
       punctuation: false,
     }
   })

@@ -30,6 +30,10 @@ import { PetDetail } from '@/features/pet/PetDetail'
 import { usePetStore } from '@/stores/petStore'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
+import { useBrowseVolumeStore } from '@/stores/browseVolumeStore'
+
+/** 这一页在 `browseVolumeStore` 里的键，用路由路径 */
+const PAGE = '/pets'
 import { gradeLevelOf, type GradeLevel, type PetState } from '@/domain/types'
 
 export function PetHome() {
@@ -52,8 +56,16 @@ export function PetHome() {
    *
    * 做成可空之后 `archived` 在加载期间恒为 `false`，绝不会误进存档态。
    * 与首页 `contentGradeLevel ?? 档案年级` 是同一个写法。
+   *
+   * ⚠️ 存在 `browseVolumeStore` 而不是 `useState`：从这一页点进小屋再返回，
+   * 组件会重新挂载——用组件状态的话她翻到的那一届会丢，迎面又是当前年级。
+   * 「没选过」仍然是 `undefined`，上面那条异步初值的坑照旧躲开了。
    */
-  const [viewGradeOverride, setViewGradeOverride] = useState<GradeLevel | null>(null)
+  // `|| undefined`：空串是「回到跟随档案年级」，与「没选过」归成同一种情况
+  const viewGradeOverride = (useBrowseVolumeStore((s) => s.selected[PAGE]) || undefined) as
+    | GradeLevel
+    | undefined
+  const selectGrade = useBrowseVolumeStore((s) => s.select)
   const viewGrade = viewGradeOverride ?? gradeLevel
   const [ownedGrades, setOwnedGrades] = useState<GradeLevel[]>([])
   const [archivePets, setArchivePets] = useState<PetState[]>([])
@@ -81,10 +93,10 @@ export function PetHome() {
   const shown = archived ? archivePets : pets
   const pet = shown[activeIndex]
 
-  // 点回当前年级时存 null 而不是存那个值：这样家长在别处改了档案年级，
-  // 这一页会自动跟上，不需要两处互相同步（同 sessionStore.setContentGrade）
+  // 点回当前年级时存**空串**（＝回到跟随）而不是存那个年级值：这样家长在别处
+  // 改了档案年级，这一页会自动跟上，不需要两处互相同步（同 sessionStore.setContentGrade）
   const switchTo = (grade: GradeLevel) => {
-    setViewGradeOverride(grade === gradeLevel ? null : grade)
+    selectGrade(PAGE, grade === gradeLevel ? '' : grade)
     setActiveIndex(0)
     setRenaming(false)
   }

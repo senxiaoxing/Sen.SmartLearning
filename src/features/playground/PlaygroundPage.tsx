@@ -23,7 +23,6 @@
  */
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { Icon } from '@/components/Icon'
@@ -34,13 +33,26 @@ import {
   PLAYGROUND_SECTIONS,
   type PlaygroundEntry,
 } from '@/features/playground/playgroundSections'
+import { useBrowseVolumeStore } from '@/stores/browseVolumeStore'
+
+/** 这一页在 `browseVolumeStore` 里的键，用路由路径 */
+const PAGE = '/playground'
 
 export function PlaygroundPage() {
   const navigate = useNavigate()
-  const [sectionId, setSectionId] = useState(DEFAULT_SECTION_ID)
+  /**
+   * ⚠️ 不能用 useState —— 这一页是**所有浏览内容的中转站**，
+   * 每进一块（拼音/识字/古诗/写字/短文/字母）都要卸载一次。
+   * 用组件状态的话，她从英语分区点进字母乐园、退回来会发现自己在语文分区，
+   * 而她的记忆是「我刚才在英语那一格」。
+   */
+  const sectionId = useBrowseVolumeStore((s) => s.selected[PAGE])
+  const select = useBrowseVolumeStore((s) => s.select)
 
   const section =
-    PLAYGROUND_SECTIONS.find((s) => s.id === sectionId) ?? PLAYGROUND_SECTIONS[0]
+    PLAYGROUND_SECTIONS.find((s) => s.id === sectionId) ??
+    PLAYGROUND_SECTIONS.find((s) => s.id === DEFAULT_SECTION_ID) ??
+    PLAYGROUND_SECTIONS[0]
 
   return (
     // ⚠️ 限宽走 AppShell 的 `narrow` 而不是给 main 单独加 max-w：
@@ -66,7 +78,7 @@ export function PlaygroundPage() {
               hint: s.hint,
             }))}
             activeId={section?.id ?? ''}
-            onSelect={setSectionId}
+            onSelect={(id) => select(PAGE, id)}
           />
         )}
 

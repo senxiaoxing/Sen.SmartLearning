@@ -26,12 +26,15 @@
  *
  * 理由与识字墙完全一致（见 `HanziWall.tsx`）：古诗没有题库，
  * 就没有「背下来了没有」的客观判据，星标只会记录「她点过哪首」。
- * 选中哪一辑同样**不落库**——记住上次的选择需要一张新的用户数据表，
- * 而每次从第一辑打开也没什么损失，翻过去只要一下。
+ *
+ * ⚠️ 但选中哪一辑**要记住**（`browseVolumeStore`）：原先这里写着
+ * 「每次从第一辑打开也没什么损失」，那是把「跨会话记住偏好」和
+ * 「同一次浏览里退回来还在原地」混成了一件事——后者是导航的基本正确性。
+ * 她从第三辑点进一首诗，返回时理应还在第三辑。
  */
 
 import { motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
@@ -39,13 +42,19 @@ import { VolumePicker } from '@/components/VolumePicker'
 import { POEM_COVERS, POEM_VOLUMES } from '@/data/seed/poems'
 import { poemTitleClipKey } from '@/domain/poem'
 import { prefetchClips } from '@/platform/speech'
+import { useBrowseVolumeStore } from '@/stores/browseVolumeStore'
 
 /** 兜底用的第一辑。诗单是静态内容，这个分支实际走不到 */
 const FIRST_VOLUME = POEM_VOLUMES[0]
 
+/** 这一页在 `browseVolumeStore` 里的键，用路由路径 */
+const PAGE = '/poems'
+
 export function PoemLibrary() {
   const navigate = useNavigate()
-  const [volumeId, setVolumeId] = useState(FIRST_VOLUME?.id ?? '')
+  // ⚠️ 不能用 useState：点进一首诗是导航，组件卸载后选中的辑就没了
+  const volumeId = useBrowseVolumeStore((s) => s.selected[PAGE])
+  const select = useBrowseVolumeStore((s) => s.select)
 
   const volume = POEM_VOLUMES.find((v) => v.id === volumeId) ?? FIRST_VOLUME
 
@@ -88,7 +97,7 @@ export function PoemLibrary() {
         volumes={POEM_VOLUMES}
         activeId={volume?.id ?? ''}
         countLabel="20 首诗"
-        onSelect={setVolumeId}
+        onSelect={(id) => select(PAGE, id)}
       />
 
       <p className="py-3 text-center text-lg text-ink/60">挑一首，我念给你听</p>

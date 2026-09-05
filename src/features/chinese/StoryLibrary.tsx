@@ -17,24 +17,30 @@
  * 理由与识字墙、诗单完全一致：短文没有题库，就没有「读懂了没有」的客观判据。
  * 打钩只会记录「她点开过哪篇」，而家长会把它读成「这些她都会了」。
  *
- * 选中哪一辑同样不落库——记住它需要一张新的用户数据表，
- * 而每次从第一辑打开也没什么损失。
+ * ⚠️ 但选中哪一辑**要记住**（放在 `browseVolumeStore` 里）：
+ * 原先这里写着「每次从第一辑打开也没什么损失」，上机第一次就被推翻——
+ * 她点了第三辑、进去一篇、退回来却在第一辑。见那个 store 的文件头。
  */
 
 import { motion } from 'framer-motion'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
 import { VolumePicker } from '@/components/VolumePicker'
 import { STORY_VOLUMES } from '@/data/seed/hanziStories'
+import { useBrowseVolumeStore } from '@/stores/browseVolumeStore'
 
 /** 兜底用的第一辑。短文是静态内容，这个分支实际走不到 */
 const FIRST_VOLUME = STORY_VOLUMES[0]
 
+/** 这一页在 `browseVolumeStore` 里的键，用路由路径 */
+const PAGE = '/stories'
+
 export function StoryLibrary() {
   const navigate = useNavigate()
-  const [volumeId, setVolumeId] = useState(FIRST_VOLUME?.id ?? '')
+  // ⚠️ 不能用 useState：返回是导航到另一个路由，组件会卸载，选中的辑随之丢失
+  const volumeId = useBrowseVolumeStore((s) => s.selected[PAGE])
+  const select = useBrowseVolumeStore((s) => s.select)
 
   const volume = STORY_VOLUMES.find((v) => v.id === volumeId) ?? FIRST_VOLUME
 
@@ -61,7 +67,7 @@ export function StoryLibrary() {
         <VolumePicker
           volumes={STORY_VOLUMES}
           activeId={volume?.id ?? ''}
-          onSelect={setVolumeId}
+          onSelect={(id) => select(PAGE, id)}
         />
       )}
 
