@@ -1,9 +1,9 @@
 /**
- * @file 写字乐园 —— 一年级最先认的 100 个字，点一下看它怎么写
+ * @file 写字乐园 —— 识字 300 字，分 3 辑，点一下看它怎么写
  * @layer features
  * @see src/features/chinese/StrokeSheet.tsx  点开之后的演示浮层
  * @see src/data/seed/strokeOrder.json  笔顺数据（npm run stroke:data 生成）
- * @see design/09-竞品借鉴.md §2.3
+ * @see design/09-竞品借鉴.md §2.3 · §6
  *
  * ## ⭐ 为什么和识字墙分开，而不是在识字卡上加个按钮
  *
@@ -13,11 +13,18 @@
  * 更要紧的是洪恩识字那条教训（design/09 §7）：把太多环节堆在一个入口里，
  * 孩子会在其中最好玩的那个上过度停留，而不是把该学的学完。
  *
- * ## ⚠️ 这里只有 100 个字，而且这是对的
+ * ## ⭐ 分辑，与识字墙同一条规矩
  *
- * `strokeOrder.json` 里只有**人工逐字核对通过**的第一辑。第二、三辑没核对，
- * 就不在数据里、这面墙上也不会出现——见 design/09 §6.4：
- * 笔顺写错是要靠手上的肌肉记忆去改的，代价比读音还高，宁可少给。
+ * 三辑 300 字都已人工核对通过（第一辑 2026-09-04、第二三辑 2026-09-05）。
+ *
+ * ⛔ **不能一片 300 格排下去**——那正是识字墙分辑要避免的事：
+ * 新字埋在滚三屏之后，她看到的永远是已经会了的那一百个
+ * （见 `hanziCards.ts` 文件头）。这一屏还比识字墙重得多，
+ * 300 个田字格同屏是三千多个 SVG path。
+ *
+ * ⚠️ 只显示 `strokeOrder.json` 里有的字。没核对通过的字**根本不在数据里**，
+ * 墙上也就不会出现——见 design/09 §6.4：笔顺写错要靠手上的肌肉记忆去改，
+ * 代价比读音还高，宁可少给。
  *
  * ## 与识字墙、拼音墙同一类
  *
@@ -31,17 +38,30 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { PageHeader } from '@/components/PageHeader'
 import { TianGrid } from '@/components/TianGrid'
+import { VolumePicker } from '@/components/VolumePicker'
 import { HANZI_VOLUMES } from '@/data/seed/hanziCards'
 import { hanziClipKey, type HanziCard, type StrokeOrder } from '@/domain/hanzi'
 import { prefetchClips } from '@/platform/speech'
 import { StrokeSheet } from '@/features/chinese/StrokeSheet'
+import { useBrowseVolumeStore } from '@/stores/browseVolumeStore'
 
 type StrokeMap = Record<string, StrokeOrder>
+
+/** 兜底用的第一辑。字表是静态内容，这个分支实际走不到 */
+const FIRST_VOLUME = HANZI_VOLUMES[0]
+
+/** 这一页在 `browseVolumeStore` 里的键，用路由路径 */
+const PAGE = '/strokes'
 
 export function StrokeWall() {
   const navigate = useNavigate()
   const [orders, setOrders] = useState<StrokeMap | null>(null)
   const [openChar, setOpenChar] = useState<string | null>(null)
+
+  // ⚠️ 不能用 useState：去乐园或识字墙再回来，她翻到的那一辑会丢
+  const volumeId = useBrowseVolumeStore((s) => s.selected[PAGE])
+  const select = useBrowseVolumeStore((s) => s.select)
+  const volume = HANZI_VOLUMES.find((v) => v.id === volumeId) ?? FIRST_VOLUME
 
   /**
    * ⭐ 笔顺数据走**动态 import**，不进首屏。
@@ -61,16 +81,21 @@ export function StrokeWall() {
     }
   }, [])
 
-  /** 有笔顺数据的字，按识字第一辑的分组摆开 */
+  /**
+   * 当前这一辑里**有笔顺数据**的字，按识字墙的分组摆开。
+   *
+   * ⚠️ 过滤不能省：没核对通过的字不在 `strokeOrder.json` 里，
+   * 而字表本身仍然有它们（识字墙照常显示）。数据文件就是白名单，见文件头。
+   */
   const groups = useMemo(() => {
     if (orders === null) return []
-    return (HANZI_VOLUMES[0]?.groups ?? [])
+    return (volume?.groups ?? [])
       .map((group) => ({
         ...group,
         cards: group.cards.filter((card) => orders[card.char] !== undefined),
       }))
       .filter((group) => group.cards.length > 0)
-  }, [orders])
+  }, [orders, volume])
 
   const allCards = useMemo(() => groups.flatMap((g) => g.cards), [groups])
 
@@ -96,6 +121,15 @@ export function StrokeWall() {
         </span>
         <span className="h-12 w-12 shrink-0" />
       </PageHeader>
+
+      {/* 与识字墙、诗单共用同一个切换条，连徽记都是同一套 1️⃣2️⃣3️⃣ ——
+          她在那边学会的动作，到这里要能原样再用一次 */}
+      <VolumePicker
+        volumes={HANZI_VOLUMES}
+        activeId={volume?.id ?? ''}
+        countLabel="100 个字"
+        onSelect={(id) => select(PAGE, id)}
+      />
 
       <p className="py-3 text-center text-lg text-ink/60">点一下字，看看它怎么写</p>
 

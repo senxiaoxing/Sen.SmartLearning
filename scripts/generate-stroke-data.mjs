@@ -10,13 +10,14 @@
  * 这样不存在「标了 true 却没有数据」或者「有数据但忘了标」这类自相矛盾的状态，
  * 而笔顺写错给一年级孩子看，是要靠手上的肌肉记忆去改的，代价比读音还高。
  *
- * ## 目前只有第一辑 100 字
+ * ## 三辑 300 字都已核对通过
  *
- * 2026-09-04 逐字核对通过（`npm run stroke:check` 生成校验页，人对着课本比序号）。
- * 第二、三辑**尚未核对**，因此不在这份数据里，写字墙上也不会出现。
+ * 第一辑 2026-09-04、第二三辑 2026-09-05，都是 `npm run stroke:check` 生成校验页、
+ * 人对着课本逐字比序号过的。
  *
- * 加辑的流程：`npm run stroke:check` → 人工核对 → 通过后把那一辑加进
+ * 加辑的流程：`npm run stroke:check -- N` → 人工核对 → 通过后把那一辑加进
  * {@link VERIFIED_VOLUMES} → `npm run stroke:data`。
+ * ⚠️ 写字墙是**按辑**摆的，加辑不会把滚动接长，见 `StrokeWall.tsx`。
  *
  * 用法：npm run stroke:data
  *
@@ -46,7 +47,7 @@ const CDN = 'https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0.1'
  * ⛔ 不要凭「上游声称遵循大陆笔顺」就往里加——那只是目标，不是保证。
  * 加之前必须真的用 `npm run stroke:check` 对着课本过一遍。
  */
-const VERIFIED_VOLUMES = ['vol1']
+const VERIFIED_VOLUMES = ['vol1', 'vol2', 'vol3']
 
 /** 扫 hanziCards.ts，按辑攒出字表 */
 function loadVolumes() {
