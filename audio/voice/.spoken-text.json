@@ -4697,5 +4697,1157 @@
  "petline.pandaG2Archived1": {
   "text": "我把那时候的单词都记住啦",
   "sig": "zh-CN-XiaoxiaoNeural|-20%|+10%"
+ },
+ "en.phraseGreetings0": {
+  "text": "Hello!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseGreetings1": {
+  "text": "Good morning!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseGreetings2": {
+  "text": "Good afternoon!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseGreetings3": {
+  "text": "Good evening!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseGreetings4": {
+  "text": "Good night!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseGreetings5": {
+  "text": "Goodbye!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyName0": {
+  "text": "What's your name?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyName1": {
+  "text": "My name is Anna.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyName2": {
+  "text": "How old are you?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyName3": {
+  "text": "I'm six.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyName4": {
+  "text": "Nice to meet you!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyName5": {
+  "text": "Nice to meet you, too!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowAreYou0": {
+  "text": "How are you?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowAreYou1": {
+  "text": "I'm fine, thank you.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowAreYou2": {
+  "text": "And you?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowAreYou3": {
+  "text": "I'm OK.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowAreYou4": {
+  "text": "See you tomorrow!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowAreYou5": {
+  "text": "Have a nice day!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phrasePoliteWords0": {
+  "text": "Thank you!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phrasePoliteWords1": {
+  "text": "You're welcome.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phrasePoliteWords2": {
+  "text": "I'm sorry.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phrasePoliteWords3": {
+  "text": "That's OK.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phrasePoliteWords4": {
+  "text": "Excuse me.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phrasePoliteWords5": {
+  "text": "Please help me.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseInClass0": {
+  "text": "Stand up, please.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseInClass1": {
+  "text": "Sit down, please.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseInClass2": {
+  "text": "Look at me.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseInClass3": {
+  "text": "Listen to me.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseInClass4": {
+  "text": "Open your book.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseInClass5": {
+  "text": "Let's begin!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseYesOrNo0": {
+  "text": "Is it a cat?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseYesOrNo1": {
+  "text": "Yes, it is.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseYesOrNo2": {
+  "text": "No, it isn't.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseYesOrNo3": {
+  "text": "Do you like milk?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseYesOrNo4": {
+  "text": "Yes, I do.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseYesOrNo5": {
+  "text": "No, I don't.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatsThis0": {
+  "text": "What's this?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatsThis1": {
+  "text": "It's a pencil.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatsThis2": {
+  "text": "What's that?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatsThis3": {
+  "text": "It's a bird.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatsThis4": {
+  "text": "Is this your bag?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatsThis5": {
+  "text": "Yes, it's my bag.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatColor0": {
+  "text": "What color is it?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatColor1": {
+  "text": "It's red.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatColor2": {
+  "text": "I like blue.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatColor3": {
+  "text": "The sky is blue.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatColor4": {
+  "text": "My bag is yellow.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhatColor5": {
+  "text": "Look at the green tree!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowMany0": {
+  "text": "How many cats?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowMany1": {
+  "text": "Three cats.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowMany2": {
+  "text": "How many apples?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowMany3": {
+  "text": "I have two apples.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowMany4": {
+  "text": "Let's count together.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowMany5": {
+  "text": "One, two, three, four, five.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyFamily0": {
+  "text": "This is my mom.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyFamily1": {
+  "text": "This is my dad.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyFamily2": {
+  "text": "Who is he?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyFamily3": {
+  "text": "He is my brother.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyFamily4": {
+  "text": "Who is she?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyFamily5": {
+  "text": "She is my sister.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseILikeIt0": {
+  "text": "I like apples.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseILikeIt1": {
+  "text": "I don't like eggs.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseILikeIt2": {
+  "text": "Do you like bread?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseILikeIt3": {
+  "text": "Yes, please.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseILikeIt4": {
+  "text": "No, thank you.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseILikeIt5": {
+  "text": "It's yummy!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyBody0": {
+  "text": "Touch your nose.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyBody1": {
+  "text": "Touch your ears.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyBody2": {
+  "text": "Clap your hands.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyBody3": {
+  "text": "Wash your hands.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyBody4": {
+  "text": "Open your eyes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseMyBody5": {
+  "text": "This is my face.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseICanDoIt0": {
+  "text": "Can you swim?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseICanDoIt1": {
+  "text": "Yes, I can.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseICanDoIt2": {
+  "text": "No, I can't.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseICanDoIt3": {
+  "text": "I can run fast.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseICanDoIt4": {
+  "text": "Can you help me?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseICanDoIt5": {
+  "text": "Let's try again!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhereIsIt0": {
+  "text": "Where is my bag?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhereIsIt1": {
+  "text": "It's on the desk.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhereIsIt2": {
+  "text": "It's in the box.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhereIsIt3": {
+  "text": "It's under the chair.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhereIsIt4": {
+  "text": "Here it is!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseWhereIsIt5": {
+  "text": "Thank you very much!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseTheWeather0": {
+  "text": "How's the weather?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseTheWeather1": {
+  "text": "It's sunny.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseTheWeather2": {
+  "text": "It's rainy.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseTheWeather3": {
+  "text": "It's windy.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseTheWeather4": {
+  "text": "It's hot today.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseTheWeather5": {
+  "text": "It's cold today.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowIFeel0": {
+  "text": "I'm happy.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowIFeel1": {
+  "text": "I'm sad.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowIFeel2": {
+  "text": "I'm hungry.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowIFeel3": {
+  "text": "I'm thirsty.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowIFeel4": {
+  "text": "Are you tired?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseHowIFeel5": {
+  "text": "Yes, I'm tired.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseAtHome0": {
+  "text": "Good morning, Mom!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseAtHome1": {
+  "text": "It's time to get up.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseAtHome2": {
+  "text": "Let's have breakfast.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseAtHome3": {
+  "text": "I'm going to school.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseAtHome4": {
+  "text": "I'm home!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseAtHome5": {
+  "text": "Good night, Dad.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseLetsPlay0": {
+  "text": "Let's play together!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseLetsPlay1": {
+  "text": "Come with me.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseLetsPlay2": {
+  "text": "It's your turn.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseLetsPlay3": {
+  "text": "It's my turn.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseLetsPlay4": {
+  "text": "That's fun!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.phraseLetsPlay5": {
+  "text": "Great job!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCat": {
+  "text": "Cat. A little cat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDog": {
+  "text": "Dog. A big dog.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBird": {
+  "text": "Bird. The bird sings.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFish": {
+  "text": "Fish. A fish in the water.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRabbit": {
+  "text": "Rabbit. A white rabbit.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDuck": {
+  "text": "Duck. A yellow duck.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPig": {
+  "text": "Pig. A pink pig.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCow": {
+  "text": "Cow. The cow is big.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHorse": {
+  "text": "Horse. A brown horse.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSheep": {
+  "text": "Sheep. The sheep is white.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLion": {
+  "text": "Lion. The lion is strong.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTiger": {
+  "text": "Tiger. The tiger runs fast.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardElephant": {
+  "text": "Elephant. An elephant is very big.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMonkey": {
+  "text": "Monkey. The monkey can jump.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPanda": {
+  "text": "Panda. A panda eats bamboo.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBear": {
+  "text": "Bear. A big brown bear.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGiraffe": {
+  "text": "Giraffe. The giraffe is tall.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardZebra": {
+  "text": "Zebra. A zebra has stripes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFrog": {
+  "text": "Frog. A little green frog.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBee": {
+  "text": "Bee. The bee likes flowers.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardApple": {
+  "text": "Apple. A red apple.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBanana": {
+  "text": "Banana. I like bananas.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardOrange": {
+  "text": "Orange. An orange is round.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPear": {
+  "text": "Pear. A green pear.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGrape": {
+  "text": "Grape. Grapes are purple.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardWatermelon": {
+  "text": "Watermelon. A big watermelon.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardStrawberry": {
+  "text": "Strawberry. Little red strawberries.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLemon": {
+  "text": "Lemon. A yellow lemon.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPeach": {
+  "text": "Peach. A sweet peach.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMango": {
+  "text": "Mango. I like mangoes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBread": {
+  "text": "Bread. I eat bread.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRice": {
+  "text": "Rice. I like rice.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEgg": {
+  "text": "Egg. One white egg.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCake": {
+  "text": "Cake. A birthday cake.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMilk": {
+  "text": "Milk. I drink milk.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardWater": {
+  "text": "Water. A glass of water.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardJuice": {
+  "text": "Juice. Orange juice.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardNoodles": {
+  "text": "Noodles. Hot noodles.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCandy": {
+  "text": "Candy. I like candy.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCheese": {
+  "text": "Cheese. Yellow cheese.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRed": {
+  "text": "Red. My red bag.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBlue": {
+  "text": "Blue. The sky is blue.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardYellow": {
+  "text": "Yellow. The sun is yellow.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGreen": {
+  "text": "Green. A green tree.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPurple": {
+  "text": "Purple. A purple flower.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBrown": {
+  "text": "Brown. Brown shoes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBlack": {
+  "text": "Black. A black cat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardWhite": {
+  "text": "White. My white shoes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPink": {
+  "text": "Pink. A pink ribbon.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRainbow": {
+  "text": "Rainbow. A big rainbow.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardOne": {
+  "text": "One. One little cat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTwo": {
+  "text": "Two. Two big dogs.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardThree": {
+  "text": "Three. Three red apples.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFour": {
+  "text": "Four. Four yellow ducks.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFive": {
+  "text": "Five. Five little birds.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSix": {
+  "text": "Six. Six green pears.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSeven": {
+  "text": "Seven. Seven white eggs.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEight": {
+  "text": "Eight. Eight brown bears.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardNine": {
+  "text": "Nine. Nine little bees.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTen": {
+  "text": "Ten. Ten little sheep.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMom": {
+  "text": "Mom. I love my mom.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDad": {
+  "text": "Dad. This is my dad.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBrother": {
+  "text": "Brother. I have a brother.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSister": {
+  "text": "Sister. My sister is little.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGrandpa": {
+  "text": "Grandpa. Grandpa is old.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGrandma": {
+  "text": "Grandma. I love grandma.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBaby": {
+  "text": "Baby. A little baby.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFamily": {
+  "text": "Family. This is my family.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFriend": {
+  "text": "Friend. You are my friend.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTeacher": {
+  "text": "Teacher. My teacher is nice.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEye": {
+  "text": "Eye. Two big eyes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEar": {
+  "text": "Ear. I have two ears.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardNose": {
+  "text": "Nose. A little nose.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMouth": {
+  "text": "Mouth. Open your mouth.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFace": {
+  "text": "Face. Wash your face.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHand": {
+  "text": "Hand. Clap your hands.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFoot": {
+  "text": "Foot. A big foot.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardArm": {
+  "text": "Arm. My arm is long.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLeg": {
+  "text": "Leg. Two long legs.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHead": {
+  "text": "Head. Touch your head.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSchool": {
+  "text": "School. I go to school.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBook": {
+  "text": "Book. A new book.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPen": {
+  "text": "Pen. A blue pen.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPencil": {
+  "text": "Pencil. A long pencil.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBag": {
+  "text": "Bag. My school bag.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRuler": {
+  "text": "Ruler. A yellow ruler.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEraser": {
+  "text": "Eraser. A little eraser.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCrayon": {
+  "text": "Crayon. Six crayons.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardChair": {
+  "text": "Chair. Sit on the chair.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardClock": {
+  "text": "Clock. Look at the clock.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHouse": {
+  "text": "House. My house is here.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDoor": {
+  "text": "Door. Open the door.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBed": {
+  "text": "Bed. My little bed.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCup": {
+  "text": "Cup. A cup of milk.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSpoon": {
+  "text": "Spoon. A small spoon.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardKey": {
+  "text": "Key. Where is my key?",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBox": {
+  "text": "Box. A big box.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPhone": {
+  "text": "Phone. A new phone.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTV": {
+  "text": "TV. Watch TV.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLight": {
+  "text": "Light. The light is on.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardShirt": {
+  "text": "Shirt. A blue shirt.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCoat": {
+  "text": "Coat. A warm coat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardShoes": {
+  "text": "Shoes. New shoes.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSocks": {
+  "text": "Socks. Red socks.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHat": {
+  "text": "Hat. A big hat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDress": {
+  "text": "Dress. A pretty dress.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPants": {
+  "text": "Pants. Long pants.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGlasses": {
+  "text": "Glasses. Black glasses.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardUmbrella": {
+  "text": "Umbrella. Take an umbrella.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardScarf": {
+  "text": "Scarf. A long scarf.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBall": {
+  "text": "Ball. Play with the ball.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardKite": {
+  "text": "Kite. Fly a kite.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDrum": {
+  "text": "Drum. Play the drum.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCar": {
+  "text": "Car. My little car.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBike": {
+  "text": "Bike. Ride a bike.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTrain": {
+  "text": "Train. The train is here.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPlane": {
+  "text": "Plane. The plane can fly.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBoat": {
+  "text": "Boat. A little boat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBalloon": {
+  "text": "Balloon. A big balloon.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRobot": {
+  "text": "Robot. A new robot.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRun": {
+  "text": "Run. I can run fast.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardJump": {
+  "text": "Jump. Jump up high.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardWalk": {
+  "text": "Walk. Walk to school.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSwim": {
+  "text": "Swim. I like to swim.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFly": {
+  "text": "Fly. Birds can fly.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSing": {
+  "text": "Sing. Sing a song.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDance": {
+  "text": "Dance. Let us dance.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDraw": {
+  "text": "Draw. Draw a cat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardClimb": {
+  "text": "Climb. Climb a tree.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardWrite": {
+  "text": "Write. Write your name.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEat": {
+  "text": "Eat. Eat an apple.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDrink": {
+  "text": "Drink. Drink some water.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSleep": {
+  "text": "Sleep. Sleep well.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLook": {
+  "text": "Look. Look at me.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardListen": {
+  "text": "Listen. Listen to mom.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardOpen": {
+  "text": "Open. Open your book.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardClose": {
+  "text": "Close. Close the door.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardWash": {
+  "text": "Wash. Wash your hands.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHelp": {
+  "text": "Help. Help me, please.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGive": {
+  "text": "Give. Give me the ball.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHappy": {
+  "text": "Happy. I am happy.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSad": {
+  "text": "Sad. Do not be sad.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardAngry": {
+  "text": "Angry. The bear is angry.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTired": {
+  "text": "Tired. I am tired.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHungry": {
+  "text": "Hungry. I am hungry.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLove": {
+  "text": "Love. I love you.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardGood": {
+  "text": "Good. Very good!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBad": {
+  "text": "Bad. A bad day.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardHot": {
+  "text": "Hot. The sun is hot.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCold": {
+  "text": "Cold. It is cold today.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBig": {
+  "text": "Big. A big house.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSmall": {
+  "text": "Small. A small cat.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLong": {
+  "text": "Long. A long train.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardShort": {
+  "text": "Short. A short pencil.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTall": {
+  "text": "Tall. My dad is tall.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardNew": {
+  "text": "New. A new bag.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardOld": {
+  "text": "Old. An old book.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFast": {
+  "text": "Fast. A fast car.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSlow": {
+  "text": "Slow. The turtle is slow.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardClean": {
+  "text": "Clean. Clean hands.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMorning": {
+  "text": "Morning. Good morning!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardAfternoon": {
+  "text": "Afternoon. Good afternoon!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardEvening": {
+  "text": "Evening. Good evening!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardNight": {
+  "text": "Night. Good night!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBreakfast": {
+  "text": "Breakfast. Eat your breakfast.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardLunch": {
+  "text": "Lunch. Time for lunch.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardDinner": {
+  "text": "Dinner. A big dinner.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardBirthday": {
+  "text": "Birthday. Happy birthday!",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardToday": {
+  "text": "Today. Today is my birthday.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardPark": {
+  "text": "Park. Go to the park.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSun": {
+  "text": "Sun. The sun is up.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMoon": {
+  "text": "Moon. Look at the moon.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardStar": {
+  "text": "Star. Many little stars.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardTree": {
+  "text": "Tree. A big tree.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardFlower": {
+  "text": "Flower. A pretty flower.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardRain": {
+  "text": "Rain. Rain, rain, go away.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSnow": {
+  "text": "Snow. White snow.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardCloud": {
+  "text": "Cloud. A white cloud.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardSea": {
+  "text": "Sea. The blue sea.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
+ },
+ "en.cardMountain": {
+  "text": "Mountain. A high mountain.",
+  "sig": "en-US-AnaNeural|-25%|+5%"
  }
 }
