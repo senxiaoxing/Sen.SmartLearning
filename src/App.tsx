@@ -26,7 +26,12 @@ import { PoemLibrary } from '@/features/chinese/PoemLibrary'
 import { PoemView } from '@/features/chinese/PoemView'
 import { StoryLibrary } from '@/features/chinese/StoryLibrary'
 import { StoryView } from '@/features/chinese/StoryView'
+import { EnglishStoryLibrary } from '@/features/english/EnglishStoryLibrary'
+import { EnglishStoryView } from '@/features/english/EnglishStoryView'
 import { LetterWall } from '@/features/english/LetterWall'
+import { PhraseLibrary } from '@/features/english/PhraseLibrary'
+import { PhraseView } from '@/features/english/PhraseView'
+import { WordWall } from '@/features/english/WordWall'
 import { HomePage } from '@/features/home/HomePage'
 import { LearningSession } from '@/features/learning/LearningSession'
 import { SessionSummary } from '@/features/learning/SessionSummary'
@@ -112,6 +117,14 @@ function AppRoutes() {
         <Route path="/playground" element={<PlaygroundPage />} />
         {/* 字母乐园：英语的第一站，先玩后练，不绑在答题流程里 */}
         <Route path="/letters" element={<LetterWall />} />
+        {/* 英语词汇：对标识字墙，点一下听「Apple. A red apple.」 */}
+        <Route path="/words" element={<WordWall />} />
+        {/* 英语短句：对标古诗，逐句可听、可长按放慢 */}
+        <Route path="/phrases" element={<PhraseLibrary />} />
+        <Route path="/phrases/:id" element={<PhraseView />} />
+        {/* 英语短文：对标语文短文。⛔ 整篇不朗读，见 EnglishStoryView.tsx 文件头 */}
+        <Route path="/enstories" element={<EnglishStoryLibrary />} />
+        <Route path="/enstories/:id" element={<EnglishStoryView />} />
         {/* 语文三块，同样是「教」不是「练」：全部可点、没有对错判定 */}
         <Route path="/pinyin" element={<PinyinWall />} />
         <Route path="/hanzi" element={<HanziWall />} />

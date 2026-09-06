@@ -15,6 +15,10 @@
  */
 
 import { ALL_ENGLISH_WORDS } from '@/data/seed/englishWords'
+import { ALL_PHRASE_TOPICS } from '@/data/seed/englishPhrases'
+import { ALL_WORD_CARDS } from '@/data/seed/englishWordCards'
+import { phraseLineClipKey } from '@/domain/englishPhrase'
+import { englishCardClipKey, englishCardSpokenText } from '@/domain/englishCard'
 import { nicknameClipFor, PET_SPEAKERS } from '@/domain/encourage/petSpeaker'
 import { ALL_HANZI_CARDS } from '@/data/seed/hanziCards'
 import { NICKNAME_PRESETS } from '@/data/seed/nicknamePresets'
@@ -428,6 +432,45 @@ const ENGLISH: VoiceManifest = Object.fromEntries(
 )
 
 /**
+ * 英语短语短句（`en.phrase*`）：18 个话题 × 6 句。
+ *
+ * ⭐ **一句一条**，与古诗同一个道理：「全部读一遍」是把这些片段按顺序排出来，
+ * 「只听这一句」直接取其中一条，同一份素材两种用法。
+ *
+ * ⚠️ 与上面那批 `en.*` 有文本重复（`Good morning!` 两处都有），
+ * 但**不复用**：短语页是跟读内容，语速要慢一档
+ * （`scripts/generate-voices.mjs` 的 `RATE_EN_PHRASE`），
+ * 而词表那批是出题素材、常速。同一句话在两处一快一慢比多几条 mp3 怪得多。
+ * 完整理由见 `domain/englishPhrase.ts` 文件头。
+ *
+ * ⚠️ 话题名（「打招呼 / Say Hello」）**不生成片段**：它是导航标签不是教学内容，
+ * 见 `wholeTopicUtterance()` 的说明。
+ */
+const ENGLISH_PHRASES: VoiceManifest = Object.fromEntries(
+  ALL_PHRASE_TOPICS.flatMap((topic) =>
+    topic.lines.map((line, index) => [phraseLineClipKey(topic.id, index), line.en] as const),
+  ),
+)
+
+/**
+ * 英语词汇卡（`en.card*`）：3 辑 × 6 组 × 10 词。
+ *
+ * ⭐ 念的是「Apple. A red apple.」而**不是孤立的「Apple」**——
+ * 与识字卡念「天。蓝天的天。」是同一个句式、同一个用意：
+ * 先听清这个词本身，再听它在句子里的样子。
+ *
+ * ⚠️ 与上面那批 `en.*` 有词形重复（`en.apple` 也念 apple），但**念的内容不一样**：
+ * 那批是出题素材，只念一个词。这与识字卡的 `hanzi.*` 和题库互不相干同理。
+ *
+ * ⚠️ 抓的是 `englishCardSpokenText()` 而不是 `card.example`：
+ * 前半句（大写的那个词）是拼出来的，取错字段的话音频里就只剩例句，
+ * 而屏幕上一切正常。
+ */
+const ENGLISH_CARDS: VoiceManifest = Object.fromEntries(
+  ALL_WORD_CARDS.map((card) => [englishCardClipKey(card.word), englishCardSpokenText(card)]),
+)
+
+/**
  * 识字卡的 300 个字（3 辑 × 100）。
  *
  * ⭐ 念的是「天。蓝天的天。」而**不是孤立的「天」**——理由见 `domain/hanzi.ts`
@@ -602,6 +645,8 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...HANZI,
   ...POEM_LINES,
   ...ENGLISH,
+  ...ENGLISH_PHRASES,
+  ...ENGLISH_CARDS,
   ...NICKNAMES,
   ...PET_NAMES,
   ...PET_NAME_PRESET_CLIPS,

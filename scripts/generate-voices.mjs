@@ -49,6 +49,8 @@ const MANIFEST_FILE = join(ROOT, 'src', 'data', 'seed', 'voiceManifest.ts')
 const SYLLABLES_FILE = join(ROOT, 'src', 'data', 'seed', 'pinyinSyllables.ts')
 const ENGLISH_FILE = join(ROOT, 'src', 'data', 'seed', 'englishWords.ts')
 const LETTERS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishLetters.ts')
+const PHRASES_FILE = join(ROOT, 'src', 'data', 'seed', 'englishPhrases.ts')
+const WORDCARDS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishWordCards.ts')
 const NICKNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'nicknamePresets.ts')
 const PETNAMES_FILE = join(ROOT, 'src', 'data', 'seed', 'petNamePresets.ts')
 const PETS_FILE = join(ROOT, 'src', 'data', 'seed', 'pets.ts')
@@ -151,6 +153,20 @@ const PINYIN_PREFIX = 'pinyin.'
 /** 字母卡。⚠️ 是 `en.` 的子集，音色跟英语走，只有语速单独一套 */
 const LETTER_PREFIX = 'en.letter'
 /**
+ * 英语短句。⚠️ 同样是 `en.` 的子集，音色跟英语走，语速单独一套（见 RATE_EN_PHRASE）。
+ *
+ * ⚠️ 与 `LETTER_PREFIX` 互不重叠（`en.letterA` / `en.phraseGreetings0`），
+ * 两个分支谁先判都行——但别把它写成 `en.p`，那会连 `en.pen`、`en.pig` 一起套进来。
+ */
+const EN_PHRASE_PREFIX = 'en.phrase'
+/**
+ * 英语词汇卡。同样是 `en.` 的子集，音色跟英语走，语速用跟读那一档。
+ *
+ * ⚠️ 与 `LETTER_PREFIX`、`EN_PHRASE_PREFIX` 互不重叠
+ * （`en.letterA` / `en.phraseGreetings0` / `en.cardApple`）。
+ */
+const EN_CARD_PREFIX = 'en.card'
+/**
  * 识字卡与古诗。
  *
  * ⭐ 音色走**默认的中文少女声**——刻意不跟 `pinyin.*` 那套播音音色：
@@ -178,8 +194,24 @@ const EXPECTED_HANZI_COUNT = 300
  */
 const EXPECTED_POEM_COUNT = 60
 
-/** 辑声明的 id 前缀。⚠️ 见 loadPoems()：诗与辑都写 `id:`，靠它区分 */
+/** 辑声明的 id 前缀。⚠️ 见 loadPoems() / loadPhrases()：内容与辑都写 `id:`，靠它区分 */
 const POEM_VOLUME_ID_PREFIX = 'vol'
+
+/**
+ * 英语短句的总条数，3 辑 × 6 话题 × 6 句。
+ *
+ * 与 `EXPECTED_POEM_COUNT` 同一个用途：`loadPhrases()` 拿它做硬失败断言，
+ * 加话题或加辑了就同步改这里，另一半在 `englishPhrases.test.ts`。
+ */
+const EXPECTED_PHRASE_COUNT = 108
+
+/**
+ * 英语词汇卡的总数，3 辑 × 6 组 × 10 词。
+ *
+ * 与 `EXPECTED_HANZI_COUNT` 同一个用途：`loadWordCards()` 拿它做硬失败断言，
+ * 加组或加辑了就同步改这里，另一半在 `englishWordCards.test.ts`。
+ */
+const EXPECTED_WORDCARD_COUNT = 180
 
 /** 语速。儿童建议略慢，与原来 Web Speech 的 0.85 对齐 */
 const RATE = '-15%'
@@ -238,6 +270,23 @@ const RATE_LETTER = '-30%'
  * 那正是「像幼儿园小朋友做的题目」那句反馈要避开的调子。
  */
 const RATE_RECITE = '-25%'
+
+/**
+ * ⭐ 英语跟读内容的语速：短句（`en.phrase*`）与词汇卡（`en.card*`），
+ * 与识字、古诗同一档。
+ *
+ * 理由也是同一个——**这两页的内容是拿来跟着念的**，不是听个大概。
+ * 常速下她跟不上，只能听完再回想，那就从「跟读」退化成「听广播」。
+ *
+ * ⚠️ 没有用字母卡那档 `-30%`：那是「每个音都陌生」的档位，
+ * 而这里的词她在词表和字母卡上大多见过，过慢会把一句话拖散架——
+ * 英语的意群靠连读维持，慢到一定程度就不再是一句话了。
+ *
+ * ⚠️ 这也正是这两批**不复用词表里现成片段**的原因：那批是出题素材、常速。
+ * 同一句 `Good morning!` 在两个地方一快一慢，比多几条 mp3 怪得多。
+ * （词汇卡更彻底：它念的是「Apple. A red apple.」整句，本来就是另一段音频。）
+ */
+const RATE_EN_RECITE = '-25%'
 
 /**
  * ⭐ 少数「怎么调参数都读不稳」的音节，靠一个**尾随逗号**救。
@@ -344,6 +393,9 @@ function voiceFor(key) {
 function prosodyFor(key) {
   if (key.startsWith(PINYIN_PREFIX)) return { rate: RATE_PINYIN, pitch: PITCH_PINYIN }
   if (key.startsWith(LETTER_PREFIX)) return { rate: RATE_LETTER, pitch: PITCH }
+  if (key.startsWith(EN_PHRASE_PREFIX) || key.startsWith(EN_CARD_PREFIX)) {
+    return { rate: RATE_EN_RECITE, pitch: PITCH }
+  }
   if (key.startsWith(HANZI_PREFIX) || key.startsWith(POEM_PREFIX)) {
     return { rate: RATE_RECITE, pitch: PITCH }
   }
@@ -729,7 +781,102 @@ function loadEnglish() {
     out[`en.${id}`] = single ?? double
   }
 
-  Object.assign(out, loadLetters())
+  Object.assign(out, loadLetters(), loadPhrases(), loadWordCards())
+  return out
+}
+
+/**
+ * 英语词汇卡：18 组 × 10 词。
+ *
+ * ⭐ 念的是「Apple. A red apple.」而**不是孤立的「apple」**，句式必须与
+ * `domain/englishCard.ts` 的 `englishCardSpokenText()` 逐字一致——
+ * 两边对不上时台账会判定「文本变了」而每次都重生成 180 条，
+ * 更糟的是屏幕与耳朵对不上。（`poemHeadText` 那边踩过同一个坑。）
+ *
+ * ⚠️ 首字母要大写：卡上存的是小写原形（`apple`），而句首得大写。
+ * 与那个函数里的 `capitalize()` 是同一件事，改一边必须改另一边。
+ *
+ * 这里用一条正则就够（不像古诗要逐行状态机）：key 里放的是词本身，
+ * 不带序号，没有「这是第几句」这种上下文要维护。
+ */
+function loadWordCards() {
+  const text = readFileSync(WORDCARDS_FILE, 'utf-8')
+  const out = {}
+
+  // 形如：  w('apple', '苹果', 'A red apple.', '🍎'),   末尾的 emoji 可省
+  // ⚠️ 锚定行首，免得扫到注释或文档里的同名片段；例句可能用双引号包
+  for (const [, word, , single, double] of text.matchAll(
+    /^\s*w\('([A-Za-z]+)',\s*'([^']*)',\s*(?:'([^']*)'|"([^"]*)")/gm,
+  )) {
+    const example = single ?? double
+    const head = `${word.charAt(0).toUpperCase()}${word.slice(1)}`
+    out[`en.card${head}`] = `${head}. ${example}`
+  }
+
+  // ⚠️ 硬失败而不是警告，与 loadHanzi / loadPoems / loadPhrases 同一个理由：
+  //    这一页的全部内容都是听的，静默漏生成等于整面墙作废
+  if (Object.keys(out).length !== EXPECTED_WORDCARD_COUNT) {
+    console.error('✗ englishWordCards.ts 的结构变了，本脚本的 loadWordCards() 必须同步：')
+    console.error(
+      `  解析出 ${Object.keys(out).length} 个词（应为 ${EXPECTED_WORDCARD_COUNT}）`,
+    )
+    process.exit(1)
+  }
+
+  return out
+}
+
+/**
+ * 英语短句：18 个话题 × 6 句。
+ *
+ * ⚠️ **逐行状态机而不是一条大正则**，与 `loadPoems()` 完全同构：
+ * 片段 key 里带序号（`en.phraseGreetings2`），而序号是「这一句在这组里排第几」——
+ * 正则匹配拿不到这个上下文。逐行扫描时遇到 `id:` 就换一组、清零计数，
+ * 遇到一行 `p(...)` 就 +1，与文件里的书写顺序严格对应。
+ * 这也是 `englishPhrases.ts` 要求每句独占一行的原因。
+ *
+ * ⚠️ 辑的声明里也写 `id: 'vol1',`，靠 `vol` 前缀认出来跳过——
+ * 与诗单同一条约定（`englishPhrases.test.ts` 校验话题 id 不以 vol 开头）。
+ *
+ * 英文原文可能用双引号包（`"What's your name?"` 里含撇号），两种都要认。
+ */
+function loadPhrases() {
+  const text = readFileSync(PHRASES_FILE, 'utf-8')
+  const out = {}
+
+  /** 当前话题的 id；`null` 表示还没进入任何话题，或刚跳过一条辑声明 */
+  let topic = null
+  let lineIndex = 0
+
+  for (const raw of text.split('\n')) {
+    const idMatch = /^\s*id:\s*'([A-Za-z0-9]+)',/.exec(raw)
+    if (idMatch !== null) {
+      topic = idMatch[1].startsWith(POEM_VOLUME_ID_PREFIX) ? null : idMatch[1]
+      lineIndex = 0
+      continue
+    }
+    if (topic === null) continue
+
+    // 形如：  p('Hello!', '你好！'),   或   p("I'm fine.", '我很好。'),
+    // ⚠️ 锚定行首的 p( ，免得扫到 `function p(en: string, …)` 那一行
+    const lineMatch = /^\s*p\(\s*(?:'([^']*)'|"([^"]*)")\s*,/.exec(raw)
+    if (lineMatch === null) continue
+
+    const head = `${topic.charAt(0).toUpperCase()}${topic.slice(1)}`
+    out[`en.phrase${head}${lineIndex}`] = lineMatch[1] ?? lineMatch[2]
+    lineIndex += 1
+  }
+
+  // ⚠️ 硬失败而不是警告，与 loadHanzi / loadPoems 同一个理由：
+  //    这一页的全部内容都是听的，静默漏生成等于整块作废
+  if (Object.keys(out).length !== EXPECTED_PHRASE_COUNT) {
+    console.error('✗ englishPhrases.ts 的结构变了，本脚本的 loadPhrases() 必须同步：')
+    console.error(
+      `  解析出 ${Object.keys(out).length} 句（应为 ${EXPECTED_PHRASE_COUNT}）`,
+    )
+    process.exit(1)
+  }
+
   return out
 }
 

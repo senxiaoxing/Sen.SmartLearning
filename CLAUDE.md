@@ -445,6 +445,44 @@ React 先跑子组件 effect 再跑父组件，后者必然把前者掐掉。
 
 逐字拼音必须与汉字**数目相同**（测试会拦），一律标**本调**不标变调——和课本一致。
 
+### ⭐ 英语区四块：字母 · 词汇 · 短句 · 短文
+
+与语文那几块同属「教」不是「练」，同样是**浏览页**：全部可点、没有对错判定、
+随时可走，⛔ 不出题、不落 attempts、不记 mastery、不给积分、不影响宠物经验。
+每一块各自对标一个**已经验过的形状**，别另起炉灶：
+
+```
+词汇（/words）     对标识字墙    ✅ 带语音，点一下听「Apple. A red apple.」
+短句（/phrases）   对标古诗      ✅ 带语音，逐句可听、长按放慢，可「全部听一遍」
+短文（/enstories） 对标语文短文  ⛔ 不朗读，唯一会响的是单个词（复用现成 en.* 片段）
+```
+
+⚠️ 四格的顺序（字母 → 词汇 → 短句 → 短文）与语文区的递进同构，**已经钉死**，
+不要再重排——词汇之所以能插在中间，只因为那批内容当时还没上线。
+
+- **词汇**是 3 辑 × 6 组 × 10 词（`englishWordCards.ts`），卡面是
+  图 / 词 / 中文 / 例句。**例句是朗读的后半句**，必须含那个词（测试逐张校验）。
+  ⛔ **同形异音词一律不收**（read · live · wind · bow · tear · row · use）——
+  卡片前半句是孤立的那个词，英语没有「换同音字」这条路，赌不起。
+  这是中文「多音字一律改写」在英语侧的形态，唯一例外是 `close`，见文件头。
+  ⭐ 它同时是英语短文的词源（`ENGLISH_STORY_WORDS`），与识字 300 之于语文短文同理。
+  加辑要改三处：`englishWordCards.test.ts` · `EXPECTED_WORDCARD_COUNT` ·
+  design/07 §3.5b，再 `npm run voices`。
+- **短句**是 3 辑 × 6 话题 × 6 句（`englishPhrases.ts`）。
+  加内容 = 追加第四辑或往某辑末尾加话题，然后改三处数量断言：
+  `englishPhrases.test.ts` · `EXPECTED_PHRASE_COUNT` · design/07 §3.5a，再 `npm run voices`。
+  ⚠️ 它与词表（`englishWords.ts`）里重复的那些句子**故意各生成一份**——
+  短句要慢一档（跟读），词表那批是出题素材（常速）。别为省几条 mp3 去合并。
+- **短文**是 3 辑 × 6 篇（`englishStories.ts`），用词边界是
+  **Dolch 高频词前三级 ＋ 词表里的实词**，由 `englishStories.test.ts` 逐词扫描强制。
+  ⛔ `englishSightWords.ts` 那三张表是引用的外部标准，**不许往里加词**：
+  缺词说明那句话该换个写法。真要扩就照 Dolch 往后加 Grade 2，连同新的一辑一起。
+  ⛔ 这一块**零新增语音**，「语音包到二年级为止」那条红线一个字都不用改。
+- ⛔ **不给这两块加朗读之外的东西**：不做进度、不做收藏星标、不做「今日 N 句」——
+  没有题库就没有客观判据，理由与语文三块完全一致。
+- ⛔ 短文**绝不加「读整篇」按钮**。要听整句，短句页那十八组每句都念给她听；
+  这一页存在的全部理由，就是那一页给不了的「她自己读」。
+
 #### ⭐ 多音字一律改写，别赌 TTS 会读对
 实测《回乡偶书》「鬓毛衰」念成了 **cuī**（这首诗的古押韵音，教材注 shuāi）——
 这套 TTS 念古诗时会主动往**古音**上靠，「此处读的正是最常用音」不能当安全条件。
@@ -585,11 +623,12 @@ npm run deploy           # ⭐ 上线：build + scripts/deploy-pages.mjs 推到 
 ```powershell
 npm run voices           # 生成语音 mp3 → public/audio/voice/，并重新打包语音包
                          #   改了 voiceManifest.ts / englishWords.ts / pinyinSyllables.ts
-                         #   / hanziCards.ts / poems.ts / pets.ts 后必跑
+                         #   / hanziCards.ts / poems.ts / pets.ts / englishPhrases.ts
+                         #   / englishWordCards.ts 后必跑
                          #   只补缺失的，以及「念的文本变了」的那些（有台账）
 npm run voices -- --force              # 全部重生成（换音色后必须）
 npm run voices -- --voice-en=en-GB-MaisieNeural   # 换英语音色
-npm run voices:bundle    # 只重新打包（1325 条 mp3 → 12 个 .bin 语音包 + 索引）
+npm run voices:bundle    # 只重新打包（1613 条 mp3 → 14 个 .bin 语音包 + 索引）
                          #   ⭐ 首装靠它从「几百个请求」降到个位数，见 design/07 §2.5d
                          #   npm run build 会自动跑，正常不用手动执行
 npm run sfx              # 合成 6 个音效 → public/audio/sfx/

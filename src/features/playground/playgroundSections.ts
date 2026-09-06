@@ -113,7 +113,7 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
     id: 'english',
     name: '英语',
     icon: 'globe',
-    hint: '字母',
+    hint: '字母、词汇、短句、短文',
     entries: [
       {
         path: '/letters',
@@ -122,6 +122,29 @@ export const PLAYGROUND_SECTIONS: readonly PlaygroundSection[] = [
         tint: 'text-info',
         glowVar: '--c-info',
       },
+      /*
+       * ⚠️ 词汇**插在字母之后**，而不是照惯例追加到末尾。
+       *
+       * 「只往后加，不插队」那条规矩保护的是**她已经记住的位置**，
+       * 而短句与短文是同一批还没上线的新内容——她一次都没见过，
+       * 此刻调整顺序的代价是零。等这一批上了 iPad，这四格就钉死了。
+       *
+       * 换来的是四格与语文区同构的递进：
+       *   字母认形状 → 词汇认词（有声，对标识字）
+       *     → 短句学说话（有声，对标古诗）→ 短文自己读（无声，对标语文短文）
+       * 她在语文那边养成的「从左往右一格格深入」的习惯，到这里能直接用上。
+       */
+      {
+        path: '/words',
+        label: '词汇',
+        icon: 'flashcard',
+        tint: 'text-accent',
+        glowVar: '--c-accent',
+      },
+      { path: '/phrases', label: '短句', icon: 'chat', tint: 'text-alert', glowVar: '--c-alert' },
+      // ⚠️ 与语文短文用同一个 `book` 图标是有意的：两边是同一件事的两种语言，
+      //    而它们分属两个分区，同屏永远不会并排出现（撞脸只在同分区内才是问题）。
+      { path: '/enstories', label: '短文', icon: 'book', tint: 'text-correct', glowVar: '--c-correct' },
     ],
   },
 ]
