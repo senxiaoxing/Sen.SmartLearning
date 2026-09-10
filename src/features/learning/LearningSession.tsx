@@ -86,7 +86,7 @@ export function LearningSession() {
   const progress = items.length === 0 ? 0 : index / items.length
 
   return (
-    <AppShell width="narrow" layout="stack">
+    <AppShell width="narrow" layout="fill">
       <PageHeader
         onBack={() => {
           stopSpeech()
@@ -116,23 +116,33 @@ export function LearningSession() {
         </span>
       </PageHeader>
 
-      <main className="flex w-full flex-1 flex-col justify-center">
-        {/*
-          ⭐ 脚手架按她的状态开合：这个知识点连错两次，下一题就多出一幅十格阵；
-          连对两次它自己撤掉。判据是纯函数，见 domain/scheduler/shouldShowScaffold.ts。
-        */}
-        <ItemRenderer
-          item={current.item}
-          selectedOptionId={feedback?.selectedOptionId ?? null}
-          revealed={status === 'feedback'}
-          onSelect={(optionId) => void answer(optionId)}
-          onReplay={countReplay}
-          showScaffold={shouldShowScaffold({
-            difficulty: current.item.difficulty,
-            type: current.item.type,
-            ...kpStreaks.get(current.item.kpId),
-          })}
-        />
+      {/*
+        ⭐ 题目区自己滚，进度条与下面的反馈区钉死不动。
+
+        原先是整页一起滚：题目一高（连一连、拼一拼这类），底部的「下一题」
+        就被顶到屏幕外，只露出半截——而那正是答完题**唯一**要点的按钮。
+        `min-h-0` 放开收缩、`shrink-0` 的居中壳兜住内容，两者缺一不可：
+        少了壳，超高的内容会被 justify-center 挤出题目区、盖到反馈语上。
+      */}
+      <main className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+        <div className="flex min-h-full w-full shrink-0 flex-col justify-center">
+          {/*
+            ⭐ 脚手架按她的状态开合：这个知识点连错两次，下一题就多出一幅十格阵；
+            连对两次它自己撤掉。判据是纯函数，见 domain/scheduler/shouldShowScaffold.ts。
+          */}
+          <ItemRenderer
+            item={current.item}
+            selectedOptionId={feedback?.selectedOptionId ?? null}
+            revealed={status === 'feedback'}
+            onSelect={(optionId) => void answer(optionId)}
+            onReplay={countReplay}
+            showScaffold={shouldShowScaffold({
+              difficulty: current.item.difficulty,
+              type: current.item.type,
+              ...kpStreaks.get(current.item.kpId),
+            })}
+          />
+        </div>
       </main>
 
       <footer className="flex min-h-[140px] items-center justify-center">

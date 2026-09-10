@@ -144,8 +144,10 @@
   }
 }
 
+/* 支点必须钉在垂穗与围巾相接的那一点（PenguinGear 里 y=130 那条边），
+   偏一点就变成整条穗子平移，看着像挂歪了而不是在飘 */
 .peng-tail {
-  transform-origin: 134px 146px;
+  transform-origin: 134px 130px;
   animation: peng-tail 3.6s ease-in-out infinite;
 }
 

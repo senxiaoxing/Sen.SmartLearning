@@ -52,7 +52,7 @@ export function ListenNumber({
   }, [item])
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-10">
+    <div className="flex flex-col items-center justify-center gap-10">
       {/*
         ⚠️ 这行字是给家长和读屏的，孩子不识字——她认的是下面那个声波框。
         ⛔ 这里绝不能改成 {item.stem.text}，那是算式。

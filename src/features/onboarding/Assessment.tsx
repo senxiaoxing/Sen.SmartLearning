@@ -61,7 +61,7 @@ export function Assessment() {
   const step = results.length + (status === 'feedback' ? 0 : 1)
 
   return (
-    <AppShell width="narrow" layout="stack">
+    <AppShell width="narrow" layout="fill">
       {/**
        * ⭐ 只画**走过的**旗子，不预告总共几站。
        *
@@ -90,13 +90,16 @@ export function Assessment() {
 
       <p className="text-center text-base text-ink/50">探险第 {step} 站</p>
 
-      <main className="flex w-full flex-1 flex-col justify-center">
-        <ItemRenderer
-          item={currentItem}
-          selectedOptionId={null}
-          revealed={status === 'feedback'}
-          onSelect={answer}
-        />
+      {/* 题目区自己滚、底下的「继续」钉在原位，理由见 LearningSession.tsx 的同一处 */}
+      <main className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+        <div className="flex min-h-full w-full shrink-0 flex-col justify-center">
+          <ItemRenderer
+            item={currentItem}
+            selectedOptionId={null}
+            revealed={status === 'feedback'}
+            onSelect={answer}
+          />
+        </div>
       </main>
 
       <footer className="flex min-h-[140px] items-center justify-center">

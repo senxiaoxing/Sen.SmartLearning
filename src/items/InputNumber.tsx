@@ -41,7 +41,7 @@ export function InputNumber({
   const scaffold = visible && item.scaffold?.kind === 'tenFrame' ? item.scaffold : undefined
 
   return (
-    <div className="flex h-full flex-col justify-center gap-6">
+    <div className="flex flex-col justify-center gap-6">
       <div className="flex items-center justify-center gap-6">
         <p className="text-stem tabular-nums text-center">{item.stem.text}</p>
         <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={onReplay} />

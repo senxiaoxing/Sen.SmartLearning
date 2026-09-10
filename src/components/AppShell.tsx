@@ -29,14 +29,29 @@ interface AppShellProps {
    * center：内容垂直居中，内容变多时自动改为顶部对齐并滚动（用 my-auto 而非
    * justify-center —— 后者在内容超高时会把顶部裁掉且滚不上去）。
    * stack：内容撑满，由调用方自己排 header / main / footer。
+   * fill：与 stack 一样自己排三段，但**整页高度锁死、由调用方决定中间哪一段滚**。
    */
-  layout?: 'center' | 'stack'
+  layout?: 'center' | 'stack' | 'fill'
   className?: string
 }
 
 const WIDTH_CLASS: Record<'narrow' | 'wide', string> = {
   narrow: 'max-w-[680px]',
   wide: 'max-w-[900px]',
+}
+
+/**
+ * ⭐ `fill` 比 `stack` 多的就是 `min-h-0`。
+ *
+ * 弹性盒的默认 `min-height: auto` 会让这一层**永远撑到内容那么高**，
+ * 于是题目一多，整页跟着变高、底部的反馈区被挤到屏幕外——
+ * 孩子看到的是「鼓励语下面露出半截按钮」，得先滚一下才点得到「下一题」。
+ * 放开这一条，中间那段才有可能自己滚，进度条与反馈区就此钉在原位。
+ */
+const LAYOUT_CLASS: Record<'center' | 'stack' | 'fill', string> = {
+  center: 'my-auto',
+  stack: 'flex-1',
+  fill: 'min-h-0 flex-1',
 }
 
 /**
@@ -60,7 +75,9 @@ export function AppShell({
   className = '',
 }: AppShellProps) {
   return (
-    <div className="relative flex h-full flex-col">
+    // keyboard-inset：软键盘弹起时整个舞台让出那段高度，居中的内容随之上移。
+    // 见 platform/trackKeyboardInset.ts —— iOS 不会自己做这件事
+    <div className="keyboard-inset relative flex h-full flex-col">
       {/* 背景装饰。fixed 而非 absolute：滚动时星空/柔光不该跟着页面走，
           它是舞台背景不是页面内容。纯 CSS 渐变，不产生重绘压力 */}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 bg-deco" />
@@ -75,11 +92,9 @@ export function AppShell({
         className={`safe-area relative z-10 flex flex-1 flex-col overflow-y-auto px-5 py-4 sm:px-6 ${className}`}
       >
         <div
-          className={[
-            'mx-auto flex w-full flex-col',
-            WIDTH_CLASS[width],
-            layout === 'center' ? 'my-auto' : 'flex-1',
-          ].join(' ')}
+          className={['mx-auto flex w-full flex-col', WIDTH_CLASS[width], LAYOUT_CLASS[layout]].join(
+            ' ',
+          )}
         >
           {children}
         </div>

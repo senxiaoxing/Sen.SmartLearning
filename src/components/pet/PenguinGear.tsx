@@ -7,6 +7,15 @@
  * 围巾之所以拆成两半，是因为「绕过脖子」这件事只能靠遮挡表达：
  * 后半圈是一整个椭圆，但画在身体之前，身体随后盖掉它中段，
  * 只在轮廓两侧留下两道月牙。整圈都画出来就只是贴了个环。
+ *
+ * ## ⭐ 围巾的高度与宽度都是贴着身体定的
+ *
+ * 它必须落在**喙底（y≈114）稍下方**，也就是脖子的位置。
+ * 掉到肩膀（鳍状肢根部 y≈94）以下就成了系在肚子上，看着像掉下来了。
+ *
+ * 两端也只能比身体轮廓宽出一两个像素——那一点点正好接上后圈露出的月牙，
+ * 「绕了一圈」才成立。探得再多就变成一个悬在半空、没挨着身体的环
+ * （2026-09-10 上机反馈：「像在肩膀下面而且悬空着」）。
  */
 
 import type { PetGearProps } from '@/components/pet/petArtProps'
@@ -47,11 +56,13 @@ export function PenguinGear({ layer, accessories, animated }: PetGearProps) {
           </g>
         )}
 
-        {/* 围巾后半圈。椭圆心比前圈高 12px——环的后半在透视上本来就更高 */}
+        {/* 围巾后半圈。椭圆心比前圈高近 30px——环的后半在透视上本来就更高，
+            而且只有抬到这个位置，月牙才会落在鳍状肢最窄的那一小段上露出来；
+            压低一点就被整片鳍完全盖住，等于白画 */}
         {has('scarf') && (
           <g>
-            <ellipse cx="100" cy="120" rx="80" ry="19" fill="#B33223" />
-            <ellipse cx="100" cy="116" rx="80" ry="15" fill="#CC4030" />
+            <ellipse cx="100" cy="104" rx="70" ry="18" fill="#B33223" />
+            <ellipse cx="100" cy="100" rx="70" ry="14" fill="#CC4030" />
           </g>
         )}
       </>
@@ -60,17 +71,17 @@ export function PenguinGear({ layer, accessories, animated }: PetGearProps) {
 
   return (
     <>
-      {/* 围巾前半圈：两端探到身体轮廓之外，正好接上后圈露出的月牙。
-          接不上，「绕了一圈」就不成立 */}
+      {/* 围巾前半圈：起落于 y=104（喙底下方一点），两端 x=35/165 —— 身体在这个高度上
+          的轮廓正好是 37/163，只比它宽两像素。这两像素就是接上后圈月牙的那一截 */}
       {has('scarf') && (
         <g>
           <path
-            d="M22,120 C38,146 162,146 178,120 L178,138 C162,164 38,164 22,138 Z"
+            d="M35,104 C50,130 150,130 165,104 L165,122 C150,148 50,148 35,122 Z"
             fill="#FF7A6B"
           />
           <path
             className="d-mid"
-            d="M25,122 C41,146 159,146 175,122"
+            d="M38,106 C52,130 148,130 162,106"
             stroke="#FFA294"
             strokeWidth="2.5"
             fill="none"
@@ -78,8 +89,8 @@ export function PenguinGear({ layer, accessories, animated }: PetGearProps) {
           />
           <path
             className="d-fine"
-            d="M38,133 L35,150 M59,143 L57,160 M80,148 L79,165 M100,150 L100,167
-               M120,148 L121,165 M141,143 L143,160 M162,133 L165,150"
+            d="M48,117 L46,134 M66,127 L64,144 M83,132 L82,149 M100,134 L100,151
+               M117,132 L118,149 M134,127 L136,144 M152,117 L154,134"
             stroke="#DE4F3C"
             strokeWidth="2"
             strokeLinecap="round"
@@ -87,12 +98,12 @@ export function PenguinGear({ layer, accessories, animated }: PetGearProps) {
           />
           <g className={anim('peng-tail')}>
             <path
-              d="M124,146 C132,153 142,151 148,144 L154,176 C148,185 135,187 128,180 Z"
+              d="M124,130 C132,137 142,135 148,128 L154,160 C148,169 135,171 128,164 Z"
               fill="#EE5945"
             />
             <path
               className="d-mid"
-              d="M133,182 L131,192 M141,184 L141,194 M149,181 L151,191"
+              d="M133,166 L131,176 M141,168 L141,178 M149,165 L151,175"
               stroke="#EE5945"
               strokeWidth="2.6"
               strokeLinecap="round"

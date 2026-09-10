@@ -47,7 +47,7 @@ export function DragOrder({ item, revealed, onSelect, onReplay }: ItemViewProps)
   }
 
   return (
-    <div className="flex h-full flex-col justify-center gap-8">
+    <div className="flex flex-col justify-center gap-8">
       <div className="flex items-center justify-center gap-4">
         <p className="text-3xl font-bold">{item.stem.text}</p>
         <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={onReplay} size="md" />
@@ -85,16 +85,21 @@ export function DragOrder({ item, revealed, onSelect, onReplay }: ItemViewProps)
         ))}
       </div>
 
-      <div className="flex justify-center">
-        <BigButton
-          tone="primary"
-          className="px-10 py-4 text-2xl"
-          disabled={!placement.isComplete || revealed}
-          onClick={submit}
-        >
-          好了
-        </BigButton>
-      </div>
+      {/* ⭐ 作答之后就撤掉：一个按不动的灰按钮没有任何意义，
+          还会跟紧接着出现的鼓励语挤在一起——屏幕矮的时候正好露出半截。
+          ChoiceCompare 的「好了」也是这么处理的 */}
+      {!revealed && (
+        <div className="flex justify-center">
+          <BigButton
+            tone="primary"
+            className="px-10 py-4 text-2xl"
+            disabled={!placement.isComplete}
+            onClick={submit}
+          >
+            好了
+          </BigButton>
+        </div>
+      )}
     </div>
   )
 }

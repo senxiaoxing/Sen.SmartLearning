@@ -86,7 +86,7 @@ export function MemoryPair({ item, revealed, onSelect }: ItemViewProps) {
   }
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-8">
+    <div className="flex flex-col items-center justify-center gap-8">
       <p className="text-2xl text-ink/70">{item.stem.text}</p>
 
       <div className="grid max-w-2xl grid-cols-4 gap-3">

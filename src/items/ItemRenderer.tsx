@@ -73,7 +73,7 @@ export function ItemRenderer(props: ItemViewProps) {
       return <MemoryPair {...props} />
     default:
       return (
-        <div className="flex h-full items-center justify-center text-xl text-ink/50">
+        <div className="flex items-center justify-center text-xl text-ink/50">
           这种题目还在准备中～
         </div>
       )

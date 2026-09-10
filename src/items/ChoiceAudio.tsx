@@ -37,7 +37,7 @@ export function ChoiceAudio({
   }, [item])
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-10">
+    <div className="flex flex-col items-center justify-center gap-10">
       <p className="text-2xl text-ink/60">{item.stem.text}</p>
 
       {/* ⭐ 喇叭在这里是题目本身，不是辅助功能，所以给最大尺寸、放在正中 */}

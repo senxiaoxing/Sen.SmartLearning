@@ -83,7 +83,7 @@ export function ChoiceCompare({
   }
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-8">
+    <div className="flex flex-col items-center justify-center gap-8">
       <div className="flex items-center gap-3">
         <p className="text-2xl text-ink/60">{item.stem.text}</p>
         {/* 题干的喇叭只读题目，选项的音在选项自己身上 */}

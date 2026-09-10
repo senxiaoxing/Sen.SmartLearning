@@ -35,7 +35,7 @@ export function ChoiceImage({
   }, [item])
 
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-8">
+    <div className="flex flex-col items-center justify-center gap-8">
       <div className="flex items-center gap-4">
         <p className="text-2xl text-ink/70">{item.stem.text}</p>
         <SpeakerButton

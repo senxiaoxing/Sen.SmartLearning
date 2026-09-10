@@ -60,6 +60,15 @@
 }
 
 @layer components {
+  /* ⭐ 软键盘弹起时把整个舞台顶上来。
+     iOS 弹键盘**不改布局视口**，页面因此纹丝不动、输入框上面的内容被压在键盘下面
+     （家长区门禁点开输入框就看不见算术题了）。高度由 platform/trackKeyboardInset.ts
+     实时写进变量，这里只负责让位。没键盘时是 0，与不加这个类完全一样。
+     ⚠️ 必须加在没有 py-* 工具类的元素上——utilities 层会盖掉 components 层的同名属性 */
+  .keyboard-inset {
+    padding-bottom: var(--keyboard-inset, 0px);
+  }
+
   /* 安全区内边距，供全屏页面使用 */
   .safe-area {
     padding-top: var(--safe-top);

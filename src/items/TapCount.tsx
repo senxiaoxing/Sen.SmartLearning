@@ -56,7 +56,7 @@ export function TapCount({ item, selectedOptionId, revealed, onSelect, onReplay 
   }, [item.signature, visual?.emoji, visual?.count])
 
   return (
-    <div className="flex h-full flex-col justify-center gap-6">
+    <div className="flex flex-col justify-center gap-6">
       <div className="flex items-center justify-center gap-4">
         <p className="text-3xl font-bold">{item.stem.text}</p>
         <SpeakerButton text={item.stem.ttsText} parts={item.stem.ttsParts} onReplay={onReplay} size="md" />
