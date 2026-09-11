@@ -17,7 +17,7 @@ import { HashRouter, Navigate, Route, Routes, useNavigate } from 'react-router-d
 import { ensureOpen } from '@/data/db'
 import { applyPendingUpdate, watchForUpdate } from '@/platform/appUpdate'
 import { onPageResume } from '@/platform/onPageResume'
-import { trackKeyboardInset } from '@/platform/trackKeyboardInset'
+import { trackTypingFocus } from '@/platform/trackTypingFocus'
 import { useProfileStore } from '@/stores/profileStore'
 import { useSessionStore } from '@/stores/sessionStore'
 import { HanziWall } from '@/features/chinese/HanziWall'
@@ -90,11 +90,12 @@ function AppRoutes() {
   // 挑备份，都会走到这一步。见 data/db.ts 的 ensureOpen()
   useEffect(() => onPageResume(() => void ensureOpen()), [])
 
-  // ⭐ 键盘弹起时把舞台顶上来。iOS 弹键盘不改布局视口，页面会一动不动地
-  // 被键盘压住下半屏——家长区门禁点开输入框就看不见那道算术题了。
-  // 挂在这里而不是各个有输入框的页面：全 App 的输入框都在家长区，
-  // 但没有一处该为「键盘来了」写第二遍。见 platform/trackKeyboardInset.ts
-  useEffect(() => trackKeyboardInset(), [])
+  // ⭐ 有文本框在用时把内容挪到上半屏，让键盘盖不住它。
+  // iOS 不会自己让位，而 iPad 上键盘有多高根本量不到——
+  // ⛔ 不要改回「算键盘高度」那条路，试过了，见 platform/trackTypingFocus.ts。
+  // 挂在这里而不是各个有输入框的页面：输入框全在家长区，
+  // 但没有一处该为「键盘来了」写第二遍
+  useEffect(() => trackTypingFocus(), [])
 
   // ⭐ 让新版本真的能装上。旧配置把新 Service Worker 下载完就搁在 waiting 里，
   // 等一个「所有页面都关闭」的时机——那个时机在 iOS 的 PWA 上几乎不会到来，

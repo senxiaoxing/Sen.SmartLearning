@@ -75,9 +75,7 @@ export function AppShell({
   className = '',
 }: AppShellProps) {
   return (
-    // keyboard-inset：软键盘弹起时整个舞台让出那段高度，居中的内容随之上移。
-    // 见 platform/trackKeyboardInset.ts —— iOS 不会自己做这件事
-    <div className="keyboard-inset relative flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       {/* 背景装饰。fixed 而非 absolute：滚动时星空/柔光不该跟着页面走，
           它是舞台背景不是页面内容。纯 CSS 渐变，不产生重绘压力 */}
       <div aria-hidden="true" className="pointer-events-none fixed inset-0 bg-deco" />

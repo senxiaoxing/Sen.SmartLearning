@@ -89,10 +89,13 @@ export function ParentGate({ children, onCancel }: ParentGateProps) {
           {challenge.a} + {challenge.b} = ?
         </p>
 
+        {/* ⛔ 不要加 autoFocus：iOS 上程序化取焦点**不会**弹出键盘，
+            它在这台设备上从来没起过作用；而现在它会让门禁一进来就
+            靠到屏幕顶上（`typing` 类是按焦点走的），底下空一大片。
+            家长本来就要点一下输入框，那一下同时弹键盘、同时让位 */}
         <input
           type="number"
           inputMode="numeric"
-          autoFocus
           value={input}
           onChange={(e) => {
             setInput(e.target.value)

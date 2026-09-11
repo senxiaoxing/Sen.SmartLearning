@@ -60,13 +60,21 @@
 }
 
 @layer components {
-  /* ⭐ 软键盘弹起时把整个舞台顶上来。
-     iOS 弹键盘**不改布局视口**，页面因此纹丝不动、输入框上面的内容被压在键盘下面
-     （家长区门禁点开输入框就看不见算术题了）。高度由 platform/trackKeyboardInset.ts
-     实时写进变量，这里只负责让位。没键盘时是 0，与不加这个类完全一样。
-     ⚠️ 必须加在没有 py-* 工具类的元素上——utilities 层会盖掉 components 层的同名属性 */
-  .keyboard-inset {
-    padding-bottom: var(--keyboard-inset, 0px);
+  /* ⭐ 有文本框在用时，把页面内容挪到上半屏。
+     iOS 弹键盘不改布局视口，页面不会自己让位；iPad 上连 visualViewport 都不动，
+     键盘有多高**根本量不到**（见 platform/trackTypingFocus.ts）。
+     但有一件事不用量也成立：键盘从屏幕底部升起，且从不超过半屏——
+     内容待在上半屏就一定在它上方。于是只做两件事：
+     内容从居中改为靠顶，底下留出半屏的可滚空间（给长页面把输入框滚上来用）。
+     ⚠️ 选择器必须是两层类名：同一个元素上还挂着 py-4 / my-auto 这些工具类，
+        单层类名压不过它们 */
+  .typing .safe-area {
+    padding-bottom: 50vh;
+  }
+
+  .typing .safe-area > * {
+    margin-top: 0;
+    margin-bottom: auto;
   }
 
   /* 安全区内边距，供全屏页面使用 */
