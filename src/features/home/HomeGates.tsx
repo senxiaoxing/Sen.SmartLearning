@@ -22,22 +22,21 @@
  */
 
 import { motion } from 'framer-motion'
-import { Icon } from '@/components/Icon'
+import { IconTile, type IconTileTone } from '@/components/IconTile'
 import type { IconName } from '@/components/iconPaths'
 
 interface Gate {
   path: string
   label: string
   icon: IconName
-  /** 图标配色。⚠️ 两扇门必须用不同色相，形状之外再加一重区分 */
-  tint: string
   /**
-   * 卡片顶部光晕用的皮肤变量名（`--c-*`）。
+   * 图标底座与卡片顶部光晕**共用**的皮肤语义色。
    *
-   * ⚠️ 存变量名而不是色值：这两扇门用的是**皮肤语义色**，换皮肤时要跟着变
+   * ⚠️ 两扇门必须用不同色相，形状之外再加一重区分。
+   * ⚠️ 存语义名而不是色值：这两扇门用的是**皮肤色**，换皮肤时要跟着变
    * （科目卡不同，那里用的是宠物的固定主题色，见 SubjectPicker）。
    */
-  glowVar: string
+  tone: IconTileTone
 }
 
 /**
@@ -47,20 +46,8 @@ interface Gate {
  * 顺序**写死**，不要按使用频率重排——位置记忆比省一次点击重要得多。
  */
 const GATES: readonly Gate[] = [
-  {
-    path: '/room',
-    label: '宠物小屋',
-    icon: 'house',
-    tint: 'text-primary-deep',
-    glowVar: '--c-primary',
-  },
-  {
-    path: '/playground',
-    label: '学习乐园',
-    icon: 'tree',
-    tint: 'text-correct',
-    glowVar: '--c-correct',
-  },
+  { path: '/room', label: '宠物小屋', icon: 'house', tone: 'primary' },
+  { path: '/playground', label: '学习乐园', icon: 'tree', tone: 'correct' },
 ]
 
 interface HomeGatesProps {
@@ -89,14 +76,19 @@ export function HomeGates({ onOpen }: HomeGatesProps) {
           // 只动 opacity / y / scale（GPU 合成属性），不碰布局属性
           transition={{ delay: i * 0.08, type: 'spring', stiffness: 300, damping: 26 }}
           whileTap={{ scale: 0.96, y: 4 }}
-          className="flex min-h-touch flex-col items-center justify-center gap-2 rounded-blob bg-surface px-4 py-6 shadow-drop-surface"
+          className="flex min-h-touch flex-col items-center justify-center gap-3 rounded-blob bg-surface px-4 py-6 shadow-drop-surface"
           /* 顶部一层本门主题色的光晕，压在卡片面的微渐变之上。
              ⚠️ 走 `rgb(var(--c-*) / …)` 而不是写死颜色，换皮肤时跟着变 */
           style={{
-            backgroundImage: `radial-gradient(120% 78% at 50% 0%, rgb(var(${gate.glowVar}) / 0.16), transparent 68%), var(--sf-raised)`,
+            backgroundImage: `radial-gradient(120% 78% at 50% 0%, rgb(var(--c-${gate.tone}) / 0.16), transparent 68%), var(--sf-raised)`,
           }}
         >
-          <Icon name={gate.icon} className={`h-14 w-14 ${gate.tint}`} />
+          <IconTile
+            name={gate.icon}
+            tone={gate.tone}
+            className="h-[76px] w-[76px]"
+            iconClassName="h-11 w-11"
+          />
           <span className="text-2xl font-bold">{gate.label}</span>
         </motion.button>
       ))}

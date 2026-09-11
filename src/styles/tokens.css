@@ -21,9 +21,31 @@
  *   --sh-card     卡片阴影整条
  *   --sh-ring     发丝级内描边，拼进上面两条里用
  *   --sf-raised   卡片面的微渐变，走 Tailwind 的 `bg-raised`
+ *   --deco        页面背景装饰**整条**，由 AppShell 铺在 fixed 层上
  *
  * ⚠️ 每套皮肤都必须把 `--sh-*` 与 `--sf-raised` **全部**定义一遍。
  *    漏掉一条不会报错，那个位置会直接没有阴影，卡片糊在背景上。
+ *
+ * ## ⭐ 背景要被看见（2026-09-11 修订）
+ *
+ * 这里原来的原则是「它是舞台背景，一旦被注意到就过了」，三套皮肤的 `--deco`
+ * 全压在 ≤13%。**那条原则在成人产品里成立，在这里不成立。**
+ *
+ * 竞品实测（design/09 §9）里那套界面之所以「不像作业本」，很大一部分就来自
+ * 一眼能看见的天空渐变。背景过淡换来的不是克制，是整页读起来只剩
+ * 「白卡片 + 文字」——而那恰恰是孩子说「像幼儿园小朋友做的题目」的那种观感。
+ *
+ * 所以现在每套皮肤的 `--deco` 都包含三件事，强度按「看得见但不抢卡片」调：
+ *
+ *   1. **天空** —— 顶部一条明确的光带，给整页定调
+ *   2. **地面** —— 底部一条同色系的压暗或压亮，与天空一起把画面分成上下两段
+ *   3. **点缀** —— 云 / 光斑 / 星点，给空间感
+ *
+ * ⚠️ 上限仍然在，判据是**眯起眼睛看**：卡片边缘还能一眼认出来就没过，
+ *    认不出来就是背景赢了，往回调。
+ * ⚠️ 仍然禁止图片与动画。fixed 层只绘制一次、被合成层缓存，几乎零代价；
+ *    一旦加动画就变成全屏重绘，直接吃掉答题时的帧预算。
+ * ⚠️ 多重背景**先写的在上层**——云要写在天空带前面，否则被天空盖住。
  *
  * ## ⭐ 阴影为什么是两层
  *
@@ -72,8 +94,8 @@
   /** 墨墨（语文小飞龙）的主题色，家长留言等「有人在等你」的元素也用它 */
   --c-accent: 167 139 250;
 
-  --r-blob: 26px;
-  --r-card: 16px;
+  --r-blob: 30px;
+  --r-card: 22px;
 
   /** 按钮顶部那道内高光。是「果冻感」的全部来源，去掉就变回扁平色块 */
   --sh-inner: inset 0 2px 0 rgb(255 255 255 / 0.45);
@@ -101,10 +123,19 @@
    *  果冻岛是暖调，用中性灰会让白卡片显得发青。 */
   --sf-raised: linear-gradient(176deg, rgb(255 255 255 / 0) 42%, rgb(217 111 19 / 0.05) 100%);
 
-  /** 页面背景装饰。纯 CSS 渐变，不加载任何图片，滚动零开销 */
+  /** 页面背景装饰。纯 CSS 渐变，不加载任何图片，滚动零开销。
+   *
+   *  果冻岛的场景是**日落海岛**：顶上暖阳、脚下沙地、两枚对角光斑给纵深，
+   *  三团云压在最上层。云用纯白而非奶油色——底色本来就是暖杏，
+   *  再用暖色画云就糊成一片，只有白能从这个底上浮起来。 */
   --deco:
-    radial-gradient(circle at 15% 8%, rgb(255 147 48 / 0.13), transparent 42%),
-    radial-gradient(circle at 88% 82%, rgb(35 201 160 / 0.13), transparent 46%);
+    radial-gradient(ellipse 17% 6% at 20% 12%, rgb(255 255 255 / 0.85), transparent 70%),
+    radial-gradient(ellipse 12% 4.5% at 28% 15%, rgb(255 255 255 / 0.7), transparent 70%),
+    radial-gradient(ellipse 14% 5% at 79% 8%, rgb(255 255 255 / 0.7), transparent 70%),
+    linear-gradient(180deg, rgb(255 205 130 / 0.5) 0%, rgb(255 205 130 / 0.12) 16%, transparent 32%),
+    linear-gradient(0deg, rgb(217 111 19 / 0.14) 0%, rgb(217 111 19 / 0.04) 12%, transparent 26%),
+    radial-gradient(circle at 15% 8%, rgb(255 147 48 / 0.18), transparent 42%),
+    radial-gradient(circle at 88% 82%, rgb(35 201 160 / 0.17), transparent 46%);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -138,8 +169,8 @@
   --c-info: 125 196 255;
   --c-accent: 178 152 255;
 
-  --r-blob: 20px;
-  --r-card: 13px;
+  --r-blob: 24px;
+  --r-card: 18px;
 
   --sh-inner: inset 0 1px 0 rgb(255 255 255 / 0.09);
   /** 深色面上的发丝边用**白色**而不是黑色：深底上再加暗边等于什么都没加，
@@ -160,15 +191,25 @@
    *  ⚠️ 方向与浅色皮肤**相反** —— 浅色是底部压暗，深色是顶部提亮。 */
   --sf-raised: linear-gradient(176deg, rgb(255 255 255 / 0.055) 0%, rgb(255 255 255 / 0) 58%);
 
-  /** 星点是 5 个 radial-gradient，不是图片也不是 canvas。
-   *  ⚠️ 星星**不做闪烁动画**：全屏重绘会直接吃掉答题时的帧预算 */
+  /** 星点是 radial-gradient，不是图片也不是 canvas。
+   *  ⚠️ 星星**不做闪烁动画**：全屏重绘会直接吃掉答题时的帧预算
+   *
+   *  ⭐ 让这套成为「夜空」而不只是「深色底」的，是那条**银河斜带**。
+   *  只有星点的话，深靛底仍然读作一块平色；一条斜穿画面的淡青带
+   *  立刻给出「这是天」的方向感。星点从 5 颗补到 8 颗并整体提亮一档，
+   *  是因为背景其余部分变亮后，原来的亮度已经压不住了。 */
   --deco:
-    radial-gradient(1.4px 1.4px at 22% 14%, rgb(255 255 255 / 0.72), transparent),
-    radial-gradient(1.2px 1.2px at 72% 26%, rgb(255 255 255 / 0.55), transparent),
-    radial-gradient(1.6px 1.6px at 42% 62%, rgb(255 255 255 / 0.6), transparent),
-    radial-gradient(1.2px 1.2px at 84% 76%, rgb(255 255 255 / 0.45), transparent),
-    radial-gradient(1.3px 1.3px at 12% 84%, rgb(255 255 255 / 0.5), transparent),
-    radial-gradient(circle at 78% 6%, rgb(61 220 255 / 0.16), transparent 44%);
+    radial-gradient(1.4px 1.4px at 22% 14%, rgb(255 255 255 / 0.85), transparent),
+    radial-gradient(1.2px 1.2px at 72% 26%, rgb(255 255 255 / 0.68), transparent),
+    radial-gradient(1.6px 1.6px at 42% 62%, rgb(255 255 255 / 0.72), transparent),
+    radial-gradient(1.2px 1.2px at 84% 76%, rgb(255 255 255 / 0.55), transparent),
+    radial-gradient(1.3px 1.3px at 12% 84%, rgb(255 255 255 / 0.62), transparent),
+    radial-gradient(1px 1px at 58% 8%, rgb(255 255 255 / 0.5), transparent),
+    radial-gradient(1px 1px at 33% 38%, rgb(255 255 255 / 0.45), transparent),
+    radial-gradient(1.1px 1.1px at 91% 44%, rgb(255 255 255 / 0.5), transparent),
+    linear-gradient(163deg, transparent 32%, rgb(125 196 255 / 0.09) 50%, transparent 68%),
+    linear-gradient(0deg, rgb(61 220 255 / 0.13) 0%, rgb(61 220 255 / 0.04) 14%, transparent 28%),
+    radial-gradient(circle at 78% 6%, rgb(61 220 255 / 0.22), transparent 44%);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -219,8 +260,8 @@
   --c-info: 127 168 208;
   --c-accent: 167 155 216;
 
-  --r-blob: 28px;
-  --r-card: 18px;
+  --r-blob: 32px;
+  --r-card: 24px;
 
   /* 这套没有内高光：柔和漫射阴影配上内高光会显得又软又亮，像塑料。
      ⚠️ 设为 none 而不是省略 —— 省略会继承果冻岛那道 45% 白高光。
@@ -246,14 +287,26 @@
    *  纯白大面积在淡绿底上会显得「空」，这 3.5% 就是空和有质感的分界。 */
   --sf-raised: linear-gradient(176deg, rgb(255 255 255 / 0) 40%, rgb(47 64 56 / 0.038) 100%);
 
-  /** 顶部一条奶油黄带 + 两枚对角光斑。参考图的空间感全来自那条暖色带：
-   *  它把「页头」和「内容」分开，而不需要任何一条分隔线。
+  /** 这套的场景是**清晨的草地**：顶上一条奶油色晨光，脚下一条草绿，
+   *  中间留给内容，三团云浮在晨光里。
    *
-   *  ⭐ 左下绿 + 右下蓝构成对角呼应，背景才有「深度」而不是一张平色纸。
-   *  用 `ellipse` 而不是 `circle`：正圆光斑在宽屏上看得出是个圆，椭圆才像光。
-   *  ⚠️ 三层都极淡（≤11%）且没有动画 —— 它是舞台背景，一旦被注意到就过了。 */
+   *  ⭐ 那条奶油带本来就在，它把「页头」和「内容」分开而不需要任何分隔线；
+   *  现在补上底部那条草绿，画面才真正分成「天」和「地」两段——
+   *  只有顶部一条带的时候，下面三分之二仍然是一张平色纸。
+   *
+   *  ⭐ 左下绿 + 右下蓝的对角呼应保留，它给的是深度。
+   *  用 `ellipse` 而不是 `circle`：正圆光斑在宽屏上看得出是个圆，椭圆才像光。 */
   --deco:
-    linear-gradient(180deg, rgb(252 242 214 / 0.85) 0%, rgb(252 242 214 / 0) 26%),
-    radial-gradient(ellipse 62% 46% at 6% 74%, rgb(62 155 114 / 0.11), transparent 72%),
-    radial-gradient(ellipse 56% 42% at 94% 90%, rgb(127 168 208 / 0.1), transparent 72%);
+    radial-gradient(ellipse 20% 7% at 21% 13%, rgb(255 255 255 / 0.95), transparent 68%),
+    radial-gradient(ellipse 14% 5.5% at 30% 16%, rgb(255 255 255 / 0.85), transparent 68%),
+    radial-gradient(ellipse 16% 6% at 80% 9%, rgb(255 255 255 / 0.85), transparent 68%),
+    linear-gradient(
+      180deg,
+      rgb(252 238 200 / 1) 0%,
+      rgb(252 240 210 / 0.5) 20%,
+      rgb(252 242 214 / 0) 42%
+    ),
+    linear-gradient(0deg, rgb(62 155 114 / 0.28) 0%, rgb(62 155 114 / 0.1) 14%, transparent 32%),
+    radial-gradient(ellipse 62% 46% at 6% 74%, rgb(62 155 114 / 0.2), transparent 72%),
+    radial-gradient(ellipse 56% 42% at 94% 90%, rgb(127 168 208 / 0.19), transparent 72%);
 }
