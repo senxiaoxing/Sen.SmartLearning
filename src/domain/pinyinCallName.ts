@@ -1,99 +1,104 @@
 /**
- * @file 声母韵母的**呼读音**片段 —— 「答案是 g」要念成「哥」
+ * @file 声母韵母的**本音**片段 —— 「答案是 g」就念声母 g 本身
  * @layer domain  纯函数，禁止 import React / Dexie / 浏览器 API
  * @see src/data/seed/pinyinSyllables.ts  INITIALS / SINGLE_FINALS / COMPOUND_FINALS
- * @see src/domain/pinyinCallName.test.ts  防漂移：这里的每条都要与音节表对得上
+ * @see design/11-拼音真人录音方案.md §3.2
  *
  * 听音辨声母/辨韵母题的答案是一个**字母**（`g`、`ai`），
  * 而字母是念不出来的：喂 `g` 给中文 TTS 得到的是英文字母名「jee」，
  * 喂 `ai` 得到的是拼音串靠猜的读音——两者都不是课堂上的那个音。
  *
- * 课堂上的读法叫**呼读音**：b 念「玻」、g 念「哥」、ai 念「哀」。
- * 音节表里这些呼读音本来就各挂着一个汉字载体（那是为了让 TTS 读对而存在的），
- * 于是这张表只做一件事：把字母映射到那条现成片段上，**零新增音频**。
+ * ⭐ **2026-09 起改念本音**：从前这里指向呼读音（b 念「玻」、g 念「哥」），
+ * 那是拿汉字凑出来的，念出来是个**完整音节**；而人教版要求声母
+ * 「读得轻短些」。现在改走 `pinyinbare.*` —— 真人录的无调本音。
  *
  * ⚠️ 表在 domain、音节数据在 data —— 分层铁律不允许反向 import，
- * 所以两边的一致性由测试守（同一个 `syllableKey()` 算出来的 key 必须逐条相等）。
+ * 所以两边的一致性由测试守（同一个 `bareKey()` 算出来的 key 必须逐条相等）。
  */
 
-import { syllableKey } from '@/domain/pinyin'
+import { bareKey } from '@/domain/pinyin'
 import type { ClipKey } from '@/domain/speech'
 
 /**
- * 字母 → 呼读音片段。
+ * 字母 → 本音片段。
  *
  * 声母与韵母合成一张表：两个集合没有交集（声母 b~w，韵母 a~ong），
  * 拆成两张只会让调用方先判断「这是声母还是韵母」，而它们都只是「屏幕上那个字母」。
  *
- * ⚠️ **`ong` 刻意缺席**：汉语里它不能独立成音节，音节表里也没有汉字载体，
- * 那条片段念的是拼音串本身、声调靠 TTS 猜（见 `pinyinSyllables.ts` 的说明）。
- * 宁可那道题的答案不念，也不能把一个可能是错的读音教给她。
+ * ⚠️ **`ong` 刻意缺席**：这张表服务于**答案语音**，而 `ong` 目前按「不念」处理
+ * （`pinyinFinal` 遇到 `sōng` 这类音节时，韵母就是 `ong`——答错只说安慰语）。
+ *
+ * ⭐ 它从前缺席是因为「没有干净载体、TTS 念不准」；现在 `pinyinbare.ong`
+ * 有真人录音了（拼音墙上在用），那个理由已经不成立。
+ * 但**要不要把它接进答案语音是独立决定**，不混在这次改动里。
  */
 const CALL_NAME_CLIPS: Readonly<Record<string, ClipKey>> = {
-  // —— 声母（呼读音，与老师带读的一致：b 玻 · p 坡 · m 摸 · f 佛…）
-  b: syllableKey('bo', 1),
-  p: syllableKey('po', 1),
-  m: syllableKey('mo', 1),
-  f: syllableKey('fo', 2),
-  d: syllableKey('de', 1),
-  t: syllableKey('te', 4),
-  n: syllableKey('ne', 4),
-  l: syllableKey('le', 4),
-  g: syllableKey('ge', 1),
-  k: syllableKey('ke', 1),
-  h: syllableKey('he', 1),
-  j: syllableKey('ji', 1),
-  q: syllableKey('qi', 1),
-  x: syllableKey('xi', 1),
-  zh: syllableKey('zhi', 1),
-  ch: syllableKey('chi', 1),
-  sh: syllableKey('shi', 1),
-  r: syllableKey('ri', 4),
-  z: syllableKey('zi', 1),
-  c: syllableKey('ci', 1),
-  s: syllableKey('si', 1),
-  y: syllableKey('yi', 1),
-  w: syllableKey('wu', 1),
+  // —— 声母。⭐ 念的是**本音**（轻短、无调），不是呼读音「玻 bō」——
+  //    人教版要求声母「读得轻短些」，而「哥」那样念出来是个完整音节。
+  //    ⚠️ 塞音（b d g p t k）发不出独立的本音，录的是它们的轻短版
+  b: bareKey('b'),
+  p: bareKey('p'),
+  m: bareKey('m'),
+  f: bareKey('f'),
+  d: bareKey('d'),
+  t: bareKey('t'),
+  n: bareKey('n'),
+  l: bareKey('l'),
+  g: bareKey('g'),
+  k: bareKey('k'),
+  h: bareKey('h'),
+  j: bareKey('j'),
+  q: bareKey('q'),
+  x: bareKey('x'),
+  zh: bareKey('zh'),
+  ch: bareKey('ch'),
+  sh: bareKey('sh'),
+  r: bareKey('r'),
+  z: bareKey('z'),
+  c: bareKey('c'),
+  s: bareKey('s'),
+  y: bareKey('y'),
+  w: bareKey('w'),
 
   // —— 单韵母
-  a: syllableKey('a', 1),
-  o: syllableKey('o', 1),
-  e: syllableKey('e', 2),
-  i: syllableKey('i', 1),
-  u: syllableKey('u', 1),
-  ü: syllableKey('ü', 2),
+  a: bareKey('a'),
+  o: bareKey('o'),
+  e: bareKey('e'),
+  i: bareKey('i'),
+  u: bareKey('u'),
+  ü: bareKey('ü'),
 
   // —— 复韵母与鼻韵母。ui / iu / un 单独不成音节，用独立形式 wei / you / wen 发音，
   //    这也正是课本教「ui 读作 wei」的道理
-  ai: syllableKey('ai', 1),
-  ei: syllableKey('ei', 1),
-  ui: syllableKey('ui', 1),
-  ao: syllableKey('ao', 1),
-  ou: syllableKey('ou', 1),
-  iu: syllableKey('iu', 1),
-  ie: syllableKey('ie', 1),
-  üe: syllableKey('üe', 1),
-  er: syllableKey('er', 2),
-  an: syllableKey('an', 1),
-  en: syllableKey('en', 1),
-  in: syllableKey('in', 1),
-  un: syllableKey('un', 1),
-  ün: syllableKey('ün', 4),
-  ang: syllableKey('ang', 1),
-  eng: syllableKey('eng', 1),
-  ing: syllableKey('ing', 1),
+  ai: bareKey('ai'),
+  ei: bareKey('ei'),
+  ui: bareKey('ui'),
+  ao: bareKey('ao'),
+  ou: bareKey('ou'),
+  iu: bareKey('iu'),
+  ie: bareKey('ie'),
+  üe: bareKey('üe'),
+  er: bareKey('er'),
+  an: bareKey('an'),
+  en: bareKey('en'),
+  in: bareKey('in'),
+  un: bareKey('un'),
+  ün: bareKey('ün'),
+  ang: bareKey('ang'),
+  eng: bareKey('eng'),
+  ing: bareKey('ing'),
 }
 
 /**
- * 这个声母/韵母的呼读音片段。
+ * 这个声母/韵母的本音片段。
  *
  * @param letter - 屏幕上显示的那个字母，如 `'g'` `'ai'` `'ü'`
- * @returns 片段 key；没有干净载体的（`ong`）返回 `undefined`，由调用方声明「不念」
+ * @returns 片段 key；`ong` 返回 `undefined`，由调用方声明「不念」
  *
  * @example
- * pinyinCallName('g')     // 'pinyin.ge1'   念「哥」
- * pinyinCallName('ai')    // 'pinyin.ai1'   念「哀」
- * pinyinCallName('ong')   // undefined      没有载体字，不念
+ * pinyinCallName('g')     // 'pinyinbare.g'   声母 g 本身（轻短、无调）
+ * pinyinCallName('ai')    // 'pinyinbare.ai'  韵母 ai 本身
+ * pinyinCallName('ong')   // undefined        刻意不进表，见上
  */
 export function pinyinCallName(letter: string): ClipKey | undefined {
   return CALL_NAME_CLIPS[letter]

@@ -30,6 +30,8 @@
 | [design/07-音频方案.md](design/07-音频方案.md) | 语音生成、音色规则、片段拼接、语音包分包 |
 | [design/08-年级分区与内容扩展.md](design/08-年级分区与内容扩展.md) | ⭐ 年级怎么分区、题目从哪来、扩年级要动哪些东西。**动图谱或调度器前必读** |
 | [design/09-竞品借鉴.md](design/09-竞品借鉴.md) | 竞品各自最强的那一条、已采纳与已否决、笔顺验收方案、视觉对照（§9）。**加新模块或改视觉前必读 §7 与 §9.4「明确不抄的」** |
+| [design/10-微信小程序可行性.md](design/10-微信小程序可行性.md) | ⭐ 能不能做成小程序公开版、卡在哪、主体与类目怎么选、先做哪个形态。**本文结论不改动本项目的硬约束** |
+| [design/11-拼音真人录音方案.md](design/11-拼音真人录音方案.md) | ⭐ 拼音 118 条改真人录音 + 47 条「本音」片段；拼音墙念本音、题目念呼读音的双轨设计（§3.1）。**动拼音音频或拼音墙前必读**（已实施，人工复听清单在 §9） |
 
 ---
 
@@ -623,13 +625,18 @@ npm run deploy           # ⭐ 上线：build + scripts/deploy-pages.mjs 推到 
 
 ```powershell
 npm run voices           # 生成语音 mp3 → public/audio/voice/，并重新打包语音包
-                         #   改了 voiceManifest.ts / englishWords.ts / pinyinSyllables.ts
-                         #   / hanziCards.ts / poems.ts / pets.ts / englishPhrases.ts
+                         #   改了 voiceManifest.ts / englishWords.ts / hanziCards.ts
+                         #   / poems.ts / pets.ts / englishPhrases.ts
                          #   / englishWordCards.ts 后必跑
                          #   只补缺失的，以及「念的文本变了」的那些（有台账）
-npm run voices -- --force              # 全部重生成（换音色后必须）
+                         #   ⚠️ 拼音不归它管（见下），--force 也不会碰拼音
+npm run voices -- --force              # 全部重生成（换音色后必须；拼音真人录音不受影响）
 npm run voices -- --voice-en=en-GB-MaisieNeural   # 换英语音色
-npm run voices:bundle    # 只重新打包（1613 条 mp3 → 14 个 .bin 语音包 + 索引）
+npm run pinyin:voice     # ⭐ 拉拼音的真人录音（165 条）→ public/audio/voice/
+                         #   118 条带调音节 pinyin.* + 47 条声母韵母本音 pinyinbare.*
+                         #   ⚠️ 拼音**不再由 TTS 生成**（TTS 念汉字必然念成饱满的完整音节，
+                         #   声母 f 成了「佛 fó」），见 design/11；换机器要跑一次
+npm run voices:bundle    # 只重新打包（1660 条 mp3 → 14 个 .bin 语音包 + 索引）
                          #   ⭐ 首装靠它从「几百个请求」降到个位数，见 design/07 §2.5d
                          #   npm run build 会自动跑，正常不用手动执行
 npm run sfx              # 合成 6 个音效 → public/audio/sfx/

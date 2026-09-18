@@ -20,14 +20,19 @@ export interface Syllable {
   base: string
   tone: Tone
   /**
-   * 发音载体汉字。⚠️ 必须是**非多音字**且读音恰好等于 `pinyin`。
+   * 汉字示例。⚠️ 必须是**非多音字**且读音恰好等于 `pinyin`。
    *
-   * ⭐ **留空 = 这个音节不可用**。
+   * ⚠️ **它不再决定音频**：2026-09 起拼音音频全部是真人录音
+   * （`npm run pinyin:voice`，见 design/11-拼音真人录音方案.md）。
+   * 仍有三处用途——拼音墙的兜底文本 `spoken`、整体认读卡的 `carrier`、
+   * P8.3「听音选字」的选项池。
    *
-   * 没有载体字时只能把拼音串本身喂给 TTS，而实测证明那样会**大面积读错声调**
-   * （`á` 读成 `ā`、`ē` 读成 `è`……）。发音教错比没有声音严重得多，
-   * 所以 {@link isUsable} 为 false 的音节一律**不进题库**，
-   * 直到有人录了真人音频补上（见 `npm run pinyin:record`）。
+   * ⭐ **留空 = 这个音节不可用**（{@link isUsable} 为 false，不进题库）。
+   *
+   * 这条判据定于 TTS 时代：没有载体字时兜底 TTS 会把拼音串念错
+   * （`á` 读成 `ā`、`ē` 读成 `è`……）。发音教错比没有声音严重得多。
+   * 现在只剩 `ong` 一条落在外面——它连真人录音都有了，
+   * 缺的只是一个读音恰好是 `ōng` 的常用单音字，而汉语里没有。
    */
   char?: string
 
@@ -58,11 +63,15 @@ export interface Syllable {
 /**
  * 这个音节能不能进题库。
  *
- * 判据就是有没有汉字载体：有则 TTS 必然读对，无则只能念拼音串、声调靠猜。
+ * 判据是**有没有汉字示例**（`char`）。
+ *
+ * ⚠️ 这个判据定于 TTS 时代（那时「没载体字」=「音频必然念不准」）。
+ * 换真人录音之后**理由已经消失，但判据本身留着没改**——
+ * 现在只有 `ong` 一条落在外面，而它缺的是一个读音恰好为 `ōng` 的常用字。
  *
  * @example
  * isUsable({ pinyin: 'bā', base: 'ba', tone: 1, char: '八' })  // true
- * isUsable({ pinyin: 'ēng', base: 'eng', tone: 1 })            // false —— 等录音
+ * isUsable({ pinyin: 'ōng', base: 'ong', tone: 1 })            // false —— 汉语里没有 ōng 的常用字
  */
 export function isUsable(syllable: Syllable): boolean {
   return syllable.char !== undefined
@@ -174,4 +183,32 @@ export function rhymeOf(syllable: Syllable): string {
  */
 export function syllableKey(base: string, tone: Tone): string {
   return `pinyin.${base.replace(/ü/g, 'v')}${tone}`
+}
+
+/**
+ * 声母/韵母**本音**片段的 key。
+ *
+ * ⭐ 与 {@link syllableKey} 是**两条轨道**，别混用：
+ *
+ * ```
+ * syllableKey('fo', 2)   // 'pinyin.fo2'     带调音节「佛 fó」—— 题目用
+ * bareKey('f')           // 'pinyinbare.f'   纯辅音 /f/        —— 拼音墙用
+ * ```
+ *
+ * 为什么不干脆共用一个 key：`pinyin.fo2` 同时被题目当作「fo 这个音节」使用
+ * （选项显示 `fó`、题干也播 `fó`），就地换成纯 /f/ 会让 P8.3 那类题
+ * **没有正确答案**。见 design/11-拼音真人录音方案.md §3.1。
+ *
+ * `ü` 同样写成 `v`，理由与 {@link syllableKey} 相同。
+ *
+ * @param letter - 声母字母（`'f'` `'zh'`）或韵母（`'ai'` `'ü'` `'ün'`）
+ * @returns 片段 key
+ *
+ * @example
+ * bareKey('f')     // 'pinyinbare.f'
+ * bareKey('ai')    // 'pinyinbare.ai'
+ * bareKey('ü')     // 'pinyinbare.v'
+ */
+export function bareKey(letter: string): string {
+  return `pinyinbare.${letter.replace(/ü/g, 'v')}`
 }

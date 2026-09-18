@@ -26,7 +26,14 @@ import { PET_NAME_PRESETS } from '@/data/seed/petNamePresets'
 import { PET_DEFINITIONS, PET_LINE_MOMENTS } from '@/data/seed/pets'
 import { REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
 import { ROOM_ITEMS, TREAT_ITEMS } from '@/data/seed/shopItems'
-import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
+import {
+  ALL_SYLLABLES,
+  COMPOUND_FINALS,
+  INITIALS,
+  SINGLE_FINALS,
+  syllableKey,
+} from '@/data/seed/pinyinSyllables'
+import { bareKey, initialOf } from '@/domain/pinyin'
 import { POEMS } from '@/data/seed/poems'
 import { spokenText, wordKey } from '@/domain/english'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
@@ -406,15 +413,33 @@ const WORDS: VoiceManifest = {
 }
 
 /**
- * 拼音音节。
+ * 拼音音节（118 条）。
  *
- * ⭐ 朗读内容优先用**汉字载体**而不是拼音串：Edge TTS 是文本转语音，
- * 喂「八」必然读对，喂「bā」只能靠它猜。没有载体字的音节退回念拼音本身，
- * 那些必须人工试听确认，见 `pinyinSyllables.ts` 的 `SYLLABLES_NEEDING_REVIEW`。
+ * ⭐ 这里的 `文本` 只是**占位**：拼音音频自 2026-09 起全部改为外部真人录音，
+ * 不再由 TTS 生成，`generate-voices.mjs` 也刻意跳过了 `pinyin.` 前缀。
+ * 运行时只关心「这个 key 在不在清单里」（`hasClip`），不读这个文本。
+ *
+ * ⚠️ 从前它是汉字载体（喂「八」必然读对，喂「bā」只能靠 TTS 猜），
+ * 但 `char` 字段另有用途（拼音墙的 `spoken` 兜底、P8.3 的选项），**不能删**。
  */
 const PINYIN: VoiceManifest = Object.fromEntries(
   ALL_SYLLABLES.map((s) => [syllableKey(s.base, s.tone), s.char ?? s.pinyin]),
 )
+
+/**
+ * ⭐ 声母韵母的**本音**（47 条）—— 拼音墙上写 `f`，念的就是 /f/。
+ *
+ * 与 {@link PINYIN} 是两条轨道，见 `domain/pinyin.ts` 的 `bareKey`：
+ * 那边是带调音节（题目用，选项显示 `fó`），这边是无调本音（拼音墙用）。
+ *
+ * 文本同样是占位——音频来自真人录音，不走 TTS。
+ * ⚠️ 只收声母表与韵母表：`TONE_SET`（mā má mǎ mà）是**声调教学**，
+ * 四个字各带各的调，不进这里。
+ */
+const PINYIN_BARE: VoiceManifest = Object.fromEntries([
+  ...INITIALS.map((s) => [bareKey(initialOf(s.base)), s.char ?? s.pinyin]),
+  ...[...SINGLE_FINALS, ...COMPOUND_FINALS].map((s) => [bareKey(s.base), s.char ?? s.pinyin]),
+])
 
 /**
  * 英语词、短语与字母。
@@ -642,6 +667,7 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...PHRASES,
   ...WORDS,
   ...PINYIN,
+  ...PINYIN_BARE,
   ...HANZI,
   ...POEM_LINES,
   ...ENGLISH,

@@ -81,21 +81,42 @@ describe('⭐ 每张卡都必须发得出正确的音', () => {
   })
 
   /**
-   * ⭐⭐ 声母韵母必须念**呼读音**，不许借例词。
+   * ⭐⭐ 声母韵母**一个都不借例词**（2026-09）。
    *
-   * 这是 2026-08 的修正：此前 d 念「弟」、n 念「你」、l 念「里」、
-   * ei 念「飞」、ün 念「云」、eng 念「风」、ci 念「词」——
-   * 孩子在这面墙上听到的和老师带读的不是一个音，
-   * 而拼音墙的全部意义就是给课堂做复习。
+   * 历史上为借例词做过两次取舍：2026-08 把 d/n/l/ei/ün/eng/ci 从
+   * 「弟/你/里/飞/云/风/词」掰回呼读音；而 `ong` 一直摆在「借松」上，
+   * 因为汉语里它不能独立成音节、也找不到呼读字。
    *
-   * `ong` 是唯一的例外：汉语里它不能独立成音节，也没有呼读字。
+   * 换成真人录音之后连那个将就也不需要了——`pinyinbare.ong` 就是
+   * 干净的韵母本音。于是这张表里标 `carrier` 的**只剩整体认读**。
    */
-  it('声母韵母念呼读音，只有 ong 借例词', () => {
+  it('只剩整体认读标载体字，声母韵母一个都不借例词', () => {
     const borrowed = ALL_CHART_CARDS.filter(
       (card) => card.carrier !== undefined && !INTEGRAL_FORMS.has(card.form),
     ).map((card) => card.form)
 
-    expect(borrowed).toEqual(['ong'])
+    expect(borrowed).toEqual([])
+  })
+
+  /**
+   * ⭐⭐ 声母/韵母卡走 `pinyinbare.*`（无调本音），整体认读走 `pinyin.*`（带调音节）。
+   *
+   * 这是这面墙最重要的一条不变量：卡面写 `f` 却播「佛 fó」，
+   * 孩子听到的是一个**完整音节**而不是声母，而教材要的是「读得轻短些」。
+   * 走错轨道的表现是「听着别扭」而不是报错，只有这条断言拦得住。
+   *
+   * ⚠️ `/^pinyin\./` 里的点必须转义：不转义的话 `pinyinbare.f` 也会匹配上。
+   *
+   * @see design/11-拼音真人录音方案.md §3.1
+   */
+  it('声母韵母走本音轨道，整体认读走带调音节轨道', () => {
+    for (const card of ALL_CHART_CARDS) {
+      const expected = INTEGRAL_FORMS.has(card.form) ? /^pinyin\./ : /^pinyinbare\./
+      expect(
+        card.clipKey,
+        `「${card.form}」的片段 ${card.clipKey} 走错了轨道`,
+      ).toMatch(expected)
+    }
   })
 
   /** 整体认读音节念的是载体字，必须标出来——孩子得知道听到的是哪个字 */

@@ -17,22 +17,35 @@
  * 用法：
  *   npm run voices                          只补缺失的与文本/参数变了的
  *   npm run voices -- --force               全部重生成
- *   npm run voices -- --force=pinyin.       只重生成拼音（调音色/韵律后用这个）
- *   npm run voices -- --voice-pinyin=zh-CN-XiaoyiNeural
  *   npm run voices -- --voice-en=en-GB-MaisieNeural
  *
- * ⭐ **三套音色，按 key 前缀分**：
+ * ⚠️⚠️ **拼音不归这个脚本管，别在这里找它。**
+ *
+ * `pinyin.*`（118 条带调音节）与 `pinyinbare.*`（47 条声母韵母本音）全部来自
+ * `npm run pinyin:voice` 拉的**外部真人录音**。理由是 TTS 这条路根本走不通：
+ * Edge TTS 是文本转语音，喂 `f` 只能靠猜，所以过去只能给每个音节挂一个汉字载体
+ * （声母 f → 「佛」）——而念出来是个**饱满的完整音节 fó**，
+ * 人教版要的却是「读得轻短些」。见 design/11-拼音真人录音方案.md。
+ *
+ * 连带三条约束（`RECORDED_PREFIXES` 一并管住）：
  * ```
- * en.*      英语童声      用中文音色念 apple 会教错发音
- * pinyin.*  标准播音音色  ⭐ 孤立单字的声调最容易读飘，标准优先于亲切
- * 其余      少女声        题干、鼓励语、昵称、宠物台词、讲解、识字、古诗
+ * 不进生成集合   → pending 永不含拼音
+ * --force 不删   → 删了就再也生不出来，TTS 那条路已经断了
+ * 拦截 --force=pinyin. → 直接报错并提示改用 npm run pinyin:voice
  * ```
- * ⭐ `hanzi.*` 与 `poem.*` 刻意**不跟拼音那套播音音色**：那边念的是孤立单字，
- * 这两类念的都是完整句子（「天。蓝天的天。」「床前明月光，」），
+ *
+ * ⭐ **音色按 key 前缀分**：
+ * ```
+ * en.*       英语童声   用中文音色念 apple 会教错发音
+ * petline.*  三个声部   数学男童 / 语文青年男 / 英语温暖女，见 PET_VOICES
+ * 其余       少女声     题干、鼓励语、昵称、宠物台词、识字、古诗
+ * ```
+ * ⭐ `hanzi.*` 与 `poem.*` 用的就是默认少女声，只是语速单独放慢——
+ * 它们念的是完整句子（「天。蓝天的天。」「床前明月光，」），
  * 少女声在句子上一向稳，而亲切感对这种会被反复翻看的内容更重要。
  *
- * 语速另有三处放慢：`pinyin.*`（声调要走完）、`en.letter*`（字母卡要听清）、
- * `hanzi.*` 与 `poem.*`（要跟着念），见 RATE_PINYIN / RATE_LETTER / RATE_RECITE。
+ * 语速另有两处放慢：`en.letter*`（字母卡要听清）、
+ * `hanzi.*` 与 `poem.*`（要跟着念），见 RATE_LETTER / RATE_RECITE。
  * ⚠️ `name.*`（昵称）必须留在默认音色里：它拼在鼓励语的**同一句话**前面，
  * 换音色就等于一句话里有两个人在说。
  * 发音教错比没有声音严重得多（拼音那边已经付过一次学费，见 design/07 §3.3）。
@@ -46,7 +59,6 @@ import { MsEdgeTTS, OUTPUT_FORMAT } from 'msedge-tts'
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT_DIR = join(ROOT, 'public', 'audio', 'voice')
 const MANIFEST_FILE = join(ROOT, 'src', 'data', 'seed', 'voiceManifest.ts')
-const SYLLABLES_FILE = join(ROOT, 'src', 'data', 'seed', 'pinyinSyllables.ts')
 const ENGLISH_FILE = join(ROOT, 'src', 'data', 'seed', 'englishWords.ts')
 const LETTERS_FILE = join(ROOT, 'src', 'data', 'seed', 'englishLetters.ts')
 const PHRASES_FILE = join(ROOT, 'src', 'data', 'seed', 'englishPhrases.ts')
@@ -77,20 +89,6 @@ const DEFAULT_VOICE = 'zh-CN-XiaoyiNeural'
  * 想要英式发音可以换 `en-GB-MaisieNeural`（同样是童声）。
  */
 const DEFAULT_VOICE_EN = 'en-US-AnaNeural'
-
-/**
- * 拼音音节专用音色。
- *
- * ⭐ **发音标准优先于亲切感**——这是全项目唯一为此破例的地方。
- *
- * `XiaoyiNeural`（少女声）念题干、鼓励语很合适，但念**孤立单字**时
- * 声调不够稳（实测 `pō mō kē hē āo ōu ēn wēn āng` 等一声字读得发飘）。
- * `XiaoxiaoNeural` 是微软中文的旗舰播音音色，播音腔在别处是缺点，
- * 在「教孩子这个音该怎么念」这件事上恰恰是优点。
- *
- * 换回少女声：`npm run voices -- --voice-pinyin=zh-CN-XiaoyiNeural --force=pinyin.`
- */
-const DEFAULT_VOICE_PINYIN = 'zh-CN-XiaoxiaoNeural'
 
 /**
  * ⭐ 三个声部的专属音色 —— 孩子一耳朵就能分出「谁在说话」。
@@ -147,9 +145,20 @@ function petSpeakerOf(key) {
   return m === null ? null : m[1]
 }
 
+/**
+ * ⭐ 已经换成真人录音、**本脚本不许碰**的前缀。
+ *
+ * 三个地方共用它：生成集合的剔除、`--force` 的清理白名单、`--force=` 的拦截。
+ * 只挡住 `pinyin.` 是不够的——`pinyinbare.` 不以 `pinyin.` 开头（点号位置不同），
+ * 漏掉它那 47 条声母韵母本音会在 `--force` 时被删得干干净净。
+ */
+const RECORDED_PREFIXES = ['pinyin.', 'pinyinbare.']
+
+/** 这个 key 的音频来自外部真人录音（`npm run pinyin:voice`），不是 TTS */
+const isRecorded = (key) => RECORDED_PREFIXES.some((prefix) => key.startsWith(prefix))
+
 /** 按 key 前缀选音色 */
 const EN_PREFIX = 'en.'
-const PINYIN_PREFIX = 'pinyin.'
 /** 字母卡。⚠️ 是 `en.` 的子集，音色跟英语走，只有语速单独一套 */
 const LETTER_PREFIX = 'en.letter'
 /**
@@ -219,40 +228,13 @@ const RATE = '-15%'
 const PITCH = '+5%'
 
 /**
- * ⭐ 拼音音节的韵律：更慢、且**不做音高偏移**。
- *
- * 两条都是为声调准确性让路的：
- *
- * 1. 慢，让声调有足够时间走完。一声是高平调、三声是降升调，
- *    语速快时后者会被压成「半三声」，孩子听到的就不是课本上那个音。
- * 2. `+0%` —— ⚠️ 音高偏移是可疑因素：中文声调本就是**相对音高的变化**，
- *    而 TTS 的整体升调并非简单平移，一声（本就在音域高处）被抬高后
- *    容易撞顶变形。别处的 `+5%` 只影响亲切感，这里影响对错。
- *
- * ⭐ **2026-08-31 从 -30% 再放慢到 -40%**（孩子真机反馈，design/05）：
- * 「n 和 l 听不出来」「má 和 mǎ 很容易搞混」。这两组恰好是拼音里
- * **区别最短促**的两处，而它们要的都是同一样东西——时间：
- *
- * - `n`/`l` 的差别只在音节开头那几十毫秒（鼻音 vs 边音），
- *   后面的韵母一模一样。辅音段拉长，那一下才抓得住。
- * - `má`/`mǎ` 的差别在调型（升 vs 先降后升）。三声的**前半段（降）**
- *   是唯一的分辨点，语速一快它就被吃掉，剩下的后半段两个调都在升。
- *
- * ⚠️ 全局放慢而不是给这几条单开一档：`pinyinOddOne` 的四个选项要**挨个点着比**
- * （P7.4 就是 n/l 那一组），一快一慢摆在一起，孩子听到的差别就不再是声母了，
- * 而「更慢的那个」还可能变成猜答案的线索。同一道题里的音节必须同一档语速。
- */
-const RATE_PINYIN = '-40%'
-const PITCH_PINYIN = '+0%'
-
-/**
  * ⭐ 字母卡（`en.letter*`）的语速：比其他英语内容更慢。
  *
  * 念的是「A is for apple.」，而对一个刚开始接触英语的孩子来说，
  * 这句话里**每一个音都是新的**——她既要抓住字母名 /eɪ/，
  * 又要听清后面那个单词。常速下这两件事会糊在一起。
  *
- * 与拼音那边同一个道理（见 RATE_PINYIN）：孤立的、要「听清楚」的教学内容，
+ * 与识字、古诗那边同一个道理：孤立的、要「听清楚」的教学内容，
  * 慢比自然更重要。⚠️ 只放慢语速、不动音高——音高偏移在英语里没有必要，
  * 而任何多余的改动都是在赌已经念对的那些。
  */
@@ -364,21 +346,20 @@ const args = process.argv.slice(2)
 const force = args.includes('--force')
 const voice = args.find((a) => a.startsWith('--voice='))?.split('=')[1] ?? DEFAULT_VOICE
 const voiceEn = args.find((a) => a.startsWith('--voice-en='))?.split('=')[1] ?? DEFAULT_VOICE_EN
-const voicePinyin =
-  args.find((a) => a.startsWith('--voice-pinyin='))?.split('=')[1] ?? DEFAULT_VOICE_PINYIN
 
 /**
- * 按前缀强制重生成，如 `--force=pinyin.`。
+ * 按前缀强制重生成，如 `--force=en.letter`。
  *
- * 比 `--force` 精确得多：调了拼音的音色或韵律时，
- * 没必要把 300 多条英语和题干也重跑一遍（那要好几分钟且都是无谓的网络请求）。
+ * 比 `--force` 精确得多：调了某一类的音色或韵律时，
+ * 没必要把上千条英语和题干也重跑一遍（那要好几分钟且都是无谓的网络请求）。
+ *
+ * ⚠️ 指到拼音上会直接报错退出——那些是真人录音，见文件头的 `RECORDED_PREFIXES`。
  */
 const forcePrefix = args.find((a) => a.startsWith('--force='))?.split('=')[1] ?? null
 
 /** 这个片段该用哪个音色念 */
 function voiceFor(key) {
   if (key.startsWith(EN_PREFIX)) return voiceEn
-  if (key.startsWith(PINYIN_PREFIX)) return voicePinyin
   const pet = petSpeakerOf(key)
   if (pet !== null) return PET_VOICES[pet]
   return voice
@@ -388,10 +369,9 @@ function voiceFor(key) {
  * 这个片段用什么语速音调。
  *
  * ⚠️ 字母的判断必须排在英语前面——`en.letterA` 同时匹配两者，
- * 而它要的是更慢的那一套。理由见 RATE_PINYIN 与 RATE_LETTER。
+ * 而它要的是更慢的那一套。理由见 RATE_LETTER。
  */
 function prosodyFor(key) {
-  if (key.startsWith(PINYIN_PREFIX)) return { rate: RATE_PINYIN, pitch: PITCH_PINYIN }
   if (key.startsWith(LETTER_PREFIX)) return { rate: RATE_LETTER, pitch: PITCH }
   if (key.startsWith(EN_PHRASE_PREFIX) || key.startsWith(EN_CARD_PREFIX)) {
     return { rate: RATE_EN_RECITE, pitch: PITCH }
@@ -464,7 +444,9 @@ function loadManifest() {
 
   Object.assign(
     manifest,
-    loadPinyin(),
+    // ⚠️ 拼音**刻意不在这里** —— 它是 `npm run pinyin:voice` 的真人录音，
+    //    见文件头的 RECORDED_PREFIXES。把它加回来的话，
+    //    `--force` 会把那 165 条删光且再也生不出来
     loadEnglish(),
     loadNicknames(),
     loadPetNames(),
@@ -911,29 +893,6 @@ function loadLetters() {
   return out
 }
 
-/**
- * 拼音音节单独解析 —— 它在 `pinyinSyllables.ts` 里是结构化对象，
- * 不是 `voiceManifest.ts` 那样的字面量键值对。
- *
- * ⭐ 朗读内容优先取 `char`（汉字载体）而不是 `pinyin`：
- * TTS 是文本转语音，喂「八」必然读对，喂「bā」只能靠它猜。
- * 没有载体字的退回念拼音，那些音节必须人工试听（见 npm run pinyin:check）。
- */
-function loadPinyin() {
-  const text = readFileSync(SYLLABLES_FILE, 'utf-8')
-  const out = {}
-
-  const pattern =
-    /\{\s*pinyin:\s*'([^']+)',\s*base:\s*'([^']+)',\s*tone:\s*(\d)(?:,\s*char:\s*'([^']+)')?/g
-
-  for (const [, pinyin, base, tone, char] of text.matchAll(pattern)) {
-    const key = `pinyin.${base.replace(/ü/g, 'v')}${tone}`
-    // 先出现的优先，与 pinyinSyllables.ts 的 dedupe 规则保持一致
-    if (!(key in out)) out[key] = char ?? pinyin
-  }
-  return out
-}
-
 /** 合成一条，返回 mp3 Buffer */
 async function synthesize(tts, text, prosody) {
   const { audioStream } = await tts.toStream(text, prosody)
@@ -948,9 +907,26 @@ const manifest = loadManifest()
 const entries = Object.entries(manifest)
 mkdirSync(OUT_DIR, { recursive: true })
 
+/**
+ * ⚠️ `--force=` 指到真人录音上**直接报错**，不能静默空转。
+ *
+ * 拼音已不在 manifest 里，`--force=pinyin.` 会一条都匹配不到，
+ * 然后打印「全部已存在，无需生成」——看着像成功，实际什么都没发生。
+ */
+if (forcePrefix !== null && isRecorded(forcePrefix)) {
+  console.error('✗ 拼音音频来自真人录音，不走 TTS。')
+  console.error('  要重新获取：npm run pinyin:voice -- --force')
+  process.exit(1)
+}
+
 if (force) {
-  for (const f of readdirSync(OUT_DIR)) unlinkSync(join(OUT_DIR, f))
-  console.log('已清空旧音频（--force）')
+  // ⚠️ 只清空**本脚本会生成的那些**，不能整目录 unlink：
+  //    真人录音走的是另一条链路，被删掉后这里一条也补不回来
+  for (const f of readdirSync(OUT_DIR)) {
+    if (isRecorded(f.replace(/\.mp3$/, ''))) continue
+    unlinkSync(join(OUT_DIR, f))
+  }
+  console.log('已清空旧的 TTS 音频（--force，真人录音不受影响）')
 }
 
 /**
@@ -976,6 +952,9 @@ function prevOf(key) {
 }
 
 const pending = entries.filter(([key, text]) => {
+  // 拼音已不在 manifest 里，这条是兜底：防止将来有人把 loadPinyin 加回来，
+  // 那样会把真人录音 TTS 覆盖掉（不会报错，只有耳朵能发现）
+  if (isRecorded(key)) return false
   if (forcePrefix !== null && key.startsWith(forcePrefix)) return true
   if (!existsSync(join(OUT_DIR, `${key}.mp3`))) return true
 
@@ -1004,7 +983,6 @@ const pendingLetter = pending.filter(([key]) => key.startsWith(LETTER_PREFIX))
 const pendingEn = pending.filter(
   ([key]) => key.startsWith(EN_PREFIX) && !key.startsWith(LETTER_PREFIX),
 )
-const pendingPy = pending.filter(([key]) => key.startsWith(PINYIN_PREFIX))
 // ⚠️ 识字与古诗同样要单独统计：它们和其他中文内容共用少女音，但语速是 RATE_RECITE。
 //    与字母那条同一个理由——混在一起报会打印出一个根本没用上的语速
 const pendingRecite = pending.filter(
@@ -1015,15 +993,14 @@ const pendingPet = pending.filter(([key]) => petSpeakerOf(key) !== null)
 const pendingZh =
   pending.length -
   pendingEn.length -
-  pendingPy.length -
   pendingLetter.length -
   pendingRecite.length -
   pendingPet.length
 
-console.log(`清单共 ${entries.length} 条，待生成 ${pending.length} 条`)
+// ⚠️ 清单里没有拼音：那 165 条是 `npm run pinyin:voice` 的真人录音，不归这里管
+console.log(`清单共 ${entries.length} 条（不含拼音），待生成 ${pending.length} 条`)
 console.log(`  中文 ${pendingZh} 条 · ${voice} · ${RATE} ${PITCH}`)
 console.log(`  识字古诗 ${pendingRecite.length} 条 · ${voice} · ${RATE_RECITE} ${PITCH}`)
-console.log(`  拼音 ${pendingPy.length} 条 · ${voicePinyin} · ${RATE_PINYIN} ${PITCH_PINYIN}`)
 console.log(`  英语 ${pendingEn.length} 条 · ${voiceEn} · ${RATE} ${PITCH}`)
 console.log(`  字母 ${pendingLetter.length} 条 · ${voiceEn} · ${RATE_LETTER} ${PITCH}`)
 for (const species of Object.keys(PET_VOICES)) {

@@ -48,7 +48,11 @@ const MAX_PART_BYTES = 3 * 1024 * 1024
  * 同域的片段要么一起用（进拼音页取拼音包），要么一起不用，缓存粒度正好。
  */
 const GROUPS = [
+  // ⚠️ 两条都要写：`pinyin.` 是带调音节（题目用），`pinyinbare.` 是声母韵母本音
+  //    （拼音墙用）。`startsWith('pinyin.')` 匹配不到 `pinyinbare.b`（点号位置不同），
+  //    漏掉第二条的话 47 条本音会落进 core 包——进拼音页时会连带拉一整包题干
   ['pinyin.', 'pinyin'],
+  ['pinyinbare.', 'pinyin'],
   ['en.', 'english'],
   ['hanzi.', 'hanzi'],
   ['poem.', 'poem'],

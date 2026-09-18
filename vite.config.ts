@@ -168,7 +168,18 @@ export default defineConfig({
           {
             urlPattern: /\/audio\/(bundles\/[^/]+\.bin|(voice|sfx)\/[^/]+\.(mp3|wav))$/,
             handler: 'CacheFirst',
-            options: { cacheName: 'audio-repair' },
+            options: {
+              /**
+               * ⚠️ **内容换了就要换名字**，这条路由没有版本修订——
+               * URL 一样就永远吃旧的。
+               *
+               * 2026-09 拼音换真人录音时从 `audio-repair` 改成了 `audio-repair-v2`：
+               * 那 165 条 mp3 的内容全变了却没换文件名，缓存里的旧 TTS 音频会让
+               * 「修好发音」在某些设备上**静默失效**——表现正是这轮要消灭的
+               * 「声母 f 念成佛」。`cleanupOutdatedCaches` 会顺手清掉旧缓存。
+               */
+              cacheName: 'audio-repair-v2',
+            },
           },
         ],
         cleanupOutdatedCaches: true,

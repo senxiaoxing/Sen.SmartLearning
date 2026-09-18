@@ -1,30 +1,42 @@
 /**
- * @file 拼音发音校验页生成 —— 让「听一遍全部音节」变成几分钟的事
+ * @file 拼音发音校验页生成 —— 让「听一遍全部拼音」变成几分钟的事
  *
  * ⭐⭐ **为什么必须有这个东西**
  *
- * 音节表里挂的汉字对不对、TTS 有没有读准，**机器验不了**。
+ * 拼音音频读得对不对，**机器验不了**。
  * `pinyinSyllables.test.ts` 只能查表自身是否自洽（声调标记与 tone 对不对得上、
- * 有没有重复用字），查不了「『八』是不是真的读 bā」——那需要人耳。
+ * 有没有重复用字），`pinyinVoice.test.ts` 只能查文件在不在、是不是有效 mp3——
+ * 查不了「这一条真的好听/好念吗」，那需要人耳。
  *
  * 而发音错误是这个项目里**代价最高**的一类错误：改代码能修好，
  * 孩子学错的发音要花很久才纠正得过来。所以宁可多花力气，
  * 也要让「全部听一遍」这件事的成本低到真的会去做。
  *
+ * ## ⭐ 2026-09 起，拼音全部是真人录音
+ *
+ * 素材来自 `npm run pinyin:voice`（见 design/11-拼音真人录音方案.md），
+ * TTS 那条路已经断了。所以这一页现在验的是**素材本身**：
+ *
+ * ```
+ * 声母·韵母本音  47 条  pinyinbare.*  ⭐ 拼音墙播的就是这些，最该听
+ * 带调音节      118 条  pinyin.*      题目用
+ * ```
+ *
  * 页面特性：
  * - 键盘 ← → 切换、空格重听，可以盲操作一路听下去
- * - 无汉字载体的音节**默认排在最前并标红**（那些是纯拼音朗读，风险最高）
- * - 标记「有问题」的音节会存进 localStorage，最后可一键导出清单
+ * - 本音 47 条**排在最前并标红**——它们直接决定孩子听到的声母是什么
+ * - 标记「有问题」的条目会存进 localStorage，最后可一键导出清单
  *
  * 用法：npm run pinyin:check     生成后用浏览器打开提示的地址
  */
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const SYLLABLES_FILE = join(ROOT, 'src', 'data', 'seed', 'pinyinSyllables.ts')
+const VOICE_DIR = join(ROOT, 'public', 'audio', 'voice')
 const OUT_FILE = join(ROOT, 'public', 'pinyin-check.html')
 
 /** 从音节表里解析出 { pinyin, base, tone, char, group } */
@@ -32,10 +44,12 @@ function loadSyllables() {
   const text = readFileSync(SYLLABLES_FILE, 'utf-8')
   const groups = [
     ['INITIALS', '声母'],
-    ['SINGLE_FINALS', '单韵母·四声'],
+    ['SINGLE_FINALS', '单韵母'],
+    ['TONE_SET', '四声调'],
     ['COMPOUND_FINALS', '复韵母·鼻韵母'],
     ['INTEGRAL_SYLLABLES', '整体认读'],
     ['BLEND_SYLLABLES', '两拼音节'],
+    ['TRIPLE_SYLLABLES', '三拼音节'],
   ]
 
   const seen = new Set()
@@ -59,10 +73,33 @@ function loadSyllables() {
   return out
 }
 
+/**
+ * ⭐ 47 条声母韵母**本音** —— 拼音墙上播的就是这些。
+ *
+ * 直接扫目录拿：key 由 `initialOf(base) || base` 推出（见 `pinyinChart.ts` 的
+ * `bareCard`），而这边是 .mjs 不能 import TS，复制一份 `initialOf` 又要多一处
+ * 同步点。扫目录既准确，也不必知道那条规则。
+ */
+function loadBareClips() {
+  return readdirSync(VOICE_DIR)
+    .filter((f) => f.startsWith('pinyinbare.') && f.endsWith('.mp3'))
+    .map((f) => f.slice(0, -'.mp3'.length))
+    .sort()
+    .map((key) => ({
+      key,
+      pinyin: key.slice('pinyinbare.'.length),
+      base: '',
+      tone: 0,
+      char: null,
+      bare: true,
+      group: '声母·韵母本音',
+    }))
+}
+
+const bare = loadBareClips()
 const syllables = loadSyllables()
-// 无汉字载体的排最前：它们是纯拼音朗读，最可能读错，要先听
-const ordered = [...syllables].sort((a, b) => (a.char === null ? 0 : 1) - (b.char === null ? 0 : 1))
-const riskCount = syllables.filter((s) => s.char === null).length
+// ⭐ 本音排最前：它们直接决定孩子听到的声母是什么，最该先听
+const ordered = [...bare, ...syllables]
 
 const html = `<!doctype html>
 <html lang="zh-CN">
@@ -103,16 +140,19 @@ const html = `<!doctype html>
 <body>
 <h1>拼音发音校验</h1>
 <p class="sub">
-  共 <b>${syllables.length}</b> 个音节，其中 <b style="color:#FF7A6B">${riskCount}</b> 个没有汉字载体（已排在最前、红框标出）。<br>
+  共 <b>${ordered.length}</b> 条：<b style="color:#FF7A6B">${bare.length}</b> 条声母韵母本音（排在最前、红框标出）+ <b>${syllables.length}</b> 条带调音节。<br>
   键盘：<b>→</b> 下一个并播放 · <b>←</b> 上一个 · <b>空格</b> 重听 · <b>1</b> 标记有问题 · <b>2</b> 标记正常
 </p>
 
 <div class="warn">
   <b>⚠️ 请重点听这几类：</b><br>
-  ① <b>没有汉字载体的</b>（红框）—— 这些是直接把拼音串喂给 TTS，读错的概率最高<br>
-  ② <b>声调对不对</b> —— 一声二声三声四声是否分明，尤其 <code>ā á ǎ à</code> 这组<br>
+  ① <b>声母韵母本音</b>（红框，${bare.length} 条）—— <b>拼音墙上播的就是这些，最该先听</b>。<br>
+  &nbsp;&nbsp;&nbsp;声母要<b>轻短</b>，听不出明显的元音和声调：<code>f</code> 是唇齿摩擦音，
+  <b>不该是「佛 fó」</b>；<code>s</code>/<code>sh</code>/<code>x</code>/<code>h</code> 同理<br>
+  ② <b>声调分明</b> —— 尤其四声调那组 <code>mā má mǎ mà</code>，四个调要一耳朵分得出<br>
   ③ <b>前后鼻音</b> —— <code>en/eng</code>、<code>in/ing</code> 是否读得出区别<br>
   ④ <b>平翘舌</b> —— <code>z/zh</code>、<code>c/ch</code>、<code>s/sh</code> 是否读得出区别<br>
+  ⑤ <b>n / l</b> —— 孩子明确反馈过这两组听不出来，得能分辨<br>
   发现问题的标记出来，最后点「导出问题清单」，把结果贴回给我即可。
 </div>
 
@@ -145,11 +185,12 @@ SYLLABLES.forEach((s, i) => {
   }
   const card = document.createElement('div');
   card.id = 'c' + i;
-  card.className = 'card' + (s.char === null ? ' risk' : '');
+  card.className = 'card' + (s.bare ? ' risk' : '');
   card.innerHTML = \`
     <div class="py">\${s.pinyin}</div>
-    <div class="meta"><span>\${s.base} · \${s.tone}声</span>
-      \${s.char ? '<span class="char">' + s.char + '</span>' : '<span class="nochar">念拼音</span>'}</div>
+    <div class="meta"><span>\${s.bare ? '本音' : s.base + ' · ' + s.tone + '声'}</span>
+      \${s.char ? '<span class="char">' + s.char + '</span>'
+        : '<span class="nochar">' + (s.bare ? '拼音墙' : '念拼音') + '</span>'}</div>
     <audio id="a\${i}" src="/audio/voice/\${s.key}.mp3" preload="none"></audio>
     <div class="row">
       <button onclick="play(\${i})">▶ 听</button>
@@ -195,8 +236,8 @@ function exportBad() {
   const bad = SYLLABLES.filter(s => marks[s.key] === 'bad');
   document.getElementById('out').value = bad.length === 0
     ? '（没有标记出问题的音节）'
-    : '发音有问题的音节：\\n' + bad.map(s =>
-        \`  \${s.pinyin}  (\${s.group}, key=\${s.key}, 载体=\${s.char ?? '无·念拼音'})\`).join('\\n');
+    : '发音有问题的拼音：\\n' + bad.map(s =>
+        \`  \${s.pinyin}  (\${s.group}, key=\${s.key})\`).join('\\n');
 }
 function resetMarks() {
   if (!confirm('清空全部标记？')) return;
@@ -221,6 +262,6 @@ mkdirSync(dirname(OUT_FILE), { recursive: true })
 writeFileSync(OUT_FILE, html, 'utf-8')
 
 console.log(`已生成校验页：${OUT_FILE}`)
-console.log(`共 ${syllables.length} 个音节，其中 ${riskCount} 个无汉字载体（风险最高，已排在最前）\n`)
+console.log(`共 ${ordered.length} 条：声母韵母本音 ${bare.length} 条（排在最前）+ 带调音节 ${syllables.length} 条\n`)
 console.log('打开方式：')
 console.log('  npm run dev  然后浏览器访问  http://localhost:5173/pinyin-check.html')

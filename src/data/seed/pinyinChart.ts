@@ -3,6 +3,7 @@
  * @layer data  静态内容，随 App 版本内置
  * @see src/data/seed/pinyinSyllables.ts  音节与发音载体（**读音的事实源在那边**）
  * @see src/features/chinese/PinyinWall.tsx  这面墙
+ * @see design/11-拼音真人录音方案.md §3.2 声母韵母念本音、整体认读念音节
  * @see design/01-知识点图谱.md §4 汉语拼音
  *
  * ## 这张表管「怎么摆、怎么记」，不管「怎么读」
@@ -16,19 +17,25 @@
  * 复韵母用谐音词）。**必须和老师教的一致**——孩子在学校听一套、在这里看另一套，
  * 记忆会互相干扰，而这一页存在的意义恰恰是给课堂做复习。
  *
- * ## ⚠️ 只剩 `ong` 念的是例词
+ * ## ⭐ 声母韵母念**本音**，不再念呼读音（2026-09）
  *
- * 声母韵母一律念**呼读音**（d 念「的」、eng 念「鞥」、ci 念「呲」），
- * 与老师带读的一致——这是 2026-08 的修正，此前 d/n/l/ei/ün/eng/ci
- * 借的是例词（弟/你/里/飞/云/风/词），孩子听到的和课堂上不是一个音。
+ * 声母卡的卡面写的是字母 `f`，而卡面下播的曾经是呼读音「佛 fó」——
+ * 那是 TTS 拿汉字载体凑出来的音（Edge TTS 是文本转语音，喂 `f` 只能靠它猜）。
+ * 实测「佛」的人声段里 **84% 是元音**，孩子听到的是一个**完整音节**，
+ * 而人教版教材要的是「**读得轻短些**」。
  *
- * `ong` 在汉语里不能独立成音节、也没有呼读字，仍借例词「松」发音：
- * 它的 `carrier` 指向例词的音节，卡面把那个字显示出来，
- * 保证**看到的就是听到的**。
+ * 现在 47 张声母/韵母卡改走 `pinyinbare.*`：真人录的**本音**，无调、轻短。
+ * 卡面写 `f`，耳朵里就是 /f/。`ong` 顺带不再借例词「松」——
+ * 它一直只是「汉语里找不到呼读字」的将就，现在有了干净录音。
+ *
+ * ⚠️ **题目那边仍然念带调音节**（选项显示 `fó`、播的就是 `fó`）。
+ * 两条轨道是刻意的：`pinyin.fo2` 同时被 `itemTemplates.ts` 的
+ * P2.x / P8.1 / P8.3 当作「一个音节」使用，就地换成纯辅音会让那些题
+ * 变成没有正确答案。见 design/11-拼音真人录音方案.md §3.1。
  */
 
 import { ALL_SYLLABLES } from '@/data/seed/pinyinSyllables'
-import { syllableKey } from '@/domain/pinyin'
+import { bareKey, initialOf, syllableKey } from '@/domain/pinyin'
 import type { Tone } from '@/domain/pinyin'
 
 /** 拼音墙上的一张卡 */
@@ -54,8 +61,11 @@ export interface PinyinChartCard {
   /**
    * 当音频念的**不是这张卡的 form** 时，这里放实际念出来的那个字。
    *
-   * 只有 `ei` `ün` `eng` `ong` 四张卡有——它们借例词发音。
-   * UI 必须把它显示出来，否则就成了「卡面写 eng、耳朵听到 fēng」的错位。
+   * 只剩 16 张整体认读卡有：卡面写 `zhi`、念的是「知」。
+   * UI 必须把它显示出来，否则就成了「卡面写 zhi、耳朵听到别的字」的错位。
+   *
+   * ⚠️ 声母/韵母卡**刻意不标**——它们念的就是卡面那个音（`f` → /f/），
+   * 标出载体字反而让孩子以为在学那个字。
    */
   carrier?: string
 }
@@ -80,7 +90,7 @@ const SYLLABLE_BY_KEY = new Map(
 )
 
 /**
- * 造一张卡。`base`/`tone` 指向音节表里的发音载体。
+ * 造一张卡。`base`/`tone` 指向音节表里的那一条——**兜底文本由它而来**。
  *
  * ⭐ **查不到音节就直接抛错**，不静默降级。
  *
@@ -91,22 +101,23 @@ const SYLLABLE_BY_KEY = new Map(
  *
  * @param form - 卡面显示的声母/韵母
  * @param mnemonic - 教学口诀
- * @param base - 载体音节的不带调形式，如 `'bo'`
- * @param tone - 载体音节的声调
+ * @param clipKey - 实际播放的片段
+ * @param base - 音节表里的不带调形式，如 `'bo'`。**兜底文本与校验都靠它**
+ * @param tone - 声调
  * @param carrier - 借例词发音时，实际念出来的那个汉字
  * @throws 音节表里没有这个音节时
  */
-function card(
+function buildCard(
   form: string,
   mnemonic: string,
+  clipKey: string,
   base: string,
   tone: Tone,
   carrier?: string,
 ): PinyinChartCard {
-  const clipKey = syllableKey(base, tone)
-  const syllable = SYLLABLE_BY_KEY.get(clipKey)
+  const syllable = SYLLABLE_BY_KEY.get(syllableKey(base, tone))
   if (syllable === undefined) {
-    throw new Error(`拼音表的「${form}」引用了音节表里不存在的 ${clipKey}`)
+    throw new Error(`拼音表的「${form}」引用了音节表里不存在的 ${syllableKey(base, tone)}`)
   }
 
   return {
@@ -122,18 +133,51 @@ function card(
 }
 
 /**
+ * 造一张念**带调音节**的卡。
+ *
+ * 只剩整体认读用得上：卡面写 `zhi`、念 `zhī`——
+ * 这一组本来就是「不用拼、直接读」，那个载体字还得显示出来。
+ */
+function card(
+  form: string,
+  mnemonic: string,
+  base: string,
+  tone: Tone,
+  carrier?: string,
+): PinyinChartCard {
+  return buildCard(form, mnemonic, syllableKey(base, tone), base, tone, carrier)
+}
+
+/**
+ * ⭐ 造一张念**本音**的卡（声母、韵母）。
+ *
+ * 片段 key 由 `initialOf(base) || base` 推出来，一条规则覆盖两类：
+ *
+ * ```
+ * 'bo' → 'b'    声母卡：卡面写 b，念纯 /p/（塞音发不出独立的本音，录的是轻短版）
+ * 'ai' → 'ai'   韵母卡：base 本身就是那个韵母
+ * ```
+ *
+ * `spoken`（片段缺失时的 TTS 兜底文本）仍取音节表的载体字——
+ * 拿 `'b'` 去念会得到英文字母 bee，而「玻」必然读对。
+ */
+function bareCard(form: string, mnemonic: string, base: string, tone: Tone): PinyinChartCard {
+  return buildCard(form, mnemonic, bareKey(initialOf(base) || base), base, tone)
+}
+
+/**
  * 六张单韵母卡。
  *
  * ⚠️ `form` 一律**不标声调**——这一组教的是元音音色不是声调，
  * 标了调就等于对声调作了声明，而 P1.3 才教声调。与音节表的 `toneless` 同一个道理。
  */
 const SINGLE_FINALS: readonly PinyinChartCard[] = [
-  card('a', '嘴巴张大', 'a', 1),
-  card('o', '嘴巴圆圆', 'o', 1),
-  card('e', '嘴巴扁扁', 'e', 2),
-  card('i', '牙齿对齐', 'i', 1),
-  card('u', '嘴巴突出', 'u', 1),
-  card('ü', '小鱼吐泡', 'ü', 2),
+  bareCard('a', '嘴巴张大', 'a', 1),
+  bareCard('o', '嘴巴圆圆', 'o', 1),
+  bareCard('e', '嘴巴扁扁', 'e', 2),
+  bareCard('i', '牙齿对齐', 'i', 1),
+  bareCard('u', '嘴巴突出', 'u', 1),
+  bareCard('ü', '小鱼吐泡', 'ü', 2),
 ]
 
 /**
@@ -143,74 +187,83 @@ const SINGLE_FINALS: readonly PinyinChartCard[] = [
  * 那是字形问题不是发音问题，所以记忆的抓手必须落在「半圆朝哪边」上。
  */
 const INITIALS: readonly PinyinChartCard[] = [
-  card('b', '右下半圆', 'bo', 1),
-  card('p', '右上半圆', 'po', 1),
-  card('m', '两个门洞', 'mo', 1),
-  card('f', '一根拐棍', 'fo', 2),
-  // ⭐ 念呼读音（的 特 讷 乐），与 b p m f 同一套读法。
-  //    不标 carrier：呼读音就是这个声母**本来的读法**，
-  //    不像 ong 借「松」那样是替代品，标出字反而让孩子以为在学那个字
-  card('d', '左下半圆', 'de', 1),
-  card('t', '伞把朝下', 'te', 4),
-  card('n', '一个门洞', 'ne', 4),
-  card('l', '一根小棍', 'le', 4),
-  card('g', '鸽子的头', 'ge', 1),
-  card('k', '小小蝌蚪', 'ke', 1),
-  card('h', '一把椅子', 'he', 1),
-  card('j', '竖弯加点', 'ji', 1),
-  card('q', '气球带线', 'qi', 1),
-  card('x', '一把剪刀', 'xi', 1),
-  card('z', '像个二字', 'zi', 1),
-  // 呼读音是 cī（呲）——与 zī、sī 同为一声，带读 z-c-s 才齐
-  card('c', '像个半圆', 'ci', 1),
-  card('s', '像条丝带', 'si', 1),
-  card('zh', 'z 加椅子', 'zhi', 1),
-  card('ch', 'c 加椅子', 'chi', 1),
-  card('sh', 's 加椅子', 'shi', 1),
-  card('r', '一棵幼苗', 'ri', 4),
-  card('y', '一个树杈', 'yi', 1),
-  card('w', '两个屋顶', 'wu', 1),
+  // ⭐ 全部走 bareCard：卡面写 `b`，念的就是声母本身（轻短、无调），
+  //    不再借「玻 bō」那类呼读音——孩子在这面墙上要认的是**声母**。
+  //    `base` 只用来取兜底文本（片段缺失时念载体字），不参与发声。
+  bareCard('b', '右下半圆', 'bo', 1),
+  bareCard('p', '右上半圆', 'po', 1),
+  bareCard('m', '两个门洞', 'mo', 1),
+  bareCard('f', '一根拐棍', 'fo', 2),
+  bareCard('d', '左下半圆', 'de', 1),
+  bareCard('t', '伞把朝下', 'te', 4),
+  bareCard('n', '一个门洞', 'ne', 4),
+  bareCard('l', '一根小棍', 'le', 4),
+  bareCard('g', '鸽子的头', 'ge', 1),
+  bareCard('k', '小小蝌蚪', 'ke', 1),
+  bareCard('h', '一把椅子', 'he', 1),
+  bareCard('j', '竖弯加点', 'ji', 1),
+  bareCard('q', '气球带线', 'qi', 1),
+  bareCard('x', '一把剪刀', 'xi', 1),
+  bareCard('z', '像个二字', 'zi', 1),
+  bareCard('c', '像个半圆', 'ci', 1),
+  bareCard('s', '像条丝带', 'si', 1),
+  bareCard('zh', 'z 加椅子', 'zhi', 1),
+  bareCard('ch', 'c 加椅子', 'chi', 1),
+  bareCard('sh', 's 加椅子', 'shi', 1),
+  bareCard('r', '一棵幼苗', 'ri', 4),
+  bareCard('y', '一个树杈', 'yi', 1),
+  bareCard('w', '两个屋顶', 'wu', 1),
 ]
 
 /**
  * 九张复韵母卡。
  *
  * 口诀是**谐音词**：复韵母没有字形上的抓手，课本一律用「阿姨 ai」这样的词来带。
- * ⚠️ 口诀只是记忆的抓手，念出来的是韵母本身（`ei` 念「诶」不是「飞」）。
+ * ⚠️ 口诀只是记忆的抓手，念出来的是**韵母本身的音**（`ei` 念 ēi 不是「飞」）——
+ * 那正是 `bareCard` 走的 `pinyinbare.*`。
  */
 const COMPOUND_FINALS: readonly PinyinChartCard[] = [
-  card('ai', '阿姨', 'ai', 1),
-  card('ei', '飞机', 'ei', 1),
-  card('ui', '围巾', 'ui', 1),
-  card('ao', '奥运', 'ao', 1),
-  card('ou', '海鸥', 'ou', 1),
-  card('iu', '邮票', 'iu', 1),
-  card('ie', '椰子', 'ie', 1),
-  card('üe', '月亮', 'üe', 1),
-  card('er', '耳朵', 'er', 2),
-]
-
-/** 五张前鼻韵母卡。`ün` 念呼读音「韵」 */
-const FRONT_NASALS: readonly PinyinChartCard[] = [
-  card('an', '天安门', 'an', 1),
-  card('en', '摁门铃', 'en', 1),
-  card('in', '树荫', 'in', 1),
-  card('un', '蚊子', 'un', 1),
-  card('ün', '白云', 'ün', 4),
+  bareCard('ai', '阿姨', 'ai', 1),
+  bareCard('ei', '飞机', 'ei', 1),
+  bareCard('ui', '围巾', 'ui', 1),
+  bareCard('ao', '奥运', 'ao', 1),
+  bareCard('ou', '海鸥', 'ou', 1),
+  bareCard('iu', '邮票', 'iu', 1),
+  bareCard('ie', '椰子', 'ie', 1),
+  bareCard('üe', '月亮', 'üe', 1),
+  bareCard('er', '耳朵', 'er', 2),
 ]
 
 /**
- * 四张后鼻韵母卡。⚠️ 只剩 `ong` 借例词「松」发音，见文件头。
+ * 五张前鼻韵母卡。
+ *
+ * ⚠️ `ün` 曾经念呼读音「韵」（那是**四声**，而韵母这一组不教声调）——
+ * 现在走 `pinyinbare.vn`，录的是无调的本音，卡面与耳朵终于对得上。
+ */
+const FRONT_NASALS: readonly PinyinChartCard[] = [
+  bareCard('an', '天安门', 'an', 1),
+  bareCard('en', '摁门铃', 'en', 1),
+  bareCard('in', '树荫', 'in', 1),
+  bareCard('un', '蚊子', 'un', 1),
+  bareCard('ün', '白云', 'ün', 4),
+]
+
+/**
+ * 四张后鼻韵母卡。
+ *
+ * ⭐ `ong` 不再借例词「松」：汉语里它确实不能独立成音节、也没有呼读字，
+ * 但那一直是「拿不到干净录音」的将就。现在 `pinyinbare.ong` 有真人录的
+ * 韵母本音，卡面写 `ong`、念的就是 ong。
  *
  * 前后鼻音是南方孩子最高频的难点（P5.3 是重点知识点），
  * 所以前鼻与后鼻**分成两组并排摆**，而不是混在一张「鼻韵母」表里——
  * 摆位本身就是一次对比。
  */
 const BACK_NASALS: readonly PinyinChartCard[] = [
-  card('ang', '山羊', 'ang', 1),
-  card('eng', '台灯', 'eng', 1),
-  card('ing', '老鹰', 'ing', 1),
-  card('ong', '闹钟', 'song', 1, '松'),
+  bareCard('ang', '山羊', 'ang', 1),
+  bareCard('eng', '台灯', 'eng', 1),
+  bareCard('ing', '老鹰', 'ing', 1),
+  bareCard('ong', '闹钟', 'ong', 1),
 ]
 
 /**
