@@ -28,6 +28,19 @@
  * 卡面写 `f`，耳朵里就是 /f/。`ong` 顺带不再借例词「松」——
  * 它一直只是「汉语里找不到呼读字」的将就，现在有了干净录音。
  *
+ * ## ⭐ 2026-09-23：63 张卡整体换成权威音源 `pinyinv3.*`
+ *
+ * 素材是教材点读的朗读，一次录成（`authenticKey`）。与上一版的区别有三处：
+ *
+ * ```
+ * 片段      一张卡一条，声母韵母与整体认读不再分两条轨道，也没有共用
+ * 整体认读   念音节本身、16 条全是一声 → ⛔ 整组不再标载体字
+ * 来源      cmguo 那 47 条 `pinyinbare.*` 不再被任何地方引用（文件保留）
+ * ```
+ *
+ * 经过（含两条走不通的路：声音转换、截短 TTS）记在小程序项目
+ * `Sen.MiniProgram/design/02` §2 与 `design/09`——那边先做，这边跟随。
+ *
  * ⚠️ **题目那边仍然念带调音节**（选项显示 `fó`、播的就是 `fó`）。
  * 两条轨道是刻意的：`pinyin.fo2` 同时被 `itemTemplates.ts` 的
  * P2.x / P8.1 / P8.3 当作「一个音节」使用，就地换成纯辅音会让那些题
@@ -35,7 +48,7 @@
  */
 
 import { ALL_SYLLABLES } from '@/data/seed/pinyinSyllables'
-import { bareKey, initialOf, syllableKey } from '@/domain/pinyin'
+import { authenticKey, syllableKey } from '@/domain/pinyin'
 import type { Tone } from '@/domain/pinyin'
 
 /** 拼音墙上的一张卡 */
@@ -133,36 +146,17 @@ function buildCard(
 }
 
 /**
- * 造一张念**带调音节**的卡。
+ * ⭐ 造一张墙上的卡 —— 片段直接由**卡面写法**推出（`authenticKey('f')` → `pinyinv3.f`）。
  *
- * 只剩整体认读用得上：卡面写 `zhi`、念 `zhī`——
- * 这一组本来就是「不用拼、直接读」，那个载体字还得显示出来。
+ * 2026-09-23 起 63 张卡全走这条：一张卡一条权威音源录音，
+ * 不再有「声母走 pinyinbare、整体认读走 pinyin」的分岔，也没有任何共用片段。
+ *
+ * `base`/`tone` 不参与发声，只做两件事：在音节表里校验这张卡写得对不对，
+ * 以及取 `spoken`（片段缺失时的兜底文本）——拿 `'b'` 去念会得到英文字母 bee，
+ * 而载体字「玻」必然读对。
  */
-function card(
-  form: string,
-  mnemonic: string,
-  base: string,
-  tone: Tone,
-  carrier?: string,
-): PinyinChartCard {
-  return buildCard(form, mnemonic, syllableKey(base, tone), base, tone, carrier)
-}
-
-/**
- * ⭐ 造一张念**本音**的卡（声母、韵母）。
- *
- * 片段 key 由 `initialOf(base) || base` 推出来，一条规则覆盖两类：
- *
- * ```
- * 'bo' → 'b'    声母卡：卡面写 b，念纯 /p/（塞音发不出独立的本音，录的是轻短版）
- * 'ai' → 'ai'   韵母卡：base 本身就是那个韵母
- * ```
- *
- * `spoken`（片段缺失时的 TTS 兜底文本）仍取音节表的载体字——
- * 拿 `'b'` 去念会得到英文字母 bee，而「玻」必然读对。
- */
-function bareCard(form: string, mnemonic: string, base: string, tone: Tone): PinyinChartCard {
-  return buildCard(form, mnemonic, bareKey(initialOf(base) || base), base, tone)
+function wallCard(form: string, mnemonic: string, base: string, tone: Tone): PinyinChartCard {
+  return buildCard(form, mnemonic, authenticKey(form), base, tone)
 }
 
 /**
@@ -172,12 +166,12 @@ function bareCard(form: string, mnemonic: string, base: string, tone: Tone): Pin
  * 标了调就等于对声调作了声明，而 P1.3 才教声调。与音节表的 `toneless` 同一个道理。
  */
 const SINGLE_FINALS: readonly PinyinChartCard[] = [
-  bareCard('a', '嘴巴张大', 'a', 1),
-  bareCard('o', '嘴巴圆圆', 'o', 1),
-  bareCard('e', '嘴巴扁扁', 'e', 2),
-  bareCard('i', '牙齿对齐', 'i', 1),
-  bareCard('u', '嘴巴突出', 'u', 1),
-  bareCard('ü', '小鱼吐泡', 'ü', 2),
+  wallCard('a', '嘴巴张大', 'a', 1),
+  wallCard('o', '嘴巴圆圆', 'o', 1),
+  wallCard('e', '嘴巴扁扁', 'e', 2),
+  wallCard('i', '牙齿对齐', 'i', 1),
+  wallCard('u', '嘴巴突出', 'u', 1),
+  wallCard('ü', '小鱼吐泡', 'ü', 2),
 ]
 
 /**
@@ -190,29 +184,29 @@ const INITIALS: readonly PinyinChartCard[] = [
   // ⭐ 全部走 bareCard：卡面写 `b`，念的就是声母本身（轻短、无调），
   //    不再借「玻 bō」那类呼读音——孩子在这面墙上要认的是**声母**。
   //    `base` 只用来取兜底文本（片段缺失时念载体字），不参与发声。
-  bareCard('b', '右下半圆', 'bo', 1),
-  bareCard('p', '右上半圆', 'po', 1),
-  bareCard('m', '两个门洞', 'mo', 1),
-  bareCard('f', '一根拐棍', 'fo', 2),
-  bareCard('d', '左下半圆', 'de', 1),
-  bareCard('t', '伞把朝下', 'te', 4),
-  bareCard('n', '一个门洞', 'ne', 4),
-  bareCard('l', '一根小棍', 'le', 4),
-  bareCard('g', '鸽子的头', 'ge', 1),
-  bareCard('k', '小小蝌蚪', 'ke', 1),
-  bareCard('h', '一把椅子', 'he', 1),
-  bareCard('j', '竖弯加点', 'ji', 1),
-  bareCard('q', '气球带线', 'qi', 1),
-  bareCard('x', '一把剪刀', 'xi', 1),
-  bareCard('z', '像个二字', 'zi', 1),
-  bareCard('c', '像个半圆', 'ci', 1),
-  bareCard('s', '像条丝带', 'si', 1),
-  bareCard('zh', 'z 加椅子', 'zhi', 1),
-  bareCard('ch', 'c 加椅子', 'chi', 1),
-  bareCard('sh', 's 加椅子', 'shi', 1),
-  bareCard('r', '一棵幼苗', 'ri', 4),
-  bareCard('y', '一个树杈', 'yi', 1),
-  bareCard('w', '两个屋顶', 'wu', 1),
+  wallCard('b', '右下半圆', 'bo', 1),
+  wallCard('p', '右上半圆', 'po', 1),
+  wallCard('m', '两个门洞', 'mo', 1),
+  wallCard('f', '一根拐棍', 'fo', 2),
+  wallCard('d', '左下半圆', 'de', 1),
+  wallCard('t', '伞把朝下', 'te', 4),
+  wallCard('n', '一个门洞', 'ne', 4),
+  wallCard('l', '一根小棍', 'le', 4),
+  wallCard('g', '鸽子的头', 'ge', 1),
+  wallCard('k', '小小蝌蚪', 'ke', 1),
+  wallCard('h', '一把椅子', 'he', 1),
+  wallCard('j', '竖弯加点', 'ji', 1),
+  wallCard('q', '气球带线', 'qi', 1),
+  wallCard('x', '一把剪刀', 'xi', 1),
+  wallCard('z', '像个二字', 'zi', 1),
+  wallCard('c', '像个半圆', 'ci', 1),
+  wallCard('s', '像条丝带', 'si', 1),
+  wallCard('zh', 'z 加椅子', 'zhi', 1),
+  wallCard('ch', 'c 加椅子', 'chi', 1),
+  wallCard('sh', 's 加椅子', 'shi', 1),
+  wallCard('r', '一棵幼苗', 'ri', 4),
+  wallCard('y', '一个树杈', 'yi', 1),
+  wallCard('w', '两个屋顶', 'wu', 1),
 ]
 
 /**
@@ -223,15 +217,15 @@ const INITIALS: readonly PinyinChartCard[] = [
  * 那正是 `bareCard` 走的 `pinyinbare.*`。
  */
 const COMPOUND_FINALS: readonly PinyinChartCard[] = [
-  bareCard('ai', '阿姨', 'ai', 1),
-  bareCard('ei', '飞机', 'ei', 1),
-  bareCard('ui', '围巾', 'ui', 1),
-  bareCard('ao', '奥运', 'ao', 1),
-  bareCard('ou', '海鸥', 'ou', 1),
-  bareCard('iu', '邮票', 'iu', 1),
-  bareCard('ie', '椰子', 'ie', 1),
-  bareCard('üe', '月亮', 'üe', 1),
-  bareCard('er', '耳朵', 'er', 2),
+  wallCard('ai', '阿姨', 'ai', 1),
+  wallCard('ei', '飞机', 'ei', 1),
+  wallCard('ui', '围巾', 'ui', 1),
+  wallCard('ao', '奥运', 'ao', 1),
+  wallCard('ou', '海鸥', 'ou', 1),
+  wallCard('iu', '邮票', 'iu', 1),
+  wallCard('ie', '椰子', 'ie', 1),
+  wallCard('üe', '月亮', 'üe', 1),
+  wallCard('er', '耳朵', 'er', 2),
 ]
 
 /**
@@ -241,11 +235,11 @@ const COMPOUND_FINALS: readonly PinyinChartCard[] = [
  * 现在走 `pinyinbare.vn`，录的是无调的本音，卡面与耳朵终于对得上。
  */
 const FRONT_NASALS: readonly PinyinChartCard[] = [
-  bareCard('an', '天安门', 'an', 1),
-  bareCard('en', '摁门铃', 'en', 1),
-  bareCard('in', '树荫', 'in', 1),
-  bareCard('un', '蚊子', 'un', 1),
-  bareCard('ün', '白云', 'ün', 4),
+  wallCard('an', '天安门', 'an', 1),
+  wallCard('en', '摁门铃', 'en', 1),
+  wallCard('in', '树荫', 'in', 1),
+  wallCard('un', '蚊子', 'un', 1),
+  wallCard('ün', '白云', 'ün', 4),
 ]
 
 /**
@@ -260,10 +254,10 @@ const FRONT_NASALS: readonly PinyinChartCard[] = [
  * 摆位本身就是一次对比。
  */
 const BACK_NASALS: readonly PinyinChartCard[] = [
-  bareCard('ang', '山羊', 'ang', 1),
-  bareCard('eng', '台灯', 'eng', 1),
-  bareCard('ing', '老鹰', 'ing', 1),
-  bareCard('ong', '闹钟', 'ong', 1),
+  wallCard('ang', '山羊', 'ang', 1),
+  wallCard('eng', '台灯', 'eng', 1),
+  wallCard('ing', '老鹰', 'ing', 1),
+  wallCard('ong', '闹钟', 'ong', 1),
 ]
 
 /**
@@ -271,26 +265,32 @@ const BACK_NASALS: readonly PinyinChartCard[] = [
  *
  * ⭐ 口诀统一是「不用拼，直接读」——这正是它们与其他音节的唯一区别，
  * 也正是 `spell_integral` 误区的来源（孩子把 zhi 拆成 zh-i 去拼）。
- * 每张卡的 `carrier` 都填了：这一组念的是载体字（zhi → 知），
- * 显示出来孩子才知道自己听到的是哪个字。
+ * ## ⭐ 2026-09-23 起整组不标载体字
+ *
+ * 从前这一组念的是**某一个字**（zhi 念「知」、ri 念「日」rì），字必须显示出来。
+ * 换成权威音源之后念的是**音节本身**，而且 16 条实测全是一声——
+ * 再标「日 rì」就成了卡面四声、耳朵一声的错位；换一声同音字又补不齐
+ * （`ri` 的一声根本没有汉字）。于是与声母韵母卡一样：不标。
+ *
+ * `base`/`tone` 保留原来那个字的声调，只用于音节表校验与兜底文本。
  */
 const INTEGRALS: readonly PinyinChartCard[] = [
-  card('zhi', '直接读', 'zhi', 1, '知'),
-  card('chi', '直接读', 'chi', 1, '吃'),
-  card('shi', '直接读', 'shi', 1, '诗'),
-  card('ri', '直接读', 'ri', 4, '日'),
-  card('zi', '直接读', 'zi', 1, '资'),
-  card('ci', '直接读', 'ci', 1, '呲'),
-  card('si', '直接读', 'si', 1, '思'),
-  card('yi', '直接读', 'yi', 1, '衣'),
-  card('wu', '直接读', 'wu', 1, '屋'),
-  card('yu', '直接读', 'yu', 2, '鱼'),
-  card('ye', '直接读', 'ye', 4, '叶'),
-  card('yue', '直接读', 'yue', 4, '月'),
-  card('yuan', '直接读', 'yuan', 3, '远'),
-  card('yin', '直接读', 'yin', 1, '音'),
-  card('yun', '直接读', 'yun', 2, '云'),
-  card('ying', '直接读', 'ying', 1, '英'),
+  wallCard('zhi', '直接读', 'zhi', 1),
+  wallCard('chi', '直接读', 'chi', 1),
+  wallCard('shi', '直接读', 'shi', 1),
+  wallCard('ri', '直接读', 'ri', 4),
+  wallCard('zi', '直接读', 'zi', 1),
+  wallCard('ci', '直接读', 'ci', 1),
+  wallCard('si', '直接读', 'si', 1),
+  wallCard('yi', '直接读', 'yi', 1),
+  wallCard('wu', '直接读', 'wu', 1),
+  wallCard('yu', '直接读', 'yu', 2),
+  wallCard('ye', '直接读', 'ye', 4),
+  wallCard('yue', '直接读', 'yue', 4),
+  wallCard('yuan', '直接读', 'yuan', 3),
+  wallCard('yin', '直接读', 'yin', 1),
+  wallCard('yun', '直接读', 'yun', 2),
+  wallCard('ying', '直接读', 'ying', 1),
 ]
 
 /**

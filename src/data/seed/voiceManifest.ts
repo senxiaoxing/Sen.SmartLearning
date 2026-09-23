@@ -26,14 +26,8 @@ import { PET_NAME_PRESETS } from '@/data/seed/petNamePresets'
 import { PET_DEFINITIONS, PET_LINE_MOMENTS } from '@/data/seed/pets'
 import { REAL_REWARD_PRESETS } from '@/data/seed/realRewards'
 import { ROOM_ITEMS, TREAT_ITEMS } from '@/data/seed/shopItems'
-import {
-  ALL_SYLLABLES,
-  COMPOUND_FINALS,
-  INITIALS,
-  SINGLE_FINALS,
-  syllableKey,
-} from '@/data/seed/pinyinSyllables'
-import { bareKey, initialOf } from '@/domain/pinyin'
+import { ALL_SYLLABLES, syllableKey } from '@/data/seed/pinyinSyllables'
+import { PINYIN_CHART } from '@/data/seed/pinyinChart'
 import { POEMS } from '@/data/seed/poems'
 import { spokenText, wordKey } from '@/domain/english'
 import { hanziClipKey, hanziSpokenText } from '@/domain/hanzi'
@@ -427,19 +421,19 @@ const PINYIN: VoiceManifest = Object.fromEntries(
 )
 
 /**
- * ⭐ 声母韵母的**本音**（47 条）—— 拼音墙上写 `f`，念的就是 /f/。
+ * ⭐ 权威音源的 63 条（2026-09-23 起）—— 拼音墙每张卡一条，答案语音也用它。
  *
- * 与 {@link PINYIN} 是两条轨道，见 `domain/pinyin.ts` 的 `bareKey`：
- * 那边是带调音节（题目用，选项显示 `fó`），这边是无调本音（拼音墙用）。
+ * 与 {@link PINYIN} 是两条轨道，见 `domain/pinyin.ts` 的 `authenticKey`：
+ * 那边是带调音节（**题目**用，选项显示 `fó` 就得播 `fó`），这边是墙上那 63 张卡。
  *
- * 文本同样是占位——音频来自真人录音，不走 TTS。
- * ⚠️ 只收声母表与韵母表：`TONE_SET`（mā má mǎ mà）是**声调教学**，
- * 四个字各带各的调，不进这里。
+ * ⭐ 直接取 `PINYIN_CHART` 的 `clipKey`，不在这里另算一遍：
+ * 从前这里用 `bareKey()` 重算 47 条，与墙上那张表各写一份——
+ * 两处一旦漂移，表现是「墙上某张卡的片段没进包」，而那是**静默**的。
+ * 文本是占位，音频来自录音，不走 TTS。
  */
-const PINYIN_BARE: VoiceManifest = Object.fromEntries([
-  ...INITIALS.map((s) => [bareKey(initialOf(s.base)), s.char ?? s.pinyin]),
-  ...[...SINGLE_FINALS, ...COMPOUND_FINALS].map((s) => [bareKey(s.base), s.char ?? s.pinyin]),
-])
+const PINYIN_V3: VoiceManifest = Object.fromEntries(
+  PINYIN_CHART.flatMap((group) => group.cards).map((card) => [card.clipKey, card.spoken]),
+)
 
 /**
  * 英语词、短语与字母。
@@ -667,7 +661,7 @@ export const VOICE_MANIFEST: VoiceManifest = {
   ...PHRASES,
   ...WORDS,
   ...PINYIN,
-  ...PINYIN_BARE,
+  ...PINYIN_V3,
   ...HANZI,
   ...POEM_LINES,
   ...ENGLISH,

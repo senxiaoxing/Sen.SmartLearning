@@ -4,7 +4,7 @@
  * @see scripts/bundle-voices.mjs     ⚠️ 本文件由它生成，手改会在下次打包时被覆盖
  * @see src/platform/voiceBundles.ts  运行时怎么按索引切片
  *
- * 首次安装只需下载这 14 个包（共 1660 条片段），
+ * 首次安装只需下载这 14 个包（共 1723 条片段），
  * 而不是几百个小文件——请求数才是首装耗时的大头，字节数不是。
  */
 
@@ -57,7 +57,7 @@ export const VOICE_BUNDLES: readonly VoiceBundle[] = [
   },
   {
     "file": "pinyin0.bin",
-    "bytes": 1970465
+    "bytes": 2363297
   },
   {
     "file": "poem0.bin",
@@ -78,7 +78,7 @@ export const VOICE_BUNDLES: readonly VoiceBundle[] = [
 ]
 
 /** 全部语音包的总字节数 */
-export const VOICE_BUNDLE_TOTAL_BYTES = 35230145
+export const VOICE_BUNDLE_TOTAL_BYTES = 35622977
 
 export const VOICE_BUNDLE_INDEX: Readonly<Record<string, VoiceBundleEntry>> = {
   'ceremony.gradeUpG2': ['core0.bin', 0, 20160],
@@ -1312,6 +1312,69 @@ export const VOICE_BUNDLE_INDEX: Readonly<Record<string, VoiceBundleEntry>> = {
   'pinyinbare.y': ['pinyin0.bin', 1947791, 7680],
   'pinyinbare.z': ['pinyin0.bin', 1955471, 7680],
   'pinyinbare.zh': ['pinyin0.bin', 1963151, 7314],
+  'pinyinv3.a': ['pinyin0.bin', 1970465, 9984],
+  'pinyinv3.ai': ['pinyin0.bin', 1980449, 6528],
+  'pinyinv3.an': ['pinyin0.bin', 1986977, 4992],
+  'pinyinv3.ang': ['pinyin0.bin', 1991969, 5568],
+  'pinyinv3.ao': ['pinyin0.bin', 1997537, 5760],
+  'pinyinv3.b': ['pinyin0.bin', 2003297, 5184],
+  'pinyinv3.c': ['pinyin0.bin', 2008481, 7104],
+  'pinyinv3.ch': ['pinyin0.bin', 2015585, 5760],
+  'pinyinv3.chi': ['pinyin0.bin', 2021345, 5952],
+  'pinyinv3.ci': ['pinyin0.bin', 2027297, 6912],
+  'pinyinv3.d': ['pinyin0.bin', 2034209, 5184],
+  'pinyinv3.e': ['pinyin0.bin', 2039393, 9792],
+  'pinyinv3.ei': ['pinyin0.bin', 2049185, 6720],
+  'pinyinv3.en': ['pinyin0.bin', 2055905, 6144],
+  'pinyinv3.eng': ['pinyin0.bin', 2062049, 6912],
+  'pinyinv3.er': ['pinyin0.bin', 2068961, 6144],
+  'pinyinv3.f': ['pinyin0.bin', 2075105, 6144],
+  'pinyinv3.g': ['pinyin0.bin', 2081249, 5184],
+  'pinyinv3.h': ['pinyin0.bin', 2086433, 6720],
+  'pinyinv3.i': ['pinyin0.bin', 2093153, 6144],
+  'pinyinv3.ie': ['pinyin0.bin', 2099297, 5952],
+  'pinyinv3.in': ['pinyin0.bin', 2105249, 7104],
+  'pinyinv3.ing': ['pinyin0.bin', 2112353, 7104],
+  'pinyinv3.iu': ['pinyin0.bin', 2119457, 6720],
+  'pinyinv3.j': ['pinyin0.bin', 2126177, 5760],
+  'pinyinv3.k': ['pinyin0.bin', 2131937, 5952],
+  'pinyinv3.l': ['pinyin0.bin', 2137889, 5184],
+  'pinyinv3.m': ['pinyin0.bin', 2143073, 6720],
+  'pinyinv3.n': ['pinyin0.bin', 2149793, 6720],
+  'pinyinv3.o': ['pinyin0.bin', 2156513, 5760],
+  'pinyinv3.ong': ['pinyin0.bin', 2162273, 6720],
+  'pinyinv3.ou': ['pinyin0.bin', 2168993, 6336],
+  'pinyinv3.p': ['pinyin0.bin', 2175329, 5952],
+  'pinyinv3.q': ['pinyin0.bin', 2181281, 5952],
+  'pinyinv3.r': ['pinyin0.bin', 2187233, 5184],
+  'pinyinv3.ri': ['pinyin0.bin', 2192417, 4800],
+  'pinyinv3.s': ['pinyin0.bin', 2197217, 6720],
+  'pinyinv3.sh': ['pinyin0.bin', 2203937, 6528],
+  'pinyinv3.shi': ['pinyin0.bin', 2210465, 6720],
+  'pinyinv3.si': ['pinyin0.bin', 2217185, 6336],
+  'pinyinv3.t': ['pinyin0.bin', 2223521, 6336],
+  'pinyinv3.u': ['pinyin0.bin', 2229857, 6144],
+  'pinyinv3.ui': ['pinyin0.bin', 2236001, 6912],
+  'pinyinv3.un': ['pinyin0.bin', 2242913, 7488],
+  'pinyinv3.v': ['pinyin0.bin', 2250401, 6720],
+  'pinyinv3.ve': ['pinyin0.bin', 2257121, 6336],
+  'pinyinv3.vn': ['pinyin0.bin', 2263457, 7104],
+  'pinyinv3.w': ['pinyin0.bin', 2270561, 5184],
+  'pinyinv3.wu': ['pinyin0.bin', 2275745, 5184],
+  'pinyinv3.x': ['pinyin0.bin', 2280929, 6336],
+  'pinyinv3.y': ['pinyin0.bin', 2287265, 5184],
+  'pinyinv3.ye': ['pinyin0.bin', 2292449, 5760],
+  'pinyinv3.yi': ['pinyin0.bin', 2298209, 4992],
+  'pinyinv3.yin': ['pinyin0.bin', 2303201, 7104],
+  'pinyinv3.ying': ['pinyin0.bin', 2310305, 6144],
+  'pinyinv3.yu': ['pinyin0.bin', 2316449, 4992],
+  'pinyinv3.yuan': ['pinyin0.bin', 2321441, 7680],
+  'pinyinv3.yue': ['pinyin0.bin', 2329121, 6720],
+  'pinyinv3.yun': ['pinyin0.bin', 2335841, 7104],
+  'pinyinv3.z': ['pinyin0.bin', 2342945, 5184],
+  'pinyinv3.zh': ['pinyin0.bin', 2348129, 4992],
+  'pinyinv3.zhi': ['pinyin0.bin', 2353121, 5184],
+  'pinyinv3.zi': ['pinyin0.bin', 2358305, 4992],
   'poem.caoL0': ['poem0.bin', 0, 15696],
   'poem.caoL1': ['poem0.bin', 15696, 15840],
   'poem.caoL2': ['poem0.bin', 31536, 15840],

@@ -28,10 +28,16 @@ const DIFFICULTIES: Difficulty[] = [1, 2, 3]
 const SAMPLES = 25
 
 describe('语音片段清单', () => {
+  /**
+   * ⚠️ 类别允许带数字（`pinyinv3.`）：2026-09-23 拼音换权威音源时新增了这个类别，
+   * 而它同时是小程序项目的片段 key、包名与 COS 上的文件名——那边的包已经上线，
+   * 为了这条正则去改前缀等于让两边的素材重打一遍。规范要守的是
+   * 「`<类别>.<标识>` 这个形状」，数字不破坏它。
+   */
   it('清单非空且键名符合 `<类别>.<标识>` 规范', () => {
     expect(VOICE_CLIP_COUNT).toBeGreaterThan(0)
     for (const key of Object.keys(VOICE_MANIFEST)) {
-      expect(key, `${key} 不符合命名规范`).toMatch(/^[a-z]+\.[A-Za-z0-9]+$/)
+      expect(key, `${key} 不符合命名规范`).toMatch(/^[a-z][a-z0-9]*\.[A-Za-z0-9]+$/)
     }
   })
 

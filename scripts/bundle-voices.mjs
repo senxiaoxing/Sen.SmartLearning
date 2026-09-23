@@ -48,11 +48,13 @@ const MAX_PART_BYTES = 3 * 1024 * 1024
  * 同域的片段要么一起用（进拼音页取拼音包），要么一起不用，缓存粒度正好。
  */
 const GROUPS = [
-  // ⚠️ 两条都要写：`pinyin.` 是带调音节（题目用），`pinyinbare.` 是声母韵母本音
-  //    （拼音墙用）。`startsWith('pinyin.')` 匹配不到 `pinyinbare.b`（点号位置不同），
-  //    漏掉第二条的话 47 条本音会落进 core 包——进拼音页时会连带拉一整包题干
+  // ⚠️ 三条都要写：`pinyin.` 是带调音节（题目用），`pinyinbare.` 是 cmguo 本音，
+  //    `pinyinv3.` 是权威音源（2026-09-23 起拼音墙与答案语音用它）。
+  //    `startsWith('pinyin.')` 匹配不到 `pinyinbare.b` / `pinyinv3.b`（点号位置不同），
+  //    漏掉哪条那批就落进 core 包——进拼音页时会连带拉一整包题干
   ['pinyin.', 'pinyin'],
   ['pinyinbare.', 'pinyin'],
+  ['pinyinv3.', 'pinyin'],
   ['en.', 'english'],
   ['hanzi.', 'hanzi'],
   ['poem.', 'poem'],

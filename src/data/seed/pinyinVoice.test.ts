@@ -31,6 +31,7 @@ import {
   SINGLE_FINALS,
 } from '@/data/seed/pinyinSyllables'
 import { bareKey, initialOf, syllableKey } from '@/domain/pinyin'
+import { PINYIN_CHART } from '@/data/seed/pinyinChart'
 
 const VOICE_DIR = join(process.cwd(), 'public', 'audio', 'voice')
 
@@ -84,6 +85,19 @@ describe('⭐ 拼音真人录音素材齐全', () => {
   it(`${BARE_KEYS.length} 条声母韵母本音的音频都在盘上`, () => {
     expect(BARE_KEYS).toHaveLength(47)
     expectAllClipsValid(BARE_KEYS)
+  })
+
+  /**
+   * ⭐ 拼音墙实际在播的那 63 条（权威音源，2026-09-23 起）。
+   *
+   * 直接取墙上每张卡的 `clipKey`，不另算一遍——这条守的正是
+   * 「卡片指向了一个盘上没有的片段」，那种错误在页面上是**静默**的：
+   * 点下去没声音，而其余卡照常。
+   */
+  it('拼音墙 63 张卡的音频都在盘上', () => {
+    const keys = PINYIN_CHART.flatMap((group) => group.cards).map((card) => card.clipKey)
+    expect(keys).toHaveLength(63)
+    expectAllClipsValid(keys)
   })
 
   /**

@@ -19,11 +19,6 @@ import { hasClip } from '@/data/seed/voiceManifest'
 /** 声母 23 + 单韵母 6 + 复韵母 9 + 前鼻 5 + 后鼻 4 + 整体认读 16 */
 const EXPECTED_TOTAL = 63
 
-/** 整体认读音节的卡面写法。它们标 carrier 是设计如此，与「借例词」是两回事 */
-const INTEGRAL_FORMS = new Set(
-  PINYIN_CHART.find((group) => group.id === 'integral')?.cards.map((card) => card.form) ?? [],
-)
-
 describe('拼音表', () => {
   it('六组共 63 张卡', () => {
     expect(PINYIN_CHART).toHaveLength(6)
@@ -87,44 +82,38 @@ describe('⭐ 每张卡都必须发得出正确的音', () => {
    * 「弟/你/里/飞/云/风/词」掰回呼读音；而 `ong` 一直摆在「借松」上，
    * 因为汉语里它不能独立成音节、也找不到呼读字。
    *
-   * 换成真人录音之后连那个将就也不需要了——`pinyinbare.ong` 就是
-   * 干净的韵母本音。于是这张表里标 `carrier` 的**只剩整体认读**。
+   * 换成真人录音之后连那个将就也不需要了——`pinyinv3.ong` 就是干净的韵母本音。
+   * 2026-09-23 换权威音源时整体认读也不标了（念的是音节本身、16 条全是一声），
+   * 于是**这张表里一张标 carrier 的卡都没有**。
    */
-  it('只剩整体认读标载体字，声母韵母一个都不借例词', () => {
-    const borrowed = ALL_CHART_CARDS.filter(
-      (card) => card.carrier !== undefined && !INTEGRAL_FORMS.has(card.form),
-    ).map((card) => card.form)
+  it('一张卡都不标载体字', () => {
+    const marked = ALL_CHART_CARDS.filter((card) => card.carrier !== undefined).map((c) => c.form)
 
-    expect(borrowed).toEqual([])
+    expect(marked).toEqual([])
   })
 
   /**
-   * ⭐⭐ 声母/韵母卡走 `pinyinbare.*`（无调本音），整体认读走 `pinyin.*`（带调音节）。
+   * ⭐⭐ 63 张卡全走 `pinyinv3.*`，一张卡一条片段。
    *
    * 这是这面墙最重要的一条不变量：卡面写 `f` 却播「佛 fó」，
    * 孩子听到的是一个**完整音节**而不是声母，而教材要的是「读得轻短些」。
    * 走错轨道的表现是「听着别扭」而不是报错，只有这条断言拦得住。
    *
-   * ⚠️ `/^pinyin\./` 里的点必须转义：不转义的话 `pinyinbare.f` 也会匹配上。
+   * ⚠️ `/^pinyinv3\./` 里的点必须转义。
+   * ⛔ **题目那 118 条 `pinyin.*` 不在这条轨道上**：选项显示 `fó` 就得播 `fó`，
+   *    就地换成这一套会让 P8.3 一类的题没有正确答案。
    *
    * @see design/11-拼音真人录音方案.md §3.1
    */
-  it('声母韵母走本音轨道，整体认读走带调音节轨道', () => {
+  it('63 张卡全走权威音源，一条片段都不共用', () => {
     for (const card of ALL_CHART_CARDS) {
-      const expected = INTEGRAL_FORMS.has(card.form) ? /^pinyin\./ : /^pinyinbare\./
       expect(
         card.clipKey,
         `「${card.form}」的片段 ${card.clipKey} 走错了轨道`,
-      ).toMatch(expected)
+      ).toMatch(/^pinyinv3\./)
     }
-  })
-
-  /** 整体认读音节念的是载体字，必须标出来——孩子得知道听到的是哪个字 */
-  it('16 个整体认读音节都标了载体字', () => {
-    const shown = ALL_CHART_CARDS.filter(
-      (card) => INTEGRAL_FORMS.has(card.form) && card.carrier !== undefined,
-    )
-    expect(shown.length).toBe(INTEGRAL_FORMS.size)
+    const keys = ALL_CHART_CARDS.map((card) => card.clipKey)
+    expect(new Set(keys).size, '有两张卡共用同一条片段').toBe(keys.length)
   })
 })
 

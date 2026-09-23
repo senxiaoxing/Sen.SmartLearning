@@ -212,3 +212,33 @@ export function syllableKey(base: string, tone: Tone): string {
 export function bareKey(letter: string): string {
   return `pinyinbare.${letter.replace(/ü/g, 'v')}`
 }
+
+/**
+ * ⭐ 权威音源片段的 key（2026-09-23 起拼音墙与答案语音都走这条）。
+ *
+ * 素材是教材点读的朗读，一次录成，63 条覆盖拼音墙的每一张卡：
+ * 47 张声母韵母 + 16 个整体认读音节，**一张卡一条片段**。
+ *
+ * ```
+ * syllableKey('zhi', 1)   // 'pinyin.zhi1'     带调音节「知」zhī —— ⭐ 题目仍然用它
+ * bareKey('zh')           // 'pinyinbare.zh'   cmguo 真人录音，2026-09-23 起不再使用
+ * authenticKey('zh')      // 'pinyinv3.zh'     权威音源
+ * ```
+ *
+ * ⛔ **题目那 118 条带调音节不在这条轨道上**：选项显示 `fó` 就必须播 `fó`，
+ * 而这一版只有 63 条、且整体认读全是一声。换掉会让 P8.3 一类的题没有正确答案。
+ * 见 design/11-拼音真人录音方案.md §3.1，那条双轨设计仍然成立。
+ *
+ * 整体认读**不带声调数字**：这一版 16 条实测全是一声，卡面也不再标载体字。
+ *
+ * @param form - 卡面写法（`'f'` `'ai'` `'ü'` `'zhi'`）
+ * @returns 片段 key
+ *
+ * @example
+ * authenticKey('f')      // 'pinyinv3.f'
+ * authenticKey('ün')     // 'pinyinv3.vn'
+ * authenticKey('yuan')   // 'pinyinv3.yuan'
+ */
+export function authenticKey(form: string): string {
+  return `pinyinv3.${form.replace(/ü/g, 'v')}`
+}
